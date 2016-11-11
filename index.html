@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- libraries -->
+    <script src="bower_components/requirejs/require.js"></script>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="scripts/all.js"></script>
+    <script>
+      require(['main'], function(main) {
+        main.start();
+      });
+    </script>
+  </head>
+  <body>
+    <input id="file_picker" type="file" />
+    <audio id="audio" controls />
+  </body>
+</html>
