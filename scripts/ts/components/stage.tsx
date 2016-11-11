@@ -1,18 +1,40 @@
-/// <reference path="../../../typings/index.d.ts"/>
+import {Player} from "./player";
 
-export interface HelloProps { compiler: string; framework: string; }
-
-export class Hello extends React.Component<HelloProps, {}> {
-    render() {
-        return <h1>Hello from {this.props.compiler} and {this.props.framework}!</h1>;
-    }
+export interface StageProps {  }
+export interface StageState {
+  random: number;
 }
 
-export function test() {
+export class Stage extends React.Component<StageProps, StageState> {
 
+  private timerId: number;
+
+  constructor(props: StageProps) {
+    super(props);
+    this.state = {
+      random: 0
+    }
+  }
+
+  componentDidMount() {
+    console.log("mounted");
+  }
+
+  componentWillUnmount() {
+    console.log("unmounted");
+  }
+
+  render() {
+    return <div>
+      <h1>Hello!</h1>
+      <Player />
+    </div>;
+  }
+}
+
+export function setup() {
   ReactDOM.render(
-      <Hello compiler="TypeScript" framework="React" />,
-      document.getElementById("root")
+    <Stage />,
+    document.getElementById("root")
   );
-
 }
