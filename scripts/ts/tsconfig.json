@@ -2,6 +2,7 @@
     "compilerOptions": {
         "target": "es5",
         "module": "amd",
+        "jsx": "react",
         "isolatedModules": false,
         "experimentalDecorators": false,
         "emitDecoratorMetadata": true,

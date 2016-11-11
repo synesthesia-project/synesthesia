@@ -1,5 +1,7 @@
 /// <reference path="../../typings/index.d.ts"/>
 
+import * as stage from "./components/stage"
+
 const timestamps: number[] = [];
 
 // Elements
@@ -17,6 +19,9 @@ export function start(): void {
 
   $('#file_picker').change(loadAudioFile);
   $(window).keydown(keydown);
+
+  // Setup stage
+  stage.test();
 }
 
 function loadAudioFile() {
