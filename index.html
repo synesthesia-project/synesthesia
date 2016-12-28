@@ -5,16 +5,10 @@
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/react/react.js"></script>
     <script src="bower_components/react/react-dom.js"></script>
-    <script src="bower_components/requirejs/require.js"></script>
     <!-- Site -->
-    <script src="scripts/all.js"></script>
   </head>
   <body>
     <div id="root"></div>
-    <script>
-      require(['main'], function(main) {
-        main.start();
-      });
-    </script>
+    <script src="dist/bundle.js"></script>
   </body>
 </html>

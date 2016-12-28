@@ -13,7 +13,17 @@
     "gulp-sourcemaps": "^1.6.0",
     "gulp-typescript": "^2.13.6",
     "gulp-typings": "^2.0.0",
+    "gulp-webpack": "^1.5.0",
+    "source-map-loader": "^0.1.5",
+    "ts-loader": "^1.3.3",
     "typescript": "^1.8.10",
-    "typings": "^1.3.1"
+    "typings": "^1.3.1",
+    "webpack": "^1.14.0"
+  },
+  "dependencies": {
+    "@types/react": "^0.14.55",
+    "@types/react-dom": "^0.14.19",
+    "react": "^15.4.1",
+    "react-dom": "^15.4.1"
   }
 }

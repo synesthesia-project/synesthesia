@@ -6,3 +6,5 @@ export function start(): void {
   // Setup stage
   stage.setup();
 }
+
+start();

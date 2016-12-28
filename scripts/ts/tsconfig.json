@@ -1,19 +1,17 @@
 {
     "compilerOptions": {
         "target": "es5",
-        "module": "amd",
+        "module": "commonjs",
         "jsx": "react",
         "isolatedModules": false,
         "experimentalDecorators": false,
-        "emitDecoratorMetadata": true,
         "declaration": false,
         "noImplicitAny": true,
         "noImplicitUseStrict": false,
         "removeComments": true,
         "noLib": false,
         "preserveConstEnums": true,
-        "suppressImplicitAnyIndexErrors": true,
-        "outFile": "all.js"
+        "suppressImplicitAnyIndexErrors": true
     },
     "compileOnSave": false,
     "buildOnSave": false,
