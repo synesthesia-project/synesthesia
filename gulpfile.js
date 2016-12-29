@@ -17,18 +17,18 @@ gulp.task("typings", function(){
     return gulp.src("./typings.json").pipe(typings());
 });
 
-// gulp.task('ts', ['typings'], function () {
-//     return tsProject.src()
-//       .pipe(sourcemaps.init())
-//       .pipe(ts(tsProject))
-//       .pipe(sourcemaps.write())
-//       .pipe(gulp.dest('scripts'));
-// });
+gulp.task('ts', ['typings'], function () {
+    return tsProject.src()
+      .pipe(sourcemaps.init())
+      .pipe(ts(tsProject))
+      .pipe(sourcemaps.write())
+      .pipe(gulp.dest('.tmp/scripts'));
+});
 
-gulp.task("webpack", ['typings'], function(callback) {
+gulp.task("webpack", ['ts'], function(callback) {
     // run webpack
     webpack(module.exports = {
-        entry: "./scripts/ts/main.ts",
+        entry: "./.tmp/scripts/main.js",
         output: {
             filename: "bundle.js",
             path: __dirname + "/dist"
@@ -37,16 +37,7 @@ gulp.task("webpack", ['typings'], function(callback) {
         // Enable sourcemaps for debugging webpack's output.
         devtool: "source-map",
 
-        resolve: {
-            // Add '.ts' and '.tsx' as resolvable extensions.
-            extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js"]
-        },
-
         module: {
-            loaders: [
-                { test: /\.tsx?$/, loader: "ts-loader" }
-            ],
-
             preLoaders: [
                 { test: /\.js$/, loader: "source-map-loader" }
             ]

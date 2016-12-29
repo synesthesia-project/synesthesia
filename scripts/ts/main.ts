@@ -2,7 +2,7 @@
 
 import * as stage from "./components/stage"
 
-export function start(): void {
+function start(): void {
   // Setup stage
   stage.setup();
 }
