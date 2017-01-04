@@ -1,6 +1,8 @@
 /// <reference path="../../typings/index.d.ts"/>
 
-interface ShadowDomInstance extends React.Component<{}, {}> {}
+interface ShadowDomInstance extends React.Component<{
+  include?: string[]
+}, {}> {}
 type ShadowDOMConstructor = { new () : ShadowDomInstance };
 
 interface Externals {
