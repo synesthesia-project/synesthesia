@@ -4,6 +4,7 @@ var bower = require('gulp-bower');
 var sourcemaps = require('gulp-sourcemaps');
 var ts = require('gulp-typescript');
 var typings = require("gulp-typings");
+var sass = require('gulp-sass');
 
 var webpack = require('webpack');
 
@@ -65,9 +66,14 @@ gulp.task("webpack", ['bower', 'ts', 'copy-js'], function(callback) {
     });
 });
 
-gulp.task("dist", ['webpack'], function(){
-  return gulp.src("./src/styles/**/*.css")
-    .pipe(gulp.dest('dist/styles'))
+gulp.task('sass', function () {
+  return gulp.src('./src/styles/**/*.scss')
+    .pipe(sass().on('error', sass.logError))
+    .pipe(gulp.dest('dist/styles'));
+});
+
+gulp.task("dist", ['webpack', 'sass'], function(){
+  
 });
 
 
