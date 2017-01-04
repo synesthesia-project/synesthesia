@@ -9,10 +9,13 @@ export class Player extends React.Component<{}, {}> {
 
   render() {
     return (
-      <div>
-        <input id="file_picker" type="file" onChange={this.loadAudioFile} />
-        <audio id="audio" controls />
-      </div>
+      <externals.ShadowDOM>
+        <div>
+          <link rel="stylesheet" type="text/css" href="dist/styles/components/player.css"/>
+          <input id="file_picker" type="file" onChange={this.loadAudioFile} />
+          <audio id="audio" controls />
+        </div>
+      </externals.ShadowDOM>
     );
   }
 

@@ -25,10 +25,15 @@ export class Stage extends React.Component<StageProps, StageState> {
   }
 
   render() {
-    return <div>
-      <h1>Hello!</h1>
-      <Player />
-    </div>;
+    return (
+      <externals.ShadowDOM>
+        <div>
+          <link rel="stylesheet" type="text/css" href="dist/styles/components/stage.css"/>
+          <h1>Hello!</h1>
+          <Player />
+        </div>
+      </externals.ShadowDOM>
+    );
   }
 }
 

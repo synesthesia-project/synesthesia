@@ -14,7 +14,12 @@ gulp.task('bower', function() {
 });
 
 gulp.task("typings", function(){
-    return gulp.src("./typings.json").pipe(typings());
+  return gulp.src("./typings.json").pipe(typings());
+});
+
+gulp.task("copy-js", function(){
+  return gulp.src("./scripts/js/*.js")
+    .pipe(gulp.dest('.tmp/scripts'))
 });
 
 gulp.task('ts', ['typings'], function () {
@@ -25,7 +30,7 @@ gulp.task('ts', ['typings'], function () {
       .pipe(gulp.dest('.tmp/scripts'));
 });
 
-gulp.task("webpack", ['ts'], function(callback) {
+gulp.task("webpack", ['bower', 'ts', 'copy-js'], function(callback) {
     // run webpack
     webpack(module.exports = {
         entry: "./.tmp/scripts/main.js",
@@ -53,12 +58,17 @@ gulp.task("webpack", ['ts'], function(callback) {
         },
     }, function(err, stats) {
         if(err) throw new gutil.PluginError("webpack", err);
-        gutil.log("[webpack]", stats.toString({
-            // output options
-        }));
+        // gutil.log("[webpack]", stats.toString({
+        //     // output options
+        // }));
         callback();
     });
 });
 
+gulp.task("dist", ['webpack'], function(){
+  return gulp.src("./src/styles/**/*.css")
+    .pipe(gulp.dest('dist/styles'))
+});
 
-gulp.task('default', ['bower', 'webpack']);
+
+gulp.task('default', ['dist']);
