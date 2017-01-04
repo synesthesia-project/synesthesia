@@ -20,7 +20,7 @@ export class Player extends React.Component<{}, {}> {
   }
 
   private $() {
-    return $(ReactDOM.findDOMNode(this));
+    return $((ReactDOM.findDOMNode(this) as any).shadowRoot);
   }
 
   private fileInputElement() {
