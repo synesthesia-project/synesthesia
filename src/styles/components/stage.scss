@@ -1,3 +1,16 @@
-h1, input {
-  color: #ff00ff;
+@import "../variables";
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+[data-reactroot] {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  #main {
+    flex-grow: 1;
+  }
 }

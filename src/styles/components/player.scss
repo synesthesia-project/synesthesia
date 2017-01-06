@@ -1,3 +1,6 @@
-h1, input {
-  color: #00ccff;
+@import "../variables";
+
+:host {
+  display: block;
+  background-color: $bg_b1;
 }
