@@ -1,8 +1,12 @@
+import * as func from "../data/functional";
+import {PlayState} from "../data/play-state";
+
 import {Player} from "./player";
+
 
 export interface StageProps {  }
 export interface StageState {
-  random: number;
+  playState: PlayState;
 }
 
 export class Stage extends React.Component<StageProps, StageState> {
@@ -12,8 +16,11 @@ export class Stage extends React.Component<StageProps, StageState> {
   constructor(props: StageProps) {
     super(props);
     this.state = {
-      random: 0
+      playState: func.none()
     }
+
+    // Bind callbacks & event listeners
+    this.playStateUpdated = this.playStateUpdated.bind(this);
   }
 
   componentDidMount() {
@@ -24,6 +31,14 @@ export class Stage extends React.Component<StageProps, StageState> {
     console.log("unmounted");
   }
 
+  playStateUpdated(state: PlayState) {
+    this.state.playState = state;
+    this.setState({
+      playState: state
+    });
+    console.log("play state updated: ", state);
+  }
+
   render() {
     return (
       <externals.ShadowDOM>
@@ -32,7 +47,10 @@ export class Stage extends React.Component<StageProps, StageState> {
           <div id="main">
 
           </div>
-          <Player />
+          <Player
+            playState={this.state.playState}
+            playStateUpdated={this.playStateUpdated}
+            />
         </div>
       </externals.ShadowDOM>
     );

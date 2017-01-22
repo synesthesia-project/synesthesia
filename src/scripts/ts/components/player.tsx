@@ -1,10 +1,19 @@
-export class Player extends React.Component<{}, {}> {
+import * as func from "../data/functional";
+import {PlayStateData, PlayState} from "../data/play-state";
+
+export interface PlayerProps {
+  playState: PlayState;
+  playStateUpdated: (value: PlayState) => void;
+}
+
+export class Player extends React.Component<PlayerProps, {}> {
 
   constructor() {
     super();
 
-    // Bind event listeners
+    // Bind callbacks & event listeners
     this.loadAudioFile = this.loadAudioFile.bind(this);
+    this.updatePlayState = this.updatePlayState.bind(this);
   }
 
   render() {
@@ -13,7 +22,9 @@ export class Player extends React.Component<{}, {}> {
         <div>
           <link rel="stylesheet" type="text/css" href="dist/styles/components/player.css"/>
           <input id="file_picker" type="file" onChange={this.loadAudioFile} />
-          <audio id="audio" controls />
+          <audio id="audio" controls
+            onCanPlay={this.updatePlayState}
+            />
         </div>
       </externals.ShadowDOM>
     );
@@ -39,5 +50,16 @@ export class Player extends React.Component<{}, {}> {
     const audio = this.audioElement();
     audio.src = URL.createObjectURL(file);
     audio.playbackRate = 1;
+  }
+
+  /**
+   * Update the play state from the audio element, and send it up.
+   */
+  private updatePlayState() {
+    const state: PlayStateData = {
+      duration: this.audioElement().duration
+    };
+    console.log('play state', state);
+    this.props.playStateUpdated(func.just(state));
   }
 }
