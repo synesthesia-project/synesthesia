@@ -2,6 +2,7 @@ import * as func from "../data/functional";
 import {PlayState} from "../data/play-state";
 
 import {FileSource} from "./file-source";
+import {Player} from "./player";
 
 
 export interface StageProps {  }
@@ -24,19 +25,18 @@ export class Stage extends React.Component<StageProps, StageState> {
   }
 
   componentDidMount() {
-    console.log("mounted");
+    // Called by react when mounted
   }
 
   componentWillUnmount() {
-    console.log("unmounted");
+    // Called by react when about to be unmounted
   }
 
-  playStateUpdated(state: PlayState) {
+  private playStateUpdated(state: PlayState) {
     this.state.playState = state;
     this.setState({
       playState: state
     });
-    console.log("play state updated: ", state);
   }
 
   render() {
@@ -50,6 +50,9 @@ export class Stage extends React.Component<StageProps, StageState> {
           <div id="main">
 
           </div>
+          <Player
+            playState={this.state.playState}
+            />
         </div>
       </externals.ShadowDOM>
     );

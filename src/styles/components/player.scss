@@ -1,0 +1,36 @@
+@import "../variables";
+@import "../shared/buttons";
+
+$control-height: 30px;
+
+:host {
+  background-color: $bg_b1;
+}
+
+[data-reactroot] {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: $spacing;
+
+  .play-pause {
+    display: block;
+    height: $control-height;
+    width: $control-height;
+    @include rect-button();
+
+    &::after {
+      content: "P";
+    }
+
+  }
+
+  .elapsed-time, .duration {
+    display: inline-block;
+    padding: 0 $spacing;
+  }
+
+  .bar {
+    flex-grow: 1;
+  }
+}

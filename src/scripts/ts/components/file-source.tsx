@@ -1,5 +1,5 @@
 import * as func from "../data/functional";
-import {PlayStateData, PlayState} from "../data/play-state";
+import {PlayStateData, PlayState, PlayStateControls, MediaPaused, MediaPlaying} from "../data/play-state";
 
 export interface FileSourceProps {
   playStateUpdated: (value: PlayState) => void;
@@ -7,8 +7,21 @@ export interface FileSourceProps {
 
 export class FileSource extends React.Component<FileSourceProps, {}> {
 
+  private controls: PlayStateControls;
+
   constructor() {
     super();
+
+    // Initialise Controls
+    this.controls = {
+      toggle: () => {
+        const audio = this.audioElement();
+        if (audio.paused)
+          audio.play()
+        else
+          audio.pause()
+      }
+    }
 
     // Bind callbacks & event listeners
     this.loadAudioFile = this.loadAudioFile.bind(this);
@@ -24,6 +37,8 @@ export class FileSource extends React.Component<FileSourceProps, {}> {
           <label htmlFor="file_picker">Open Audio File</label>
           <audio id="audio"
             onCanPlay={this.updatePlayState}
+            onPlaying={this.updatePlayState}
+            onPause={this.updatePlayState}
             />
         </div>
       </externals.ShadowDOM>
@@ -43,10 +58,7 @@ export class FileSource extends React.Component<FileSourceProps, {}> {
   }
 
   private loadAudioFile() {
-    console.log("loadAudioFile", this.fileInputElement(), this.audioElement());
-
     const file = this.fileInputElement().files[0];
-    console.debug('file', file);
     const audio = this.audioElement();
     audio.src = URL.createObjectURL(file);
     audio.playbackRate = 1;
@@ -56,10 +68,20 @@ export class FileSource extends React.Component<FileSourceProps, {}> {
    * Update the play state from the audio element, and send it up.
    */
   private updatePlayState() {
+    const audio = this.audioElement();
     const state: PlayStateData = {
-      duration: this.audioElement().duration
+      durationMillis: audio.duration * 1000,
+      state: (
+        audio.paused ?
+        func.left<MediaPaused, MediaPlaying>({
+          timeMillis: audio.currentTime * 1000
+        }) :
+        func.right<MediaPaused, MediaPlaying>({
+          effectiveStartTimeMillis: new Date().getTime() - audio.currentTime * 1000
+        })
+      ),
+      controls: this.controls
     };
-    console.log('play state', state);
     this.props.playStateUpdated(func.just(state));
   }
 }
