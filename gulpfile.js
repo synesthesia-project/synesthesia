@@ -1,14 +1,20 @@
 var gulp = require('gulp');
+var clean = require('gulp-clean');
 var gutil = require("gulp-util");
 var bower = require('gulp-bower');
 var sourcemaps = require('gulp-sourcemaps');
 var ts = require('gulp-typescript');
 var typings = require("gulp-typings");
 var sass = require('gulp-sass');
-
+var runSequence = require('run-sequence');
 var webpack = require('webpack');
 
-var tsProject = ts.createProject('scripts/ts/tsconfig.json');
+var tsProject = ts.createProject('src/scripts/ts/tsconfig.json');
+
+gulp.task('clean', function() {
+  return gulp.src(['.tmp', 'dist'], {read: false})
+        .pipe(clean());
+});
 
 gulp.task('bower', function() {
   return bower();
@@ -19,7 +25,7 @@ gulp.task("typings", function(){
 });
 
 gulp.task("copy-js", function(){
-  return gulp.src("./scripts/js/*.js")
+  return gulp.src("./src/scripts/js/*.js")
     .pipe(gulp.dest('.tmp/scripts'))
 });
 
@@ -73,8 +79,13 @@ gulp.task('sass', function () {
 });
 
 gulp.task("dist", ['webpack', 'sass'], function(){
-  
+
 });
 
 
-gulp.task('default', ['dist']);
+gulp.task('default', function(callback) {
+  runSequence(
+    'clean',
+    'dist',
+    callback);
+});
