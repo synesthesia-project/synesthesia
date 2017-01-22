@@ -83,7 +83,7 @@ export class Player extends React.Component<PlayerProps, {}> {
       this.elapsedTimeElement().text(displayMillis(elapsed));
     }
     // Pick a nice interval that will show the milliseconds updating
-    this.updateInterval = setInterval(updater, 53);
+    this.updateInterval = setInterval(updater, 16);
     updater();
   }
 
