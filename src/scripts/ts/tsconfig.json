@@ -8,6 +8,7 @@
         "declaration": false,
         "noImplicitAny": true,
         "noImplicitUseStrict": false,
+        "strictNullChecks": true,
         "removeComments": true,
         "noLib": false,
         "preserveConstEnums": true,

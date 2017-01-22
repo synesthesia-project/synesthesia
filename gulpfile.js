@@ -32,7 +32,7 @@ gulp.task("copy-js", function(){
 gulp.task('ts', ['typings'], function () {
     return tsProject.src()
       .pipe(sourcemaps.init())
-      .pipe(ts(tsProject))
+      .pipe(tsProject())
       .pipe(sourcemaps.write())
       .pipe(gulp.dest('.tmp/scripts'));
 });

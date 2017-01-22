@@ -1,3 +1,6 @@
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+
 import * as func from "../data/functional";
 import {PlayState, MediaPlaying} from "../data/play-state";
 import {displayMillis} from "../display/timing";
@@ -8,7 +11,7 @@ export interface PlayerProps {
 
 export class Player extends React.Component<PlayerProps, {}> {
 
-  private updateInterval: number;
+  private updateInterval: any;
 
   constructor() {
     super();

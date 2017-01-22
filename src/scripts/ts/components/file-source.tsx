@@ -1,3 +1,6 @@
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+
 import * as func from "../data/functional";
 import {PlayStateData, PlayState, PlayStateControls, MediaPaused, MediaPlaying} from "../data/play-state";
 
@@ -58,10 +61,15 @@ export class FileSource extends React.Component<FileSourceProps, {}> {
   }
 
   private loadAudioFile() {
-    const file = this.fileInputElement().files[0];
-    const audio = this.audioElement();
-    audio.src = URL.createObjectURL(file);
-    audio.playbackRate = 1;
+    const files = this.fileInputElement().files;
+    if (files) {
+      const file = files[0];
+      const audio = this.audioElement();
+      audio.src = URL.createObjectURL(file);
+      audio.playbackRate = 1;
+    } else {
+      console.error("no files");
+    }
   }
 
   /**

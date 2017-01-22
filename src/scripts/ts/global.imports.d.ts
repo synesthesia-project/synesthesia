@@ -1,5 +1,3 @@
-/// <reference path="../../../typings/index.d.ts"/>
-
 interface ShadowDomInstance extends React.Component<{
   include?: string[]
 }, {}> {}

@@ -1,3 +1,6 @@
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+
 import * as func from "../data/functional";
 import {PlayState} from "../data/play-state";
 
