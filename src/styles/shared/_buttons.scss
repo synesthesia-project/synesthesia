@@ -1,0 +1,12 @@
+@import "../variables";
+
+@mixin rect-button() {
+  cursor: pointer;
+  padding: $spacing;
+  border: 1px solid $bg_d1;
+  background: $bg;
+
+  &:hover {
+    background: $bg_b2;
+  }
+}

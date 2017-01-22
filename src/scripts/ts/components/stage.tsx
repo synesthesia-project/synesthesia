@@ -1,7 +1,7 @@
 import * as func from "../data/functional";
 import {PlayState} from "../data/play-state";
 
-import {Player} from "./player";
+import {FileSource} from "./file-source";
 
 
 export interface StageProps {  }
@@ -44,13 +44,12 @@ export class Stage extends React.Component<StageProps, StageState> {
       <externals.ShadowDOM>
         <div>
           <link rel="stylesheet" type="text/css" href="dist/styles/components/stage.css"/>
+          <FileSource
+            playStateUpdated={this.playStateUpdated}
+            />
           <div id="main">
 
           </div>
-          <Player
-            playState={this.state.playState}
-            playStateUpdated={this.playStateUpdated}
-            />
         </div>
       </externals.ShadowDOM>
     );

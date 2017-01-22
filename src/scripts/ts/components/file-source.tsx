@@ -1,12 +1,11 @@
 import * as func from "../data/functional";
 import {PlayStateData, PlayState} from "../data/play-state";
 
-export interface PlayerProps {
-  playState: PlayState;
+export interface FileSourceProps {
   playStateUpdated: (value: PlayState) => void;
 }
 
-export class Player extends React.Component<PlayerProps, {}> {
+export class FileSource extends React.Component<FileSourceProps, {}> {
 
   constructor() {
     super();
@@ -20,9 +19,10 @@ export class Player extends React.Component<PlayerProps, {}> {
     return (
       <externals.ShadowDOM>
         <div>
-          <link rel="stylesheet" type="text/css" href="dist/styles/components/player.css"/>
+          <link rel="stylesheet" type="text/css" href="dist/styles/components/file-source.css"/>
           <input id="file_picker" type="file" onChange={this.loadAudioFile} />
-          <audio id="audio" controls
+          <label htmlFor="file_picker">Open Audio File</label>
+          <audio id="audio"
             onCanPlay={this.updatePlayState}
             />
         </div>
