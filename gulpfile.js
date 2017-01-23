@@ -33,7 +33,9 @@ gulp.task('ts', ['typings'], function () {
     return tsProject.src()
       .pipe(sourcemaps.init())
       .pipe(tsProject())
-      .pipe(sourcemaps.write())
+      .pipe(sourcemaps.write({
+        sourceRoot: '/src/scripts/ts'
+      }))
       .pipe(gulp.dest('.tmp/scripts'));
 });
 
@@ -74,7 +76,11 @@ gulp.task("webpack", ['bower', 'ts', 'copy-js'], function(callback) {
 
 gulp.task('sass', function () {
   return gulp.src('./src/styles/**/*.scss')
+    .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
+    .pipe(sourcemaps.write({
+      sourceRoot: '/src/styles'
+    }))
     .pipe(gulp.dest('dist/styles'));
 });
 
