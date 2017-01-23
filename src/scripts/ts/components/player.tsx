@@ -5,6 +5,8 @@ import * as func from "../data/functional";
 import {PlayState, MediaPlaying} from "../data/play-state";
 import {displayMillis} from "../display/timing";
 
+import {PlayerBar} from "./player-bar";
+
 export interface PlayerProps {
   playState: PlayState;
 }
@@ -12,6 +14,10 @@ export interface PlayerProps {
 export class Player extends React.Component<PlayerProps, {}> {
 
   private updateInterval: any;
+
+  // Elements
+  private _elapsedTimeElement: JQuery;
+  private _durationElement: JQuery;
 
   constructor() {
     super();
@@ -35,7 +41,7 @@ export class Player extends React.Component<PlayerProps, {}> {
           <link rel="stylesheet" type="text/css" href="dist/styles/components/player.css"/>
           <span className="play-pause" onClick={this.playPauseClicked}></span>
           <span className="elapsed-time"></span>
-          <div className="bar"></div>
+          <PlayerBar playState={this.props.playState}></PlayerBar>
           <span className="duration"></span>
         </div>
       </externals.ShadowDOM>
@@ -51,11 +57,15 @@ export class Player extends React.Component<PlayerProps, {}> {
   }
 
   private elapsedTimeElement() {
-    return this.$().find('.elapsed-time');
+    if(!this._elapsedTimeElement)
+      this._elapsedTimeElement = this.$().find('.elapsed-time');
+    return this._elapsedTimeElement;
   }
 
   private durationElement() {
-    return this.$().find('.duration');
+    if (!this._durationElement)
+      this._durationElement = this.$().find('.duration');
+    return this._durationElement;
   }
 
   private updatePlayerDisplay() {
@@ -69,7 +79,7 @@ export class Player extends React.Component<PlayerProps, {}> {
         });
       },
       none: () => {
-        // Gray out controls
+        // TODO: Gray out controls
         this.elapsedTimeElement().text('---');
         this.durationElement().text('---');
       }

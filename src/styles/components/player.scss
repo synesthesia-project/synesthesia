@@ -28,9 +28,8 @@ $control-height: 30px;
   .elapsed-time, .duration {
     display: inline-block;
     padding: 0 $spacing;
-  }
-
-  .bar {
-    flex-grow: 1;
+    width: 75px;
+    font-size: 15px;
+    text-align: center;
   }
 }

@@ -1,13 +1,18 @@
 @import "../variables";
 
-@mixin rect-button() {
+@mixin button($border-width: 1px) {
   box-sizing: border-box;
   cursor: pointer;
-  padding: $spacing;
-  border: 1px solid $bg_d1;
+  border: $border-width solid $bg_d1;
   background: $bg;
 
   &:hover {
     background: $bg_b2;
   }
+}
+
+@mixin rect-button() {
+  padding: $spacing;
+  border-radius: 3px;
+  @include button();
 }
