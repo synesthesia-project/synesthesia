@@ -5,6 +5,8 @@ export interface PlayStateControls {
    * Toggle Play / Pause
    */
   toggle(): void;
+  pause(): void;
+  goToTime(timeMillis: number): void;
 }
 
 export interface MediaPaused {

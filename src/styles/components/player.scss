@@ -32,4 +32,16 @@ $control-height: 30px;
     font-size: 15px;
     text-align: center;
   }
+
+  &.disabled {
+
+    .play-pause{
+      opacity: 0.5;
+      @include button-disabled();
+    }
+
+    .elapsed-time, .duration {
+        opacity: 0.5;
+    }
+  }
 }

@@ -1,5 +1,5 @@
+import {BaseComponent} from "./base";
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 
 import * as func from "../data/functional";
 import {PlayStateData, PlayState, PlayStateControls, MediaPaused, MediaPlaying} from "../data/play-state";
@@ -8,7 +8,7 @@ export interface FileSourceProps {
   playStateUpdated: (value: PlayState) => void;
 }
 
-export class FileSource extends React.Component<FileSourceProps, {}> {
+export class FileSource extends BaseComponent<FileSourceProps, {}> {
 
   private controls: PlayStateControls;
 
@@ -18,11 +18,17 @@ export class FileSource extends React.Component<FileSourceProps, {}> {
     // Initialise Controls
     this.controls = {
       toggle: () => {
-        const audio = this.audioElement();
+        const audio = this.$audio();
         if (audio.paused)
-          audio.play()
+          audio.play();
         else
-          audio.pause()
+          audio.pause();
+      },
+      pause: () => {
+        this.$audio().pause();
+      },
+      goToTime: (timeMillis: number) => {
+        this.$audio().currentTime = timeMillis / 1000;
       }
     }
 
@@ -48,23 +54,19 @@ export class FileSource extends React.Component<FileSourceProps, {}> {
     );
   }
 
-  private $() {
-    return $((ReactDOM.findDOMNode(this) as any).shadowRoot);
-  }
-
-  private fileInputElement() {
+  private $fileInput() {
     return this.$().find('input').get(0) as HTMLInputElement;
   }
 
-  private audioElement() {
+  private $audio() {
     return this.$().find('audio').get(0) as HTMLAudioElement;
   }
 
   private loadAudioFile() {
-    const files = this.fileInputElement().files;
+    const files = this.$fileInput().files;
     if (files) {
       const file = files[0];
-      const audio = this.audioElement();
+      const audio = this.$audio();
       audio.src = URL.createObjectURL(file);
       audio.playbackRate = 1;
     } else {
@@ -76,7 +78,7 @@ export class FileSource extends React.Component<FileSourceProps, {}> {
    * Update the play state from the audio element, and send it up.
    */
   private updatePlayState() {
-    const audio = this.audioElement();
+    const audio = this.$audio();
     const state: PlayStateData = {
       durationMillis: audio.duration * 1000,
       state: (

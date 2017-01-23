@@ -1,11 +1,22 @@
 // Maybe
 
-export interface Maybe<T> {
-  caseOf<Output>(cases: {none: () => Output, just: (value: T) => Output}): Output;
-  fmap<Output>(map: (value: T) => Output): Maybe<Output>;
+export abstract class Maybe<T> {
+  abstract caseOf<Output>(cases: {none: () => Output, just: (value: T) => Output}): Output;
+  abstract fmap<Output>(map: (value: T) => Output): Maybe<Output>;
+
+  isJust() {
+    return this.caseOf({
+      just: () => true,
+      none: () => false
+    });
+  }
+
+  isNone() {
+    return !this.isJust();
+  }
 }
 
-class None<T> implements Maybe<T> {
+class None<T> extends Maybe<T> {
   public caseOf<Output>(cases: {none: () => Output, just: (value: T) => Output}): Output {
     return cases.none();
   }
@@ -15,11 +26,12 @@ class None<T> implements Maybe<T> {
   }
 }
 
-class Just<T> implements Maybe<T> {
+class Just<T> extends Maybe<T> {
 
   private value: T;
 
   constructor(value: T) {
+    super();
     this.value = value;
   }
 

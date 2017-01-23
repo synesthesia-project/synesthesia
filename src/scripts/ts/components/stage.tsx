@@ -1,3 +1,4 @@
+import {BaseComponent} from "./base";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
@@ -13,7 +14,7 @@ export interface StageState {
   playState: PlayState;
 }
 
-export class Stage extends React.Component<StageProps, StageState> {
+export class Stage extends BaseComponent<StageProps, StageState> {
 
   private timerId: number;
 

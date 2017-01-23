@@ -11,6 +11,11 @@
   }
 }
 
+@mixin button-disabled() {
+  cursor: default;
+  background: $bg !important;
+}
+
 @mixin rect-button() {
   padding: $spacing;
   border-radius: 3px;
