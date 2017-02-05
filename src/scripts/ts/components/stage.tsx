@@ -8,6 +8,7 @@ import {PlayState} from "../data/play-state";
 import {FileSource} from "./file-source";
 import {Player} from "./player";
 import {Layer} from "./layer";
+import {Timeline} from "./timeline";
 
 
 export interface StageProps {  }
@@ -58,9 +59,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
               <Layer />
               <Layer />
             </div>
-            <div className="timeline">
-              <div className="side"></div>
-            </div>
+            <Timeline />
           </div>
           <Player
             playState={this.state.playState}
