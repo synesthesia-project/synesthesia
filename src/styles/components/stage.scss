@@ -12,5 +12,43 @@
 
   #main {
     flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+
+    .layers {
+      flex-grow: 1;
+      position: relative;
+
+      &::after {
+        content: "";
+        display: block;
+        background: $layer_side_bg;
+        position: absolute;
+        width: $layer_side_column_width;
+        height: 100%;
+        top: 0;
+        left: 0;
+        border-right: 1px solid $border-light;
+        z-index: -100;
+      }
+    }
+
+    .timeline {
+      position: relative;
+      background: $layer_side_bg;
+      height: 40px;
+      border-top: 1px solid $border-light;
+
+      .side {
+        display: block;
+        background: $layer_side_bg;
+        position: absolute;
+        width: $layer_side_column_width;
+        height: 100%;
+        top: 0;
+        left: 0;
+        border-right: 1px solid $border-light;
+      }
+    }
   }
 }

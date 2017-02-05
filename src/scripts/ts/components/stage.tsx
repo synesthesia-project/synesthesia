@@ -59,6 +59,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
               <Layer />
             </div>
             <div className="timeline">
+              <div className="side"></div>
             </div>
           </div>
           <Player
