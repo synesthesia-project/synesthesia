@@ -20,6 +20,7 @@
       position: relative;
 
       &::after {
+        box-sizing: border-box;
         content: "";
         display: block;
         background: $layer_side_bg;

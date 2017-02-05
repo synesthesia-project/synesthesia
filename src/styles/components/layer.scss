@@ -1,12 +1,14 @@
 @import "../variables";
 
 [data-reactroot] {
+  box-sizing: border-box;
   display: block;
   height: 60px;
   border-bottom: 1px solid $border-light;
   position: relative;
 
   .side {
+    box-sizing: border-box;
     background: $layer_side_bg;
     display: block;
     position: absolute;

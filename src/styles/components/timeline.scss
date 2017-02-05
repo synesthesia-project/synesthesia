@@ -1,14 +1,21 @@
 @import "../variables";
+@import "../shared/buttons";
+
+$timeline-height: 40px;
+$button-height: $timeline-height - 2 * $spacing;
 
 [data-reactroot] {
   display: block;
   position: relative;
   background: $layer_side_bg;
-  height: 40px;
+  height: $timeline-height;
   border-top: 1px solid $border-light;
 
   .side {
-    display: block;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 0 $spacing;
     background: $layer_side_bg;
     position: absolute;
     width: $layer_side_column_width;
@@ -16,5 +23,17 @@
     top: 0;
     left: 0;
     border-right: 1px solid $border-light;
+
+    .add-button {
+      display: block;
+      height: $button-height;
+      width: $button-height;
+      @include rect-button();
+
+      &::after {
+        content: "A";
+      }
+
+    }
   }
 }
