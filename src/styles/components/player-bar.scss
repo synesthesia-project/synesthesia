@@ -25,11 +25,11 @@ $button-width: $button-height;
     right: 0;
     top: ($button-height - $bar-width - $bar-border * 2) / 2;
     height: $bar-width;
-    background-color: $bg_d1;
-    border: 1px solid $bg_d1;
+    background-color: $border_dark;
+    border: 1px solid $border_dark;
 
     .fill {
-      background-color: $bg_b2;
+      background-color: $border_light;
       position: absolute;
       height: 100%;
       width: 50%;
@@ -45,7 +45,7 @@ $button-width: $button-height;
     width: $button-width;
     height: $button-height;
     border-radius: $button-height;
-    border: $button-border solid $bg_d1;
+    border: $button-border solid $border_dark;
     background: $bg;
   }
 
@@ -103,7 +103,7 @@ $button-width: $button-height;
       border-color: $bg;
 
       .fill {
-        background-color: $bg_b2;
+        background-color: $bg;
       }
     }
 

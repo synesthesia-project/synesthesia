@@ -4,21 +4,27 @@
 :host {
   display: block;
   background-color: $bg_b1;
-  padding: $spacing;
+  border-bottom: 1px solid $border-dark;
 }
 
-input {
-	width: 0.1px;
-	height: 0.1px;
-	opacity: 0;
-	overflow: hidden;
-	position: absolute;
-	z-index: -1;
+[data-reactroot] {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: $spacing;
 
-  & + label {
-    display: inline-block;
-    @include rect-button();
+  input {
+  	width: 0.1px;
+  	height: 0.1px;
+  	opacity: 0;
+  	overflow: hidden;
+  	position: absolute;
+  	z-index: -1;
+
+    & + label {
+      @include rect-button();
 
 
+    }
   }
 }

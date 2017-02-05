@@ -1,0 +1,19 @@
+@import "../variables";
+
+[data-reactroot] {
+  display: block;
+  height: 60px;
+  border-bottom: 1px solid $border-light;
+  position: relative;
+
+  .side {
+    background: $layer_side_bg;
+    display: block;
+    position: absolute;
+    width: $layer_side_column_width;
+    height: 100%;
+    top: 0;
+    left: 0;
+    border-right: 1px solid $border-light;
+  }
+}

@@ -1,11 +1,19 @@
 
-$bg_d1: #0a0a0a;
-$bg: #111111;
-$bg_b1: #222;
-$bg_b2: #333;
+$bg: #2a2a2b;
+$bg_b1: #353638;
+
+$border_dark: #151516;
+$border-light: #1c1d1d;
+
+// TODO: Colors to replace
 $hint: #4286f4;
 $hint_d1: darken($hint, 5%);
+// END TODO
+
+$layer_side_bg: #303133;
 
 $font-family: sans-serif;
 
 $spacing: 5px;
+
+$layer_side_column_width: 100px;

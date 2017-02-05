@@ -1,13 +1,33 @@
 @import "../variables";
 
 @mixin button($border-width: 1px) {
+  position: relative;
   box-sizing: border-box;
   cursor: pointer;
-  border: $border-width solid $bg_d1;
-  background: $bg;
+  transition: all 200ms;
+  padding: 6px 8px;
+  color: #F3F3F5;
+  background: linear-gradient(to bottom, #4f5053, #343436);
+  text-shadow: 0 -1px rgba(0, 0, 0, 0.7);
+  border-radius: 3px;
+  border: 1px solid $border_dark;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 1px 0 0 rgba(0,0,0,0.25);
+  overflow: hidden;
 
   &:hover {
-    background: $bg_b2;
+    color: #F3F3F5;
+    outline-color: rgba(243, 243, 245, 0.3);
+    background: linear-gradient(to bottom, #5e6064, #393A3B);
+    text-shadow: 0 -1px rgba(0, 0, 0, 0.7);
+  }
+
+  &:active {
+    color: #ffffff;
+    outline-color: rgba(255, 255, 255, 0.3);
+    background: linear-gradient(to bottom, #242525, #37383A);
+    text-shadow: 0 -1px rgba(0, 0, 0, 0.4);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), 0 1px 0 0 rgba(255,255,255,0.15);
+    transition-duration: 50ms;
   }
 }
 
