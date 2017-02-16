@@ -10,10 +10,13 @@ import {Player} from "./player";
 import {Layer} from "./layer";
 import {Timeline} from "./timeline";
 
+import {CueFile, emptyFile} from "../data/file";
+
 
 export interface StageProps {  }
 export interface StageState {
   playState: PlayState;
+  cueFile: CueFile;
 }
 
 export class Stage extends BaseComponent<StageProps, StageState> {
@@ -23,11 +26,13 @@ export class Stage extends BaseComponent<StageProps, StageState> {
   constructor(props: StageProps) {
     super(props);
     this.state = {
-      playState: func.none()
+      playState: func.none(),
+      cueFile: emptyFile()
     }
 
     // Bind callbacks & event listeners
     this.playStateUpdated = this.playStateUpdated.bind(this);
+    this.updateCueFile = this.updateCueFile.bind(this);
   }
 
   componentDidMount() {
@@ -39,13 +44,25 @@ export class Stage extends BaseComponent<StageProps, StageState> {
   }
 
   private playStateUpdated(state: PlayState) {
-    this.state.playState = state;
     this.setState({
       playState: state
-    });
+    } as StageState);
+  }
+
+  private updateCueFile(file: CueFile) {
+    this.setState({
+      cueFile: file
+    } as StageState);
   }
 
   render() {
+
+    let layers = this.state.cueFile.layers.map((layer, i) =>
+      <Layer
+        key={i}
+        />
+    );
+
     return (
       <externals.ShadowDOM>
         <div>
@@ -55,11 +72,12 @@ export class Stage extends BaseComponent<StageProps, StageState> {
             />
           <div id="main">
             <div className="layers">
-              <Layer />
-              <Layer />
-              <Layer />
+              {layers}
             </div>
-            <Timeline />
+            <Timeline
+              cueFile={this.state.cueFile}
+              updateCueFile={this.updateCueFile}
+              />
           </div>
           <Player
             playState={this.state.playState}
