@@ -13,6 +13,7 @@ import {Timeline} from "./timeline";
 import {CueFile, emptyFile} from "../data/file";
 import * as selection from "../data/selection";
 import * as types from "../util/types";
+import {KEYCODES} from "../util/input";
 
 
 export interface StageProps {  }
@@ -38,6 +39,8 @@ export class Stage extends BaseComponent<StageProps, StageState> {
     this.playStateUpdated = this.playStateUpdated.bind(this);
     this.updateCueFile = this.updateCueFile.bind(this);
     this.updateSelection = this.updateSelection.bind(this);
+
+    this.setupWindowListeners();
   }
 
   componentDidMount() {
@@ -46,6 +49,31 @@ export class Stage extends BaseComponent<StageProps, StageState> {
 
   componentWillUnmount() {
     // Called by react when about to be unmounted
+  }
+
+  private setupWindowListeners() {
+    $(window).on('keydown', (e) => {
+      // Add items to selected layers
+      if (e.keyCode == KEYCODES.ENTER) {
+        this.addItemsToSelectedLayers();
+        e.preventDefault();
+        return;
+      }
+      console.debug('keydown', e, e.keyCode);
+    });
+    $(window).on('keyup', (e) => {
+      // Toggle Play / Pause
+      if (e.keyCode == KEYCODES.SPACE) {
+        this.state.playState.fmap(state => state.controls.toggle());
+        e.preventDefault();
+        return;
+      }
+      console.debug('keyup', e, e.keyCode);
+    });
+  }
+
+  private addItemsToSelectedLayers() {
+    console.log("add items to selected layers");
   }
 
   private playStateUpdated(playState: PlayState) {
