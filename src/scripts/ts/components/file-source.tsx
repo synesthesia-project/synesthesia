@@ -5,6 +5,7 @@ import * as func from "../data/functional";
 import {PlayStateData, PlayState, PlayStateControls, MediaPaused, MediaPlaying} from "../data/play-state";
 
 export interface FileSourceProps {
+  // Callbacks
   playStateUpdated: (value: PlayState) => void;
 }
 

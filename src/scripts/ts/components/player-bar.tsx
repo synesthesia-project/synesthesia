@@ -14,8 +14,10 @@ export interface PlayerBarState {
 }
 
 export interface PlayerBarProps {
+  // Properties
   playState: PlayState;
   scrubbingPosition: func.Maybe<number>;
+  // Callbacks
   updateScrubbingPosition: (position: func.Maybe<number>) => void;
 }
 

@@ -2,12 +2,13 @@ import {BaseComponent} from "./base";
 import * as React from "react";
 
 import * as file from "../data/file";
+import * as types from "../util/types";
 
 export interface TimelineState { }
 
 export interface TimelineProps {
-  cueFile: file.CueFile;
-  updateCueFile: (file: file.CueFile) => void;
+  // Callbacks
+  updateCueFile: types.Mutator<file.CueFile>;
 }
 
 export class Timeline extends BaseComponent<TimelineProps, TimelineState> {
@@ -33,7 +34,7 @@ export class Timeline extends BaseComponent<TimelineProps, TimelineState> {
   }
 
   private addLayerClicked() {
-    this.props.updateCueFile(file.addLayer(this.props.cueFile));
+    this.props.updateCueFile(cueFile => file.addLayer(cueFile));
   }
 
 }

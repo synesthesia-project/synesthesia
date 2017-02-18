@@ -11,12 +11,15 @@ import {Layer} from "./layer";
 import {Timeline} from "./timeline";
 
 import {CueFile, emptyFile} from "../data/file";
+import * as selection from "../data/selection";
+import * as types from "../util/types";
 
 
 export interface StageProps {  }
 export interface StageState {
   playState: PlayState;
   cueFile: CueFile;
+  selection: selection.Selection;
 }
 
 export class Stage extends BaseComponent<StageProps, StageState> {
@@ -27,12 +30,14 @@ export class Stage extends BaseComponent<StageProps, StageState> {
     super(props);
     this.state = {
       playState: func.none(),
-      cueFile: emptyFile()
+      cueFile: emptyFile(),
+      selection: selection.initialSelection()
     }
 
     // Bind callbacks & event listeners
     this.playStateUpdated = this.playStateUpdated.bind(this);
     this.updateCueFile = this.updateCueFile.bind(this);
+    this.updateSelection = this.updateSelection.bind(this);
   }
 
   componentDidMount() {
@@ -43,16 +48,16 @@ export class Stage extends BaseComponent<StageProps, StageState> {
     // Called by react when about to be unmounted
   }
 
-  private playStateUpdated(state: PlayState) {
-    this.setState({
-      playState: state
-    } as StageState);
+  private playStateUpdated(playState: PlayState) {
+    this.setState({playState} as StageState);
   }
 
-  private updateCueFile(file: CueFile) {
-    this.setState({
-      cueFile: file
-    } as StageState);
+  private updateCueFile(mutator: (cueFile: CueFile) => CueFile) {
+    this.setState({cueFile: mutator(this.state.cueFile)} as StageState);
+  }
+
+  private updateSelection(mutator: (selection: selection.Selection) => selection.Selection) {
+    this.setState({selection: mutator(this.state.selection)} as StageState);
   }
 
   render() {
@@ -60,6 +65,10 @@ export class Stage extends BaseComponent<StageProps, StageState> {
     let layers = this.state.cueFile.layers.map((layer, i) =>
       <Layer
         key={i}
+        layerKey={i}
+        layer={layer}
+        selection={this.state.selection}
+        updateSelection={this.updateSelection}
         />
     );
 
@@ -75,7 +84,6 @@ export class Stage extends BaseComponent<StageProps, StageState> {
               {layers}
             </div>
             <Timeline
-              cueFile={this.state.cueFile}
               updateCueFile={this.updateCueFile}
               />
           </div>

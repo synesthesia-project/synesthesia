@@ -1,21 +1,46 @@
 @import "../variables";
+@import "../shared/buttons";
+
+$bar-height: 60px;
+$button-height: $bar-height - $spacing * 4;
 
 [data-reactroot] {
   box-sizing: border-box;
   display: block;
-  height: 60px;
+  height: $bar-height;
   border-bottom: 1px solid $border-light;
   position: relative;
 
   .side {
     box-sizing: border-box;
     background: $layer_side_bg;
-    display: block;
+    display: flex;
+    flex-direction: row;
+    padding: $spacing * 2;
+    align-items: center;
     position: absolute;
     width: $layer_side_column_width;
     height: 100%;
     top: 0;
     left: 0;
     border-right: 1px solid $border-light;
+
+    .toggle-select-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: $button-height;
+      width: $button-height;
+      @include rect-button();
+
+      &.selected {
+        @include button-pressed();
+      }
+
+      &::after {
+        content: "S";
+      }
+
+    }
   }
 }

@@ -16,6 +16,7 @@ interface PlayerState {
 }
 
 interface PlayerProps {
+  // Properties
   playState: PlayState;
 }
 
