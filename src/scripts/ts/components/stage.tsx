@@ -10,7 +10,7 @@ import {Player} from "./player";
 import {Layer} from "./layer";
 import {Timeline} from "./timeline";
 
-import {CueFile, emptyFile} from "../data/file";
+import * as file from "../data/file";
 import * as selection from "../data/selection";
 import * as types from "../util/types";
 import {KEYCODES} from "../util/input";
@@ -19,7 +19,7 @@ import {KEYCODES} from "../util/input";
 export interface StageProps {  }
 export interface StageState {
   playState: PlayState;
-  cueFile: CueFile;
+  cueFile: file.CueFile;
   selection: selection.Selection;
 }
 
@@ -31,7 +31,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
     super(props);
     this.state = {
       playState: func.none(),
-      cueFile: emptyFile(),
+      cueFile: file.emptyFile(),
       selection: selection.initialSelection()
     }
 
@@ -73,14 +73,24 @@ export class Stage extends BaseComponent<StageProps, StageState> {
   }
 
   private addItemsToSelectedLayers() {
-    console.log("add items to selected layers");
+    this.state.playState.fmap(state => {
+      const timestampMillis = state.state.caseOf({
+        left: pausedState => pausedState.timeMillis,
+        right: playingState => new Date().getTime() - playingState.effectiveStartTimeMillis
+      });
+      let cueFile = this.state.cueFile;
+      for (const i of this.state.selection.layers) {
+        cueFile = file.addLayerItem(cueFile, i, timestampMillis);
+      }
+      this.setState({cueFile} as StageState);
+    })
   }
 
   private playStateUpdated(playState: PlayState) {
     this.setState({playState} as StageState);
   }
 
-  private updateCueFile(mutator: (cueFile: CueFile) => CueFile) {
+  private updateCueFile(mutator: (cueFile: file.CueFile) => file.CueFile) {
     this.setState({cueFile: mutator(this.state.cueFile)} as StageState);
   }
 
