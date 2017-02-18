@@ -19,7 +19,7 @@ import {KEYCODES} from "../util/input";
 export interface StageProps {  }
 export interface StageState {
   playState: PlayState;
-  cueFile: file.CueFile;
+  cueFile: func.Maybe<file.CueFile>;
   selection: selection.Selection;
 }
 
@@ -31,7 +31,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
     super(props);
     this.state = {
       playState: func.none(),
-      cueFile: file.emptyFile(),
+      cueFile: func.none(),
       selection: selection.initialSelection()
     }
 
@@ -78,20 +78,33 @@ export class Stage extends BaseComponent<StageProps, StageState> {
         left: pausedState => pausedState.timeMillis,
         right: playingState => new Date().getTime() - playingState.effectiveStartTimeMillis
       });
-      let cueFile = this.state.cueFile;
-      for (const i of this.state.selection.layers) {
-        cueFile = file.addLayerItem(cueFile, i, timestampMillis);
-      }
-      this.setState({cueFile} as StageState);
+      this.state.cueFile.fmap(cueFile => {
+        for (const i of this.state.selection.layers) {
+          cueFile = file.addLayerItem(cueFile, i, timestampMillis);
+        }
+        this.setState({cueFile: func.just(cueFile)} as StageState);
+      });
     })
   }
 
   private playStateUpdated(playState: PlayState) {
     this.setState({playState} as StageState);
+    // If a file is loaded, update the length of the cue file
+    playState.fmap(playState => {
+      const cueFile = func.just(this.state.cueFile.caseOf({
+        // Create new Cue File
+        none: () => file.emptyFile(playState.durationMillis),
+        // TODO: add user prompt to confirm if they want to change length of cue file
+        just: existingFile => file.setLength(existingFile, playState.durationMillis)
+      }));
+      this.setState({cueFile} as StageState);
+    })
   }
 
   private updateCueFile(mutator: (cueFile: file.CueFile) => file.CueFile) {
-    this.setState({cueFile: mutator(this.state.cueFile)} as StageState);
+    this.state.cueFile.fmap(cueFile => {
+      this.setState({cueFile: func.just(mutator(cueFile))} as StageState);
+    });
   }
 
   private updateSelection(mutator: (selection: selection.Selection) => selection.Selection) {
@@ -100,15 +113,19 @@ export class Stage extends BaseComponent<StageProps, StageState> {
 
   render() {
 
-    let layers = this.state.cueFile.layers.map((layer, i) =>
-      <Layer
-        key={i}
-        layerKey={i}
-        layer={layer}
-        selection={this.state.selection}
-        updateSelection={this.updateSelection}
-        />
-    );
+    let layers = this.state.cueFile.caseOf({
+      just: cueFile => cueFile.layers.map((layer, i) =>
+        <Layer
+          key={i}
+          file={cueFile}
+          layerKey={i}
+          layer={layer}
+          selection={this.state.selection}
+          updateSelection={this.updateSelection}
+          />
+      ),
+      none: () => []
+    });
 
     return (
       <externals.ShadowDOM>

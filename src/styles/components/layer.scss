@@ -43,4 +43,19 @@ $button-height: $bar-height - $spacing * 4;
 
     }
   }
+
+  .timeline {
+    display: block;
+    margin-left: $layer_side_column_width;
+    height: 100%;
+    position: relative;
+
+    .item {
+      position: absolute;
+      top: 0;
+      width: 1px;
+      height: 100%;
+      background-color: #fff;
+    }
+  }
 }

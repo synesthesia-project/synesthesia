@@ -9,6 +9,7 @@ export interface LayerState { }
 export interface LayerProps {
   // Properties
   selection: selection.Selection;
+  file: file.CueFile;
   layer: file.CueFileLayer;
   layerKey: number;
   // Callbacks
@@ -29,6 +30,12 @@ export class Layer extends BaseComponent<LayerProps, LayerState> {
   }
 
   render() {
+    const items = this.props.layer.items.map((item, i) => {
+      const style: React.CSSProperties = {
+        left: (item.timestampMillis / this.props.file.lengthMillis) * 100 + "%"
+      };
+      return <div key={i} className="item" style={style}></div>
+    });
     return (
       <externals.ShadowDOM>
         <div>
@@ -36,7 +43,9 @@ export class Layer extends BaseComponent<LayerProps, LayerState> {
           <div className="side">
             <span className={"toggle-select-button" + (this.isSelected() ? " selected" : "")} onClick={this.toggleSelect}/>
           </div>
-          <div className="timeline"></div>
+          <div className="timeline">
+           {items}
+          </div>
         </div>
       </externals.ShadowDOM>
     );
