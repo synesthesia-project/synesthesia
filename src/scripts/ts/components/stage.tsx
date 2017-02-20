@@ -13,6 +13,7 @@ import {Timeline} from "./timeline";
 import * as file from "../data/file";
 import * as selection from "../data/selection";
 import * as types from "../util/types";
+import * as stageState from "../data/stage-state"
 import {KEYCODES} from "../util/input";
 
 
@@ -21,6 +22,7 @@ export interface StageState {
   playState: PlayState;
   cueFile: func.Maybe<file.CueFile>;
   selection: selection.Selection;
+  state: stageState.StageState;
 }
 
 export class Stage extends BaseComponent<StageProps, StageState> {
@@ -32,7 +34,8 @@ export class Stage extends BaseComponent<StageProps, StageState> {
     this.state = {
       playState: func.none(),
       cueFile: func.none(),
-      selection: selection.initialSelection()
+      selection: selection.initialSelection(),
+      state: stageState.initialState()
     }
 
     // Bind callbacks & event listeners
@@ -72,7 +75,14 @@ export class Stage extends BaseComponent<StageProps, StageState> {
     });
     $(window).on('wheel', e => {
       const delta = (e.originalEvent as WheelEvent).deltaY;
-      const ctrlKey = e.ctrlKey;
+      if (e.ctrlKey) {
+        let state: stageState.StageState;
+        if (delta > 0)
+          state = stageState.zoomIn(this.state.state, 0.3);
+        else
+          state = stageState.zoomOut(this.state.state, 0.3);
+        this.setState({state} as StageState);
+      }
       // Mouse wheel either zooms or scrolls
       e.preventDefault();
     })
