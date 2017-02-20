@@ -70,6 +70,12 @@ export class Stage extends BaseComponent<StageProps, StageState> {
       }
       console.debug('keyup', e, e.keyCode);
     });
+    $(window).on('wheel', e => {
+      const delta = (e.originalEvent as WheelEvent).deltaY;
+      const ctrlKey = e.ctrlKey;
+      // Mouse wheel either zooms or scrolls
+      e.preventDefault();
+    })
   }
 
   private addItemsToSelectedLayers() {
