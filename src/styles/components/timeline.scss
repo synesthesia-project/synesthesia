@@ -36,4 +36,26 @@ $button-height: $timeline-height - 2 * $spacing;
 
     }
   }
+
+  .timeline {
+    display: block;
+    margin-left: $layer_side_column_width;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+
+    .timeline-zoom {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+
+      .player-position {
+        position: absolute;
+        height: 100%;
+        width: 3px;
+        background-color: #fff;
+        margin-left: -1px;
+      }
+    }
+  }
 }
