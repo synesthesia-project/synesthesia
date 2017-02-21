@@ -111,16 +111,16 @@ export class Stage extends BaseComponent<StageProps, StageState> {
 
       // Handle horizontal scrolling
 
-      if (mousePosition === 'layers' && deltaX !== 0) {
-        if (deltaX < 0)
+      if ((mousePosition === 'layers' || mousePosition === 'timeline')  && deltaY !== 0) {
+        if (deltaY < 0)
           this.setState({state: stageState.zoomMoveLeft(this.state.state)} as StageState);
         else
           this.setState({state: stageState.zoomMoveRight(this.state.state)} as StageState);
         return;
       }
 
-      if (mousePosition === 'timeline' && deltaY !== 0) {
-        if (deltaY < 0)
+      if (mousePosition === 'layers' && deltaX !== 0) {
+        if (deltaX < 0)
           this.setState({state: stageState.zoomMoveLeft(this.state.state)} as StageState);
         else
           this.setState({state: stageState.zoomMoveRight(this.state.state)} as StageState);
