@@ -159,6 +159,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
               />
           </div>
           <Player
+            zoom={this.state.state.zoom}
             playState={this.state.playState}
             />
         </div>

@@ -4,6 +4,7 @@ import * as React from "react";
 import * as util from "../util/util";
 
 import * as func from "../data/functional";
+import * as stageState from "../data/stage-state";
 import {PlayState, PlayStateData, MediaPlaying} from "../data/play-state";
 
 export interface PlayerBarState {
@@ -17,6 +18,7 @@ export interface PlayerBarProps {
   // Properties
   playState: PlayState;
   scrubbingPosition: func.Maybe<number>;
+  zoom: stageState.ZoomState;
   // Callbacks
   updateScrubbingPosition: (position: func.Maybe<number>) => void;
 }
@@ -55,6 +57,11 @@ export class PlayerBar extends BaseComponent<PlayerBarProps, PlayerBarState> {
       <externals.ShadowDOM>
         <div>
           <link rel="stylesheet" type="text/css" href="dist/styles/components/player-bar.css"/>
+          <div className="zoom" style={{
+            left: this.props.zoom.startPoint * 100 + '%',
+            right: (1 - this.props.zoom.endPoint) * 100 + '%'
+            }}>
+          </div>
           <div className="bar"><div className="fill"></div></div>
           <div className="button"></div>
           <div className="hit"

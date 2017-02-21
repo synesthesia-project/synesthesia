@@ -2,6 +2,7 @@ import {BaseComponent} from "./base";
 import * as React from "react";
 
 import * as func from "../data/functional";
+import * as stageState from "../data/stage-state";
 import {PlayState, PlayStateData, MediaPlaying} from "../data/play-state";
 import {displayMillis} from "../display/timing";
 
@@ -18,6 +19,7 @@ interface PlayerState {
 interface PlayerProps {
   // Properties
   playState: PlayState;
+  zoom: stageState.ZoomState;
 }
 
 export class Player extends BaseComponent<PlayerProps, PlayerState> {
@@ -57,6 +59,7 @@ export class Player extends BaseComponent<PlayerProps, PlayerState> {
           <PlayerBar
             playState={this.props.playState}
             scrubbingPosition={this.state.scrubbingPosition}
+            zoom={this.props.zoom}
             updateScrubbingPosition={this.updateScrubbingPosition}
           ></PlayerBar>
           <span className="duration"></span>

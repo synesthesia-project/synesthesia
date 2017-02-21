@@ -2,7 +2,7 @@
 @import "../shared/buttons";
 
 $button-height: 16px;
-$button-border: 2px;
+$button-border: 1px;
 $bar-width: 2px;
 $bar-border: 1px;
 
@@ -58,6 +58,15 @@ $button-width: $button-height;
     left: -15px;
   }
 
+  .zoom {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border-right: 1px solid $border_dark;
+    border-left: 1px solid $border_dark;
+    background: $bg;
+  }
+
   &:hover {
     .bar {
       border-color: $hint_d1;
@@ -109,6 +118,10 @@ $button-width: $button-height;
 
     .button {
       display: none;
+    }
+
+    .zoom {
+      border-color: $bg;
     }
   }
 }
