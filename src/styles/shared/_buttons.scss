@@ -38,6 +38,12 @@
   @include button-state-normal-active();
 }
 
+@mixin button-state-disabled() {
+  @include button-state-normal();
+  cursor: default;
+  background: $bg !important;
+}
+
 
 @mixin button($border-width: 1px) {
   position: relative;
@@ -72,8 +78,11 @@
 }
 
 @mixin button-disabled() {
-  cursor: default;
-  background: $bg !important;
+  @include button-state-disabled();
+
+  &:hover, &:active {
+    @include button-state-disabled();
+  }
 }
 
 @mixin rect-button() {
