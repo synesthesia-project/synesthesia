@@ -2,6 +2,7 @@ import * as util from "../util/util";
 
 const ZOOM_STEP = 1.25;
 const MAX_ZOOM = 20; // 2000 %
+const MIN_DELTA = 0.0005;
 
 export interface StageState {
   zoom: ZoomState;
@@ -40,9 +41,9 @@ function modifyZoom(current: ZoomState, zoomOrigin: number, ratio: number): Zoom
   // The new bounds of the viewport
   const newStart = current.startPoint + indent * zoomOrigin;
   const newEnd = current.endPoint - indent * (1 - zoomOrigin);
-  if (newStart < 0)
+  if (newStart < MIN_DELTA)
     return {startPoint: 0, endPoint: newSize};
-  if (newEnd > 1)
+  if (newEnd > 1 - MIN_DELTA)
     return {startPoint: 1 - newSize, endPoint: 1}
   return {startPoint: newStart, endPoint: newEnd}
 }

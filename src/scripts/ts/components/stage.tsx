@@ -77,7 +77,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
       const delta = (e.originalEvent as WheelEvent).deltaY;
       if (e.ctrlKey) {
         let state: stageState.StageState;
-        if (delta > 0)
+        if (delta < 0)
           state = stageState.zoomIn(this.state.state, 0.3);
         else
           state = stageState.zoomOut(this.state.state, 0.3);
