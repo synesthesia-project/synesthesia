@@ -2,12 +2,10 @@
 @import "../shared/buttons";
 
 $button-height: 16px;
+$button-width: 6px;
 $button-border: 1px;
 $bar-width: 2px;
 $bar-border: 1px;
-
-// calculated
-$button-width: $button-height;
 
 :host {
   position: relative;
