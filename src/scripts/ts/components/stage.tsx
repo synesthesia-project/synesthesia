@@ -42,12 +42,11 @@ export class Stage extends BaseComponent<StageProps, StageState> {
     this.playStateUpdated = this.playStateUpdated.bind(this);
     this.updateCueFile = this.updateCueFile.bind(this);
     this.updateSelection = this.updateSelection.bind(this);
-
-    this.setupWindowListeners();
   }
 
   componentDidMount() {
     // Called by react when mounted
+    this.setupWindowListeners();
   }
 
   componentWillUnmount() {
@@ -76,11 +75,14 @@ export class Stage extends BaseComponent<StageProps, StageState> {
     $(window).on('wheel', e => {
       const delta = (e.originalEvent as WheelEvent).deltaY;
       if (e.ctrlKey) {
+        // Work out position of mouse on stage for zoom origin
+        const paddingLeft = 100;
+        const pos = (e.pageX - paddingLeft) / ($(window).width() - paddingLeft);
         let state: stageState.StageState;
         if (delta < 0)
-          state = stageState.zoomIn(this.state.state, 0.3);
+          state = stageState.zoomIn(this.state.state, pos);
         else
-          state = stageState.zoomOut(this.state.state, 0.3);
+          state = stageState.zoomOut(this.state.state, pos);
         this.setState({state} as StageState);
       }
       // Mouse wheel either zooms or scrolls

@@ -1,7 +1,7 @@
 import * as util from "../util/util";
 
 const ZOOM_STEP = 1.25;
-const MAX_ZOOM = 20; // 2000 %
+const MAX_ZOOM = 100; // 10000 %
 const MIN_DELTA = 0.0005;
 
 export interface StageState {
