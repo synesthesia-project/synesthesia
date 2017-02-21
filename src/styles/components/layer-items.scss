@@ -1,0 +1,19 @@
+@import "../variables";
+@import "../shared/buttons";
+
+$bar-height: 60px;
+$button-height: $bar-height - $spacing * 4;
+
+[data-reactroot] {
+  display: block;
+  height: 100%;
+  width: 100%;
+
+  .item {
+    position: absolute;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    background-color: #fff;
+  }
+}

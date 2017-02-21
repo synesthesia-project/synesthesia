@@ -1,4 +1,5 @@
 import {BaseComponent} from "./base";
+import {LayerItems} from "./layer-items";
 import * as React from "react";
 import * as file from "../data/file";
 import * as selection from "../data/selection";
@@ -32,12 +33,6 @@ export class Layer extends BaseComponent<LayerProps, LayerState> {
   }
 
   render() {
-    const items = this.props.layer.items.map((item, i) => {
-      const style: React.CSSProperties = {
-        left: (item.timestampMillis / this.props.file.lengthMillis) * 100 + "%"
-      };
-      return <div key={i} className="item" style={style}></div>
-    });
     const zoomMargin = stageState.relativeZoomMargins(this.props.zoom);
     return (
       <externals.ShadowDOM>
@@ -51,7 +46,12 @@ export class Layer extends BaseComponent<LayerProps, LayerState> {
                 left: (- zoomMargin.left * 100) + '%',
                 right: (- zoomMargin.right * 100) + '%'
               }}>
-              {items}
+              <LayerItems
+                file={this.props.file}
+                layer={this.props.layer}
+                layerKey={this.props.layerKey}
+                selection={this.props.selection}
+                />
             </div>
           </div>
         </div>

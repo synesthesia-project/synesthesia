@@ -55,14 +55,6 @@ $button-height: $bar-height - $spacing * 4;
       position: absolute;
       top: 0;
       bottom: 0;
-
-      .item {
-        position: absolute;
-        top: 0;
-        width: 1px;
-        height: 100%;
-        background-color: #fff;
-      }
     }
   }
 }
