@@ -126,9 +126,6 @@ export class Stage extends BaseComponent<StageProps, StageState> {
           this.setState({state: stageState.zoomMoveRight(this.state.state)} as StageState);
         return;
       }
-
-
-
     })
   }
 
@@ -201,10 +198,16 @@ export class Stage extends BaseComponent<StageProps, StageState> {
               ref={layers => this.layers = layers}>
               {layers}
             </div>
-            <Timeline
-              ref={timeline => this.timeline = timeline}
-              updateCueFile={this.updateCueFile}
-              />
+            {this.state.cueFile.caseOf({
+              just: cueFile => <Timeline
+                ref={timeline => this.timeline = timeline}
+                updateCueFile={this.updateCueFile}
+                file={cueFile}
+                zoom={this.state.state.zoom}
+                playState={this.state.playState}
+                />,
+              none: () => null
+            })}
           </div>
           <Player
             ref={player => this.player = player}

@@ -1,12 +1,19 @@
 import {BaseComponent} from "./base";
 import * as React from "react";
 
+import * as func from "../data/functional";
+import * as playState from "../data/play-state";
+import * as stageState from "../data/stage-state";
 import * as file from "../data/file";
 import * as types from "../util/types";
 
 export interface TimelineState { }
 
 export interface TimelineProps {
+  // Properties
+  file: file.CueFile;
+  playState: playState.PlayState;
+  zoom: stageState.ZoomState;
   // Callbacks
   updateCueFile: types.Mutator<file.CueFile>;
 }
