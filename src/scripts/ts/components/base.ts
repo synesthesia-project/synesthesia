@@ -15,4 +15,11 @@ export abstract class BaseComponent<Props, State> extends React.Component<Props,
     return this._reactRootElement;
   }
 
+  /**
+   * Get the position of this element relative to the document
+   */
+  public getOffset(): JQueryCoordinates {
+    return this.$reactRoot().offset();
+  }
+
 }

@@ -29,6 +29,11 @@ export class Stage extends BaseComponent<StageProps, StageState> {
 
   private timerId: number;
 
+  // Refd Elements (used for event geometry)
+  private timeline: Timeline;
+  private player: Player;
+  private layers: HTMLDivElement;
+
   constructor(props: StageProps) {
     super(props);
     this.state = {
@@ -54,6 +59,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
   }
 
   private setupWindowListeners() {
+
     $(window).on('keydown', (e) => {
       // Add items to selected layers
       if (e.keyCode == KEYCODES.ENTER) {
@@ -63,6 +69,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
       }
       console.debug('keydown', e, e.keyCode);
     });
+
     $(window).on('keyup', (e) => {
       // Toggle Play / Pause
       if (e.keyCode == KEYCODES.SPACE) {
@@ -72,21 +79,56 @@ export class Stage extends BaseComponent<StageProps, StageState> {
       }
       console.debug('keyup', e, e.keyCode);
     });
+
     $(window).on('wheel', e => {
-      const delta = (e.originalEvent as WheelEvent).deltaY;
-      if (e.ctrlKey) {
-        // Work out position of mouse on stage for zoom origin
-        const paddingLeft = 100;
-        const pos = (e.pageX - paddingLeft) / ($(window).width() - paddingLeft);
-        let state: stageState.StageState;
-        if (delta < 0)
-          state = stageState.zoomIn(this.state.state, pos);
-        else
-          state = stageState.zoomOut(this.state.state, pos);
-        this.setState({state} as StageState);
-      }
-      // Mouse wheel either zooms or scrolls
+      // Prevent all default mouse wheel behaviour
       e.preventDefault();
+
+      // Work out where the mouse is currently positioned
+      const paddingLeft = 100; // width of the side bar
+      const mousePosition =
+        e.pageY > this.player.getOffset().top ? 'player' :
+        e.pageX > paddingLeft && e.pageY > this.timeline.getOffset().top ? 'timeline' :
+        e.pageX > paddingLeft && e.pageY > $(this.layers).offset().top ? 'layers' : 'none';
+
+      const deltaY = (e.originalEvent as WheelEvent).deltaY;
+      const deltaX = (e.originalEvent as WheelEvent).deltaX;
+
+      let state: stageState.StageState;
+
+      // Handle zooming in + out
+
+      if ((mousePosition === 'layers' || mousePosition === 'timeline') && e.ctrlKey && deltaY !== 0) {
+        // Work out position of mouse on stage for zoom origin
+        const pos = (e.pageX - paddingLeft) / ($(window).width() - paddingLeft);
+
+        if (deltaY < 0)
+          this.setState({state: stageState.zoomIn(this.state.state, pos)} as StageState);
+        else
+          this.setState({state: stageState.zoomOut(this.state.state, pos)} as StageState);
+        return;
+      }
+
+      // Handle horizontal scrolling
+
+      if (mousePosition === 'layers' && deltaX !== 0) {
+        if (deltaX < 0)
+          this.setState({state: stageState.zoomMoveLeft(this.state.state)} as StageState);
+        else
+          this.setState({state: stageState.zoomMoveRight(this.state.state)} as StageState);
+        return;
+      }
+
+      if (mousePosition === 'timeline' && deltaY !== 0) {
+        if (deltaY < 0)
+          this.setState({state: stageState.zoomMoveLeft(this.state.state)} as StageState);
+        else
+          this.setState({state: stageState.zoomMoveRight(this.state.state)} as StageState);
+        return;
+      }
+
+
+
     })
   }
 
@@ -153,14 +195,18 @@ export class Stage extends BaseComponent<StageProps, StageState> {
             playStateUpdated={this.playStateUpdated}
             />
           <div id="main">
-            <div className="layers">
+            <div
+              className="layers"
+              ref={layers => this.layers = layers}>
               {layers}
             </div>
             <Timeline
+              ref={timeline => this.timeline = timeline}
               updateCueFile={this.updateCueFile}
               />
           </div>
           <Player
+            ref={player => this.player = player}
             zoom={this.state.state.zoom}
             playState={this.state.playState}
             />

@@ -1,6 +1,14 @@
 import * as util from "../util/util";
 
+/**
+ * By what ratio should we zoom in / out by in a single step.
+ */
 const ZOOM_STEP = 1.25;
+/**
+ * How much should we move left / right by (in a single step) as a proportion of
+ * the current viewport.
+ */
+const ZOOM_MOVE_AMNT = 0.1;
 const MAX_ZOOM = 100; // 10000 %
 const MIN_DELTA = 0.0005;
 
@@ -48,6 +56,18 @@ function modifyZoom(current: ZoomState, zoomOrigin: number, ratio: number): Zoom
   return {startPoint: newStart, endPoint: newEnd}
 }
 
+function moveZoom(current: ZoomState, amnt: number): ZoomState {
+  const currentSize = current.endPoint - current.startPoint;
+  const moveAmnt = currentSize * amnt;
+  const newStart = current.startPoint + moveAmnt;
+  const newEnd = current.endPoint + moveAmnt;
+  if (newStart < MIN_DELTA)
+    return {startPoint: 0, endPoint: currentSize};
+  if (newEnd > 1 - MIN_DELTA)
+    return {startPoint: 1 - currentSize, endPoint: 1}
+  return {startPoint: newStart, endPoint: newEnd}
+}
+
 /**
  * Zoom and have the focal point of the zoom at zoomOrigin, where zoomOrigin is
  * some value between 0 and 1, where 0 is the start of the current viewport, and
@@ -71,4 +91,22 @@ export function zoomIn(current: StageState, zoomOrigin: number): StageState {
  */
 export function zoomOut(current: StageState, zoomOrigin: number): StageState {
   return zoom(current, zoomOrigin, 1 / ZOOM_STEP);
+}
+
+/**
+ * Move the zoom left by one step.
+ */
+export function zoomMoveLeft(current: StageState): StageState {
+  return util.deepFreeze({
+    zoom: moveZoom(current.zoom, -ZOOM_MOVE_AMNT)
+  });
+}
+
+/**
+ * Move the zoom right by one step.
+ */
+export function zoomMoveRight(current: StageState): StageState {
+  return util.deepFreeze({
+    zoom: moveZoom(current.zoom, ZOOM_MOVE_AMNT)
+  });
 }
