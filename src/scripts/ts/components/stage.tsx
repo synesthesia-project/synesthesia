@@ -180,6 +180,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
           file={cueFile}
           layerKey={i}
           layer={layer}
+          zoom={this.state.state.zoom}
           selection={this.state.selection}
           updateSelection={this.updateSelection}
           />

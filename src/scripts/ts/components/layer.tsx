@@ -3,6 +3,7 @@ import * as React from "react";
 import * as file from "../data/file";
 import * as selection from "../data/selection";
 import * as types from "../util/types";
+import * as stageState from "../data/stage-state";
 
 export interface LayerState { }
 
@@ -12,6 +13,7 @@ export interface LayerProps {
   file: file.CueFile;
   layer: file.CueFileLayer;
   layerKey: number;
+  zoom: stageState.ZoomState;
   // Callbacks
   updateSelection: types.Mutator<selection.Selection>;
 }
@@ -36,6 +38,7 @@ export class Layer extends BaseComponent<LayerProps, LayerState> {
       };
       return <div key={i} className="item" style={style}></div>
     });
+    const zoomMargin = stageState.relativeZoomMargins(this.props.zoom);
     return (
       <externals.ShadowDOM>
         <div>
@@ -44,7 +47,12 @@ export class Layer extends BaseComponent<LayerProps, LayerState> {
             <span className={"toggle-select-button" + (this.isSelected() ? " selected" : "")} onClick={this.toggleSelect}/>
           </div>
           <div className="timeline">
-           {items}
+            <div className="timeline-zoom" style={{
+                left: (- zoomMargin.left * 100) + '%',
+                right: (- zoomMargin.right * 100) + '%'
+              }}>
+              {items}
+            </div>
           </div>
         </div>
       </externals.ShadowDOM>

@@ -110,3 +110,22 @@ export function zoomMoveRight(current: StageState): StageState {
     zoom: moveZoom(current.zoom, ZOOM_MOVE_AMNT)
   });
 }
+
+/**
+ * Given a zoom state, work out what the left and right margins would be
+ * relative to the size of the viewport.
+ *
+ * I.E: Given:
+ *
+ *  |<-- left -->|<-- viewport -->|<-- right -->|
+ *  |<------------- full timeline ------------->|
+ *
+ * calculate the sizes of lm and rm relative to the size of the viewport
+ */
+export function relativeZoomMargins(zoom: ZoomState) {
+  const currentSize = zoom.endPoint - zoom.startPoint;
+  return {
+    left: zoom.startPoint / currentSize,
+    right: (1 - zoom.endPoint) / currentSize
+  };
+}
