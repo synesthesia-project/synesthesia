@@ -7,11 +7,20 @@ export interface CueFile {
 
 export interface CueFileLayer {
   kind: 'percussion';
-  items: CueFileLayerItem[];
+  events: CueFileEvent[];
 }
 
-export interface CueFileLayerItem {
+export interface CueFileEvent {
   timestampMillis: number;
+  states: CueFileEventState[];
+}
+
+export interface CueFileEventState {
+  millisDelta: number;
+  values: {
+    amplitude: number;
+    pitch: number;
+  }
 }
 
 export function emptyFile(lengthMillis: number): CueFile {
@@ -32,7 +41,7 @@ export function addLayer(file: CueFile): CueFile {
   const layers = file.layers.slice();
   layers.push({
     kind: 'percussion',
-    items: []
+    events: []
   });
   return util.deepFreeze({
     lengthMillis: file.lengthMillis,
@@ -47,13 +56,14 @@ export function addLayerItem(file: CueFile, layer: number, timestampMillis: numb
       if (i !== layer)
         return l;
       // Add item
-      const items = l.items.slice();
-      items.push({
-        timestampMillis
+      const events = l.events.slice();
+      events.push({
+        timestampMillis,
+        states: []
       });
       return {
         kind: l.kind,
-        items
+        events
       }
     })
   });
