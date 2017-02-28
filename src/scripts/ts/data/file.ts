@@ -25,7 +25,7 @@ export interface CueFileEventState<EventStateValues> {
 
 export interface BasicEventStateValues {
   amplitude: number;
-  pitch: number;
+  pitch?: number;
 }
 
 /**
@@ -49,6 +49,19 @@ export function isPercussionLayer(layer: AnyLayer): layer is PercussionLayer {
 
 export function isTonesLayer(layer: AnyLayer): layer is TonesLayer {
   return layer.kind === 'tones';
+}
+
+export function switchLayer<O>(
+    layer: AnyLayer,
+    cases: {
+      percussion: (layer: PercussionLayer) => O,
+      tones: (layer: TonesLayer) => O
+    }): O {
+  if (isPercussionLayer(layer))
+    return cases.percussion(layer);
+  if (isTonesLayer(layer))
+    return cases.tones(layer);
+  throw new Error("Unrecognized Layer");
 }
 
 export function emptyFile(lengthMillis: number): CueFile {
