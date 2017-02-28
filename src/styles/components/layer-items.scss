@@ -12,8 +12,10 @@ $button-height: $bar-height - $spacing * 4;
   .item {
     position: absolute;
     top: 0;
+    margin-left: -1px;
     width: 1px;
-    height: 100%;
-    background-color: #fff;
+    height: calc(100% - 2px);
+    background-color: #444;
+    border: 1px solid #666;
   }
 }

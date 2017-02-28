@@ -33,7 +33,14 @@ export interface BasicEventStateValues {
  */
 export type AnyLayer = PercussionLayer | TonesLayer;
 
-export interface PercussionLayer extends CueFileLayer<'percussion', {}, BasicEventStateValues> {}
+export interface PercussionLayer extends CueFileLayer<
+  'percussion',
+  {
+    /** Default length for a percussion event */
+    defaultLengthMillis: number
+  },
+  BasicEventStateValues> {}
+
 export interface TonesLayer extends CueFileLayer<'tones', {}, BasicEventStateValues> {}
 
 export function isPercussionLayer(layer: AnyLayer): layer is PercussionLayer {
@@ -62,7 +69,7 @@ export function addLayer(file: CueFile): CueFile {
   const layers = file.layers.slice();
   layers.push({
     kind: 'percussion',
-    settings: {},
+    settings: {defaultLengthMillis: 100},
     events: []
   });
   return util.deepFreeze({
