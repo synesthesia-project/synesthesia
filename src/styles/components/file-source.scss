@@ -5,6 +5,8 @@
   display: block;
   background-color: $bg_b1;
   border-bottom: 1px solid $border-dark;
+  box-shadow: 0px 1px 8px 0px rgba(0,0,0,0.3);
+  z-index:100;
 }
 
 [data-reactroot] {
