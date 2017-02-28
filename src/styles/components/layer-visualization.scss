@@ -1,0 +1,14 @@
+@import "../variables";
+
+[data-reactroot] {
+  width: $visualization_width;
+  box-sizing: border-box;
+  background: $layer_side_bg;
+  display: block;
+  position: absolute;
+  width: $layer_side_column_width;
+  height: 100%;
+  top: 0;
+  right: 0;
+  border-left: 1px solid $border-light;
+}

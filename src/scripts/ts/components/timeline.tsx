@@ -55,9 +55,10 @@ export class Timeline extends BaseComponent<TimelineProps, TimelineState> {
       <externals.ShadowDOM>
         <div>
           <link rel="stylesheet" type="text/css" href="dist/styles/components/timeline.css"/>
-          <div className="side">
+          <div className="side left">
             <span className="add-button" onClick={this.addLayerClicked}/>
           </div>
+          <div className="side right" />
           <div className="timeline">
             <div className="timeline-zoom" style={{
                 left: (- zoomMargin.left * 100) + '%',

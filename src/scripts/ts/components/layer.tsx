@@ -1,5 +1,6 @@
 import {BaseComponent} from "./base";
 import {LayerItems} from "./layer-items";
+import {LayerVisualization} from "./layer-visualization";
 import * as React from "react";
 import * as file from "../data/file";
 import * as selection from "../data/selection";
@@ -41,6 +42,7 @@ export class Layer extends BaseComponent<LayerProps, LayerState> {
           <div className="side">
             <span className={"toggle-select-button" + (this.isSelected() ? " selected" : "")} onClick={this.toggleSelect}/>
           </div>
+          <LayerVisualization layer={this.props.layer} positionMillis={0} />
           <div className="timeline">
             <div className="timeline-zoom" style={{
                 left: (- zoomMargin.left * 100) + '%',

@@ -18,28 +18,38 @@ $button-height: $timeline-height - 2 * $spacing;
     padding: 0 $spacing;
     background: $layer_side_bg;
     position: absolute;
-    width: $layer_side_column_width;
     height: 100%;
     top: 0;
-    left: 0;
-    border-right: 1px solid $border-light;
 
-    .add-button {
-      display: block;
-      height: $button-height;
-      width: $button-height;
-      @include rect-button();
+    &.left {
+      left: 0;
+      width: $layer_side_column_width;
+      border-right: 1px solid $border-light;
 
-      &::after {
-        content: "A";
+      .add-button {
+        display: block;
+        height: $button-height;
+        width: $button-height;
+        @include rect-button();
+
+        &::after {
+          content: "A";
+        }
+
       }
+    }
 
+    &.right {
+      right: 0;
+      width: $visualization_width;
+      border-left: 1px solid $border-light;
     }
   }
 
   .timeline {
     display: block;
     margin-left: $layer_side_column_width;
+    margin-right: $visualization_width;
     height: 100%;
     position: relative;
     overflow: hidden;
