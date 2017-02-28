@@ -12,7 +12,7 @@ export interface LayerProps {
   // Properties
   selection: selection.Selection;
   file: file.CueFile;
-  layer: file.CueFileLayer;
+  layer: file.AnyLayer;
   layerKey: number;
   zoom: stageState.ZoomState;
   // Callbacks

@@ -9,7 +9,7 @@ export interface LayerItemsProps {
   // Properties
   selection: selection.Selection;
   file: file.CueFile;
-  layer: file.CueFileLayer;
+  layer: file.AnyLayer;
   layerKey: number;
 }
 
@@ -20,7 +20,7 @@ export class LayerItems extends BaseComponent<LayerItemsProps, {}> {
   }
 
   render() {
-    const items = this.props.layer.items.map((item, i) => {
+    const items = this.props.layer.events.map((item, i) => {
       const style: React.CSSProperties = {
         left: (item.timestampMillis / this.props.file.lengthMillis) * 100 + "%"
       };
