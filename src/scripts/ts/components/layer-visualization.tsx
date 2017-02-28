@@ -17,6 +17,7 @@ export class LayerVisualization extends BaseComponent<LayerVisualizationProps, {
   }
 
   render() {
+    console.debug("render", this.props.positionMillis);
     return (
       <externals.ShadowDOM>
         <div>

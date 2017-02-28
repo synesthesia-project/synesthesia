@@ -7,7 +7,7 @@ import {PlayState} from "../data/play-state";
 
 import {FileSource} from "./file-source";
 import {Player} from "./player";
-import {Layer} from "./layer";
+import {LayersAndTimeline} from "./layers-and-timeline";
 import {Timeline} from "./timeline";
 
 import * as file from "../data/file";
@@ -26,8 +26,6 @@ export interface StageState {
 }
 
 export class Stage extends BaseComponent<StageProps, StageState> {
-
-  private timerId: number;
 
   // Refd Elements (used for event geometry)
   private timeline: Timeline;
@@ -170,21 +168,6 @@ export class Stage extends BaseComponent<StageProps, StageState> {
 
   render() {
 
-    let layers = this.state.cueFile.caseOf({
-      just: cueFile => cueFile.layers.map((layer, i) =>
-        <Layer
-          key={i}
-          file={cueFile}
-          layerKey={i}
-          layer={layer}
-          zoom={this.state.state.zoom}
-          selection={this.state.selection}
-          updateSelection={this.updateSelection}
-          />
-      ),
-      none: () => []
-    });
-
     return (
       <externals.ShadowDOM>
         <div>
@@ -192,23 +175,16 @@ export class Stage extends BaseComponent<StageProps, StageState> {
           <FileSource
             playStateUpdated={this.playStateUpdated}
             />
-          <div id="main">
-            <div
-              className="layers"
-              ref={layers => this.layers = layers}>
-              {layers}
-            </div>
-            {this.state.cueFile.caseOf({
-              just: cueFile => <Timeline
-                ref={timeline => this.timeline = timeline}
-                updateCueFile={this.updateCueFile}
-                file={cueFile}
-                zoom={this.state.state.zoom}
-                playState={this.state.playState}
-                />,
-              none: () => null
-            })}
-          </div>
+          <LayersAndTimeline
+            file={this.state.cueFile}
+            playState={this.state.playState}
+            selection={this.state.selection}
+            state={this.state.state}
+            updateSelection={this.updateSelection}
+            timelineRef={timeline => this.timeline = timeline}
+            layersRef={layers => this.layers = layers}
+            updateCueFile={this.updateCueFile}
+            />
           <Player
             ref={player => this.player = player}
             zoom={this.state.state.zoom}

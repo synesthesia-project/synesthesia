@@ -15,13 +15,12 @@ export interface TimelineProps {
   file: file.CueFile;
   playState: playState.PlayState;
   zoom: stageState.ZoomState;
+  positionMillis: number;
   // Callbacks
   updateCueFile: types.Mutator<file.CueFile>;
 }
 
 export class Timeline extends BaseComponent<TimelineProps, TimelineState> {
-
-  private updateInterval: any;
 
   constructor() {
     super();
@@ -30,26 +29,10 @@ export class Timeline extends BaseComponent<TimelineProps, TimelineState> {
     this.addLayerClicked = this.addLayerClicked.bind(this);
   }
 
-  componentDidUpdate() {
-    clearInterval(this.updateInterval);
-    // Start a re-rendering interval if currently playing
-    this.props.playState.fmap(state => state.state.caseOf<void>({
-      left: pausedState => {},
-      right: playingState => this.updateInterval = setInterval(() => this.forceUpdate(), 20)
-    }));
-  }
-
   render() {
     const zoomMargin = stageState.relativeZoomMargins(this.props.zoom);
 
-    const playerPosition = this.props.playState
-      // Extract current time
-      .fmap(state => state.state.caseOf({
-        left: pausedState => pausedState.timeMillis,
-        right: playingState => new Date().getTime() - playingState.effectiveStartTimeMillis
-      }))
-      // Divide by total file time
-      .fmap(time => time / this.props.file.lengthMillis);
+    const playerPosition = this.props.positionMillis / this.props.file.lengthMillis;
 
     return (
       <externals.ShadowDOM>
@@ -64,10 +47,7 @@ export class Timeline extends BaseComponent<TimelineProps, TimelineState> {
                 left: (- zoomMargin.left * 100) + '%',
                 right: (- zoomMargin.right * 100) + '%'
               }}>
-              {playerPosition.caseOf({
-                just: pos => <div className="player-position" style={{left: pos * 100 + '%'}}/>,
-                none: () => null
-              })}
+              <div className="player-position" style={{left: playerPosition * 100 + '%'}}/>
             </div>
           </div>
         </div>
