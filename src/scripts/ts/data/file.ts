@@ -82,7 +82,7 @@ export function addLayer(file: CueFile): CueFile {
   const layers = file.layers.slice();
   layers.push({
     kind: 'percussion',
-    settings: {defaultLengthMillis: 100},
+    settings: {defaultLengthMillis: 200},
     events: []
   });
   return util.deepFreeze({

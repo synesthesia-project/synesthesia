@@ -15,7 +15,7 @@ export interface LayerVisualizationProps {
  * Conversion of the underlying file state to a collection of states that can be visualized
  */
 export interface VisualisedState {
-  brightness: number;
+  width: number;
 }
 
 export class LayerVisualization extends BaseComponent<LayerVisualizationProps, {}> {
@@ -44,8 +44,8 @@ export class LayerVisualization extends BaseComponent<LayerVisualizationProps, {
   private processPercussionLayerEvents(layer: file.PercussionLayer):
       file.CueFileEvent<VisualisedState>[] {
     const defaultPercussionStates: file.CueFileEventState<VisualisedState>[] = [
-      {millisDelta: 0, values: {brightness: 1}},
-      {millisDelta: layer.settings.defaultLengthMillis, values: {brightness: 0}}
+      {millisDelta: 0, values: {width: 1}},
+      {millisDelta: layer.settings.defaultLengthMillis, values: {width: 0}}
     ];
     return util.deepFreeze(
       layer.events
@@ -55,7 +55,7 @@ export class LayerVisualization extends BaseComponent<LayerVisualizationProps, {
           states: event.states.length > 0 ?
             event.states.map(s => ({
               millisDelta: s.millisDelta,
-              values: {brightness: s.values.amplitude}
+              values: {width: s.values.amplitude}
             })) :
             defaultPercussionStates
         };
@@ -97,9 +97,9 @@ export class LayerVisualization extends BaseComponent<LayerVisualizationProps, {
         break;
       // Position within this segment
       const position = (time - s1time) / (s2time - s1time);
-      const brightness = s1.values.brightness * (1 - position) + s2.values.brightness * position;
+      const width = s1.values.width * (1 - position) + s2.values.width * position;
       return {
-        brightness
+        width
       };
     }
     throw new Error("getCurrentState() called for inactive event");
@@ -108,12 +108,12 @@ export class LayerVisualization extends BaseComponent<LayerVisualizationProps, {
   render() {
     this.processLayerIfNeeded();
     const states = this.getCurrentEvents().map(e => this.getCurrentState(e));
-    const brightness = states.length == 0 ? 0 : Math.max.apply(null, states.map(s => s.brightness));
+    const width = states.length == 0 ? 0 : Math.max.apply(null, states.map(s => s.width));
     return (
       <externals.ShadowDOM>
         <div>
           <link rel="stylesheet" type="text/css" href="dist/styles/components/layer-visualization.css"/>
-          <div className="box" style={{opacity: brightness}} />
+          <div className="box" style={{width: (width * 100) + '%'}} />
         </div>
       </externals.ShadowDOM>
     );
