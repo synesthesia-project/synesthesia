@@ -36,6 +36,7 @@ export class FileSource extends BaseComponent<FileSourceProps, {}> {
     // Bind callbacks & event listeners
     this.loadAudioFile = this.loadAudioFile.bind(this);
     this.updatePlayState = this.updatePlayState.bind(this);
+    this.connectToCompanion = this.connectToCompanion.bind(this);
   }
 
   render() {
@@ -50,6 +51,9 @@ export class FileSource extends BaseComponent<FileSourceProps, {}> {
             onPlaying={this.updatePlayState}
             onPause={this.updatePlayState}
             />
+          <button className="connectToCompanion" onClick={this.connectToCompanion}>
+            Connect To Companion
+          </button>
         </div>
       </externals.ShadowDOM>
     );
@@ -94,5 +98,18 @@ export class FileSource extends BaseComponent<FileSourceProps, {}> {
       controls: this.controls
     };
     this.props.playStateUpdated(func.just(state));
+  }
+
+  private connectToCompanion() {
+    // The ID of the extension we want to talk to.
+    const extensionId = "nblfcglicikmahfabcabikgkfbcadndp";
+
+    // Start a long-running conversation:
+    const port = chrome.runtime.connect(extensionId);
+    console.debug("opened port", port);
+    port.onMessage.addListener((msg) => {
+      console.debug("got message", msg);
+    })
+    port.postMessage({foo: "bar"});
   }
 }
