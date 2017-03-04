@@ -36,5 +36,9 @@
     font-size: 16px;
     margin: $spacing / 2;
     outline: none;
+
+    &.pressed {
+      @include button-pressed();
+    }
   }
 }

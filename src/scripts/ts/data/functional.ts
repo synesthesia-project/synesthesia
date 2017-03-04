@@ -32,6 +32,8 @@ class Just<T> extends Maybe<T> {
 
   constructor(value: T) {
     super();
+    if (value === null || value === undefined)
+      throw new Error("value must not be null or undefined");
     this.value = value;
   }
 

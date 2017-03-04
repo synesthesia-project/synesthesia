@@ -3,18 +3,26 @@ import * as React from "react";
 
 import * as func from "../data/functional";
 import {PlayStateData, PlayState, PlayStateControls, MediaPaused, MediaPlaying} from "../data/play-state";
+import {CompanionConnection} from "../util/companion";
 
 export interface FileSourceProps {
   // Callbacks
   playStateUpdated: (value: PlayState) => void;
 }
 
-export class FileSource extends BaseComponent<FileSourceProps, {}> {
+interface FileSourceState {
+  companion: func.Maybe<CompanionConnection>;
+}
+
+export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
 
   private controls: PlayStateControls;
 
   constructor() {
     super();
+    this.state = {
+      companion: func.none()
+    };
 
     // Initialise Controls
     this.controls = {
@@ -36,7 +44,7 @@ export class FileSource extends BaseComponent<FileSourceProps, {}> {
     // Bind callbacks & event listeners
     this.loadAudioFile = this.loadAudioFile.bind(this);
     this.updatePlayState = this.updatePlayState.bind(this);
-    this.connectToCompanion = this.connectToCompanion.bind(this);
+    this.toggleCompanion = this.toggleCompanion.bind(this);
   }
 
   render() {
@@ -51,7 +59,7 @@ export class FileSource extends BaseComponent<FileSourceProps, {}> {
             onPlaying={this.updatePlayState}
             onPause={this.updatePlayState}
             />
-          <button className="connectToCompanion" onClick={this.connectToCompanion}>
+          <button className={"connectToCompanion" + (this.state.companion.isJust() ? ' pressed' : '')} onClick={this.toggleCompanion}>
             Connect To Companion
           </button>
         </div>
@@ -97,19 +105,22 @@ export class FileSource extends BaseComponent<FileSourceProps, {}> {
       ),
       controls: this.controls
     };
+    this.clearCompanion();
     this.props.playStateUpdated(func.just(state));
   }
 
-  private connectToCompanion() {
-    // The ID of the extension we want to talk to.
-    const extensionId = "nblfcglicikmahfabcabikgkfbcadndp";
+  private toggleCompanion() {
+    this.state.companion.caseOf({
+      just: companion => companion.disconnect(),
+      none: () => {
+        const onDisconnect = () => this.setState({companion: func.none()});
+        const companion = func.just(new CompanionConnection(onDisconnect))
+        this.setState({companion});
+      }
+    });
+  }
 
-    // Start a long-running conversation:
-    const port = chrome.runtime.connect(extensionId);
-    console.debug("opened port", port);
-    port.onMessage.addListener((msg) => {
-      console.debug("got message", msg);
-    })
-    port.postMessage({foo: "bar"});
+  private clearCompanion() {
+    this.state.companion.fmap(companion => companion.disconnect());
   }
 }
