@@ -41,4 +41,11 @@
       @include button-pressed();
     }
   }
+
+  .description {
+    margin: $spacing / 2;
+    font-size: 14px;
+    padding: 0 6px;
+    opacity: 0.8;
+  }
 }

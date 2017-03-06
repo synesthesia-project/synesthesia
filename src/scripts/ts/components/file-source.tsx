@@ -12,6 +12,7 @@ export interface FileSourceProps {
 
 interface FileSourceState {
   companion: func.Maybe<CompanionConnection>;
+  description: string;
 }
 
 export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
@@ -21,7 +22,8 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
   constructor() {
     super();
     this.state = {
-      companion: func.none()
+      companion: func.none(),
+      description: ''
     };
 
     // Initialise Controls
@@ -62,6 +64,7 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
           <button className={"connectToCompanion" + (this.state.companion.isJust() ? ' pressed' : '')} onClick={this.toggleCompanion}>
             Connect To Companion
           </button>
+          <span className="description">{this.state.description}</span>
         </div>
       </externals.ShadowDOM>
     );
@@ -116,22 +119,29 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
         const companion = new CompanionConnection(
           // On Disconnect
           () => {
-            this.setState({companion: func.none()});
+            this.setState({companion: func.none(), description: ''});
             this.props.playStateUpdated(func.none());
           },
           // On State Changed
-          state => this.props.playStateUpdated(state.fmap(state => {
-            const playState: PlayStateData = {
-              durationMillis: state.length,
-              state: state.state === 'paused' ?
-                func.left({timeMillis: state.stateValue}) :
-                func.right({effectiveStartTimeMillis: state.stateValue}),
-              controls: companion.getControls()
-            };
-            console.debug('state: ', state, 'playStateData: ', playState);
-            return playState;
-          })
-        ));
+          state => {
+            // Update play state
+            this.props.playStateUpdated(state.fmap(state => {
+              const playState: PlayStateData = {
+                durationMillis: state.length,
+                state: state.state === 'paused' ?
+                  func.left({timeMillis: state.stateValue}) :
+                  func.right({effectiveStartTimeMillis: state.stateValue}),
+                controls: companion.getControls()
+              };
+              return playState;
+            }));
+            // Update description
+            this.setState({description: state.caseOf({
+              just: state => state.title + ' - ' + state.artist,
+              none: () => ''
+            })});
+          }
+        );
         this.setState({companion: func.just(companion)});
       }
     });
