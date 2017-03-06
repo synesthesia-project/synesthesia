@@ -1,3 +1,4 @@
+
 /**
  * Logic for connecting to the companion extension:
  *
@@ -28,8 +29,8 @@ export class CompanionConnection {
     this.port.onDisconnect.addListener(this.onDisconnect);
 
     // Send initial message
-    this.port.postMessage({mode: 'composer'});
-    this.port.postMessage({action: 'play'});
+    const initMessage: Synesthesia.Companion.InitMessage = {mode: "composer"}
+    this.port.postMessage(initMessage);
 
   }
 
