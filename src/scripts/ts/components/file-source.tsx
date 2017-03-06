@@ -115,7 +115,10 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
       none: () => {
         const companion = new CompanionConnection(
           // On Disconnect
-          () => this.setState({companion: func.none()}),
+          () => {
+            this.setState({companion: func.none()});
+            this.props.playStateUpdated(func.none());
+          },
           // On State Changed
           state => this.props.playStateUpdated(state.fmap(state => {
             const playState: PlayStateData = {
