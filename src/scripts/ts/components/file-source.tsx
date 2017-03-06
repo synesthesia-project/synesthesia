@@ -113,9 +113,23 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
     this.state.companion.caseOf({
       just: companion => companion.disconnect(),
       none: () => {
-        const onDisconnect = () => this.setState({companion: func.none()});
-        const companion = func.just(new CompanionConnection(onDisconnect))
-        this.setState({companion});
+        const companion = new CompanionConnection(
+          // On Disconnect
+          () => this.setState({companion: func.none()}),
+          // On State Changed
+          state => this.props.playStateUpdated(state.fmap(state => {
+            const playState: PlayStateData = {
+              durationMillis: state.length,
+              state: state.state === 'paused' ?
+                func.left({timeMillis: state.stateValue}) :
+                func.right({effectiveStartTimeMillis: state.stateValue}),
+              controls: companion.getControls()
+            };
+            console.debug('state: ', state, 'playStateData: ', playState);
+            return playState;
+          })
+        ));
+        this.setState({companion: func.just(companion)});
       }
     });
   }
