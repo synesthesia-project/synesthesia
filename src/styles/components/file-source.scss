@@ -33,7 +33,6 @@
 
   .connectToCompanion {
     @include rect-button();
-    font-size: 16px;
     margin: $spacing / 2;
     outline: none;
 

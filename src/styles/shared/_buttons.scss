@@ -54,6 +54,7 @@
   border-radius: 3px;
   border: 1px solid $border_dark;
   overflow: hidden;
+  font-size: 16px;
   @include button-state-normal();
 
   &:hover {
