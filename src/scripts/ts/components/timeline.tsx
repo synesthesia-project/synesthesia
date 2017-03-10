@@ -37,7 +37,7 @@ export class Timeline extends BaseComponent<TimelineProps, TimelineState> {
     return (
       <externals.ShadowDOM>
         <div>
-          <link rel="stylesheet" type="text/css" href="dist/styles/components/timeline.css"/>
+          <link rel="stylesheet" type="text/css" href="styles/components/timeline.css"/>
           <div className="side left">
             <span className="add-button" onClick={this.addLayerClicked}/>
           </div>

@@ -171,7 +171,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
     return (
       <externals.ShadowDOM>
         <div>
-          <link rel="stylesheet" type="text/css" href="dist/styles/components/stage.css"/>
+          <link rel="stylesheet" type="text/css" href="styles/components/stage.css"/>
           <FileSource
             playStateUpdated={this.playStateUpdated}
             />

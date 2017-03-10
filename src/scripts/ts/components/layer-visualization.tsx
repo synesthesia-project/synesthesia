@@ -112,7 +112,7 @@ export class LayerVisualization extends BaseComponent<LayerVisualizationProps, {
     return (
       <externals.ShadowDOM>
         <div>
-          <link rel="stylesheet" type="text/css" href="dist/styles/components/layer-visualization.css"/>
+          <link rel="stylesheet" type="text/css" href="styles/components/layer-visualization.css"/>
           <div className="box" style={{width: (width * 100) + '%'}} />
         </div>
       </externals.ShadowDOM>

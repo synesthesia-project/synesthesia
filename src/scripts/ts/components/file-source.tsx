@@ -53,7 +53,7 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
     return (
       <externals.ShadowDOM>
         <div>
-          <link rel="stylesheet" type="text/css" href="dist/styles/components/file-source.css"/>
+          <link rel="stylesheet" type="text/css" href="styles/components/file-source.css"/>
           <input id="file_picker" type="file" onChange={this.loadAudioFile} />
           <label htmlFor="file_picker">Open Audio File</label>
           <audio id="audio"

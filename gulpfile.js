@@ -1,4 +1,5 @@
 var gulp = require('gulp');
+var all = require('gulp-all');
 var clean = require('gulp-clean');
 var gutil = require("gulp-util");
 var bower = require('gulp-bower');
@@ -10,6 +11,7 @@ var runSequence = require('run-sequence');
 var webpack = require('webpack');
 
 var tsProject = ts.createProject('src/scripts/ts/tsconfig.json');
+var extensionTsProject = ts.createProject('src/extension/ts/tsconfig.json');
 
 gulp.task('clean', function() {
   return gulp.src(['.tmp', 'dist'], {read: false})
@@ -37,6 +39,16 @@ gulp.task('ts', ['typings'], function () {
         sourceRoot: '/src/scripts/ts'
       }))
       .pipe(gulp.dest('.tmp/scripts'));
+});
+
+gulp.task('extension-ts', function () {
+    return extensionTsProject.src()
+      .pipe(sourcemaps.init())
+      .pipe(extensionTsProject())
+      .pipe(sourcemaps.write({
+        sourceRoot: '/src/extension/ts'
+      }))
+      .pipe(gulp.dest('dist/extension'));
 });
 
 gulp.task("webpack", ['bower', 'ts', 'copy-js'], function(callback) {
@@ -84,8 +96,20 @@ gulp.task('sass', function () {
     .pipe(gulp.dest('dist/styles'));
 });
 
-gulp.task("dist", ['webpack', 'sass'], function(){
+gulp.task("dist", ['webpack', 'sass', 'extension-ts'], function(){
+  var copyCoreFiles = gulp.src([
+      './src/manifest.json',
+      './src/index.html'
+    ])
+    .pipe(gulp.dest('dist'));
 
+  var copyLibs = gulp.src([
+      './bower_components/jquery/dist/jquery.min.js',
+      './bower_components/react/react.js',
+      './bower_components/react/react-dom.js'])
+    .pipe(gulp.dest('dist/lib'));
+
+  return all(copyCoreFiles, copyLibs);
 });
 
 

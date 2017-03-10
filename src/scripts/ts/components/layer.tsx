@@ -39,7 +39,7 @@ export class Layer extends BaseComponent<LayerProps, LayerState> {
     return (
       <externals.ShadowDOM>
         <div>
-          <link rel="stylesheet" type="text/css" href="dist/styles/components/layer.css"/>
+          <link rel="stylesheet" type="text/css" href="styles/components/layer.css"/>
           <div className="side">
             <span className={"toggle-select-button" + (this.isSelected() ? " selected" : "")} onClick={this.toggleSelect}/>
           </div>

@@ -53,7 +53,7 @@ export class Player extends BaseComponent<PlayerProps, PlayerState> {
     return (
       <externals.ShadowDOM>
         <div>
-          <link rel="stylesheet" type="text/css" href="dist/styles/components/player.css"/>
+          <link rel="stylesheet" type="text/css" href="styles/components/player.css"/>
           <span className="play-pause" onClick={this.playPauseClicked}></span>
           <span className="elapsed-time"></span>
           <PlayerBar

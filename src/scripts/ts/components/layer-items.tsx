@@ -38,7 +38,7 @@ export class LayerItems extends BaseComponent<LayerItemsProps, {}> {
     return (
       <externals.ShadowDOM>
         <div>
-          <link rel="stylesheet" type="text/css" href="dist/styles/components/layer-items.css"/>
+          <link rel="stylesheet" type="text/css" href="styles/components/layer-items.css"/>
           {items}
         </div>
       </externals.ShadowDOM>

@@ -56,7 +56,7 @@ export class PlayerBar extends BaseComponent<PlayerBarProps, PlayerBarState> {
     return (
       <externals.ShadowDOM>
         <div>
-          <link rel="stylesheet" type="text/css" href="dist/styles/components/player-bar.css"/>
+          <link rel="stylesheet" type="text/css" href="styles/components/player-bar.css"/>
           <div className="zoom" style={{
             left: this.props.zoom.startPoint * 100 + '%',
             right: (1 - this.props.zoom.endPoint) * 100 + '%'
