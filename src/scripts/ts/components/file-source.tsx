@@ -12,6 +12,7 @@ export interface FileSourceProps {
 
 interface FileSourceState {
   companion: func.Maybe<CompanionConnection>;
+  companionAllowed: boolean;
   description: string;
 }
 
@@ -23,6 +24,7 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
     super();
     this.state = {
       companion: func.none(),
+      companionAllowed: true,
       description: ''
     };
 
@@ -49,6 +51,11 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
     this.toggleCompanion = this.toggleCompanion.bind(this);
   }
 
+  public componentDidMount() {
+    // Automatically connect to extension when starting
+    this.toggleCompanion();
+  }
+
   render() {
     return (
       <externals.ShadowDOM>
@@ -61,9 +68,13 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
             onPlaying={this.updatePlayState}
             onPause={this.updatePlayState}
             />
-          <button className={"connectToCompanion" + (this.state.companion.isJust() ? ' pressed' : '')} onClick={this.toggleCompanion}>
-            Connect To Companion
+          <button className={
+              "connectToCompanion" +
+              (this.state.companion.isJust() ? ' pressed' : '') +
+              (this.state.companionAllowed ? '' : ' disabled')} onClick={this.toggleCompanion}>
+            Connect To Tabs
           </button>
+          {this.state.companionAllowed ? null : <span className="companionDisabled" title="Run as a chrome extension to enable.">Tab Connector Disabled</span> }
           <span className="description">{this.state.description}</span>
         </div>
       </externals.ShadowDOM>
@@ -116,6 +127,7 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
     this.state.companion.caseOf({
       just: companion => companion.disconnect(),
       none: () => {
+        let failed = false;
         const companion = new CompanionConnection(
           // On Disconnect
           () => {
@@ -140,9 +152,16 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
               just: state => state.title + ' - ' + state.artist,
               none: () => ''
             })});
-          }
+          },
+          // Called when the companion failed to initialise because it
+          // couldn't connect to extension
+          () => failed = true
         );
-        this.setState({companion: func.just(companion)});
+        if (failed) {
+          this.setState({companionAllowed: false});
+        } else {
+          this.setState({companion: func.just(companion)});
+        }
       }
     });
   }

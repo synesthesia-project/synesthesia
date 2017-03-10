@@ -20,7 +20,8 @@ export class CompanionConnection {
 
   public constructor(
       onDisconnectHandler: () => void,
-      onPlayStateChanged: (state: func.Maybe<PlayState>) => void) {
+      onPlayStateChanged: (state: func.Maybe<PlayState>) => void,
+      onConnectionFailed: () => void) {
     this.onDisconnectHandler = onDisconnectHandler;
     this.onPlayStateChanged = onPlayStateChanged;
 
@@ -29,9 +30,19 @@ export class CompanionConnection {
     this.onDisconnect = this.onDisconnect.bind(this);
 
     // Connect to port
-    this.port = chrome.runtime.connect();
-    this.port.onMessage.addListener(this.onReceiveMessage);
-    this.port.onDisconnect.addListener(this.onDisconnect);
+    try {
+      this.port = chrome.runtime.connect();
+      this.port.onMessage.addListener(this.onReceiveMessage);
+      this.port.onDisconnect.addListener(this.onDisconnect);
+
+      // Send initial message
+      const initMessage: Synesthesia.Companion.InitMessage = {mode: "composer"}
+      this.port.postMessage(initMessage);
+      this.port.postMessage({foo: 'bar'});
+    } catch(e) {
+      onConnectionFailed();
+      return;
+    }
 
     // Setup playback controls
     this.controls = {
@@ -40,10 +51,6 @@ export class CompanionConnection {
       goToTime: (timeMillis: number) => console.debug('goToTime(' + timeMillis + ')')
     };
 
-    // Send initial message
-    const initMessage: Synesthesia.Companion.InitMessage = {mode: "composer"}
-    this.port.postMessage(initMessage);
-    this.port.postMessage({foo: 'bar'});
 
   }
 

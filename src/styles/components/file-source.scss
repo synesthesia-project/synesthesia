@@ -25,9 +25,8 @@
     margin: $spacing / 2;
 
     & + label {
+      margin: $spacing / 2;
       @include rect-button();
-
-
     }
   }
 
@@ -39,12 +38,20 @@
     &.pressed {
       @include button-pressed();
     }
+
+    &.disabled {
+      display: none;
+    }
   }
 
-  .description {
+  span {
     margin: $spacing / 2;
     font-size: 14px;
     padding: 0 6px;
     opacity: 0.8;
+
+    &.companionDisabled {
+      color: #ff8c8c;
+    }
   }
 }
