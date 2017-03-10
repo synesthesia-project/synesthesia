@@ -9,9 +9,6 @@ type PlayState = Synesthesia.Companion.PlayState;
  * https://github.com/samlanning/synesthesia-companion-chrome
  */
 
-// The ID of the extension.
-const EXTENSION_ID = "nblfcglicikmahfabcabikgkfbcadndp";
-
  // Start a long-running conversation:
 export class CompanionConnection {
 
@@ -32,7 +29,7 @@ export class CompanionConnection {
     this.onDisconnect = this.onDisconnect.bind(this);
 
     // Connect to port
-    this.port = chrome.runtime.connect(EXTENSION_ID);
+    this.port = chrome.runtime.connect();
     this.port.onMessage.addListener(this.onReceiveMessage);
     this.port.onDisconnect.addListener(this.onDisconnect);
 
