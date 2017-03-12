@@ -82,6 +82,10 @@ export class Stage extends BaseComponent<StageProps, StageState> {
       // Prevent all default mouse wheel behaviour
       e.preventDefault();
 
+      // Don't do any zoom behaviour if timeline isn't setup
+      if (!this.timeline)
+        return;
+
       // Work out where the mouse is currently positioned
       const paddingLeft = 100; // width of the side bar
       const mousePosition =
