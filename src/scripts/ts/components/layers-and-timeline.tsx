@@ -25,6 +25,7 @@ export interface LayersAndTimelineProps {
 export interface LayersAndTimelineState {
   /** Current position in milliseconds, updated every so often based on frame-rate */
   positionMillis: number;
+  mousePosition: func.Maybe<number>;
 }
 
 export class LayersAndTimeline extends BaseComponent<LayersAndTimelineProps, LayersAndTimelineState> {
@@ -34,8 +35,10 @@ export class LayersAndTimeline extends BaseComponent<LayersAndTimelineProps, Lay
   constructor() {
     super();
     this.state = {
-      positionMillis: 0
+      positionMillis: 0,
+      mousePosition: func.none()
     }
+    this.updateMouseHover = this.updateMouseHover.bind(this);
   }
 
   componentDidMount() {
@@ -74,6 +77,10 @@ export class LayersAndTimeline extends BaseComponent<LayersAndTimelineProps, Lay
     });
   }
 
+  private updateMouseHover(mousePosition: func.Maybe<number>) {
+    this.setState({mousePosition});
+  }
+
   render() {
     let layers = this.props.file.caseOf({
       just: cueFile => cueFile.layers.map((layer, i) =>
@@ -107,7 +114,11 @@ export class LayersAndTimeline extends BaseComponent<LayersAndTimelineProps, Lay
                 right: (- zoomMargin.right * 100) + '%'
               }}>
               {playerPosition.caseOf({
-                just: position => <div className="player-position" style={{left: position * 100 + '%'}}/>,
+                just: position => <div className="marker player-position" style={{left: position * 100 + '%'}}/>,
+                none: () => null
+              })}
+              {this.state.mousePosition.caseOf({
+                just: position => <div className="marker mouse" style={{left: position * 100 + '%'}}/>,
                 none: () => null
               })}
             </div>
@@ -121,6 +132,8 @@ export class LayersAndTimeline extends BaseComponent<LayersAndTimelineProps, Lay
             zoom={this.props.state.zoom}
             positionMillis={this.state.positionMillis}
             playState={this.props.playState}
+            updateMouseHover={this.updateMouseHover}
+            mousePosition={this.state.mousePosition}
             />,
           none: () => null
         })}
