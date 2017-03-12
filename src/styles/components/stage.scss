@@ -44,6 +44,31 @@
         border-left: 1px solid $border-light;
       }
 
+      .overlay {
+        position: absolute;
+        pointer-events: none;
+        top: 0;
+        bottom: 0;
+        left: $layer_side_column_width;
+        right: $layer_side_column_width;
+        overflow: hidden;
+
+        .zoom {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          right: 50%;
+          left: -50%;
+
+          .player-position {
+            position: absolute;
+            height: 100%;
+            width: 1px;
+            background: rgba(255, 255, 255, 0.2);
+          }
+        }
+      }
+
     }
   }
 }

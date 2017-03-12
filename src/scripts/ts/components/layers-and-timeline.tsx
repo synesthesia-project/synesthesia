@@ -90,12 +90,28 @@ export class LayersAndTimeline extends BaseComponent<LayersAndTimelineProps, Lay
       ),
       none: () => []
     });
+
+    const zoomMargin = stageState.relativeZoomMargins(this.props.state.zoom);
+
+    const playerPosition = this.props.file.fmap(file => this.state.positionMillis / file.lengthMillis);
+
     return (
       <div id="main">
         <div
           className="layers"
           ref={layers => this.props.layersRef(layers)}>
           {layers}
+          <div className="overlay">
+            <div className="zoom" style={{
+                left: (- zoomMargin.left * 100) + '%',
+                right: (- zoomMargin.right * 100) + '%'
+              }}>
+              {playerPosition.caseOf({
+                just: position => <div className="player-position" style={{left: position * 100 + '%'}}/>,
+                none: () => null
+              })}
+            </div>
+          </div>
         </div>
         {this.props.file.caseOf({
           just: cueFile => <Timeline
