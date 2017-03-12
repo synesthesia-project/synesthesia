@@ -54,6 +54,7 @@ export class Layer extends BaseComponent<LayerProps, LayerState> {
                 layer={this.props.layer}
                 layerKey={this.props.layerKey}
                 selection={this.props.selection}
+                updateSelection={this.props.updateSelection}
                 />
             </div>
           </div>

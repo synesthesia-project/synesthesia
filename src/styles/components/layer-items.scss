@@ -17,5 +17,14 @@ $button-height: $bar-height - $spacing * 4;
     height: calc(100% - 2px);
     background-color: #444;
     border: 1px solid #666;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #666;
+    }
+
+    &.selected {
+      background-color: #999;
+    }
   }
 }

@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "target": "es5",
+        "target": "es6",
         "isolatedModules": false,
         "experimentalDecorators": false,
         "declaration": false,

@@ -11,6 +11,8 @@ export interface LayerItemsProps {
   file: file.CueFile;
   layer: file.AnyLayer;
   layerKey: number;
+  // Callbacks
+  updateSelection: types.Mutator<selection.Selection>;
 }
 
 export class LayerItems extends BaseComponent<LayerItemsProps, {}> {
@@ -20,6 +22,12 @@ export class LayerItems extends BaseComponent<LayerItemsProps, {}> {
   }
 
   render() {
+    // Items that are selected for this layer
+    const selectedItems = new Set(
+      this.props.selection.items
+      .filter(i => i.layer === this.props.layerKey)
+      .map(i => i.index)
+    );
     const items = this.props.layer.events.map((item, i) => {
       let length = 0;
       if (item.states.length !== 0) {
@@ -33,7 +41,10 @@ export class LayerItems extends BaseComponent<LayerItemsProps, {}> {
         left: (item.timestampMillis / this.props.file.lengthMillis) * 100 + "%",
         width: (length / this.props.file.lengthMillis) * 100 + "%",
       };
-      return <div key={i} className="item" style={style}></div>
+      const onClick = (e: React.MouseEvent<{}>) => {
+        this.props.updateSelection(s => selection.handleItemSelectionChange(s, e, this.props.layerKey, [i]));
+      }
+      return <div key={i} className={"item" + (selectedItems.has(i) ? ' selected' : '')} style={style} onClick={onClick}></div>
     });
     return (
       <externals.ShadowDOM>
