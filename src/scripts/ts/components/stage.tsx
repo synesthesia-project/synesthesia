@@ -9,6 +9,7 @@ import {FileSource} from "./file-source";
 import {Player} from "./player";
 import {LayersAndTimeline} from "./layers-and-timeline";
 import {Timeline} from "./timeline";
+import {EventProperties} from "./item-properties";
 
 import * as file from "../data/file";
 import * as selection from "../data/selection";
@@ -189,6 +190,10 @@ export class Stage extends BaseComponent<StageProps, StageState> {
             layersRef={layers => this.layers = layers}
             updateCueFile={this.updateCueFile}
             />
+          {this.state.cueFile.caseOf({
+            just: file => <EventProperties file={file} selection={this.state.selection} />,
+            none: () => null
+          })}
           <Player
             ref={player => this.player = player}
             zoom={this.state.state.zoom}

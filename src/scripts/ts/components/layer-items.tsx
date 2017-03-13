@@ -23,10 +23,10 @@ export class LayerItems extends BaseComponent<LayerItemsProps, {}> {
 
   render() {
     // Items that are selected for this layer
-    const selectedItems = new Set(
-      this.props.selection.items
-      .filter(i => i.layer === this.props.layerKey)
-      .map(i => i.index)
+    const selectedEvents = new Set(
+      this.props.selection.events
+      .filter(e => e.layer === this.props.layerKey)
+      .map(e => e.index)
     );
     const items = this.props.layer.events.map((item, i) => {
       let length = 0;
@@ -44,7 +44,7 @@ export class LayerItems extends BaseComponent<LayerItemsProps, {}> {
       const onClick = (e: React.MouseEvent<{}>) => {
         this.props.updateSelection(s => selection.handleItemSelectionChange(s, e, this.props.layerKey, [i]));
       }
-      return <div key={i} className={"item" + (selectedItems.has(i) ? ' selected' : '')} style={style} onClick={onClick}></div>
+      return <div key={i} className={"item" + (selectedEvents.has(i) ? ' selected' : '')} style={style} onClick={onClick}></div>
     });
     return (
       <externals.ShadowDOM>

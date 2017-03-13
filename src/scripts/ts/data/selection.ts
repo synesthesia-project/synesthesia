@@ -14,13 +14,13 @@ export interface Selection {
   /**
    * Items currently selected for modification
    */
-  items: ItemsSelection;
+  events: ItemsSelection;
 }
 
 export function initialSelection(): Selection {
   return util.deepFreeze({
     layers: [],
-    items: []
+    events: []
   });
 }
 
@@ -33,7 +33,7 @@ export function toggleLayer(selection: Selection, layer: number): Selection  {
     layers.splice(index, 1);
   return util.deepFreeze({
     layers,
-    items: selection.items
+    events: selection.events
   });
 }
 
@@ -42,35 +42,35 @@ export function handleItemSelectionChange(
     e: React.MouseEvent<{}>,
     layer: number,
     itemIndexes: number[]): Selection  {
-  let items: ItemsSelection;
+  let events: ItemsSelection;
   if (e.ctrlKey) {
     // Toggle each item in the list
     const existingIndexesForLayer = new Set(
-      selection.items.filter(i => i.layer === layer).map(i => i.index)
+      selection.events.filter(i => i.layer === layer).map(i => i.index)
     );
     const itemIndexesSet = new Set(itemIndexes);
     // Remove existing items
-    items = selection.items.filter(i => i.layer !== layer || !itemIndexesSet.has(i.index));
+    events = selection.events.filter(i => i.layer !== layer || !itemIndexesSet.has(i.index));
     // Add not-existing items
-    items = items.concat(
+    events = events.concat(
       itemIndexes.filter(i => !existingIndexesForLayer.has(i)).map(index => ({layer, index}))
     );
   } else if (e.shiftKey) {
     // Add to existing items (but ensure no duplicates)
     const existingIndexesForLayer = new Set(
-      selection.items.filter(i => i.layer === layer).map(i => i.index)
+      selection.events.filter(i => i.layer === layer).map(i => i.index)
     );
-    items = selection.items.concat(
+    events = selection.events.concat(
       itemIndexes
       .filter(index => !existingIndexesForLayer.has(index))
       .map(index => ({layer, index}))
     );
   } else {
     // Fresh selection
-    items = itemIndexes.map(index => ({layer, index}));
+    events = itemIndexes.map(index => ({layer, index}));
   }
   return util.deepFreeze({
     layers: selection.layers,
-    items
+    events
   });
 }
