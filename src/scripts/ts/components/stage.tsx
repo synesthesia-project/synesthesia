@@ -191,7 +191,10 @@ export class Stage extends BaseComponent<StageProps, StageState> {
             updateCueFile={this.updateCueFile}
             />
           {this.state.cueFile.caseOf({
-            just: file => <EventProperties file={file} selection={this.state.selection} />,
+            just: file => <EventProperties
+              file={file}
+              selection={this.state.selection}
+              updateCueFile={this.updateCueFile} />,
             none: () => null
           })}
           <Player

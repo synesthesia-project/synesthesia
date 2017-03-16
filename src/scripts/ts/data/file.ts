@@ -64,6 +64,10 @@ export function switchLayer<O>(
   throw new Error("Unrecognized Layer");
 }
 
+export function convertLayer<L, K, V>(l: CueFileLayer<L, K, V>, f: (l: CueFileLayer<L, K, V>) => CueFileLayer<L, K, V>): AnyLayer {
+  return f(l as any as CueFileLayer<L, K, V>) as any as AnyLayer;
+}
+
 export function emptyFile(lengthMillis: number): CueFile {
   return util.deepFreeze({
     lengthMillis,
