@@ -5,8 +5,12 @@ export abstract class BaseComponent<Props, State> extends React.Component<Props,
 
   private _reactRootElement: JQuery;
 
+  protected shadowRoot() {
+    return (ReactDOM.findDOMNode(this) as any).shadowRoot;
+  }
+
   protected $() {
-    return $((ReactDOM.findDOMNode(this) as any).shadowRoot);
+    return $(this.shadowRoot());
   }
 
   protected $reactRoot() {
