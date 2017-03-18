@@ -76,6 +76,12 @@ export class Stage extends BaseComponent<StageProps, StageState> {
         e.preventDefault();
         return;
       }
+      // Clear Selected Events
+      if (e.keyCode == KEYCODES.ESC) {
+        this.updateSelection(s => selection.clearSelectedEvents(s));
+        e.preventDefault();
+        return;
+      }
       console.debug('keyup', e, e.keyCode);
     });
 

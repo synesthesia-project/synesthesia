@@ -24,6 +24,13 @@ export function initialSelection(): Selection {
   });
 }
 
+export function clearSelectedEvents(selection: Selection): Selection {
+  return util.deepFreeze({
+    layers: selection.layers,
+    events: []
+  });
+}
+
 export function toggleLayer(selection: Selection, layer: number): Selection  {
   const layers = selection.layers.slice();
   const index = layers.indexOf(layer);
