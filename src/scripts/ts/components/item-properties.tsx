@@ -13,7 +13,7 @@ interface EventPropertiesProps {
   selection: selection.Selection;
   file: file.CueFile;
   // Callbacks
-  updateCueFile: types.Mutator<file.CueFile>;
+  updateCueFileAndSelection: types.Mutator<[file.CueFile, selection.Selection]>;
 }
 
 export class EventProperties extends BaseComponent<EventPropertiesProps, {}> {
@@ -23,6 +23,7 @@ export class EventProperties extends BaseComponent<EventPropertiesProps, {}> {
 
     // Bind callbacks & event listeners
     this.onStartTimeChange = this.onStartTimeChange.bind(this);
+    this.onDelete = this.onDelete.bind(this);
   }
 
   private getEvent(e: {layer: number, index: number}) {
@@ -35,7 +36,17 @@ export class EventProperties extends BaseComponent<EventPropertiesProps, {}> {
   }
 
   private onStartTimeChange(value: string) {
-    this.props.updateCueFile(f => fileManipulation.updateStartTimeForSelection(f, this.props.selection, Number(value)));
+    this.props.updateCueFileAndSelection(([f, s]) => [
+      fileManipulation.updateStartTimeForSelectedEvents(f, this.props.selection, Number(value)),
+      s
+    ]);
+  }
+
+  private onDelete() {
+    this.props.updateCueFileAndSelection(([f, s]) => [
+      fileManipulation.deleteSelectedEvents(f, s),
+      selection.clearSelectedEvents(s)
+    ]);
   }
 
   render() {
@@ -57,6 +68,9 @@ export class EventProperties extends BaseComponent<EventPropertiesProps, {}> {
                   type="number"
                   value={String(this.getEarliestStartTime(this.props))}
                   onChange={this.onStartTimeChange}/>
+              </div>
+              <div className="property">
+                <button onClick={this.onDelete}>Delete</button>
               </div>
             </div>
             : null

@@ -2,7 +2,22 @@ import * as file from "./file";
 import * as selection from "./selection";
 import * as util from "../util/util";
 
-export function updateStartTimeForSelection(
+/*
+ * Build up a data structure for quick lookup of selected events
+ * layer -> {set of event ids}
+ */
+function buildUpSelectionSet(selection: selection.Selection) {
+  const selectedEvents = new Map<number, Set<number>>();
+  for (const e of selection.events) {
+    let layerSet = selectedEvents.get(e.layer);
+    if (!layerSet)
+      selectedEvents.set(e.layer, layerSet = new Set<number>());
+    layerSet.add(e.index);
+  }
+  return selectedEvents;
+}
+
+export function updateStartTimeForSelectedEvents(
     cueFile: file.CueFile,
     selection: selection.Selection,
     newStartTime: number): file.CueFile {
@@ -30,15 +45,7 @@ export function updateStartTimeForSelection(
   if (shift < 0.1 && shift > 0.1)
     return cueFile;
 
-  // Build up a data structure for quick lookup of selected events
-  // layer -> {set of event ids}
-  const selectedEvents = new Map<number, Set<number>>();
-  for (const e of selection.events) {
-    let layerSet = selectedEvents.get(e.layer);
-    if (!layerSet)
-      selectedEvents.set(e.layer, layerSet = new Set<number>());
-    layerSet.add(e.index);
-  }
+  const selectedEvents = buildUpSelectionSet(selection);
 
   function convertLayer<K, S, V>(
       selectedEvents: Set<number>,
@@ -65,6 +72,34 @@ export function updateStartTimeForSelection(
       // Layer unchanged
       return layer;
     return file.convertLayer(layer, l => convertLayer(layerSet, l));
+  });
+
+  return util.deepFreeze({
+    lengthMillis: cueFile.lengthMillis,
+    layers: newLayers
+  });
+}
+
+export function deleteSelectedEvents(
+    cueFile: file.CueFile,
+    selection: selection.Selection): file.CueFile {
+
+  // Ignore empty selections
+  if (selection.events.length === 0)
+    return cueFile;
+
+  const selectedEvents = buildUpSelectionSet(selection);
+
+  const newLayers = cueFile.layers.map((layer, i) => {
+    const layerSet = selectedEvents.get(i);
+    if (!layerSet)
+      // Layer unchanged
+      return layer;
+    return file.convertLayer(layer, l => ({
+      kind: layer.kind,
+      settings: layer.settings,
+      events: layer.events.filter((e, i) => !layerSet.has(i))
+    }));
   });
 
   return util.deepFreeze({

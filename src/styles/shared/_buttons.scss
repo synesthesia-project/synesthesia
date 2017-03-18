@@ -87,7 +87,11 @@
 }
 
 @mixin rect-button() {
-  padding: $spacing;
-  border-radius: 3px;
   @include button();
+}
+
+@mixin rect-button-small() {
+  @include button();
+  font-size: 12px;
+  padding: 4px 6px;
 }

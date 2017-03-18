@@ -15,6 +15,7 @@ import * as file from "../data/file";
 import * as selection from "../data/selection";
 import * as types from "../util/types";
 import * as stageState from "../data/stage-state"
+import * as fileManipulation from "../data/file-manipulation";
 import {KEYCODES} from "../util/input";
 
 
@@ -46,6 +47,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
     this.playStateUpdated = this.playStateUpdated.bind(this);
     this.updateCueFile = this.updateCueFile.bind(this);
     this.updateSelection = this.updateSelection.bind(this);
+    this.updateCueFileAndSelection = this.updateCueFileAndSelection.bind(this);
   }
 
   componentDidMount() {
@@ -79,6 +81,15 @@ export class Stage extends BaseComponent<StageProps, StageState> {
       // Clear Selected Events
       if (e.keyCode == KEYCODES.ESC) {
         this.updateSelection(s => selection.clearSelectedEvents(s));
+        e.preventDefault();
+        return;
+      }
+      // Delete Selected Events (if not focussed on something else)
+      if (e.keyCode == KEYCODES.DEL && document.activeElement === document.body) {
+        this.updateCueFileAndSelection(([f, s]) => [
+          fileManipulation.deleteSelectedEvents(f, s),
+          selection.clearSelectedEvents(s)
+        ]);
         e.preventDefault();
         return;
       }
@@ -177,6 +188,13 @@ export class Stage extends BaseComponent<StageProps, StageState> {
     this.setState({selection: mutator(this.state.selection)} as StageState);
   }
 
+  private updateCueFileAndSelection(mutator: (current: [file.CueFile, selection.Selection]) => [file.CueFile, selection.Selection]) {
+    this.state.cueFile.fmap(cueFile => {
+      const result = mutator([cueFile, this.state.selection]);
+      this.setState({cueFile: func.just(result[0]), selection: result[1]} as StageState);
+    })
+  }
+
   render() {
 
     return (
@@ -200,7 +218,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
             just: file => <EventProperties
               file={file}
               selection={this.state.selection}
-              updateCueFile={this.updateCueFile} />,
+              updateCueFileAndSelection={this.updateCueFileAndSelection} />,
             none: () => null
           })}
           <Player
