@@ -1,11 +1,14 @@
 import {BaseComponent} from "./base";
 import * as React from "react";
 
+import * as file from "../data/file";
 import * as func from "../data/functional";
+import * as storage from "../util/storage";
 import {PlayStateData, PlayState, PlayStateControls, MediaPaused, MediaPlaying} from "../data/play-state";
 import {CompanionConnection} from "../util/companion";
 
 export interface FileSourceProps {
+  file: func.Maybe<file.CueFile>;
   // Callbacks
   playStateUpdated: (value: PlayState) => void;
 }
@@ -49,11 +52,18 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
     this.loadAudioFile = this.loadAudioFile.bind(this);
     this.updatePlayState = this.updatePlayState.bind(this);
     this.toggleCompanion = this.toggleCompanion.bind(this);
+    this.saveFile = this.saveFile.bind(this);
   }
 
   public componentDidMount() {
     // Automatically connect to extension when starting
     this.toggleCompanion();
+  }
+
+  public saveFile() {
+    this.props.file.fmap(file => {
+      storage.saveStringAsFile(JSON.stringify(file), 'song.scue');
+    })
   }
 
   render() {
@@ -76,6 +86,8 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
           </button>
           {this.state.companionAllowed ? null : <span className="companionDisabled" title="Run as a chrome extension to enable.">Tab Connector Disabled</span> }
           <span className="description">{this.state.description}</span>
+          <span className="grow"/>
+          <button className={this.props.file.isJust() ? '' : 'disabled'} onClick={this.saveFile}>Save</button>
         </div>
       </externals.ShadowDOM>
     );

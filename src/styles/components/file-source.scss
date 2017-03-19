@@ -30,7 +30,7 @@
     }
   }
 
-  .connectToCompanion {
+  button {
     @include rect-button();
     margin: $spacing / 2;
     outline: none;
@@ -40,8 +40,16 @@
     }
 
     &.disabled {
-      display: none;
+      @include button-disabled();
+
+      &.connectToCompanion {
+        display: none;
+      }
     }
+  }
+
+  .grow {
+    flex-grow: 1;
   }
 
   span {

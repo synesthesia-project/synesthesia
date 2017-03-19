@@ -202,6 +202,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
         <div>
           <link rel="stylesheet" type="text/css" href="styles/components/stage.css"/>
           <FileSource
+            file={this.state.cueFile}
             playStateUpdated={this.playStateUpdated}
             />
           <LayersAndTimeline
