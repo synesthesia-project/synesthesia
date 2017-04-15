@@ -26,6 +26,8 @@ export interface StageState {
   cueFile: func.Maybe<file.CueFile>;
   selection: selection.Selection;
   state: stageState.StageState;
+  bindingLayer: func.Maybe<number>;
+  midiLayerBindings: {input: string, note: number, layer: number}[];
 }
 
 export class Stage extends BaseComponent<StageProps, StageState> {
@@ -43,7 +45,9 @@ export class Stage extends BaseComponent<StageProps, StageState> {
       playState: func.none(),
       cueFile: func.none(),
       selection: selection.initialSelection(),
-      state: stageState.initialState()
+      state: stageState.initialState(),
+      bindingLayer: func.none(),
+      midiLayerBindings: []
     }
 
     // Bind callbacks & event listeners
@@ -51,6 +55,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
     this.updateCueFile = this.updateCueFile.bind(this);
     this.updateSelection = this.updateSelection.bind(this);
     this.updateCueFileAndSelection = this.updateCueFileAndSelection.bind(this);
+    this.requestBindingForLayer = this.requestBindingForLayer.bind(this);
   }
 
   componentDidMount() {
@@ -157,7 +162,23 @@ export class Stage extends BaseComponent<StageProps, StageState> {
   private setupMIDIListeners() {
     this.midi.addListener({
       inputRemoved: input => console.debug('inputRemoved', input),
-      noteOn: (input, note, velocity) => console.debug('stage noteOn', input, note, velocity),
+      noteOn: (input, note, velocity) => {
+        this.state.bindingLayer.caseOf({
+          just: layerKey => {
+            // Bind this note to that layer
+            this.setState({
+              bindingLayer: func.none(),
+              midiLayerBindings: this.state.midiLayerBindings
+                // Remove existing bindings for this layer or note
+                .filter(b => b.layer !== layerKey && (b.input !== input || b.note !== note))
+                .concat({input, note, layer: layerKey})
+            });
+          },
+          none: () => {
+            // Add item to any required layer
+          }
+        })
+      },
       noteOff: (input, note) => console.debug('stage noteOff', input, note)
     });
   }
@@ -208,6 +229,10 @@ export class Stage extends BaseComponent<StageProps, StageState> {
     })
   }
 
+  private requestBindingForLayer(layerKey: number) {
+    this.setState({bindingLayer: func.just(layerKey)});
+  }
+
   render() {
 
     return (
@@ -223,10 +248,13 @@ export class Stage extends BaseComponent<StageProps, StageState> {
             playState={this.state.playState}
             selection={this.state.selection}
             state={this.state.state}
+            bindingLayer={this.state.bindingLayer}
+            midiLayerBindings={this.state.midiLayerBindings}
             updateSelection={this.updateSelection}
             timelineRef={timeline => this.timeline = timeline}
             layersRef={layers => this.layers = layers}
             updateCueFile={this.updateCueFile}
+            requestBindingForLayer={this.requestBindingForLayer}
             />
           {this.state.cueFile.caseOf({
             just: file => <EventProperties

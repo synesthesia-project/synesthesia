@@ -15,11 +15,14 @@ export interface LayersAndTimelineProps {
   file: func.Maybe<file.CueFile>;
   state: stageState.StageState;
   playState: playState.PlayState;
+  bindingLayer: func.Maybe<number>;
+  midiLayerBindings: {input: string, note: number, layer: number}[];
   // Callbacks
   timelineRef: (ref: Timeline) => void;
   layersRef: (ref: HTMLDivElement) => void;
   updateCueFile: types.Mutator<file.CueFile>;
   updateSelection: types.Mutator<selection.Selection>;
+  requestBindingForLayer: (layerKey: number) => void;
 }
 
 export interface LayersAndTimelineState {
@@ -92,7 +95,10 @@ export class LayersAndTimeline extends BaseComponent<LayersAndTimelineProps, Lay
           zoom={this.props.state.zoom}
           selection={this.props.selection}
           positionMillis={this.state.positionMillis}
+          bindingLayer={this.props.bindingLayer}
+          midiLayerBindings={this.props.midiLayerBindings}
           updateSelection={this.props.updateSelection}
+          requestBindingForLayer={this.props.requestBindingForLayer}
           />
       ),
       none: () => []

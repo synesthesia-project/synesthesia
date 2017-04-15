@@ -1,6 +1,7 @@
 import {BaseComponent} from "./base";
 import {LayerItems} from "./layer-items";
 import {LayerVisualization} from "./layer-visualization";
+import * as func from "../data/functional";
 import * as React from "react";
 import * as file from "../data/file";
 import * as selection from "../data/selection";
@@ -17,8 +18,11 @@ export interface LayerProps {
   layerKey: number;
   zoom: stageState.ZoomState;
   positionMillis: number;
+  bindingLayer: func.Maybe<number>;
+  midiLayerBindings: {input: string, note: number, layer: number}[];
   // Callbacks
   updateSelection: types.Mutator<selection.Selection>;
+  requestBindingForLayer: (layerKey: number) => void;
 }
 
 export class Layer extends BaseComponent<LayerProps, LayerState> {
@@ -28,20 +32,37 @@ export class Layer extends BaseComponent<LayerProps, LayerState> {
 
     // Bind callbacks & event listeners
     this.toggleSelect = this.toggleSelect.bind(this);
+    this.requestBind = this.requestBind.bind(this);
   }
 
   private isSelected() {
     return this.props.selection.layers.indexOf(this.props.layerKey) >= 0;
   }
 
+  private isBinding() {
+    return this.props.bindingLayer.caseOf({
+      just: layerKey => layerKey === this.props.layerKey,
+      none: () => false
+    });
+  }
+
   render() {
     const zoomMargin = stageState.relativeZoomMargins(this.props.zoom);
+    let binding = "";
+    this.props.midiLayerBindings.map(b => {
+      if (b.layer === this.props.layerKey)
+        binding = b.note.toString();
+    });
+
     return (
       <externals.ShadowDOM>
         <div>
           <link rel="stylesheet" type="text/css" href="styles/components/layer.css"/>
           <div className="side">
             <span className={"toggle-select-button" + (this.isSelected() ? " selected" : "")} onClick={this.toggleSelect}/>
+            <span className={"bind-button" + (this.isBinding() ? " binding" : "")} onClick={this.requestBind}>
+              {binding ? ('B: ' + binding) : 'B'}
+            </span>
           </div>
           <LayerVisualization layer={this.props.layer} positionMillis={this.props.positionMillis} />
           <div className="timeline">
@@ -65,6 +86,10 @@ export class Layer extends BaseComponent<LayerProps, LayerState> {
 
   private toggleSelect() {
     this.props.updateSelection(s => selection.toggleLayer(s, this.props.layerKey));
+  }
+
+  private requestBind() {
+    this.props.requestBindingForLayer(this.props.layerKey);
   }
 
 }
