@@ -16,6 +16,7 @@ import * as selection from "../data/selection";
 import * as types from "../util/types";
 import * as stageState from "../data/stage-state"
 import * as fileManipulation from "../data/file-manipulation";
+import * as midi from "../midi/midi";
 import {KEYCODES} from "../util/input";
 
 
@@ -53,6 +54,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
   componentDidMount() {
     // Called by react when mounted
     this.setupWindowListeners();
+    midi.init();
   }
 
   componentWillUnmount() {
