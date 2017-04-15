@@ -1,0 +1,28 @@
+body {
+  background-color: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+#leds {
+  border: 1px solid #222;
+  background-color: #000;
+  padding: 2px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.led {
+  display: block;
+  width: 10px;
+  height: 10px;
+  margin: 2px;
+  background-color: #444;
+}

@@ -1,0 +1,3 @@
+#! /bin/bash
+
+nodejs build/ts/main-proxy.js
