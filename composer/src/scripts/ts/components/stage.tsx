@@ -30,6 +30,8 @@ export interface StageState {
 
 export class Stage extends BaseComponent<StageProps, StageState> {
 
+  private readonly midi = new midi.Midi();
+
   // Refd Elements (used for event geometry)
   private timeline: Timeline;
   private player: Player;
@@ -54,7 +56,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
   componentDidMount() {
     // Called by react when mounted
     this.setupWindowListeners();
-    midi.init();
+    this.midi.init();
   }
 
   componentWillUnmount() {
