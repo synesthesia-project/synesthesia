@@ -56,6 +56,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
   componentDidMount() {
     // Called by react when mounted
     this.setupWindowListeners();
+    this.setupMIDIListeners();
     this.midi.init();
   }
 
@@ -151,6 +152,14 @@ export class Stage extends BaseComponent<StageProps, StageState> {
         return;
       }
     })
+  }
+
+  private setupMIDIListeners() {
+    this.midi.addListener({
+      inputRemoved: input => console.debug('inputRemoved', input),
+      noteOn: (input, note, velocity) => console.debug('stage noteOn', input, note, velocity),
+      noteOff: (input, note) => console.debug('stage noteOff', input, note)
+    });
   }
 
   private addItemsToSelectedLayers() {
