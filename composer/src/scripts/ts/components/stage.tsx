@@ -3,7 +3,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 
 import * as func from "../data/functional";
-import {PlayState} from "../data/play-state";
+import {PlayState, PlayStateData} from "../data/play-state";
 
 import {FileSource} from "./file-source";
 import {Player} from "./player";
@@ -175,7 +175,18 @@ export class Stage extends BaseComponent<StageProps, StageState> {
             });
           },
           none: () => {
-            // Add item to any required layer
+            this.state.midiLayerBindings.map(b => {
+              if (b.input === input && b.note === note) {
+                this.state.playState.fmap(state => {
+                  const timestampMillis = this.currentTimestamp(state);
+                  this.state.cueFile.fmap(cueFile => {
+                    this.setState({cueFile: func.just(
+                      file.addLayerItem(cueFile, b.layer, timestampMillis)
+                    )});
+                  });
+                })
+              }
+            })
           }
         })
       },
@@ -185,10 +196,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
 
   private addItemsToSelectedLayers() {
     this.state.playState.fmap(state => {
-      const timestampMillis = state.state.caseOf({
-        left: pausedState => pausedState.timeMillis,
-        right: playingState => new Date().getTime() - playingState.effectiveStartTimeMillis
-      });
+      const timestampMillis = this.currentTimestamp(state);
       this.state.cueFile.fmap(cueFile => {
         for (const i of this.state.selection.layers) {
           cueFile = file.addLayerItem(cueFile, i, timestampMillis);
@@ -196,6 +204,13 @@ export class Stage extends BaseComponent<StageProps, StageState> {
         this.setState({cueFile: func.just(cueFile)} as StageState);
       });
     })
+  }
+
+  private currentTimestamp(state: PlayStateData) {
+    return state.state.caseOf({
+      left: pausedState => pausedState.timeMillis,
+      right: playingState => new Date().getTime() - playingState.effectiveStartTimeMillis
+    });
   }
 
   private playStateUpdated(playState: PlayState) {
