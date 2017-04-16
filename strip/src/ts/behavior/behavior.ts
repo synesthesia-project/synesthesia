@@ -53,8 +53,8 @@ export class StripBehavior {
     backend.addReadyListener(this.connected.bind(this));
     backend.addDisconnectedListener(this.disconnected.bind(this));
 
-    this.primaryColor = new Color(20, 0, 0);
-    this.secondaryColor = new Color(20, 0, 20);
+    this.primaryColor = new Color(200, 0, 0);
+    this.secondaryColor = new Color(200, 0, 200);
     this.sparkleColor = new Color(0, 0, 0);
 
     // Zero-Out buffer
