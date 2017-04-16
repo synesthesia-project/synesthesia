@@ -55,9 +55,7 @@ export class StripBehavior {
 
     this.primaryColor = new Color(20, 0, 0);
     this.secondaryColor = new Color(20, 0, 20);
-    // this.primaryColor = new Color(255, 255, 255);
-    // this.secondaryColor = new Color(255, 255, 255);
-    this.sparkleColor = new Color(0, 255, 0);
+    this.sparkleColor = new Color(0, 0, 0);
 
     // Zero-Out buffer
     for (let i = 0; i < numberOfLeds; i++)
