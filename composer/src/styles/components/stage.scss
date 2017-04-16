@@ -26,7 +26,6 @@
         display: block;
         background: $layer_side_bg;
         position: absolute;
-        width: $layer_side_column_width;
         height: 100%;
         top: 0;
         z-index: -100;
@@ -35,11 +34,13 @@
       }
 
       &::before {
+        width: $layer_side_column_width;
         left: 0;
         border-right: 1px solid $border-light;
       }
 
       &::after {
+        width: $visualization_width;
         right: 0;
         border-left: 1px solid $border-light;
       }
@@ -50,7 +51,7 @@
         top: 0;
         bottom: 0;
         left: $layer_side_column_width;
-        right: $layer_side_column_width;
+        right: $visualization_width;
         overflow: hidden;
 
         .zoom {
