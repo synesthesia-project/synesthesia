@@ -53,9 +53,9 @@ export class StripBehavior {
     backend.addReadyListener(this.connected.bind(this));
     backend.addDisconnectedListener(this.disconnected.bind(this));
 
-    this.primaryColor = new Color(200, 0, 0);
-    this.secondaryColor = new Color(200, 0, 200);
-    this.sparkleColor = new Color(0, 0, 0);
+    this.primaryColor = new Color(4, 0, 20);
+    this.secondaryColor = new Color(20, 0, 4);
+    this.sparkleColor = new Color(100, 0, 50);
 
     // Zero-Out buffer
     for (let i = 0; i < numberOfLeds; i++)
