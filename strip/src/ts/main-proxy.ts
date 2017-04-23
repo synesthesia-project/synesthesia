@@ -4,7 +4,7 @@ import {StripBehavior} from "./behavior/behavior";
 import {Frontend} from "./frontend/frontend";
 
 const sockfile = '/tmp/led-socket';
-const leds = 60;
+const leds = 60 * 4;
 
 const backend: LEDStripBackend = new AdafruitDotstarsProxyBackend(leds, sockfile);
 
