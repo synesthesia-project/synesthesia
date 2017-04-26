@@ -1,6 +1,6 @@
 (() => {
 
-  var socket = new WebSocket("ws://localhost:8120/strip");
+  var socket = new WebSocket(`ws://${window.location.hostname}:8120/strip`);
 
   const formElements = {
     primaryArtifacts: $('#primaryArtifacts'),
