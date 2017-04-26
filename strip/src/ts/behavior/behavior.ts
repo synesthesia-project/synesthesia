@@ -9,7 +9,6 @@ interface Artifact {
   positionSpeed: number;
   life: number;
   lifeSpeed: number;
-  color: Color;
 }
 
 interface Sparkle {
@@ -18,20 +17,30 @@ interface Sparkle {
   lifeSpeed: number;
 }
 
-function genRandomArtifact(maxWidth: number, color: Color): Artifact {
+function genRandomArtifact(maxWidth: number): Artifact {
   return {
     width: getRandomArbitrary(maxWidth / 3, maxWidth),
     position: Math.random(),
     positionSpeed: (Math.random() < 0.5 ? 1 : -1) * getRandomArbitrary(0.001, 0.005),
     life: 0,
-    lifeSpeed: getRandomArbitrary(0.001, 0.005),
-    color
+    lifeSpeed: getRandomArbitrary(0.001, 0.005)
   };
 }
 
 function getRandomArbitrary(min: number, max: number) {
   return Math.random() * (max - min) + min;
 }
+
+export interface StripBehaviorState {
+  primaryColor: Color;
+  secondaryColor: Color;
+  sparkleColor: Color;
+  primaryArtifacts: number;
+  secondaryArtifacts: number;
+  sparlkiness: number;
+}
+
+type StripBehaviorListener = (state: StripBehaviorState) => void;
 
 export class StripBehavior {
 
@@ -40,9 +49,9 @@ export class StripBehavior {
   private readonly buffer: Buffer;
   private intervalID: NodeJS.Timer;
 
-  private primaryColor: Color;
-  private secondaryColor: Color;
-  private sparkleColor: Color;
+  private state: StripBehaviorState;
+
+  private listeners: StripBehaviorListener[] = [];
 
   constructor(numberOfLeds: number, backend: LEDStripBackend) {
     this.numberOfLeds = numberOfLeds;
@@ -53,13 +62,42 @@ export class StripBehavior {
     backend.addReadyListener(this.connected.bind(this));
     backend.addDisconnectedListener(this.disconnected.bind(this));
 
-    this.primaryColor = new Color(4, 0, 20);
-    this.secondaryColor = new Color(20, 0, 4);
-    this.sparkleColor = new Color(100, 0, 50);
+    this.state = {
+      primaryColor: new Color(4, 0, 20),
+      secondaryColor: new Color(20, 0, 4),
+      sparkleColor: new Color(100, 0, 50),
+      primaryArtifacts: 5,
+      secondaryArtifacts: 3,
+      sparlkiness: 1
+    };
 
     // Zero-Out buffer
     for (let i = 0; i < numberOfLeds; i++)
-      this.setPixel(i, this.primaryColor);
+      this.setPixel(i, this.state.primaryColor);
+  }
+
+  public addListener(listener: StripBehaviorListener) {
+    this.listeners.push(listener);
+    listener(this.state);
+  }
+
+  public updateState(state: Partial<StripBehaviorState>) {
+    for (const key of Object.keys(state)) {
+      const val: number | Color = state[key];
+      if (val === undefined) continue;
+      if (val instanceof Color) {
+        if (!val.equals(this.state[key]))
+          this.state[key] = val;
+      } else if (val !== this.state[key]) {
+        this.state[key] = val;
+      }
+    }
+
+    this.listeners.map(l => l(this.state));
+  }
+
+  public removeListener(listener: StripBehaviorListener) {
+    this.listeners = this.listeners.filter(l => listener !== l);
   }
 
   private connected() {
@@ -98,13 +136,12 @@ export class StripBehavior {
             position: p > 1 ? (p - 1) : p < 0 ? (p + 1) : p,
             positionSpeed: a.positionSpeed,
             life: a.life + a.lifeSpeed,
-            lifeSpeed: a.lifeSpeed,
-            color: a.color
+            lifeSpeed: a.lifeSpeed
           }
         })
         .filter(a => a.life < 1)
 
-    const displayArtifacts = (artifacts: Artifact[]) =>
+    const displayArtifacts = (artifacts: Artifact[], color: Color) =>
       artifacts.map(a => {
         const ledWidth = 1.0 / leds.length;
         const sectionSize = (a.width / 2);
@@ -136,7 +173,7 @@ export class StripBehavior {
             );
           const actualOpacity = artifactOpacity * opacity;
           if (actualOpacity > 0)
-            leds[i] = leds[i].overlay(a.color, actualOpacity);
+            leds[i] = leds[i].overlay(color, actualOpacity);
         }
       });
 
@@ -146,18 +183,18 @@ export class StripBehavior {
         leds[i] = Colors.Black;
 
       // Generate new artifacts
-      while (primaryArtifacts.length < 5)
-        primaryArtifacts.push(genRandomArtifact(0.6, this.primaryColor));
-      while (secondaryArtifacts.length < 2)
-        secondaryArtifacts.push(genRandomArtifact(0.4, this.secondaryColor));
+      while (primaryArtifacts.length < this.state.primaryArtifacts)
+        primaryArtifacts.push(genRandomArtifact(0.6));
+      while (secondaryArtifacts.length < this.state.secondaryArtifacts)
+        secondaryArtifacts.push(genRandomArtifact(0.4));
 
       // Update artifacts
       primaryArtifacts = tickArtifacts(primaryArtifacts);
       secondaryArtifacts = tickArtifacts(secondaryArtifacts);
 
       // Print Primary Artifacts
-      displayArtifacts(primaryArtifacts);
-      displayArtifacts(secondaryArtifacts);
+      displayArtifacts(primaryArtifacts, this.state.primaryColor);
+      displayArtifacts(secondaryArtifacts, this.state.secondaryColor);
 
       // Generate new sparkles
       nextSparkle--;
@@ -182,7 +219,7 @@ export class StripBehavior {
       sparkles.map(s => {
         const pixel = Math.min(leds.length - 1, Math.floor(s.pos * leds.length));
         const opacity = (s.life < 0.5 ? (s.life) : (1-s.life)) * 2;
-        leds[pixel] = leds[pixel].overlay(this.sparkleColor, opacity);
+        leds[pixel] = leds[pixel].overlay(this.state.sparkleColor, opacity);
       })
 
       // Update Strip
