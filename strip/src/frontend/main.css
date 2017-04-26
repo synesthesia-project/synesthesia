@@ -1,3 +1,30 @@
 body {
   background-color: #111;
+  color: #ddd;
+  font-family: sans-serif;
+  font-size: 14px;
+}
+
+.group {
+  padding: 0 0 10px 0;
+}
+
+.group .title {
+  padding: 5px 0;
+}
+
+.group .form-elements {
+
+}
+
+.group .form-elements input {
+  border: 1px solid #555;
+  background: #222;
+  color: #ddd;
+  padding: 5px;
+  border-radius: 3px;
+}
+
+.group .form-elements .number input {
+  width: 60px;
 }
