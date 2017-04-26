@@ -38,7 +38,7 @@ export class StripControllerProtocol {
           sparkleColor: msg.updateState.sparkleColor ? Color.fromTriple(msg.updateState.sparkleColor) : undefined,
           primaryArtifacts: msg.updateState.primaryArtifacts,
           secondaryArtifacts: msg.updateState.secondaryArtifacts,
-          sparlkiness: msg.updateState.sparlkiness
+          sparkliness: msg.updateState.sparkliness
         }
         this.behavior.updateState(state);
       }
@@ -62,7 +62,7 @@ export class StripControllerProtocol {
       sparkleColor: bState.sparkleColor.toTriple(),
       primaryArtifacts: bState.primaryArtifacts,
       secondaryArtifacts: bState.secondaryArtifacts,
-      sparlkiness: bState.sparlkiness
+      sparkliness: bState.sparkliness
     }
     this.send({state});
   }

@@ -8,7 +8,7 @@ declare namespace synesthesia.strip_controller_api {
     sparkleColor: Color;
     primaryArtifacts: number;
     secondaryArtifacts: number;
-    sparlkiness: number;
+    sparkliness: number;
   }
 
   export interface ClientMessage {

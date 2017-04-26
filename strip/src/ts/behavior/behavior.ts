@@ -1,6 +1,8 @@
 import {LEDStripBackend} from "../backends/backends";
 import {Color, Colors} from "../data/colors";
 
+const MAX_SPARKLINESS = 10;
+
 interface Artifact {
   /** between 0 and 1 */
   width: number;
@@ -37,7 +39,8 @@ export interface StripBehaviorState {
   sparkleColor: Color;
   primaryArtifacts: number;
   secondaryArtifacts: number;
-  sparlkiness: number;
+  /** Between 0 and 5 */
+  sparkliness: number;
 }
 
 type StripBehaviorListener = (state: StripBehaviorState) => void;
@@ -68,7 +71,7 @@ export class StripBehavior {
       sparkleColor: new Color(100, 0, 50),
       primaryArtifacts: 5,
       secondaryArtifacts: 3,
-      sparlkiness: 1
+      sparkliness: 7
     };
 
     // Zero-Out buffer
@@ -92,6 +95,9 @@ export class StripBehavior {
         this.state[key] = val;
       }
     }
+
+    // Sanity Check state
+    this.state.sparkliness = Math.max(0, Math.min(MAX_SPARKLINESS, Math.round(this.state.sparkliness)));
 
     this.listeners.map(l => l(this.state));
   }
@@ -198,13 +204,18 @@ export class StripBehavior {
 
       // Generate new sparkles
       nextSparkle--;
-      while (nextSparkle <= 0) {
-        sparkles.push({
-          pos: Math.random(),
-          life: 0,
-          lifeSpeed: getRandomArbitrary(0.01, 0.08)
-        });
-        nextSparkle = Math.round(getRandomArbitrary(0, 3));
+      if (this.state.sparkliness > 0) {
+        while (nextSparkle <= 0) {
+          sparkles.push({
+            pos: Math.random(),
+            life: 0,
+            lifeSpeed: getRandomArbitrary(0.02, 0.08)
+          });
+          if (Math.random() < this.state.sparkliness / (MAX_SPARKLINESS + 2))
+            nextSparkle = 0;
+          else
+            nextSparkle = Math.round(getRandomArbitrary(1, MAX_SPARKLINESS * 2 - this.state.sparkliness * 2 + 2));
+        }
       }
 
       // Update sparkles
