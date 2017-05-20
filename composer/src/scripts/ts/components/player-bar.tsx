@@ -25,7 +25,7 @@ export interface PlayerBarProps {
 
 export class PlayerBar extends BaseComponent<PlayerBarProps, PlayerBarState> {
 
-  private updateInterval: any;
+  private updateInterval: number;
 
   // Elements
   private _$bar: JQuery;
@@ -134,7 +134,8 @@ export class PlayerBar extends BaseComponent<PlayerBarProps, PlayerBarState> {
   }
 
   private updatePlayerDisplay() {
-    clearInterval(this.updateInterval);
+    cancelAnimationFrame(this.updateInterval);
+    this.updateInterval = -1;
     this.props.playState.caseOf({
       just: state => {
         this.$reactRoot().removeClass('disabled');
@@ -151,13 +152,17 @@ export class PlayerBar extends BaseComponent<PlayerBarProps, PlayerBarState> {
   }
 
   private initUpdateInterval(playState: PlayStateData, playingState: MediaPlaying) {
+    let nextFrame: number;
     const updater = () => {
+      // HACK: For some reason cancelAnimationFrame() alone isn't working here...
+      if (nextFrame !== this.updateInterval) return;
       const now = new Date().getTime();
       const elapsed = now - playingState.effectiveStartTimeMillis;
       this.updateBarPosition(elapsed / playState.durationMillis);
+      nextFrame = this.updateInterval = requestAnimationFrame(updater);
     }
     // Pick a nice interval that will show the milliseconds updating
-    this.updateInterval = setInterval(updater, 16);
+    nextFrame = this.updateInterval = requestAnimationFrame(updater);
     updater();
   }
 

@@ -53,12 +53,16 @@ export class LayersAndTimeline extends BaseComponent<LayersAndTimelineProps, Lay
   }
 
   private updatePositionInterval(newProps: LayersAndTimelineProps) {
-    clearInterval(this.updateInterval);
+    cancelAnimationFrame(this.updateInterval);
     // Start a re-rendering interval if currently playing
     newProps.playState.fmap(state => state.state.caseOf<void>({
       left: pausedState => {},
       right: playingState => {
-        this.updateInterval = window.setInterval(() => this.updatePosition(newProps), 20)
+        const update = () => {
+          this.updatePosition(newProps);
+          this.updateInterval = requestAnimationFrame(update);
+        }
+        this.updateInterval = requestAnimationFrame(update);
       }
     }));
     this.updatePosition(newProps);
