@@ -65,7 +65,7 @@ gulp.task("webpack", ['bower', 'ts', 'copy-js'], function(callback) {
 
         module: {
             preLoaders: [
-                { test: /\.js$/, loader: "source-map-loader" }
+                { test: /\.js$/, loader: "source-map" }
             ]
         },
 
