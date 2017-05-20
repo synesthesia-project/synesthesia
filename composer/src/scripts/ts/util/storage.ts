@@ -12,3 +12,18 @@ export function saveStringAsFile(data: string, filename: string) {
     window.URL.revokeObjectURL(url);
   }, 0);
 }
+
+export function loadFileAsString() {
+  return new Promise<string>(resolve => {
+    const input = document.createElement("input");
+    input.type = 'file';
+    input.accept = '.scue';
+    input.onchange = e => {
+      if (!input.files || input.files.length === 0) return;
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.readAsText(input.files[0]);
+    }
+    input.click();
+  });
+}

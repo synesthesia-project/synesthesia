@@ -115,3 +115,9 @@ export function addLayerItem(file: CueFile, layer: number, timestampMillis: numb
     })
   });
 }
+
+// File Validation
+export function validateFile(obj: any) {
+  //TODO: actually validate, for now assume it's fine
+  return util.deepFreeze(obj) as CueFile;
+}

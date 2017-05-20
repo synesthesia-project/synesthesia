@@ -11,6 +11,7 @@ export interface FileSourceProps {
   file: func.Maybe<file.CueFile>;
   // Callbacks
   playStateUpdated: (value: PlayState) => void;
+  fileLoaded: (file: file.CueFile) => void;
 }
 
 interface FileSourceState {
@@ -53,6 +54,7 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
     this.updatePlayState = this.updatePlayState.bind(this);
     this.toggleCompanion = this.toggleCompanion.bind(this);
     this.saveFile = this.saveFile.bind(this);
+    this.openFile = this.openFile.bind(this);
   }
 
   public componentDidMount() {
@@ -64,6 +66,14 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
     this.props.file.fmap(file => {
       storage.saveStringAsFile(JSON.stringify(file), 'song.scue');
     })
+  }
+
+  public openFile() {
+    storage.loadFileAsString().then(fileString => {
+      const obj = JSON.parse(fileString);
+      const validatedFile = file.validateFile(obj);
+      this.props.fileLoaded(validatedFile);
+    });
   }
 
   render() {
@@ -87,6 +97,7 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
           {this.state.companionAllowed ? null : <span className="companionDisabled" title="Run as a chrome extension to enable.">Tab Connector Disabled</span> }
           <span className="description">{this.state.description}</span>
           <span className="grow"/>
+          <button onClick={this.openFile}>Open</button>
           <button className={this.props.file.isJust() ? '' : 'disabled'} onClick={this.saveFile}>Save</button>
         </div>
       </externals.ShadowDOM>

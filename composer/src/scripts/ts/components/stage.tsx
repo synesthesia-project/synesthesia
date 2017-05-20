@@ -52,6 +52,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
 
     // Bind callbacks & event listeners
     this.playStateUpdated = this.playStateUpdated.bind(this);
+    this.fileLoaded = this.fileLoaded.bind(this);
     this.updateCueFile = this.updateCueFile.bind(this);
     this.updateSelection = this.updateSelection.bind(this);
     this.updateCueFileAndSelection = this.updateCueFileAndSelection.bind(this);
@@ -227,6 +228,10 @@ export class Stage extends BaseComponent<StageProps, StageState> {
     })
   }
 
+  private fileLoaded(file: file.CueFile) : void {
+    this.setState({cueFile: func.just(file)});
+  }
+
   private updateCueFile(mutator: (cueFile: file.CueFile) => file.CueFile) {
     this.state.cueFile.fmap(cueFile => {
       this.setState({cueFile: func.just(mutator(cueFile))} as StageState);
@@ -257,6 +262,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
           <FileSource
             file={this.state.cueFile}
             playStateUpdated={this.playStateUpdated}
+            fileLoaded={this.fileLoaded}
             />
           <LayersAndTimeline
             file={this.state.cueFile}
