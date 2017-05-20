@@ -53,7 +53,7 @@ gulp.task('extension-ts', function () {
 
 gulp.task("webpack", ['bower', 'ts', 'copy-js'], function(callback) {
     // run webpack
-    webpack(module.exports = {
+    webpack({
         entry: "./.tmp/scripts/main.js",
         output: {
             filename: "bundle.js",
