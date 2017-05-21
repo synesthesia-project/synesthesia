@@ -8,6 +8,9 @@ import * as selection from "../data/selection";
 import * as types from "../util/types";
 import * as stageState from "../data/stage-state";
 
+import Keyboard = require('react-icons/lib/md/keyboard');
+import MusicNote = require('react-icons/lib/md/music-note');
+
 export interface LayerState { }
 
 export interface LayerProps {
@@ -59,9 +62,9 @@ export class Layer extends BaseComponent<LayerProps, LayerState> {
         <div>
           <link rel="stylesheet" type="text/css" href="styles/components/layer.css"/>
           <div className="side">
-            <span className={"toggle-select-button" + (this.isSelected() ? " selected" : "")} onClick={this.toggleSelect}/>
+            <span className={"toggle-select-button" + (this.isSelected() ? " selected" : "")} onClick={this.toggleSelect}><Keyboard /></span>
             <span className={"bind-button" + (this.isBinding() ? " binding" : "")} onClick={this.requestBind}>
-              {binding ? ('B: ' + binding) : 'B'}
+              <MusicNote/>{binding ? (': ' + binding) : ''}
             </span>
           </div>
           <LayerVisualization layer={this.props.layer} positionMillis={this.props.positionMillis} />

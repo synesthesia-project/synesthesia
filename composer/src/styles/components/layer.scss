@@ -39,10 +39,6 @@ $button-height: $bar-height - $spacing * 4;
       &.selected {
         @include button-pressed();
       }
-
-      &::after {
-        content: "S";
-      }
     }
 
     .bind-button {

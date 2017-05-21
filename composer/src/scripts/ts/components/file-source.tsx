@@ -7,6 +7,10 @@ import * as storage from "../util/storage";
 import {PlayStateData, PlayState, PlayStateControls, MediaPaused, MediaPlaying} from "../data/play-state";
 import {CompanionConnection} from "../util/companion";
 
+import Save = require('react-icons/lib/md/save');
+import FolderOpen = require('react-icons/lib/md/folder-open');
+import Tab = require('react-icons/lib/md/tab');
+
 export interface FileSourceProps {
   file: func.Maybe<file.CueFile>;
   // Callbacks
@@ -82,7 +86,7 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
         <div>
           <link rel="stylesheet" type="text/css" href="styles/components/file-source.css"/>
           <input id="file_picker" type="file" onChange={this.loadAudioFile} />
-          <label htmlFor="file_picker">Open Audio File</label>
+          <label htmlFor="file_picker"><FolderOpen/> Open Audio File</label>
           <audio id="audio"
             onCanPlay={this.updatePlayState}
             onPlaying={this.updatePlayState}
@@ -92,13 +96,13 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
               "connectToCompanion" +
               (this.state.companion.isJust() ? ' pressed' : '') +
               (this.state.companionAllowed ? '' : ' disabled')} onClick={this.toggleCompanion}>
-            Connect To Tabs
+            <Tab/> Connect To Tabs
           </button>
           {this.state.companionAllowed ? null : <span className="companionDisabled" title="Run as a chrome extension to enable.">Tab Connector Disabled</span> }
           <span className="description">{this.state.description}</span>
           <span className="grow"/>
-          <button onClick={this.openFile}>Open</button>
-          <button className={this.props.file.isJust() ? '' : 'disabled'} onClick={this.saveFile}>Save</button>
+          <button onClick={this.openFile}><FolderOpen/></button>
+          <button className={this.props.file.isJust() ? '' : 'disabled'} onClick={this.saveFile}><Save/></button>
         </div>
       </externals.ShadowDOM>
     );

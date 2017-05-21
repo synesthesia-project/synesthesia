@@ -27,6 +27,10 @@
     & + label {
       margin: $spacing / 2;
       @include rect-button();
+
+      > svg {
+        margin-right: 5px;
+      }
     }
   }
 
@@ -44,6 +48,12 @@
 
       &.connectToCompanion {
         display: none;
+      }
+    }
+
+    &.connectToCompanion {
+      > svg {
+        margin-right: 5px;
       }
     }
   }

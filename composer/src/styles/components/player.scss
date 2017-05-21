@@ -19,12 +19,7 @@ $control-height: 30px;
     display: block;
     height: $control-height;
     width: $control-height;
-    @include rect-button();
-
-    &::after {
-      content: "P";
-    }
-
+    @include rect-icon-button();
   }
 
   .elapsed-time, .duration {

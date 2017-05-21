@@ -55,6 +55,9 @@
   border: 1px solid $border_dark;
   overflow: hidden;
   font-size: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   @include button-state-normal();
 
   &:hover {
@@ -88,6 +91,11 @@
 
 @mixin rect-button() {
   @include button();
+}
+
+@mixin rect-icon-button() {
+  @include button();
+  padding: 0;
 }
 
 @mixin rect-button-small() {

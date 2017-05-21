@@ -8,6 +8,8 @@ import * as file from "../data/file";
 import * as types from "../util/types";
 import * as util from "../util/util";
 
+import Add = require('react-icons/lib/md/add');
+
 export interface TimelineState {
 }
 
@@ -45,7 +47,7 @@ export class Timeline extends BaseComponent<TimelineProps, TimelineState> {
         <div>
           <link rel="stylesheet" type="text/css" href="styles/components/timeline.css"/>
           <div className="side left">
-            <span className="add-button" onClick={this.addLayerClicked}/>
+            <span className="add-button" onClick={this.addLayerClicked}><Add /></span>
           </div>
           <div className="side right" />
           <div className="timeline">

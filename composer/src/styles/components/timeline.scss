@@ -31,11 +31,7 @@ $button-height: $timeline-height - 2 * $spacing;
         display: block;
         height: $button-height;
         width: $button-height;
-        @include rect-button();
-
-        &::after {
-          content: "A";
-        }
+        @include rect-icon-button();
 
       }
     }

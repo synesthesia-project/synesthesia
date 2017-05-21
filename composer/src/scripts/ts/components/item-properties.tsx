@@ -8,6 +8,8 @@ import * as fileManipulation from "../data/file-manipulation";
 import * as types from "../util/types";
 import {DelayedPropigationInput} from "./util/input";
 
+import Delete = require('react-icons/lib/md/delete');
+
 interface EventPropertiesProps {
   // Properties
   selection: selection.Selection;
@@ -70,7 +72,7 @@ export class EventProperties extends BaseComponent<EventPropertiesProps, {}> {
                   onChange={this.onStartTimeChange}/>
               </div>
               <div className="property">
-                <button onClick={this.onDelete}>Delete</button>
+                <button onClick={this.onDelete}><Delete/></button>
               </div>
             </div>
             : null

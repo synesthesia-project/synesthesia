@@ -8,6 +8,9 @@ import {displayMillis} from "../display/timing";
 
 import {PlayerBar} from "./player-bar";
 
+import Pause = require('react-icons/lib/md/pause');
+import Play = require('react-icons/lib/md/play-arrow');
+
 interface PlayerState {
   /**
    * If the user is currently scrubbing the track, this number will be set to
@@ -50,11 +53,20 @@ export class Player extends BaseComponent<PlayerProps, PlayerState> {
   }
 
   render() {
+    const playing = this.props.playState.caseOf({
+      just: state => state.state.caseOf({
+        left: () => false,
+        right: () => true
+      }),
+      none: () => false
+    });
     return (
       <externals.ShadowDOM>
         <div>
           <link rel="stylesheet" type="text/css" href="styles/components/player.css"/>
-          <span className="play-pause" onClick={this.playPauseClicked}></span>
+          <span className="play-pause" onClick={this.playPauseClicked}>
+            { playing ? <Pause /> : <Play /> }
+          </span>
           <span className="elapsed-time"></span>
           <PlayerBar
             playState={this.props.playState}
