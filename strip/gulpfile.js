@@ -42,7 +42,7 @@ gulp.task('demo', function () {
 });
 
 gulp.task('demo-lib', function () {
-    return gulp.src(['bower_components/jquery/dist/jquery.*']).pipe(gulp.dest('build/demo/lib/'));
+    return gulp.src(['node_modules/jquery/dist/jquery.*']).pipe(gulp.dest('build/demo/lib/'));
 });
 
 gulp.task('frontend', function () {
@@ -50,7 +50,7 @@ gulp.task('frontend', function () {
 });
 
 gulp.task('frontend-lib', function () {
-    return gulp.src(['bower_components/jquery/dist/jquery.*']).pipe(gulp.dest('build/frontend/lib/'));
+    return gulp.src(['node_modules/jquery/dist/jquery.*']).pipe(gulp.dest('build/frontend/lib/'));
 });
 
 gulp.task('default', function(callback) {

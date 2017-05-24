@@ -4,22 +4,22 @@
 
 "@gulp-sourcemaps/map-sources@1.X":
   version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@gulp-sourcemaps/map-sources/-/map-sources-1.0.0.tgz#890ae7c5d8c877f6d384860215ace9d7ec945bda"
+  resolved "@gulp-sourcemaps-map-sources-1.0.0.tgz#890ae7c5d8c877f6d384860215ace9d7ec945bda"
   dependencies:
     normalize-path "^2.0.1"
     through2 "^2.0.3"
 
 "@types/jquery@^2.0.41":
   version "2.0.41"
-  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-2.0.41.tgz#b87ba051011f99edbe586d8f97282e7786e01a6d"
+  resolved "@types-jquery-2.0.41.tgz#b87ba051011f99edbe586d8f97282e7786e01a6d"
 
 "@types/node@*", "@types/node@^7.0.12":
   version "7.0.12"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.12.tgz#ae5f67a19c15f752148004db07cbbb372e69efc9"
+  resolved "@types-node-7.0.12.tgz#ae5f67a19c15f752148004db07cbbb372e69efc9"
 
 "@types/ws@^0.0.39":
   version "0.0.39"
-  resolved "https://registry.yarnpkg.com/@types/ws/-/ws-0.0.39.tgz#d2386c3475eb64e561137a245a4d1d13b1f69fd1"
+  resolved "@types-ws-0.0.39.tgz#d2386c3475eb64e561137a245a4d1d13b1f69fd1"
   dependencies:
     "@types/node" "*"
 
@@ -161,7 +161,7 @@ concat-map@0.0.1:
 
 convert-source-map@1.X, convert-source-map@^1.1.1:
   version "1.5.0"
-  resolved "https://registry.yarnpkg.com/convert-source-map/-/convert-source-map-1.5.0.tgz#9acd70851c6d5dfdd93d9282e5edf94a03ff46b5"
+  resolved convert-source-map-1.5.0.tgz#9acd70851c6d5dfdd93d9282e5edf94a03ff46b5
 
 core-util-is@~1.0.0:
   version "1.0.2"
@@ -203,7 +203,7 @@ debug-fabulous@0.0.X:
 
 debug@2.X:
   version "2.6.3"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.3.tgz#0f7eb8c30965ec08c72accfa0130c8b79984141d"
+  resolved debug-2.6.3.tgz#0f7eb8c30965ec08c72accfa0130c8b79984141d
   dependencies:
     ms "0.7.2"
 
@@ -260,7 +260,7 @@ end-of-stream@~0.1.5:
 
 error-ex@^1.2.0:
   version "1.3.1"
-  resolved "https://registry.yarnpkg.com/error-ex/-/error-ex-1.3.1.tgz#f855a86ce61adc4e8621c3cda21e7a7612c3a8dc"
+  resolved error-ex-1.3.1.tgz#f855a86ce61adc4e8621c3cda21e7a7612c3a8dc
   dependencies:
     is-arrayish "^0.2.1"
 
@@ -365,11 +365,11 @@ flagged-respawn@^0.3.2:
 
 for-in@^1.0.1:
   version "1.0.2"
-  resolved "https://registry.yarnpkg.com/for-in/-/for-in-1.0.2.tgz#81068d295a8142ec0ac726c6e2200c30fb6d5e80"
+  resolved for-in-1.0.2.tgz#81068d295a8142ec0ac726c6e2200c30fb6d5e80
 
 for-own@^0.1.4:
   version "0.1.5"
-  resolved "https://registry.yarnpkg.com/for-own/-/for-own-0.1.5.tgz#5265c681a4f294dabbf17c9509b6763aa84510ce"
+  resolved for-own-0.1.5.tgz#5265c681a4f294dabbf17c9509b6763aa84510ce
   dependencies:
     for-in "^1.0.1"
 
@@ -449,7 +449,7 @@ glob2base@^0.0.12:
 
 glob@^4.3.1:
   version "4.5.3"
-  resolved "https://registry.yarnpkg.com/glob/-/glob-4.5.3.tgz#c6cb73d3226c1efef04de3c56d012f03377ee15f"
+  resolved glob-4.5.3.tgz#c6cb73d3226c1efef04de3c56d012f03377ee15f
   dependencies:
     inflight "^1.0.4"
     inherits "2"
@@ -531,7 +531,7 @@ graceful-fs@~1.2.0:
 
 gulp-clean@^0.3.2:
   version "0.3.2"
-  resolved "https://registry.yarnpkg.com/gulp-clean/-/gulp-clean-0.3.2.tgz#a347d473acea40182f935587a451941671928102"
+  resolved gulp-clean-0.3.2.tgz#a347d473acea40182f935587a451941671928102
   dependencies:
     gulp-util "^2.2.14"
     rimraf "^2.2.8"
@@ -549,7 +549,7 @@ gulp-sourcemaps@1.6.0:
 
 gulp-sourcemaps@^1.6.0:
   version "1.12.0"
-  resolved "https://registry.yarnpkg.com/gulp-sourcemaps/-/gulp-sourcemaps-1.12.0.tgz#786f97c94a0f968492465d70558e04242c679598"
+  resolved gulp-sourcemaps-1.12.0.tgz#786f97c94a0f968492465d70558e04242c679598
   dependencies:
     "@gulp-sourcemaps/map-sources" "1.X"
     acorn "4.X"
@@ -565,7 +565,7 @@ gulp-sourcemaps@^1.6.0:
 
 gulp-typescript@^3.1.4:
   version "3.1.6"
-  resolved "https://registry.yarnpkg.com/gulp-typescript/-/gulp-typescript-3.1.6.tgz#6c67b84364cf3589a9ad6fdea2e3c0bc525c435e"
+  resolved gulp-typescript-3.1.6.tgz#6c67b84364cf3589a9ad6fdea2e3c0bc525c435e
   dependencies:
     gulp-util "~3.0.7"
     source-map "~0.5.3"
@@ -658,7 +658,7 @@ homedir-polyfill@^1.0.0:
 
 hosted-git-info@^2.1.4:
   version "2.4.1"
-  resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.4.1.tgz#4b0445e41c004a8bd1337773a4ff790ca40318c8"
+  resolved hosted-git-info-2.4.1.tgz#4b0445e41c004a8bd1337773a4ff790ca40318c8
 
 indent-string@^2.1.0:
   version "2.1.0"
@@ -687,7 +687,7 @@ ini@^1.3.4:
 
 interpret@^1.0.0:
   version "1.0.2"
-  resolved "https://registry.yarnpkg.com/interpret/-/interpret-1.0.2.tgz#f4f623f0bb7122f15f5717c8e254b8161b5c5b2d"
+  resolved interpret-1.0.2.tgz#f4f623f0bb7122f15f5717c8e254b8161b5c5b2d
 
 is-absolute@^0.2.3:
   version "0.2.6"
@@ -702,7 +702,7 @@ is-arrayish@^0.2.1:
 
 is-buffer@^1.0.2:
   version "1.1.5"
-  resolved "https://registry.yarnpkg.com/is-buffer/-/is-buffer-1.1.5.tgz#1f3b26ef613b214b88cbca23cc6c01d87961eecc"
+  resolved is-buffer-1.1.5.tgz#1f3b26ef613b214b88cbca23cc6c01d87961eecc
 
 is-builtin-module@^1.0.0:
   version "1.0.0"
@@ -802,13 +802,17 @@ isarray@1.0.0, isarray@~1.0.0:
 
 isexe@^2.0.0:
   version "2.0.0"
-  resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
+  resolved isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10
 
 isobject@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-2.1.0.tgz#f065561096a3f1da2ef46272f815c840d87e0c89"
   dependencies:
     isarray "1.0.0"
+
+jquery@^3.2.1:
+  version "3.2.1"
+  resolved jquery-3.2.1.tgz#5c4d9de652af6cd0a770154a631bba12b015c787
 
 json-stable-stringify@^1.0.0:
   version "1.0.1"
@@ -1179,7 +1183,7 @@ natives@^1.1.0:
 
 normalize-package-data@^2.3.2, normalize-package-data@^2.3.4:
   version "2.3.6"
-  resolved "https://registry.yarnpkg.com/normalize-package-data/-/normalize-package-data-2.3.6.tgz#498fa420c96401f787402ba21e600def9f981fff"
+  resolved normalize-package-data-2.3.6.tgz#498fa420c96401f787402ba21e600def9f981fff
   dependencies:
     hosted-git-info "^2.1.4"
     is-builtin-module "^1.0.0"
@@ -1188,7 +1192,7 @@ normalize-package-data@^2.3.2, normalize-package-data@^2.3.4:
 
 normalize-path@^2.0.1:
   version "2.1.1"
-  resolved "https://registry.yarnpkg.com/normalize-path/-/normalize-path-2.1.1.tgz#1ab28b556e198363a8c1a6f7e6fa20137fe6aed9"
+  resolved normalize-path-2.1.1.tgz#1ab28b556e198363a8c1a6f7e6fa20137fe6aed9
   dependencies:
     remove-trailing-separator "^1.0.1"
 
@@ -1206,7 +1210,7 @@ object-assign@^3.0.0:
 
 object-keys@~0.4.0:
   version "0.4.0"
-  resolved "https://registry.yarnpkg.com/object-keys/-/object-keys-0.4.0.tgz#28a6aae7428dd2c3a92f3d95f21335dd204e0336"
+  resolved object-keys-0.4.0.tgz#28a6aae7428dd2c3a92f3d95f21335dd204e0336
 
 object.omit@^2.0.0:
   version "2.0.1"
@@ -1287,7 +1291,7 @@ path-is-absolute@^1.0.0:
 
 path-parse@^1.0.5:
   version "1.0.5"
-  resolved "https://registry.yarnpkg.com/path-parse/-/path-parse-1.0.5.tgz#3c1adf871ea9cd6c9431b6ea2bd74a0ff055c4c1"
+  resolved path-parse-1.0.5.tgz#3c1adf871ea9cd6c9431b6ea2bd74a0ff055c4c1
 
 path-root-regex@^0.1.0:
   version "0.1.2"
@@ -1366,7 +1370,7 @@ read-pkg@^1.0.0:
 
 readable-stream@^2.0.0, readable-stream@^2.0.1, readable-stream@^2.0.4, readable-stream@^2.0.5, readable-stream@^2.1.5:
   version "2.2.6"
-  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.2.6.tgz#8b43aed76e71483938d12a8d46c6cf1a00b1f816"
+  resolved readable-stream-2.2.6.tgz#8b43aed76e71483938d12a8d46c6cf1a00b1f816
   dependencies:
     buffer-shims "^1.0.0"
     core-util-is "~1.0.0"
@@ -1407,7 +1411,7 @@ regex-cache@^0.4.2:
 
 remove-trailing-separator@^1.0.1:
   version "1.0.1"
-  resolved "https://registry.yarnpkg.com/remove-trailing-separator/-/remove-trailing-separator-1.0.1.tgz#615ebb96af559552d4bf4057c8436d486ab63cc4"
+  resolved remove-trailing-separator-1.0.1.tgz#615ebb96af559552d4bf4057c8436d486ab63cc4
 
 repeat-element@^1.1.2:
   version "1.1.2"
@@ -1440,13 +1444,13 @@ resolve-url@~0.2.1:
 
 resolve@^1.1.6, resolve@^1.1.7:
   version "1.3.2"
-  resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.3.2.tgz#1f0442c9e0cbb8136e87b9305f932f46c7f28235"
+  resolved resolve-1.3.2.tgz#1f0442c9e0cbb8136e87b9305f932f46c7f28235
   dependencies:
     path-parse "^1.0.5"
 
 rimraf@^2.2.8:
   version "2.6.1"
-  resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-2.6.1.tgz#c2338ec643df7a1b7fe5c54fa86f57428a55f33d"
+  resolved rimraf-2.6.1.tgz#c2338ec643df7a1b7fe5c54fa86f57428a55f33d
   dependencies:
     glob "^7.0.5"
 
@@ -1588,7 +1592,7 @@ through2@2.X, through2@^2.0.0, through2@^2.0.3, through2@~2.0.0, through2@~2.0.1
 
 through2@^0.4.2:
   version "0.4.2"
-  resolved "https://registry.yarnpkg.com/through2/-/through2-0.4.2.tgz#dbf5866031151ec8352bb6c4db64a2292a840b9b"
+  resolved through2-0.4.2.tgz#dbf5866031151ec8352bb6c4db64a2292a840b9b
   dependencies:
     readable-stream "~1.0.17"
     xtend "~2.1.1"
@@ -1629,11 +1633,11 @@ trim-newlines@^1.0.0:
 
 typescript@^2.0.10:
   version "2.2.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.2.2.tgz#606022508479b55ffa368b58fee963a03dfd7b0c"
+  resolved typescript-2.2.2.tgz#606022508479b55ffa368b58fee963a03dfd7b0c
 
 ultron@~1.1.0:
   version "1.1.0"
-  resolved "https://registry.yarnpkg.com/ultron/-/ultron-1.1.0.tgz#b07a2e6a541a815fc6a34ccd4533baec307ca864"
+  resolved ultron-1.1.0.tgz#b07a2e6a541a815fc6a34ccd4533baec307ca864
 
 unc-path-regex@^0.1.0:
   version "0.1.2"
@@ -1664,7 +1668,7 @@ util-deprecate@~1.0.1:
 
 v8flags@^2.0.2:
   version "2.0.12"
-  resolved "https://registry.yarnpkg.com/v8flags/-/v8flags-2.0.12.tgz#73235d9f7176f8e8833fb286795445f7938d84e5"
+  resolved v8flags-2.0.12.tgz#73235d9f7176f8e8833fb286795445f7938d84e5
   dependencies:
     user-home "^1.1.1"
 
@@ -1745,7 +1749,7 @@ vinyl@^0.5.0:
 
 which@^1.2.12:
   version "1.2.14"
-  resolved "https://registry.yarnpkg.com/which/-/which-1.2.14.tgz#9a87c4378f03e827cecaf1acdf56c736c01c14e5"
+  resolved which-1.2.14.tgz#9a87c4378f03e827cecaf1acdf56c736c01c14e5
   dependencies:
     isexe "^2.0.0"
 
@@ -1755,7 +1759,7 @@ wrappy@1:
 
 ws@^2.2.2:
   version "2.2.2"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-2.2.2.tgz#aa26daf39c52b20ed716e3447f8641494a726b01"
+  resolved ws-2.2.2.tgz#aa26daf39c52b20ed716e3447f8641494a726b01
   dependencies:
     ultron "~1.1.0"
 
@@ -1765,7 +1769,7 @@ ws@^2.2.2:
 
 xtend@~2.1.1:
   version "2.1.2"
-  resolved "https://registry.yarnpkg.com/xtend/-/xtend-2.1.2.tgz#6efecc2a4dad8e6962c4901b337ce7ba87b5d28b"
+  resolved xtend-2.1.2.tgz#6efecc2a4dad8e6962c4901b337ce7ba87b5d28b
   dependencies:
     object-keys "~0.4.0"
 
