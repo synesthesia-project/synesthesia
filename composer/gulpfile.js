@@ -5,6 +5,7 @@ var gutil = require("gulp-util");
 var bower = require('gulp-bower');
 var sourcemaps = require('gulp-sourcemaps');
 var ts = require('gulp-typescript');
+var tslint = require('gulp-tslint');
 var typings = require("gulp-typings");
 var sass = require('gulp-sass');
 var runSequence = require('run-sequence');
@@ -12,6 +13,13 @@ var webpack = require('webpack');
 
 var tsProject = ts.createProject('src/scripts/ts/tsconfig.json');
 var extensionTsProject = ts.createProject('src/extension/ts/tsconfig.json');
+
+// Utility Functions
+
+function handleError(err) {
+  gutil.log("Build failed", err.message);
+  process.exit(1);
+}
 
 gulp.task('clean', function() {
   return gulp.src(['.tmp', 'dist'], {read: false})
@@ -49,6 +57,16 @@ gulp.task('extension-ts', function () {
         sourceRoot: '/src/extension/ts'
       }))
       .pipe(gulp.dest('dist/extension'));
+});
+
+gulp.task('tslint', function() {
+  return gulp.src(['src/**/*.ts', 'src/**/*.tsx'])
+  .pipe(tslint({
+    formatter: 'verbose',
+    configuration: '../tslint.json'
+  }))
+  .on('error', handleError)
+  .pipe(tslint.report());
 });
 
 gulp.task("webpack", ['bower', 'ts', 'copy-js'], function(callback) {

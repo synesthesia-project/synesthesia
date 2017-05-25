@@ -2,11 +2,19 @@ var gulp = require('gulp');
 var clean = require('gulp-clean');
 var sourcemaps = require('gulp-sourcemaps');
 var ts = require('gulp-typescript');
+var tslint = require('gulp-tslint');
 var runSequence = require('run-sequence');
 
 var tsProject = ts.createProject('src/ts/tsconfig.json');
 var demoTsProject = ts.createProject('src/demo/ts/tsconfig.json');
 var frontendTsProject = ts.createProject('src/frontend/ts/tsconfig.json');
+
+// Utility Functions
+
+function handleError(err) {
+  gutil.log("Build failed", err.message);
+  process.exit(1);
+}
 
 gulp.task('clean', function() {
   return gulp.src(['build'], {read: false})
@@ -35,6 +43,16 @@ gulp.task('frontend-ts', function () {
       .pipe(frontendTsProject())
       .pipe(sourcemaps.write())
       .pipe(gulp.dest('build/frontend/'));
+});
+
+gulp.task('tslint', function() {
+  return gulp.src(['src/**/*.ts'])
+  .pipe(tslint({
+    formatter: 'verbose',
+    configuration: '../tslint.json'
+  }))
+  .on('error', handleError)
+  .pipe(tslint.report());
 });
 
 gulp.task('demo', function () {

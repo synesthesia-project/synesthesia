@@ -6,8 +6,10 @@
     "gulp": "^3.9.1",
     "gulp-clean": "^0.3.2",
     "gulp-sourcemaps": "^1.6.0",
+    "gulp-tslint": "8.1.0",
     "gulp-typescript": "^3.1.4",
     "run-sequence": "^1.2.2",
+    "tslint": "5.3.2",
     "typescript": "^2.0.10"
   },
   "dependencies": {
