@@ -101,8 +101,8 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
           {this.state.companionAllowed ? null : <span className="companionDisabled" title="Run as a chrome extension to enable.">Tab Connector Disabled</span> }
           <span className="description">{this.state.description}</span>
           <span className="grow"/>
-          <button onClick={this.openFile}><FolderOpen/></button>
-          <button className={this.props.file.isJust() ? '' : 'disabled'} onClick={this.saveFile}><Save/></button>
+          <button onClick={this.openFile} title="Open"><FolderOpen/></button>
+          <button className={this.props.file.isJust() ? '' : 'disabled'} onClick={this.saveFile} title="Save"><Save/></button>
         </div>
       </externals.ShadowDOM>
     );
