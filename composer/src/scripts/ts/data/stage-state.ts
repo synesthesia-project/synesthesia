@@ -1,4 +1,4 @@
-import * as util from "../util/util";
+import * as util from '../util/util';
 
 /**
  * By what ratio should we zoom in / out by in a single step.
@@ -52,8 +52,8 @@ function modifyZoom(current: ZoomState, zoomOrigin: number, ratio: number): Zoom
   if (newStart < MIN_DELTA)
     return {startPoint: 0, endPoint: newSize};
   if (newEnd > 1 - MIN_DELTA)
-    return {startPoint: 1 - newSize, endPoint: 1}
-  return {startPoint: newStart, endPoint: newEnd}
+    return {startPoint: 1 - newSize, endPoint: 1};
+  return {startPoint: newStart, endPoint: newEnd};
 }
 
 function moveZoom(current: ZoomState, amnt: number): ZoomState {
@@ -64,8 +64,8 @@ function moveZoom(current: ZoomState, amnt: number): ZoomState {
   if (newStart < MIN_DELTA)
     return {startPoint: 0, endPoint: currentSize};
   if (newEnd > 1 - MIN_DELTA)
-    return {startPoint: 1 - currentSize, endPoint: 1}
-  return {startPoint: newStart, endPoint: newEnd}
+    return {startPoint: 1 - currentSize, endPoint: 1};
+  return {startPoint: newStart, endPoint: newEnd};
 }
 
 /**

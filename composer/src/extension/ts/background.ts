@@ -78,16 +78,17 @@ function connectionListener(port: chrome.runtime.Port) {
 
   // Setup Port Listeners
   port.onMessage.addListener(msg => {
-    switch(mode) {
+    switch (mode) {
       case Mode.UNKNOWN:
         switch ((msg as C.InitMessage).mode) {
-          case "tab":
+          case 'tab':
             initTab();
             return;
-          case "composer":
+          case 'composer':
             initComposer();
             return;
         }
+        throw new Error('unexpected mode');
       case Mode.TAB:
         handleTabMessage(msg as C.TabMessage);
         return;
@@ -97,7 +98,7 @@ function connectionListener(port: chrome.runtime.Port) {
     }
   });
   port.onDisconnect.addListener(() => {
-    switch(mode) {
+    switch (mode) {
       case Mode.UNKNOWN:
         return;
       case Mode.TAB:
@@ -107,8 +108,8 @@ function connectionListener(port: chrome.runtime.Port) {
         handleComposerClosed();
         return;
     }
-  })
-};
+  });
+}
 
 // chrome.runtime.onConnectExternal.addListener(connectionListener);
 chrome.runtime.onConnect.addListener(connectionListener);

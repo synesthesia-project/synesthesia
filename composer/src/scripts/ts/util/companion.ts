@@ -1,5 +1,5 @@
-import * as func from "../data/functional";
-import {PlayStateControls} from "../data/play-state";
+import * as func from '../data/functional';
+import {PlayStateControls} from '../data/play-state';
 
 type PlayState = Synesthesia.Companion.PlayState;
 
@@ -36,10 +36,10 @@ export class CompanionConnection {
       this.port.onDisconnect.addListener(this.onDisconnect);
 
       // Send initial message
-      const initMessage: Synesthesia.Companion.InitMessage = {mode: "composer"}
+      const initMessage: Synesthesia.Companion.InitMessage = {mode: 'composer'};
       this.port.postMessage(initMessage);
       this.port.postMessage({foo: 'bar'});
-    } catch(e) {
+    } catch (e) {
       onConnectionFailed();
       return;
     }

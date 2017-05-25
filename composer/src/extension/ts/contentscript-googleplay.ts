@@ -1,33 +1,8 @@
-/**
- * Wrap a function to ensure it doesn't get called more than every x amount of
- * milliseconds.
- */
-function throttle(fn: () => void, millis: number): () => void {
-  let last = 0;
-  let timeout: number | null = null;
-
-  const call = () => {
-    timeout = null;
-    fn();
-    last = new Date().getTime();
-  }
-
-  return () => {
-    const now = new Date().getTime();
-    if (now >= last + millis) {
-      call();
-    } else if (timeout === null) {
-      timeout = window.setTimeout(call, millis);
-    }
-  };
-}
-
 ($ => {
 
-  console.log("Inserted contentscript");
+  console.log('Inserted contentscript');
 
-  let update_timeout = 0,
-  $player = $('#player'),
+  let $player = $('#player'),
   lastState: C.PlayState | null = null,
   album_art_url: string | null = null,
   paperSliderObserverSet = false,
@@ -77,7 +52,6 @@ function throttle(fn: () => void, millis: number): () => void {
     // Create closure (on demand) for functions requiring control access
     // (created on demand and disposed of as elems change over the lifetime
     // of page)
-    let changed = false;
     const $buttons = $('.material-player-middle:first'),
           $play_pause = $buttons.children('[data-id=play-pause]:first'),
           $next = $buttons.children('[data-id=forward]:first'),
@@ -112,13 +86,16 @@ function throttle(fn: () => void, millis: number): () => void {
           // Album Art
           const new_album_art_url = $('#playerBarArt').attr('src');
 
-          if (album_art_url != new_album_art_url) {
-            convertImgToBase64(new_album_art_url, base64 => {
-              const msg: C.TabMessage = {
-                updateAlbumArt: {art: base64}
-              };
-              port.postMessage(msg)
-            }, "image/png");
+          if (album_art_url !== new_album_art_url) {
+            convertImgToBase64(
+              new_album_art_url,
+              base64 => {
+                const msg: C.TabMessage = {
+                  updateAlbumArt: {art: base64}
+                };
+                port.postMessage(msg);
+              },
+              'image/png');
           }
 
           album_art_url = new_album_art_url;
@@ -145,7 +122,7 @@ function throttle(fn: () => void, millis: number): () => void {
       toggle: () => $play_pause.click(),
       next: () => $next.click(),
       prev: () => $prev.click()
-    }
+    };
   }
 
   function stateChanged(oldState: C.PlayState | null, newState: C.PlayState | null) {
@@ -168,7 +145,7 @@ function throttle(fn: () => void, millis: number): () => void {
         (
           // If paused, state is different at all
           oldState.state === 'paused' &&
-          oldState.stateValue != newState.stateValue
+          oldState.stateValue !== newState.stateValue
         ) ||
         oldState.title !== newState.title ||
         oldState.artist !== newState.artist ||
@@ -180,10 +157,10 @@ function throttle(fn: () => void, millis: number): () => void {
   }
 
   function update_state() {
-    control().update_state()
+    control().update_state();
   }
 
-  function send_state(){
+  function send_state() {
     const msg: C.TabMessage = {
       updatePlayState: {state: lastState}
     };
@@ -193,11 +170,11 @@ function throttle(fn: () => void, millis: number): () => void {
   function convertImgToBase64(
     url: string,
     callback: (dataUrl: string) => void,
-    outputFormat: "image/png"){
+    outputFormat: 'image/png') {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       if (ctx === null)
-        throw new Error("null context");
+        throw new Error('null context');
       const img = new Image;
       img.crossOrigin = 'Anonymous';
       img.onload = () => {
@@ -210,4 +187,4 @@ function throttle(fn: () => void, millis: number): () => void {
       img.src = url;
     }
 
-  })(jQuery)
+  })(jQuery);

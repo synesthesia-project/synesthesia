@@ -3,4 +3,4 @@ export const KEYCODES = {
   ESC: 27,
   SPACE: 32,
   DEL: 46
-}
+};

@@ -1,12 +1,12 @@
-import {BaseComponent} from "./base";
-import * as React from "react";
+import {BaseComponent} from './base';
+import * as React from 'react';
 
-import * as func from "../data/functional";
-import * as stageState from "../data/stage-state";
-import {PlayState, PlayStateData, MediaPlaying} from "../data/play-state";
-import {displayMillis} from "../display/timing";
+import * as func from '../data/functional';
+import * as stageState from '../data/stage-state';
+import {PlayState, PlayStateData, MediaPlaying} from '../data/play-state';
+import {displayMillis} from '../display/timing';
 
-import {PlayerBar} from "./player-bar";
+import {PlayerBar} from './player-bar';
 
 import Pause = require('react-icons/lib/md/pause');
 import Play = require('react-icons/lib/md/play-arrow');
@@ -37,22 +37,22 @@ export class Player extends BaseComponent<PlayerProps, PlayerState> {
     super();
     this.state = {
       scrubbingPosition: func.none()
-    }
+    };
 
     // Bind callbacks & event listeners
     this.playPauseClicked = this.playPauseClicked.bind(this);
     this.updateScrubbingPosition = this.updateScrubbingPosition.bind(this);
   }
 
-  componentDidMount() {
+  public componentDidMount() {
     this.updatePlayerDisplay();
   }
 
-  componentDidUpdate() {
+  public componentDidUpdate() {
     this.updatePlayerDisplay();
   }
 
-  render() {
+  public render() {
     const playing = this.props.playState.caseOf({
       just: state => state.state.caseOf({
         left: () => false,
@@ -85,7 +85,7 @@ export class Player extends BaseComponent<PlayerProps, PlayerState> {
   }
 
   private $elapsedTime() {
-    if(!this._$elapsedTime)
+    if (!this._$elapsedTime)
       this._$elapsedTime = this.$().find('.elapsed-time');
     return this._$elapsedTime;
   }
@@ -123,7 +123,7 @@ export class Player extends BaseComponent<PlayerProps, PlayerState> {
         none: () => new Date().getTime() - playingState.effectiveStartTimeMillis
       });
       this.updateElapsedText(playState, elapsed);
-    }
+    };
     // Pick a nice interval that will show the milliseconds updating
     this.updateInterval = setInterval(updater, 16);
     updater();

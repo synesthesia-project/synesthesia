@@ -1,11 +1,11 @@
-import {BaseComponent} from "./base";
-import * as React from "react";
+import {BaseComponent} from './base';
+import * as React from 'react';
 
-import * as file from "../data/file";
-import * as func from "../data/functional";
-import * as storage from "../util/storage";
-import {PlayStateData, PlayState, PlayStateControls, MediaPaused, MediaPlaying} from "../data/play-state";
-import {CompanionConnection} from "../util/companion";
+import * as file from '../data/file';
+import * as func from '../data/functional';
+import * as storage from '../util/storage';
+import {PlayStateData, PlayState, PlayStateControls, MediaPaused, MediaPlaying} from '../data/play-state';
+import {CompanionConnection} from '../util/companion';
 
 import Save = require('react-icons/lib/md/save');
 import FolderOpen = require('react-icons/lib/md/folder-open');
@@ -51,7 +51,7 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
       goToTime: (timeMillis: number) => {
         this.$audio().currentTime = timeMillis / 1000;
       }
-    }
+    };
 
     // Bind callbacks & event listeners
     this.loadAudioFile = this.loadAudioFile.bind(this);
@@ -69,7 +69,7 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
   public saveFile() {
     this.props.file.fmap(file => {
       storage.saveStringAsFile(JSON.stringify(file), 'song.scue');
-    })
+    });
   }
 
   public openFile() {
@@ -80,7 +80,7 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
     });
   }
 
-  render() {
+  public render() {
     return (
       <externals.ShadowDOM>
         <div>
@@ -93,12 +93,15 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
             onPause={this.updatePlayState}
             />
           <button className={
-              "connectToCompanion" +
+              'connectToCompanion' +
               (this.state.companion.isJust() ? ' pressed' : '') +
               (this.state.companionAllowed ? '' : ' disabled')} onClick={this.toggleCompanion}>
             <Tab/> Connect To Tabs
           </button>
-          {this.state.companionAllowed ? null : <span className="companionDisabled" title="Run as a chrome extension to enable.">Tab Connector Disabled</span> }
+          {this.state.companionAllowed ?
+            null :
+            <span className="companionDisabled" title="Run as a chrome extension to enable.">Tab Connector Disabled</span>
+          }
           <span className="description">{this.state.description}</span>
           <span className="grow"/>
           <button onClick={this.openFile} title="Open"><FolderOpen/></button>
@@ -124,7 +127,7 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
       audio.src = URL.createObjectURL(file);
       audio.playbackRate = 1;
     } else {
-      console.error("no files");
+      console.error('no files');
     }
   }
 

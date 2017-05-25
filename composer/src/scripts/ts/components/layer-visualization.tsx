@@ -1,10 +1,7 @@
-import {BaseComponent} from "./base";
-import * as React from "react";
-import * as file from "../data/file";
-import * as selection from "../data/selection";
-import * as types from "../util/types";
-import * as stageState from "../data/stage-state";
-import * as util from "../util/util";
+import {BaseComponent} from './base';
+import * as React from 'react';
+import * as file from '../data/file';
+import * as util from '../util/util';
 
 export interface LayerVisualizationProps {
   layer: file.AnyLayer;
@@ -36,8 +33,8 @@ export class LayerVisualization extends BaseComponent<LayerVisualizationProps, {
       this.processedLayerEvents = file.switchLayer(this.currentLayer, {
         percussion: this.processPercussionLayerEvents,
         tones: layer => []
-      })
-      console.debug("processed", this.currentLayer, this.processedLayerEvents);
+      });
+      console.debug('processed', this.currentLayer, this.processedLayerEvents);
     }
   }
 
@@ -102,13 +99,13 @@ export class LayerVisualization extends BaseComponent<LayerVisualizationProps, {
         width
       };
     }
-    throw new Error("getCurrentState() called for inactive event");
+    throw new Error('getCurrentState() called for inactive event');
   }
 
-  render() {
+  public render() {
     this.processLayerIfNeeded();
     const states = this.getCurrentEvents().map(e => this.getCurrentState(e));
-    const width = states.length == 0 ? 0 : Math.max.apply(null, states.map(s => s.width));
+    const width = states.length === 0 ? 0 : Math.max.apply(null, states.map(s => s.width));
     return (
       <externals.ShadowDOM>
         <div>

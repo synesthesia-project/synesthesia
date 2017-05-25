@@ -1,12 +1,11 @@
-import {BaseComponent} from "./base";
-import * as React from "react";
-import * as file from "../data/file";
-import * as selection from "../data/selection";
-import * as func from "../data/functional";
-import * as text from "../display/text";
-import * as fileManipulation from "../data/file-manipulation";
-import * as types from "../util/types";
-import {DelayedPropigationInput} from "./util/input";
+import {BaseComponent} from './base';
+import * as React from 'react';
+import * as file from '../data/file';
+import * as selection from '../data/selection';
+import * as text from '../display/text';
+import * as fileManipulation from '../data/file-manipulation';
+import * as types from '../util/types';
+import {DelayedPropigationInput} from './util/input';
 
 import Delete = require('react-icons/lib/md/delete');
 
@@ -51,7 +50,7 @@ export class EventProperties extends BaseComponent<EventPropertiesProps, {}> {
     ]);
   }
 
-  render() {
+  public render() {
     const selectedEvents = this.props.selection.events.length;
     return (
       <externals.ShadowDOM>

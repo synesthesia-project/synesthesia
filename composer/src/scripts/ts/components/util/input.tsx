@@ -1,5 +1,5 @@
-import * as React from "react";
-import {KEYCODES} from "../../util/input";
+import * as React from 'react';
+import {KEYCODES} from '../../util/input';
 
 interface PropertyInputProperties {
   for?: string;
@@ -43,20 +43,21 @@ export class DelayedPropigationInput extends React.Component<PropertyInputProper
   }
 
   private onBlur(e: React.FocusEvent<HTMLInputElement>) {
-    const val = Number(e.currentTarget.value);
     this.changing = true;
     this.props.onChange(e.currentTarget.value);
     setTimeout(() => this.changing = false, 0);
   }
 
   public render() {
-    return <input
-      ref={i => this.ref = i}
-      htmlFor={this.props.for}
-      type={this.props.type}
-      defaultValue={this.props.value}
-      onKeyDown={this.onKeyDown}
-      onBlur={this.onBlur} />
+    return (
+      <input
+        ref={i => this.ref = i}
+        htmlFor={this.props.for}
+        type={this.props.type}
+        defaultValue={this.props.value}
+        onKeyDown={this.onKeyDown}
+        onBlur={this.onBlur} />
+    );
   }
 
 }

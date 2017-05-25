@@ -16,7 +16,7 @@
       "variables-before-functions"
     ],
     "no-arg": true,
-    "no-bitwise": true,
+    "no-bitwise": false,
     "no-construct": true,
     "no-debugger": true,
     "no-duplicate-variable": true,

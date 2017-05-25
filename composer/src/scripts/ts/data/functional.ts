@@ -1,17 +1,17 @@
 // Maybe
 
 export abstract class Maybe<T> {
-  abstract caseOf<Output>(cases: {none: () => Output, just: (value: T) => Output}): Output;
-  abstract fmap<Output>(map: (value: T) => Output): Maybe<Output>;
+  public abstract caseOf<Output>(cases: {none: () => Output, just: (value: T) => Output}): Output;
+  public abstract fmap<Output>(map: (value: T) => Output): Maybe<Output>;
 
-  isJust() {
+  public isJust() {
     return this.caseOf({
       just: () => true,
       none: () => false
     });
   }
 
-  isNone() {
+  public isNone() {
     return !this.isJust();
   }
 }
@@ -33,7 +33,7 @@ class Just<T> extends Maybe<T> {
   constructor(value: T) {
     super();
     if (value === null || value === undefined) {
-      const err = new Error("value must not be null or undefined");
+      const err = new Error('value must not be null or undefined');
       console.error(err);
       throw err;
     }

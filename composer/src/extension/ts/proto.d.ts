@@ -19,7 +19,7 @@ declare namespace Synesthesia {
     }
 
     interface InitMessage {
-      mode: "tab" | "composer";
+      mode: 'tab' | 'composer';
     }
 
     interface TabMessage {

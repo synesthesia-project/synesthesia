@@ -1,12 +1,12 @@
-import {BaseComponent} from "./base";
-import {LayerItems} from "./layer-items";
-import {LayerVisualization} from "./layer-visualization";
-import * as func from "../data/functional";
-import * as React from "react";
-import * as file from "../data/file";
-import * as selection from "../data/selection";
-import * as types from "../util/types";
-import * as stageState from "../data/stage-state";
+import {BaseComponent} from './base';
+import {LayerItems} from './layer-items';
+import {LayerVisualization} from './layer-visualization';
+import * as func from '../data/functional';
+import * as React from 'react';
+import * as file from '../data/file';
+import * as selection from '../data/selection';
+import * as types from '../util/types';
+import * as stageState from '../data/stage-state';
 
 import Keyboard = require('react-icons/lib/md/keyboard');
 import MusicNote = require('react-icons/lib/md/music-note');
@@ -49,9 +49,9 @@ export class Layer extends BaseComponent<LayerProps, LayerState> {
     });
   }
 
-  render() {
+  public render() {
     const zoomMargin = stageState.relativeZoomMargins(this.props.zoom);
-    let binding = "";
+    let binding = '';
     this.props.midiLayerBindings.map(b => {
       if (b.layer === this.props.layerKey)
         binding = b.note.toString();
@@ -62,8 +62,10 @@ export class Layer extends BaseComponent<LayerProps, LayerState> {
         <div>
           <link rel="stylesheet" type="text/css" href="styles/components/layer.css"/>
           <div className="side">
-            <span className={"toggle-select-button" + (this.isSelected() ? " selected" : "")} onClick={this.toggleSelect}><Keyboard /></span>
-            <span className={"bind-button" + (this.isBinding() ? " binding" : "")} onClick={this.requestBind}>
+            <span
+              className={'toggle-select-button' + (this.isSelected() ? ' selected' : '')}
+              onClick={this.toggleSelect}><Keyboard /></span>
+            <span className={'bind-button' + (this.isBinding() ? ' binding' : '')} onClick={this.requestBind}>
               <MusicNote/>{binding ? (': ' + binding) : ''}
             </span>
           </div>

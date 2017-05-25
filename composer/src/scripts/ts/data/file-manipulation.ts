@@ -1,6 +1,6 @@
-import * as file from "./file";
-import * as selection from "./selection";
-import * as util from "../util/util";
+import * as file from './file';
+import * as selection from './selection';
+import * as util from '../util/util';
 
 /*
  * Build up a data structure for quick lookup of selected events
@@ -49,7 +49,7 @@ export function updateStartTimeForSelectedEvents(
 
   function convertLayer<K, S, V>(
       selectedEvents: Set<number>,
-      layer: file.CueFileLayer<K, S, V>) : file.CueFileLayer<K, S, V> {
+      layer: file.CueFileLayer<K, S, V>): file.CueFileLayer<K, S, V> {
     return {
       kind: layer.kind,
       settings: layer.settings,
@@ -63,7 +63,7 @@ export function updateStartTimeForSelectedEvents(
           return e;
         }
       })
-    }
+    };
   }
 
   const newLayers = cueFile.layers.map((layer, i) => {

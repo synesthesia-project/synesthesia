@@ -1,4 +1,4 @@
-import {Maybe, Either} from "./functional";
+import {Maybe, Either} from './functional';
 
 export interface PlayStateControls {
   /**

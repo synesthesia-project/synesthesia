@@ -1,13 +1,13 @@
-import {BaseComponent} from "./base";
-import {Layer} from "./layer";
-import {Timeline} from "./timeline";
-import * as React from "react";
-import * as func from "../data/functional";
-import * as file from "../data/file";
-import * as selection from "../data/selection";
-import * as types from "../util/types";
-import * as stageState from "../data/stage-state";
-import * as playState from "../data/play-state";
+import {BaseComponent} from './base';
+import {Layer} from './layer';
+import {Timeline} from './timeline';
+import * as React from 'react';
+import * as func from '../data/functional';
+import * as file from '../data/file';
+import * as selection from '../data/selection';
+import * as types from '../util/types';
+import * as stageState from '../data/stage-state';
+import * as playState from '../data/play-state';
 
 export interface LayersAndTimelineProps {
   // Properties
@@ -40,15 +40,15 @@ export class LayersAndTimeline extends BaseComponent<LayersAndTimelineProps, Lay
     this.state = {
       positionMillis: 0,
       mousePosition: func.none()
-    }
+    };
     this.updateMouseHover = this.updateMouseHover.bind(this);
   }
 
-  componentDidMount() {
+  public componentDidMount() {
     this.updatePositionInterval(this.props);
   }
 
-  componentWillReceiveProps(newProps: LayersAndTimelineProps) {
+  public componentWillReceiveProps(newProps: LayersAndTimelineProps) {
     this.updatePositionInterval(newProps);
   }
 
@@ -56,12 +56,12 @@ export class LayersAndTimeline extends BaseComponent<LayersAndTimelineProps, Lay
     cancelAnimationFrame(this.updateInterval);
     // Start a re-rendering interval if currently playing
     newProps.playState.fmap(state => state.state.caseOf<void>({
-      left: pausedState => {},
+      left: pausedState => { /* do-nothing */ },
       right: playingState => {
         const update = () => {
           this.updatePosition(newProps);
           this.updateInterval = requestAnimationFrame(update);
-        }
+        };
         this.updateInterval = requestAnimationFrame(update);
       }
     }));
@@ -88,7 +88,7 @@ export class LayersAndTimeline extends BaseComponent<LayersAndTimelineProps, Lay
     this.setState({mousePosition});
   }
 
-  render() {
+  public render() {
     let layers = this.props.file.caseOf({
       just: cueFile => cueFile.layers.map((layer, i) =>
         <Layer

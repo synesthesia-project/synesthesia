@@ -1,4 +1,4 @@
-import * as util from "../util/util";
+import * as util from '../util/util';
 
 export interface CueFile {
   lengthMillis: number;
@@ -61,7 +61,7 @@ export function switchLayer<O>(
     return cases.percussion(layer);
   if (isTonesLayer(layer))
     return cases.tones(layer);
-  throw new Error("Unrecognized Layer");
+  throw new Error('Unrecognized Layer');
 }
 
 export function convertLayer<L, K, V>(l: CueFileLayer<L, K, V>, f: (l: CueFileLayer<L, K, V>) => CueFileLayer<L, K, V>): AnyLayer {
@@ -111,13 +111,13 @@ export function addLayerItem(file: CueFile, layer: number, timestampMillis: numb
         kind: l.kind as any,
         settings: l.settings,
         events
-      }
+      };
     })
   });
 }
 
 // File Validation
 export function validateFile(obj: any) {
-  //TODO: actually validate, for now assume it's fine
+  // TODO: actually validate, for now assume it's fine
   return util.deepFreeze(obj) as CueFile;
 }

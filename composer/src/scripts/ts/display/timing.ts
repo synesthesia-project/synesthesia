@@ -9,8 +9,8 @@ export function displayMillis(totalMilliseconds: number): string {
   remaining -= (seconds * 1000);
   const millis = remaining | 0;
   return (
-    mins + ":" +
-    (seconds < 10 ? '0' : '') + seconds + ":" +
+    mins + ':' +
+    (seconds < 10 ? '0' : '') + seconds + ':' +
     (millis < 10 ? '00' : millis < 100 ? '0' : '') + millis
   );
 }

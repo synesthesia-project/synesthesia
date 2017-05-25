@@ -1,12 +1,12 @@
-import {BaseComponent} from "./base";
-import * as React from "react";
+import {BaseComponent} from './base';
+import * as React from 'react';
 
-import * as func from "../data/functional";
-import * as playState from "../data/play-state";
-import * as stageState from "../data/stage-state";
-import * as file from "../data/file";
-import * as types from "../util/types";
-import * as util from "../util/util";
+import * as func from '../data/functional';
+import * as playState from '../data/play-state';
+import * as stageState from '../data/stage-state';
+import * as file from '../data/file';
+import * as types from '../util/types';
+import * as util from '../util/util';
 
 import Add = require('react-icons/lib/md/add');
 
@@ -37,7 +37,7 @@ export class Timeline extends BaseComponent<TimelineProps, TimelineState> {
     this.mouseLeave = this.mouseLeave.bind(this);
   }
 
-  render() {
+  public render() {
     const zoomMargin = stageState.relativeZoomMargins(this.props.zoom);
 
     const playerPosition = this.props.positionMillis / this.props.file.lengthMillis;

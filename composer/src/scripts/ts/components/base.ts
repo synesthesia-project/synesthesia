@@ -1,5 +1,5 @@
-import * as React from "react";
-import * as ReactDOM from "react-dom";
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 
 export abstract class BaseComponent<Props, State> extends React.Component<Props, State> {
 

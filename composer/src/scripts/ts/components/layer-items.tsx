@@ -1,9 +1,8 @@
-import {BaseComponent} from "./base";
-import * as React from "react";
-import * as file from "../data/file";
-import * as selection from "../data/selection";
-import * as types from "../util/types";
-import * as stageState from "../data/stage-state";
+import {BaseComponent} from './base';
+import * as React from 'react';
+import * as file from '../data/file';
+import * as selection from '../data/selection';
+import * as types from '../util/types';
 
 export interface LayerItemsProps {
   // Properties
@@ -21,7 +20,7 @@ export class LayerItems extends BaseComponent<LayerItemsProps, {}> {
     super();
   }
 
-  render() {
+  public render() {
     // Items that are selected for this layer
     const selectedEvents = new Set(
       this.props.selection.events
@@ -38,13 +37,19 @@ export class LayerItems extends BaseComponent<LayerItemsProps, {}> {
         length = this.props.layer.settings.defaultLengthMillis;
       }
       const style: React.CSSProperties = {
-        left: (item.timestampMillis / this.props.file.lengthMillis) * 100 + "%",
-        width: (length / this.props.file.lengthMillis) * 100 + "%",
+        left: (item.timestampMillis / this.props.file.lengthMillis) * 100 + '%',
+        width: (length / this.props.file.lengthMillis) * 100 + '%',
       };
       const onClick = (e: React.MouseEvent<{}>) => {
         this.props.updateSelection(s => selection.handleItemSelectionChange(s, e, this.props.layerKey, [i]));
-      }
-      return <div key={i} className={"item" + (selectedEvents.has(i) ? ' selected' : '')} style={style} onClick={onClick}></div>
+      };
+      return (
+        <div
+          key={i}
+          className={'item' + (selectedEvents.has(i) ? ' selected' : '')}
+          style={style}
+          onClick={onClick} />
+        );
     });
     return (
       <externals.ShadowDOM>

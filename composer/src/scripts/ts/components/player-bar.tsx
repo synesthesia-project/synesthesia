@@ -1,11 +1,11 @@
-import {BaseComponent} from "./base";
-import * as React from "react";
+import {BaseComponent} from './base';
+import * as React from 'react';
 
-import * as util from "../util/util";
+import * as util from '../util/util';
 
-import * as func from "../data/functional";
-import * as stageState from "../data/stage-state";
-import {PlayState, PlayStateData, MediaPlaying} from "../data/play-state";
+import * as func from '../data/functional';
+import * as stageState from '../data/stage-state';
+import {PlayState, PlayStateData, MediaPlaying} from '../data/play-state';
 
 export interface PlayerBarState {
   /**
@@ -44,15 +44,15 @@ export class PlayerBar extends BaseComponent<PlayerBarProps, PlayerBarState> {
     this.onMouseUp = this.onMouseUp.bind(this);
   }
 
-  componentDidMount() {
+  public componentDidMount() {
     this.updatePlayerDisplay();
   }
 
-  componentDidUpdate() {
+  public componentDidUpdate() {
     this.updatePlayerDisplay();
   }
 
-  render() {
+  public render() {
     return (
       <externals.ShadowDOM>
         <div>
@@ -160,7 +160,7 @@ export class PlayerBar extends BaseComponent<PlayerBarProps, PlayerBarState> {
       const elapsed = now - playingState.effectiveStartTimeMillis;
       this.updateBarPosition(elapsed / playState.durationMillis);
       nextFrame = this.updateInterval = requestAnimationFrame(updater);
-    }
+    };
     // Pick a nice interval that will show the milliseconds updating
     nextFrame = this.updateInterval = requestAnimationFrame(updater);
     updater();

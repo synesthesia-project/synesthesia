@@ -1,5 +1,5 @@
-import * as React from "react";
-import * as util from "../util/util";
+import * as React from 'react';
+import * as util from '../util/util';
 
 type ItemsSelection = {layer: number, index: number}[];
 

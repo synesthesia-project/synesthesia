@@ -52,7 +52,7 @@ export class Midi {
   }
 
   private onMidiStateChange(change: WebMidi.MIDIConnectionEvent) {
-    if (isMidiInput(change.port)){
+    if (isMidiInput(change.port)) {
       this.setupOrTeardownMidiInput(change.port);
     }
   }
@@ -70,14 +70,14 @@ export class Midi {
   private onMidiMessageClosure(input: WebMidi.MIDIInput) {
     return (msg: WebMidi.MIDIMessageEvent) => {
       const data = msg.data,
-            cmd = data[0] >> 4,
-            channel = data[0] & 0xf,
+            // cmd = data[0] >> 4,
+            // channel = data[0] & 0xf,
             type = data[0] & 0xf0, // channel agnostic message type. Thanks, Phil Burk.
             note = data[1],
             velocity = data[2];
       switch (type) {
         case 144: // noteOn message
-           if(velocity > 0) {
+           if (velocity > 0) {
              this.listeners.forEach(l => l.noteOn(input.id, note, velocity));
            } else {
              this.listeners.forEach(l => l.noteOff(input.id, note));
@@ -87,6 +87,6 @@ export class Midi {
           this.listeners.forEach(l => l.noteOff(input.id, note));
           break;
       }
-    }
+    };
   }
 }

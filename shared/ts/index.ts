@@ -1,3 +1,3 @@
-import * as protocol from "./protocol";
+import * as protocol from './protocol';
 
 export {protocol};

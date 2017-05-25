@@ -1,25 +1,24 @@
-import {BaseComponent} from "./base";
-import * as React from "react";
-import * as ReactDOM from "react-dom";
+import {BaseComponent} from './base';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 
 import * as shared from '../shared';
 
-import * as func from "../data/functional";
-import {PlayState, PlayStateData} from "../data/play-state";
+import * as func from '../data/functional';
+import {PlayState, PlayStateData} from '../data/play-state';
 
-import {FileSource} from "./file-source";
-import {Player} from "./player";
-import {LayersAndTimeline} from "./layers-and-timeline";
-import {Timeline} from "./timeline";
-import {EventProperties} from "./item-properties";
+import {FileSource} from './file-source';
+import {Player} from './player';
+import {LayersAndTimeline} from './layers-and-timeline';
+import {Timeline} from './timeline';
+import {EventProperties} from './item-properties';
 
-import * as file from "../data/file";
-import * as selection from "../data/selection";
-import * as types from "../util/types";
-import * as stageState from "../data/stage-state"
-import * as fileManipulation from "../data/file-manipulation";
-import * as midi from "../midi/midi";
-import {KEYCODES} from "../util/input";
+import * as file from '../data/file';
+import * as selection from '../data/selection';
+import * as stageState from '../data/stage-state';
+import * as fileManipulation from '../data/file-manipulation';
+import * as midi from '../midi/midi';
+import {KEYCODES} from '../util/input';
 
 
 export interface StageProps {  }
@@ -50,7 +49,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
       state: stageState.initialState(),
       bindingLayer: func.none(),
       midiLayerBindings: []
-    }
+    };
 
     // Bind callbacks & event listeners
     this.playStateUpdated = this.playStateUpdated.bind(this);
@@ -63,14 +62,14 @@ export class Stage extends BaseComponent<StageProps, StageState> {
     shared.protocol.messages.test();
   }
 
-  componentDidMount() {
+  public componentDidMount() {
     // Called by react when mounted
     this.setupWindowListeners();
     this.setupMIDIListeners();
     this.midi.init();
   }
 
-  componentWillUnmount() {
+  public componentWillUnmount() {
     // Called by react when about to be unmounted
   }
 
@@ -78,7 +77,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
 
     $(window).on('keydown', (e) => {
       // Add items to selected layers
-      if (e.keyCode == KEYCODES.ENTER) {
+      if (e.keyCode === KEYCODES.ENTER) {
         this.addItemsToSelectedLayers();
         e.preventDefault();
         return;
@@ -88,19 +87,19 @@ export class Stage extends BaseComponent<StageProps, StageState> {
 
     $(window).on('keyup', (e) => {
       // Toggle Play / Pause
-      if (e.keyCode == KEYCODES.SPACE) {
+      if (e.keyCode === KEYCODES.SPACE) {
         this.state.playState.fmap(state => state.controls.toggle());
         e.preventDefault();
         return;
       }
       // Clear Selected Events
-      if (e.keyCode == KEYCODES.ESC) {
+      if (e.keyCode === KEYCODES.ESC) {
         this.updateSelection(s => selection.clearSelectedEvents(s));
         e.preventDefault();
         return;
       }
       // Delete Selected Events (if not focussed on something else)
-      if (e.keyCode == KEYCODES.DEL && document.activeElement === document.body) {
+      if (e.keyCode === KEYCODES.DEL && document.activeElement === document.body) {
         this.updateCueFileAndSelection(([f, s]) => [
           fileManipulation.deleteSelectedEvents(f, s),
           selection.clearSelectedEvents(s)
@@ -128,8 +127,6 @@ export class Stage extends BaseComponent<StageProps, StageState> {
 
       const deltaY = (e.originalEvent as WheelEvent).deltaY;
       const deltaX = (e.originalEvent as WheelEvent).deltaX;
-
-      let state: stageState.StageState;
 
       // Handle zooming in + out
 
@@ -161,7 +158,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
           this.setState({state: stageState.zoomMoveRight(this.state.state)} as StageState);
         return;
       }
-    })
+    });
   }
 
   private setupMIDIListeners() {
@@ -189,11 +186,11 @@ export class Stage extends BaseComponent<StageProps, StageState> {
                       file.addLayerItem(cueFile, b.layer, timestampMillis)
                     )});
                   });
-                })
+                });
               }
-            })
+            });
           }
-        })
+        });
       },
       noteOff: (input, note) => console.debug('stage noteOff', input, note)
     });
@@ -208,7 +205,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
         }
         this.setState({cueFile: func.just(cueFile)} as StageState);
       });
-    })
+    });
   }
 
   private currentTimestamp(state: PlayStateData) {
@@ -229,10 +226,10 @@ export class Stage extends BaseComponent<StageProps, StageState> {
         just: existingFile => file.setLength(existingFile, playState.durationMillis)
       }));
       this.setState({cueFile} as StageState);
-    })
+    });
   }
 
-  private fileLoaded(file: file.CueFile) : void {
+  private fileLoaded(file: file.CueFile): void {
     this.setState({cueFile: func.just(file)});
   }
 
@@ -250,14 +247,14 @@ export class Stage extends BaseComponent<StageProps, StageState> {
     this.state.cueFile.fmap(cueFile => {
       const result = mutator([cueFile, this.state.selection]);
       this.setState({cueFile: func.just(result[0]), selection: result[1]} as StageState);
-    })
+    });
   }
 
   private requestBindingForLayer(layerKey: number) {
     this.setState({bindingLayer: func.just(layerKey)});
   }
 
-  render() {
+  public render() {
 
     return (
       <externals.ShadowDOM>
@@ -302,6 +299,6 @@ export class Stage extends BaseComponent<StageProps, StageState> {
 export function setup() {
   ReactDOM.render(
     <Stage />,
-    document.getElementById("root")
+    document.getElementById('root')
   );
 }
