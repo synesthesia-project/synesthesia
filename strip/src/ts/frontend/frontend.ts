@@ -8,6 +8,8 @@ import {StripBehavior} from "../behavior/behavior";
 import {SynesthesiaConsumerProtocol} from "./synesthesia-consumer";
 import {StripControllerProtocol} from "./strip-controller";
 
+import * as shared from '../shared';
+
 export class Frontend {
 
   private readonly server: http.Server;
@@ -62,6 +64,8 @@ export class Frontend {
     console.log("Starting Frontend");
     this.server.listen(8121);
     console.log('Frontend HTTP Server listening on http://localhost:8121/');
+
+    shared.protocol.messages.test();
 
     const wss = new WebSocket.Server({
       perMessageDeflate: false,

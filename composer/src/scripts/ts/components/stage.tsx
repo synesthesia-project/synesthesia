@@ -2,6 +2,8 @@ import {BaseComponent} from "./base";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
+import * as shared from '../shared';
+
 import * as func from "../data/functional";
 import {PlayState, PlayStateData} from "../data/play-state";
 
@@ -57,6 +59,8 @@ export class Stage extends BaseComponent<StageProps, StageState> {
     this.updateSelection = this.updateSelection.bind(this);
     this.updateCueFileAndSelection = this.updateCueFileAndSelection.bind(this);
     this.requestBindingForLayer = this.requestBindingForLayer.bind(this);
+
+    shared.protocol.messages.test();
   }
 
   componentDidMount() {
