@@ -1,6 +1,6 @@
 declare var consts: {
   numberOfLeds: number;
-}
+};
 
 (() => {
 
@@ -19,7 +19,7 @@ declare var consts: {
 
   function updateLeds(arr: Uint8Array) {
     if (leds.length * 3 !== arr.length) {
-      throw new Error("unexpected array length: " + arr.length);
+      throw new Error('unexpected array length: ' + arr.length);
     }
     for (let i = 0; i < leds.length; i ++) {
       const j = i * 3;
@@ -34,14 +34,14 @@ declare var consts: {
     }
   }
 
-  var socket = new WebSocket("ws://localhost:8126/");
+  const socket = new WebSocket('ws://localhost:8126/');
 
   socket.onmessage = e => {
     const fileReader = new FileReader();
     fileReader.onload = result => {
       updateLeds(new Uint8Array(fileReader.result));
-    }
+    };
     fileReader.readAsArrayBuffer(e.data);
-  }
+  };
 
 })();

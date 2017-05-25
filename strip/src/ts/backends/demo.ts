@@ -25,11 +25,10 @@ export class DemoBackend extends LEDStripBackend {
     function sendDemoFile(file: string, response: http.ServerResponse, contentType: string) {
       fs.readFile(path.join(staticDir, file), function(error, content) {
         if (error) {
-          if(error.code == 'ENOENT'){
+          if (error.code === 'ENOENT') {
             response.writeHead(404, { 'Content-Type': 'text/plain' });
             response.end('file not found', 'utf-8');
-          }
-          else {
+          } else {
             response.writeHead(500, { 'Content-Type': 'text/plain' });
             response.end('Error', 'utf-8');
             console.error(error);
@@ -78,7 +77,7 @@ export class DemoBackend extends LEDStripBackend {
         } else {
           this.websocketListeners = this.websocketListeners.filter(f => f !== sendData);
         }
-      }
+      };
       this.websocketListeners.push(sendData);
       // Send initial buffer if set
       if (this.buffer) {
@@ -87,7 +86,7 @@ export class DemoBackend extends LEDStripBackend {
       // connection.on('message', msg => {});
       connection.onclose = () => {
         this.websocketListeners = this.websocketListeners.filter(f => f !== sendData);
-      }
+      };
     });
 
   }

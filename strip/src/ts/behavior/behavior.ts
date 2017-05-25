@@ -1,5 +1,5 @@
-import {LEDStripBackend} from "../backends/backends";
-import {Color, Colors} from "../data/colors";
+import {LEDStripBackend} from '../backends/backends';
+import {Color, Colors} from '../data/colors';
 
 const MAX_SPARKLINESS = 10;
 
@@ -143,9 +143,9 @@ export class StripBehavior {
             positionSpeed: a.positionSpeed,
             life: a.life + a.lifeSpeed,
             lifeSpeed: a.lifeSpeed
-          }
+          };
         })
-        .filter(a => a.life < 1)
+        .filter(a => a.life < 1);
 
     const displayArtifacts = (artifacts: Artifact[], color: Color) =>
       artifacts.map(a => {
@@ -231,13 +231,13 @@ export class StripBehavior {
         const pixel = Math.min(leds.length - 1, Math.floor(s.pos * leds.length));
         const opacity = (s.life < 0.5 ? (s.life) : (1-s.life)) * 2;
         leds[pixel] = leds[pixel].overlay(this.state.sparkleColor, opacity);
-      })
+      });
 
       // Update Strip
       for (let i = 0; i < leds.length; i++)
         this.setPixel(i, leds[i]);
       this.backend.updateStrip();
-    }
+    };
     this.intervalID = setInterval(calculateAndSendPattern, 10);
   }
 

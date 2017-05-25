@@ -4,9 +4,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as WebSocket from 'ws';
 
-import {StripBehavior} from "../behavior/behavior";
-import {SynesthesiaConsumerProtocol} from "./synesthesia-consumer";
-import {StripControllerProtocol} from "./strip-controller";
+import {StripBehavior} from '../behavior/behavior';
+import {SynesthesiaConsumerProtocol} from './synesthesia-consumer';
+import {StripControllerProtocol} from './strip-controller';
 
 import * as shared from '../shared';
 
@@ -23,11 +23,10 @@ export class Frontend {
     function sendDemoFile(file: string, response: http.ServerResponse, contentType: string) {
       fs.readFile(path.join(staticDir, file), function(error, content) {
         if (error) {
-          if(error.code == 'ENOENT'){
+          if (error.code === 'ENOENT') {
             response.writeHead(404, { 'Content-Type': 'text/plain' });
             response.end('file not found', 'utf-8');
-          }
-          else {
+          } else {
             response.writeHead(500, { 'Content-Type': 'text/plain' });
             response.end('Error', 'utf-8');
             console.error(error);
@@ -61,7 +60,7 @@ export class Frontend {
   }
 
   public start() {
-    console.log("Starting Frontend");
+    console.log('Starting Frontend');
     this.server.listen(8121);
     console.log('Frontend HTTP Server listening on http://localhost:8121/');
 

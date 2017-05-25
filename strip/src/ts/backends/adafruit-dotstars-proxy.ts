@@ -1,5 +1,5 @@
 import * as net from 'net';
-import {LEDStripBackend} from "./backends";
+import {LEDStripBackend} from './backends';
 
 /**
  * An LED Backend controller that connects to a running strip-proxy.py
@@ -20,7 +20,7 @@ export class AdafruitDotstarsProxyBackend extends LEDStripBackend {
 
   public setupBuffer(buffer: Buffer) {
     if (buffer.length !== this.numberOfPixels * 3) {
-      throw new Error("Unexpected Buffer Size");
+      throw new Error('Unexpected Buffer Size');
     }
     this.buffer = buffer;
   }
@@ -50,7 +50,7 @@ export class AdafruitDotstarsProxyBackend extends LEDStripBackend {
 
   public updateStrip() {
     if (!this.buffer) {
-      throw new Error("setupBuffer() has not been called");
+      throw new Error('setupBuffer() has not been called');
     }
     this.socket.write(this.buffer, 'binary');
   }

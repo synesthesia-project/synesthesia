@@ -1,7 +1,7 @@
 import * as WebSocket from 'ws';
 
-import {Color} from "../data/colors";
-import {StripBehavior, StripBehaviorState} from "../behavior/behavior";
+import {Color} from '../data/colors';
+import {StripBehavior, StripBehaviorState} from '../behavior/behavior';
 
 export class StripControllerProtocol {
 
@@ -39,7 +39,7 @@ export class StripControllerProtocol {
           primaryArtifacts: msg.updateState.primaryArtifacts,
           secondaryArtifacts: msg.updateState.secondaryArtifacts,
           sparkliness: msg.updateState.sparkliness
-        }
+        };
         this.behavior.updateState(state);
       }
     } catch (e) {
@@ -63,7 +63,7 @@ export class StripControllerProtocol {
       primaryArtifacts: bState.primaryArtifacts,
       secondaryArtifacts: bState.secondaryArtifacts,
       sparkliness: bState.sparkliness
-    }
+    };
     this.send({state});
   }
 
@@ -76,6 +76,6 @@ export class StripControllerProtocol {
     this.behavior.removeListener(this.onBehaviourStateChange);
     // websocket listeners
     // TODO
-    console.log('removeListeners()')
+    console.log('removeListeners()');
   }
 }
