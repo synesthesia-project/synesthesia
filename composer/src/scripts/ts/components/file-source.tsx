@@ -11,6 +11,7 @@ import {CompanionConnection} from '../util/companion';
 import Save = require('react-icons/lib/md/save');
 import FolderOpen = require('react-icons/lib/md/folder-open');
 import Tab = require('react-icons/lib/md/tab');
+import SettingsEthernet = require('react-icons/lib/md/settings-ethernet');
 
 export interface FileSourceProps {
   file: func.Maybe<file.CueFile>;
@@ -105,6 +106,7 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
           }
           <span className="description">{this.state.description}</span>
           <span className="grow"/>
+          <button title="Connect to Consumer"><SettingsEthernet/></button>
           <button onClick={this.openFile} title="Open"><FolderOpen/></button>
           <button className={this.props.file.isJust() ? '' : 'disabled'} onClick={this.saveFile} title="Save"><Save/></button>
         </div>
