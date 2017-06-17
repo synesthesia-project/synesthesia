@@ -183,7 +183,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
                   const timestampMillis = this.currentTimestamp(state);
                   this.state.cueFile.fmap(cueFile => {
                     this.setState({cueFile: func.just(
-                      file.addLayerItem(cueFile, b.layer, timestampMillis)
+                      fileManipulation.addLayerItem(cueFile, b.layer, timestampMillis)
                     )});
                   });
                 });
@@ -201,7 +201,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
       const timestampMillis = this.currentTimestamp(state);
       this.state.cueFile.fmap(cueFile => {
         for (const i of this.state.selection.layers) {
-          cueFile = file.addLayerItem(cueFile, i, timestampMillis);
+          cueFile = fileManipulation.addLayerItem(cueFile, i, timestampMillis);
         }
         this.setState({cueFile: func.just(cueFile)} as StageState);
       });
@@ -223,7 +223,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
         // Create new Cue File
         none: () => file.emptyFile(playState.durationMillis),
         // TODO: add user prompt to confirm if they want to change length of cue file
-        just: existingFile => file.setLength(existingFile, playState.durationMillis)
+        just: existingFile => fileManipulation.setLength(existingFile, playState.durationMillis)
       }));
       this.setState({cueFile} as StageState);
     });

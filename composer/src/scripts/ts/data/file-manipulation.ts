@@ -1,6 +1,10 @@
-import * as file from './file';
+import {CueFile, CueFileLayer, AnyLayer} from './file';
 import * as selection from './selection';
 import * as util from '../util/util';
+
+function convertLayer<L, K, V>(l: CueFileLayer<L, K, V>, f: (l: CueFileLayer<L, K, V>) => CueFileLayer<L, K, V>): AnyLayer {
+  return f(l as any as CueFileLayer<L, K, V>) as any as AnyLayer;
+}
 
 /*
  * Build up a data structure for quick lookup of selected events
@@ -18,9 +22,9 @@ function buildUpSelectionSet(selection: selection.Selection) {
 }
 
 export function updateStartTimeForSelectedEvents(
-    cueFile: file.CueFile,
+    cueFile: CueFile,
     selection: selection.Selection,
-    newStartTime: number): file.CueFile {
+    newStartTime: number): CueFile {
 
   // Ignore empty selections
   if (selection.events.length === 0)
@@ -47,9 +51,9 @@ export function updateStartTimeForSelectedEvents(
 
   const selectedEvents = buildUpSelectionSet(selection);
 
-  function convertLayer<K, S, V>(
+  function doConvertLayer<K, S, V>(
       selectedEvents: Set<number>,
-      layer: file.CueFileLayer<K, S, V>): file.CueFileLayer<K, S, V> {
+      layer: CueFileLayer<K, S, V>): CueFileLayer<K, S, V> {
     return {
       kind: layer.kind,
       settings: layer.settings,
@@ -71,7 +75,7 @@ export function updateStartTimeForSelectedEvents(
     if (!layerSet)
       // Layer unchanged
       return layer;
-    return file.convertLayer(layer, l => convertLayer(layerSet, l));
+    return convertLayer(layer, l => doConvertLayer(layerSet, l));
   });
 
   return util.deepFreeze({
@@ -81,8 +85,8 @@ export function updateStartTimeForSelectedEvents(
 }
 
 export function deleteSelectedEvents(
-    cueFile: file.CueFile,
-    selection: selection.Selection): file.CueFile {
+    cueFile: CueFile,
+    selection: selection.Selection): CueFile {
 
   // Ignore empty selections
   if (selection.events.length === 0)
@@ -95,7 +99,7 @@ export function deleteSelectedEvents(
     if (!layerSet)
       // Layer unchanged
       return layer;
-    return file.convertLayer(layer, l => ({
+    return convertLayer(layer, l => ({
       kind: layer.kind,
       settings: layer.settings,
       events: layer.events.filter((e, i) => !layerSet.has(i))
@@ -105,5 +109,47 @@ export function deleteSelectedEvents(
   return util.deepFreeze({
     lengthMillis: cueFile.lengthMillis,
     layers: newLayers
+  });
+}
+
+
+export function setLength(file: CueFile, lengthMillis: number): CueFile {
+  return util.deepFreeze({
+    lengthMillis,
+    layers: file.layers
+  });
+}
+
+export function addLayer(file: CueFile): CueFile {
+  const layers = file.layers.slice();
+  layers.push({
+    kind: 'percussion',
+    settings: {defaultLengthMillis: 200},
+    events: []
+  });
+  return util.deepFreeze({
+    lengthMillis: file.lengthMillis,
+    layers
+  });
+}
+
+export function addLayerItem(file: CueFile, layer: number, timestampMillis: number): CueFile {
+  return util.deepFreeze({
+    lengthMillis: file.lengthMillis,
+    layers: file.layers.map((l, i) => {
+      if (i !== layer)
+        return l;
+      // Add item
+      const events = l.events.slice();
+      events.push({
+        timestampMillis,
+        states: []
+      });
+      return {
+        kind: l.kind as any,
+        settings: l.settings,
+        events
+      };
+    })
   });
 }

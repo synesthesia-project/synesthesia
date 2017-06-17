@@ -64,10 +64,6 @@ export function switchLayer<O>(
   throw new Error('Unrecognized Layer');
 }
 
-export function convertLayer<L, K, V>(l: CueFileLayer<L, K, V>, f: (l: CueFileLayer<L, K, V>) => CueFileLayer<L, K, V>): AnyLayer {
-  return f(l as any as CueFileLayer<L, K, V>) as any as AnyLayer;
-}
-
 export function emptyFile(lengthMillis: number): CueFile {
   return util.deepFreeze({
     lengthMillis,
@@ -75,46 +71,6 @@ export function emptyFile(lengthMillis: number): CueFile {
   });
 }
 
-export function setLength(file: CueFile, lengthMillis: number): CueFile {
-  return util.deepFreeze({
-    lengthMillis,
-    layers: file.layers
-  });
-}
-
-export function addLayer(file: CueFile): CueFile {
-  const layers = file.layers.slice();
-  layers.push({
-    kind: 'percussion',
-    settings: {defaultLengthMillis: 200},
-    events: []
-  });
-  return util.deepFreeze({
-    lengthMillis: file.lengthMillis,
-    layers
-  });
-}
-
-export function addLayerItem(file: CueFile, layer: number, timestampMillis: number): CueFile {
-  return util.deepFreeze({
-    lengthMillis: file.lengthMillis,
-    layers: file.layers.map((l, i) => {
-      if (i !== layer)
-        return l;
-      // Add item
-      const events = l.events.slice();
-      events.push({
-        timestampMillis,
-        states: []
-      });
-      return {
-        kind: l.kind as any,
-        settings: l.settings,
-        events
-      };
-    })
-  });
-}
 
 // File Validation
 export function validateFile(obj: any) {

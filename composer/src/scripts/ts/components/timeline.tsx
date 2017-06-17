@@ -5,6 +5,7 @@ import * as func from '../data/functional';
 import * as playState from '../data/play-state';
 import * as stageState from '../data/stage-state';
 import * as file from '../data/file';
+import * as fileManipulation from '../data/file-manipulation';
 import * as types from '../util/types';
 import * as util from '../util/util';
 
@@ -73,7 +74,7 @@ export class Timeline extends BaseComponent<TimelineProps, TimelineState> {
   }
 
   private addLayerClicked() {
-    this.props.updateCueFile(cueFile => file.addLayer(cueFile));
+    this.props.updateCueFile(cueFile => fileManipulation.addLayer(cueFile));
   }
 
   /**
