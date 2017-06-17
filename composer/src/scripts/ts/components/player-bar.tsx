@@ -1,7 +1,7 @@
 import {BaseComponent} from './base';
 import * as React from 'react';
 
-import * as util from '../util/util';
+import * as util from '../shared/util/util';
 
 import * as func from '../data/functional';
 import * as stageState from '../data/stage-state';

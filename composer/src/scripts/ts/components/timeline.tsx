@@ -6,8 +6,8 @@ import * as playState from '../data/play-state';
 import * as stageState from '../data/stage-state';
 import * as file from '../data/file';
 import * as fileManipulation from '../data/file-manipulation';
-import * as types from '../util/types';
-import * as util from '../util/util';
+import * as types from '../shared/util/types';
+import * as util from '../shared/util/util';
 
 import Add = require('react-icons/lib/md/add');
 

@@ -1,4 +1,4 @@
-import * as util from '../util/util';
+import * as util from '../shared/util/util';
 import {CueFile} from './file';
 
 export function validateFile(obj: any) {

@@ -1,7 +1,7 @@
 import {BaseComponent} from './base';
 import * as React from 'react';
 import * as file from '../data/file';
-import * as util from '../util/util';
+import * as util from '../shared/util/util';
 
 export interface LayerVisualizationProps {
   layer: file.AnyLayer;

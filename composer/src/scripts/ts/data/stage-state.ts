@@ -1,4 +1,4 @@
-import * as util from '../util/util';
+import * as util from '../shared/util/util';
 
 /**
  * By what ratio should we zoom in / out by in a single step.

@@ -1,6 +1,6 @@
 import {CueFile, CueFileLayer, AnyLayer} from './file';
 import * as selection from './selection';
-import * as util from '../util/util';
+import * as util from '../shared/util/util';
 
 function convertLayer<L, K, V>(l: CueFileLayer<L, K, V>, f: (l: CueFileLayer<L, K, V>) => CueFileLayer<L, K, V>): AnyLayer {
   return f(l as any as CueFileLayer<L, K, V>) as any as AnyLayer;

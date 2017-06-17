@@ -5,7 +5,7 @@ import * as React from 'react';
 import * as func from '../data/functional';
 import * as file from '../data/file';
 import * as selection from '../data/selection';
-import * as types from '../util/types';
+import * as types from '../shared/util/types';
 import * as stageState from '../data/stage-state';
 import * as playState from '../data/play-state';
 

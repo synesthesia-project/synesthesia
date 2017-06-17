@@ -4,7 +4,7 @@ import * as file from '../data/file';
 import * as selection from '../data/selection';
 import * as text from '../display/text';
 import * as fileManipulation from '../data/file-manipulation';
-import * as types from '../util/types';
+import * as types from '../shared/util/types';
 import {DelayedPropigationInput} from './util/input';
 
 import Delete = require('react-icons/lib/md/delete');

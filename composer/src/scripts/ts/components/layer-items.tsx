@@ -2,7 +2,7 @@ import {BaseComponent} from './base';
 import * as React from 'react';
 import * as file from '../data/file';
 import * as selection from '../data/selection';
-import * as types from '../util/types';
+import * as types from '../shared/util/types';
 
 export interface LayerItemsProps {
   // Properties
