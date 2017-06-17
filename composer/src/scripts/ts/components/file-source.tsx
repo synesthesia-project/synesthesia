@@ -2,6 +2,7 @@ import {BaseComponent} from './base';
 import * as React from 'react';
 
 import * as file from '../data/file';
+import {validateFile} from '../data/file-validation';
 import * as func from '../data/functional';
 import * as storage from '../util/storage';
 import {PlayStateData, PlayState, PlayStateControls, MediaPaused, MediaPlaying} from '../data/play-state';
@@ -75,7 +76,7 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
   public openFile() {
     storage.loadFileAsString().then(fileString => {
       const obj = JSON.parse(fileString);
-      const validatedFile = file.validateFile(obj);
+      const validatedFile = validateFile(obj);
       this.props.fileLoaded(validatedFile);
     });
   }

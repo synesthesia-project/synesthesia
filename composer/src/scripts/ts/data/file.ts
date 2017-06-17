@@ -64,16 +64,12 @@ export function switchLayer<O>(
   throw new Error('Unrecognized Layer');
 }
 
+/**
+ * Create a new file with the given length
+ */
 export function emptyFile(lengthMillis: number): CueFile {
   return util.deepFreeze({
     lengthMillis,
     layers: []
   });
-}
-
-
-// File Validation
-export function validateFile(obj: any) {
-  // TODO: actually validate, for now assume it's fine
-  return util.deepFreeze(obj) as CueFile;
 }
