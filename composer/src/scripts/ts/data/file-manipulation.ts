@@ -1,4 +1,4 @@
-import {CueFile, CueFileLayer, AnyLayer} from './file';
+import {CueFile, CueFileLayer, AnyLayer} from '../shared/file/file';
 import * as selection from './selection';
 import * as util from '../shared/util/util';
 

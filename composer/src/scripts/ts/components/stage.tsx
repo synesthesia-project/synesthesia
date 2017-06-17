@@ -13,7 +13,7 @@ import {LayersAndTimeline} from './layers-and-timeline';
 import {Timeline} from './timeline';
 import {EventProperties} from './item-properties';
 
-import * as file from '../data/file';
+import * as file from '../shared/file/file';
 import * as selection from '../data/selection';
 import * as stageState from '../data/stage-state';
 import * as fileManipulation from '../data/file-manipulation';

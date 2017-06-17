@@ -1,6 +1,6 @@
 import {BaseComponent} from './base';
 import * as React from 'react';
-import * as file from '../data/file';
+import * as file from '../shared/file/file';
 import * as selection from '../data/selection';
 import * as types from '../shared/util/types';
 

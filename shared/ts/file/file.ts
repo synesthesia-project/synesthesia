@@ -1,4 +1,4 @@
-import * as util from '../shared/util/util';
+import * as util from '../util/util';
 
 export interface CueFile {
   lengthMillis: number;
