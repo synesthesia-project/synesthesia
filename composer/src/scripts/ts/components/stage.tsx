@@ -7,6 +7,7 @@ import * as shared from '../shared';
 import * as func from '../data/functional';
 import {PlayState, PlayStateData} from '../data/play-state';
 
+import {Overlays} from './overlays';
 import {FileSource} from './file-source';
 import {Player} from './player';
 import {LayersAndTimeline} from './layers-and-timeline';
@@ -260,6 +261,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
       <externals.ShadowDOM>
         <div>
           <link rel="stylesheet" type="text/css" href="styles/components/stage.css"/>
+          <Overlays />
           <FileSource
             file={this.state.cueFile}
             playStateUpdated={this.playStateUpdated}
