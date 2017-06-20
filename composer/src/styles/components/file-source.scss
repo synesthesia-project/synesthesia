@@ -1,5 +1,6 @@
 @import "../variables";
 @import "../shared/buttons";
+@import "./connection-button";
 
 :host {
   display: block;
@@ -58,18 +59,20 @@
     }
   }
 
+  @include connection-button();
+
   .grow {
     flex-grow: 1;
   }
 
-  span {
+  > span {
     margin: $spacing / 2;
     font-size: 14px;
     padding: 0 6px;
     opacity: 0.8;
 
     &.companionDisabled {
-      color: #ff8c8c;
+      color: $color-red;
     }
   }
 }
