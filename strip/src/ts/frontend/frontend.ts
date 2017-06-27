@@ -1,4 +1,3 @@
-
 import * as http from 'http';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -68,7 +67,7 @@ export class Frontend {
 
     const wss = new WebSocket.Server({
       perMessageDeflate: false,
-      port: 8120
+      port: shared.constants.DEFAULT_SYNESTHESIA_PORT
     });
 
     wss.on('connection', connection => {
@@ -77,7 +76,7 @@ export class Frontend {
         const proto = new StripControllerProtocol(connection, this.behavior);
         return;
       }
-      if (url === '/synesthesia') {
+      if (url === shared.constants.SYNESTHESIA_WEBSOCKET_PATH) {
         const proto = new SynesthesiaConsumerProtocol(connection);
         return;
       }
