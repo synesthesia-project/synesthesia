@@ -1,25 +1,23 @@
-import {ProtocolEndpoint} from './common';
+import {Endpoint} from './common';
 import {Message} from './messages';
 
 /**
  * The ControllerEndpoint is the side of the protocol that shares synesthesia
  * information.
  */
-export class ControllerEndpoint {
+export class ControllerEndpoint extends Endpoint {
 
-  private readonly endpoint: ProtocolEndpoint;
+  public constructor(sendMessage: (msg: Message) => void) {
+    super(sendMessage);
 
-  public constructor(endpoint: ProtocolEndpoint) {
-    this.endpoint = endpoint;
-    this.onRecvMessage = this.onRecvMessage.bind(this);
-    this.endpoint.setOnReceiveMessage(this.onRecvMessage);
+    sendMessage({type: 'request', request: 'foo'});
   }
 
-  private onRecvMessage(message: Message) {
+  public recvMessage(message: Message) {
     console.log('recv:', message);
     switch (message.type) {
       case 'request': {
-        this.endpoint.sendMessage({
+        this.sendMessage({
           type: 'response',
           response: message.request + '-' + message.request
         });

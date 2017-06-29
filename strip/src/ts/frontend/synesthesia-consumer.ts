@@ -10,16 +10,8 @@ export class SynesthesiaConsumerProtocol {
 
     this.ws = ws;
 
+    const endpoint = new ConsumerEndpoint(msg => ws.send(JSON.stringify(msg)));
     ws.onclose = () => console.log('connection closed');
-
-    const endpoint = new ConsumerEndpoint({
-      sendMessage: msg => {
-        ws.send(JSON.stringify(msg));
-      },
-      setOnReceiveMessage: recv => {
-        ws.onmessage = msg => {
-          recv(JSON.parse(msg.data));
-        };
-      }});
+    ws.onmessage = msg => endpoint.recvMessage(JSON.parse(msg.data));
   }
 }

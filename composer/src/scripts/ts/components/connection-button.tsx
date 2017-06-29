@@ -69,18 +69,12 @@ export class ConnectionButton extends React.Component<{}, ConnectionButtonState>
         this.socket.onopen = () => {
           if (socket !== this.socket) return;
           this.setState({state: 'connected'});
-          const endpoint = new ControllerEndpoint({
-            sendMessage: msg => {
+          const endpoint = new ControllerEndpoint(
+            msg => {
               if (socket !== this.socket) throw new Error('socket not open');
               socket.send(JSON.stringify(msg));
-            },
-            setOnReceiveMessage: recv => {
-              if (socket !== this.socket) throw new Error('socket not open');
-              socket.onmessage = msg => {
-                recv(JSON.parse(msg.data));
-              };
-            }
-          });
+            });
+          socket.onmessage = msg => endpoint.recvMessage(JSON.parse(msg.data));
         };
       })
       .catch(err => {
