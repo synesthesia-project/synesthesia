@@ -7,10 +7,13 @@ import {Message, Request, Response} from './messages';
  */
 export class ConsumerEndpoint extends Endpoint {
 
+  private latestGoodPing: {ping: number, requestTime: number} | null = null;
+
   public constructor(sendMessage: (msg: Message) => void) {
     super(sendMessage);
 
-    setInterval(() => this.updateTimeDifference(), 500);
+    setInterval(() => this.updateTimeDifference(), 10000);
+    this.updateTimeDifference();
   }
 
   protected handleRequest(request: Request) {
@@ -25,8 +28,21 @@ export class ConsumerEndpoint extends Endpoint {
    * controller.
    */
   private updateTimeDifference() {
+    const requestTime = new Date().getTime();
     this.sendRequest({type: 'ping'}).then(resp => {
-      console.log('got response:', resp);
+      const responseTime = new Date().getTime();
+      const ping = responseTime - requestTime;
+      if (!this.latestGoodPing || this.latestGoodPing.ping > ping) {
+        // Update difference
+        const thisTimestamp = Math.round(requestTime + ping / 2);
+        const diff = thisTimestamp - resp.timestampMillis;
+        this.latestGoodPing = {
+          ping, requestTime
+        };
+        // TODO: actually store diff somewhere
+        console.log('updating time difference:', diff);
+      }
+      console.log('ping:', ping);
     });
   }
 

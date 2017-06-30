@@ -15,17 +15,11 @@ export class ControllerEndpoint extends Endpoint {
     return new Promise<Response>((resolve, reject) => {
       switch (request.type) {
         case 'ping': {
-          setTimeout(
-            () => {
-              const response: Response = {
-                type: 'pong',
-                timestampMillis: new Date().getTime()
-              };
-              setTimeout(
-                () => resolve(response),
-                Math.round(Math.random() * 300) + 200);
-            },
-            Math.round(Math.random() * 300) + 200);
+          const response: Response = {
+            type: 'pong',
+            timestampMillis: new Date().getTime()
+          };
+          resolve(response);
           return;
         }
       }
