@@ -21,9 +21,11 @@ export class ControllerEndpoint extends Endpoint {
                 type: 'pong',
                 timestampMillis: new Date().getTime()
               };
-              setTimeout(() => resolve(response), 500);
+              setTimeout(
+                () => resolve(response),
+                Math.round(Math.random() * 300) + 200);
             },
-            500);
+            Math.round(Math.random() * 300) + 200);
           return;
         }
       }

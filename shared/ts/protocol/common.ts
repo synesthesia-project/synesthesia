@@ -24,6 +24,7 @@ export abstract class Endpoint {
         break;
       }
       case 'response': {
+        console.log('got response:', msg.requestId);
         const r = this.pendingRequests.get(msg.requestId);
         if (r) {
           r.resolve(msg.response);
