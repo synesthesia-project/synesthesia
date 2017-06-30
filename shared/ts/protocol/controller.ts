@@ -1,5 +1,5 @@
 import {Endpoint} from './common';
-import {Message} from './messages';
+import {Message, Request, Response} from './messages';
 
 /**
  * The ControllerEndpoint is the side of the protocol that shares synesthesia
@@ -9,21 +9,26 @@ export class ControllerEndpoint extends Endpoint {
 
   public constructor(sendMessage: (msg: Message) => void) {
     super(sendMessage);
-
-    sendMessage({type: 'request', request: 'foo'});
   }
 
-  public recvMessage(message: Message) {
-    console.log('recv:', message);
-    switch (message.type) {
-      case 'request': {
-        this.sendMessage({
-          type: 'response',
-          response: message.request + '-' + message.request
-        });
-        break;
+  protected handleRequest(request: Request) {
+    return new Promise<Response>((resolve, reject) => {
+      switch (request.type) {
+        case 'ping': {
+          setTimeout(
+            () => {
+              const response: Response = {
+                type: 'pong',
+                timestampMillis: new Date().getTime()
+              };
+              setTimeout(() => resolve(response), 500);
+            },
+            500);
+          return;
+        }
       }
-    }
+      reject(new Error('unknown request type'));
+    });
   }
 
 }
