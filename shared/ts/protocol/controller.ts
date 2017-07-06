@@ -1,5 +1,5 @@
 import {Endpoint} from './common';
-import {Message, Request, Response} from './messages';
+import {Message, Request, Response, PlayStateData} from './messages';
 
 /**
  * The ControllerEndpoint is the side of the protocol that shares synesthesia
@@ -29,6 +29,18 @@ export class ControllerEndpoint extends Endpoint {
 
   protected handleClosed() {
     console.log('connection closed');
+  }
+
+  public sendState(state: PlayStateData | null) {
+    this.sendMessage({
+      type: 'notification',
+      notification: state ? {
+        type: 'playing',
+        data: state
+      } : {
+        type: 'stopped'
+      }
+    });
   }
 
 }

@@ -35,6 +35,8 @@ export abstract class Endpoint {
         }
         break;
       }
+      default:
+        console.log('unknown message', msg);
     }
   }
 

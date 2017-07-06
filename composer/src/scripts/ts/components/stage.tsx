@@ -264,6 +264,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
           <Overlays />
           <FileSource
             file={this.state.cueFile}
+            playState={this.state.playState}
             playStateUpdated={this.playStateUpdated}
             fileLoaded={this.fileLoaded}
             />

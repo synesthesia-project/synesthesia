@@ -16,6 +16,7 @@ import {ConnectionButton} from './connection-button';
 
 export interface FileSourceProps {
   file: func.Maybe<file.CueFile>;
+  playState: PlayState;
   // Callbacks
   playStateUpdated: (value: PlayState) => void;
   fileLoaded: (file: file.CueFile) => void;
@@ -107,7 +108,7 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
           }
           <span className="description">{this.state.description}</span>
           <span className="grow"/>
-          <ConnectionButton />
+          <ConnectionButton file={this.props.file} playState={this.props.playState} />
           <button onClick={this.openFile} title="Open"><FolderOpen/></button>
           <button className={this.props.file.isJust() ? '' : 'disabled'} onClick={this.saveFile} title="Save"><Save/></button>
         </div>

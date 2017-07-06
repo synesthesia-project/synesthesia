@@ -22,7 +22,7 @@ class None<T> extends Maybe<T> {
   }
 
   public fmap<Output>(map: (value: T) => Output): Maybe<Output> {
-    return none();
+    return none<Output>();
   }
 }
 
@@ -58,7 +58,7 @@ export function just<T>(value: T): Maybe<T> {
 }
 
 export function maybeFrom<T>(value: T | null | undefined): Maybe<T> {
-  return (value === null || value === undefined) ? none() : just(value);
+  return (value === null || value === undefined) ? none<T>() : just(value);
 }
 
 // Either
