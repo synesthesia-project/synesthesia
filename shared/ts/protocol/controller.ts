@@ -1,5 +1,5 @@
 import {Endpoint} from './common';
-import {Message, Request, Response, PlayStateData} from './messages';
+import {Message, Request, Response, PlayStateData, Notification} from './messages';
 
 /**
  * The ControllerEndpoint is the side of the protocol that shares synesthesia
@@ -25,6 +25,10 @@ export class ControllerEndpoint extends Endpoint {
       }
       reject(new Error('unknown request type'));
     });
+  }
+
+  protected handleNotification(notification: Notification) {
+    console.error('unexpected notification', notification);
   }
 
   protected handleClosed() {

@@ -1,5 +1,5 @@
 import {Endpoint} from './common';
-import {Message, Request, Response} from './messages';
+import {Message, Request, Response, Notification, PlayStateData} from './messages';
 
 /**
  * The ConsumerEndpoint is the side of the protocol that receives synesthesia
@@ -7,11 +7,18 @@ import {Message, Request, Response} from './messages';
  */
 export class ConsumerEndpoint extends Endpoint {
 
-  private pingInterval: any;
-  private latestGoodPing: {ping: number, requestTime: number} | null = null;
+  private readonly playStateUpdated: (state: PlayStateData | null) => void;
 
-  public constructor(sendMessage: (msg: Message) => void) {
+  private lastPlayState: PlayStateData | null;
+  private pingInterval: any;
+  private latestGoodPing: {ping: number, requestTime: number, diff: number} | null = null;
+
+  public constructor(
+    sendMessage: (msg: Message) => void,
+    playStateUpdated: (state: PlayStateData | null) => void
+  ) {
     super(sendMessage);
+    this.playStateUpdated = playStateUpdated;
 
     this.pingInterval = setInterval(() => this.updateTimeDifference(), 10000);
     this.updateTimeDifference();
@@ -23,8 +30,34 @@ export class ConsumerEndpoint extends Endpoint {
     });
   }
 
+  protected handleNotification(notification: Notification) {
+    switch (notification.type) {
+      case 'playing': {
+        this.lastPlayState = notification.data;
+        this.sendPlayState();
+        break;
+      }
+      case 'stopped': {
+        this.playStateUpdated(null);
+        break;
+      }
+      default:
+        console.error('unknown notification:', notification);
+    }
+  }
+
   protected handleClosed() {
     clearInterval(this.pingInterval);
+  }
+
+  private sendPlayState() {
+    if (this.lastPlayState && this.latestGoodPing) {
+      this.playStateUpdated({
+        effectiveStartTimeMillis:
+          this.lastPlayState.effectiveStartTimeMillis + this.latestGoodPing.diff,
+        file: this.lastPlayState.file
+      });
+    }
   }
 
   /**
@@ -42,10 +75,10 @@ export class ConsumerEndpoint extends Endpoint {
         const thisTimestamp = Math.round(requestTime + ping / 2);
         const diff = thisTimestamp - resp.timestampMillis;
         this.latestGoodPing = {
-          ping, requestTime
+          ping, requestTime, diff
         };
-        // TODO: actually store diff somewhere
         console.log('updating time difference:', diff);
+        this.sendPlayState();
       }
       console.log('ping:', ping);
     });

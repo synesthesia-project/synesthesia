@@ -1,4 +1,4 @@
-import {Message, Request, Response} from './messages';
+import {Message, Request, Response, Notification} from './messages';
 
 export abstract class Endpoint {
 
@@ -35,6 +35,10 @@ export abstract class Endpoint {
         }
         break;
       }
+      case 'notification': {
+        this.handleNotification(msg.notification);
+        break;
+      }
       default:
         console.log('unknown message', msg);
     }
@@ -48,6 +52,8 @@ export abstract class Endpoint {
   }
 
   protected abstract handleRequest(request: Request): Promise<Response>;
+
+  protected abstract handleNotification(notification: Notification): void;
 
   protected abstract handleClosed(): void;
 
