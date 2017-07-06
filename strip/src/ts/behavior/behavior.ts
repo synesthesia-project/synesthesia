@@ -2,6 +2,7 @@ import {PlayStateData} from '../shared/protocol/messages';
 
 import {LEDStripBackend} from '../backends/backends';
 import {Color, Colors} from '../data/colors';
+import {SynesthesiaDisplay} from './synesthesia-display';
 
 const MAX_SPARKLINESS = 10;
 
@@ -55,6 +56,7 @@ export class StripBehavior {
   private intervalID: NodeJS.Timer;
 
   private state: StripBehaviorState;
+  private synesthesiaDisplay: SynesthesiaDisplay | null = null;
 
   private listeners: StripBehaviorListener[] = [];
 
@@ -106,6 +108,7 @@ export class StripBehavior {
 
   public updateSynesthesiaPlayState(state: PlayStateData | null): void {
     console.log('updateSynesthesiaPlayState', state);
+    this.synesthesiaDisplay = state ? new SynesthesiaDisplay(this.numberOfLeds, state) : null;
   }
 
   public removeListener(listener: StripBehaviorListener) {
@@ -238,6 +241,17 @@ export class StripBehavior {
         const opacity = (s.life < 0.5 ? (s.life) : (1-s.life)) * 2;
         leds[pixel] = leds[pixel].overlay(this.state.sparkleColor, opacity);
       });
+
+      // Overlay Synesthesia Display
+      if (this.synesthesiaDisplay) {
+        const display = this.synesthesiaDisplay.getDisplay();
+        if (display.length !== leds.length) {
+          console.error('length mismatch');
+        } else {
+          for (let i = 0; i < leds.length; i++)
+            leds[i] = leds[i].overlay(display[i], 0.5);
+          }
+      }
 
       // Update Strip
       for (let i = 0; i < leds.length; i++)

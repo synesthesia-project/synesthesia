@@ -16,7 +16,10 @@ export class SynesthesiaConsumerProtocol {
       msg => ws.send(JSON.stringify(msg)),
       state => behavior.updateSynesthesiaPlayState(state)
     );
-    ws.onclose = () => endpoint.closed();
+    ws.onclose = () => {
+      endpoint.closed();
+      behavior.updateSynesthesiaPlayState(null);
+    };
     ws.onmessage = msg => endpoint.recvMessage(JSON.parse(msg.data));
   }
 }
