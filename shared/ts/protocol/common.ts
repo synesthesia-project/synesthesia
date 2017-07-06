@@ -12,6 +12,9 @@ export abstract class Endpoint {
     this.sendMessage = sendMessage;
   }
 
+  /**
+   * Call this method when the connection receives a message
+   */
   public recvMessage(msg: Message): void {
     switch (msg.type) {
       case 'request': {
@@ -35,7 +38,16 @@ export abstract class Endpoint {
     }
   }
 
+  /**
+   * Call this method when the connection has been closed
+   */
+  public closed(): void {
+    this.handleClosed();
+  }
+
   protected abstract handleRequest(request: Request): Promise<Response>;
+
+  protected abstract handleClosed(): void;
 
   protected sendRequest(request: Request) {
     return new Promise<Response>(resolve => {

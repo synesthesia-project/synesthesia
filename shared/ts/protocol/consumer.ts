@@ -7,12 +7,13 @@ import {Message, Request, Response} from './messages';
  */
 export class ConsumerEndpoint extends Endpoint {
 
+  private pingInterval: any;
   private latestGoodPing: {ping: number, requestTime: number} | null = null;
 
   public constructor(sendMessage: (msg: Message) => void) {
     super(sendMessage);
 
-    setInterval(() => this.updateTimeDifference(), 10000);
+    this.pingInterval = setInterval(() => this.updateTimeDifference(), 10000);
     this.updateTimeDifference();
   }
 
@@ -20,6 +21,10 @@ export class ConsumerEndpoint extends Endpoint {
     return new Promise<Response>((resolve, reject) => {
       reject(new Error('unknown request type'));
     });
+  }
+
+  protected handleClosed() {
+    clearInterval(this.pingInterval);
   }
 
   /**

@@ -27,4 +27,8 @@ export class ControllerEndpoint extends Endpoint {
     });
   }
 
+  protected handleClosed() {
+    console.log('connection closed');
+  }
+
 }

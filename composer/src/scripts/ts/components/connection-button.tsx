@@ -61,11 +61,6 @@ export class ConnectionButton extends React.Component<{}, ConnectionButtonState>
           this.setState({state: 'error'});
           this.socket = null;
         };
-        this.socket.onclose = () => {
-          if (socket !== this.socket) return;
-          this.setState({state: 'not_connected'});
-          this.socket = null;
-        };
         this.socket.onopen = () => {
           if (socket !== this.socket) return;
           this.setState({state: 'connected'});
@@ -75,6 +70,12 @@ export class ConnectionButton extends React.Component<{}, ConnectionButtonState>
               socket.send(JSON.stringify(msg));
             });
           socket.onmessage = msg => endpoint.recvMessage(JSON.parse(msg.data));
+          socket.onclose = () => () => {
+            if (socket !== this.socket) return;
+            this.setState({state: 'not_connected'});
+            this.socket = null;
+            endpoint.closed();
+          };
         };
       })
       .catch(err => {
