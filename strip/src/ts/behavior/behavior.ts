@@ -1,3 +1,5 @@
+import {PlayStateData} from '../shared/protocol/messages';
+
 import {LEDStripBackend} from '../backends/backends';
 import {Color, Colors} from '../data/colors';
 
@@ -100,6 +102,10 @@ export class StripBehavior {
     this.state.sparkliness = Math.max(0, Math.min(MAX_SPARKLINESS, Math.round(this.state.sparkliness)));
 
     this.listeners.map(l => l(this.state));
+  }
+
+  public updateSynesthesiaPlayState(state: PlayStateData | null): void {
+    console.log('updateSynesthesiaPlayState', state);
   }
 
   public removeListener(listener: StripBehaviorListener) {

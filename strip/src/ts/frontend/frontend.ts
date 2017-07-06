@@ -77,7 +77,7 @@ export class Frontend {
         return;
       }
       if (url === shared.constants.SYNESTHESIA_WEBSOCKET_PATH) {
-        const proto = new SynesthesiaConsumerProtocol(connection);
+        const proto = new SynesthesiaConsumerProtocol(connection, this.behavior);
         return;
       }
       console.error('unrecognized websocket url: ', url);
