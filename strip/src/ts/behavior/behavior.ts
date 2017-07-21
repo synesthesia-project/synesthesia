@@ -70,9 +70,9 @@ export class StripBehavior {
     backend.addDisconnectedListener(this.disconnected.bind(this));
 
     this.state = {
-      primaryColor: new Color(4, 0, 20),
-      secondaryColor: new Color(20, 0, 4),
-      sparkleColor: new Color(100, 0, 50),
+      primaryColor: new Color(50, 0, 255),
+      secondaryColor: new Color(255, 0, 50),
+      sparkleColor: new Color(255, 255, 255),
       primaryArtifacts: 5,
       secondaryArtifacts: 3,
       sparkliness: 7
@@ -249,7 +249,7 @@ export class StripBehavior {
           console.error('length mismatch');
         } else {
           for (let i = 0; i < leds.length; i++)
-            leds[i] = leds[i].overlay(display[i], 0.5);
+            leds[i] = leds[i].overlay(display[i], display[i].a);
           }
       }
 

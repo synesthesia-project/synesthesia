@@ -30,7 +30,17 @@ export class Color {
 
 }
 
+export class AlphaColor extends Color {
+  public readonly a: number;
+
+  public constructor(r: number, g: number, b: number, a: number) {
+    super(r, g, b);
+    this.a = a;
+  }
+}
+
 export class Colors {
   public static readonly Black = new Color(0, 0, 0);
   public static readonly White = new Color(255, 255, 255);
+  public static readonly Transparent = new AlphaColor(0, 0, 0, 0);
 }
