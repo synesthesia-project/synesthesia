@@ -38,3 +38,17 @@ function preparePercussionLayerEvent(layer: file.PercussionLayer): file.Percussi
       .sort((a, b) => a.timestampMillis - b.timestampMillis)
   };
 }
+
+export function getActiveEvents<T>(
+    events: file.CueFileEvent<T>[], positionMillis: number): file.CueFileEvent<T>[] {
+  const active: file.CueFileEvent<T>[] = [];
+  for (let i = 0; i < events.length; i++) {
+    const event = events[i];
+    if (event.timestampMillis > positionMillis)
+      break;
+    const lastTimestamp = event.timestampMillis + event.states[event.states.length - 1].millisDelta;
+    if (lastTimestamp > positionMillis)
+      active.push(event);
+  }
+  return active;
+}

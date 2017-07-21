@@ -1,6 +1,7 @@
 import {BaseComponent} from './base';
 import * as React from 'react';
 import * as file from '../shared/file/file';
+import {getActiveEvents} from '../shared/file/file-usage';
 import * as util from '../shared/util/util';
 
 export interface LayerVisualizationProps {
@@ -65,16 +66,7 @@ export class LayerVisualization extends BaseComponent<LayerVisualizationProps, {
    * Return the events that are active for the current timestamp
    */
   private getCurrentEvents(): file.CueFileEvent<VisualisedState>[] {
-    const active: file.CueFileEvent<VisualisedState>[] = [];
-    for (let i = 0; i < this.processedLayerEvents.length; i++) {
-      const event = this.processedLayerEvents[i];
-      if (event.timestampMillis > this.props.positionMillis)
-        break;
-      const lastTimestamp = event.timestampMillis + event.states[event.states.length - 1].millisDelta;
-      if (lastTimestamp > this.props.positionMillis)
-        active.push(event);
-    }
-    return active;
+    return getActiveEvents(this.processedLayerEvents, this.props.positionMillis);
   }
 
   /**
