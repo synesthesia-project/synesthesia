@@ -1,6 +1,11 @@
 import {PlayStateData} from '../shared/protocol/messages';
 import {CueFile} from '../shared/file/file';
-import {PreparedFile, prepareFile, getActiveEvents} from '../shared/file/file-usage';
+import {
+    PreparedFile,
+    prepareFile,
+    getActiveEvents,
+    getCurrentEventStateValue
+  } from '../shared/file/file-usage';
 
 import {Color, Colors} from '../data/colors';
 
@@ -31,7 +36,12 @@ export class SynesthesiaDisplay {
     for (const layer of this.preparedFile.layers) {
       const activeEvents = getActiveEvents(layer.events, positionMillis);
       if (activeEvents.length > 0) {
-        this.leds[0] = Colors.White;
+        let maxAmplitude = 0;
+        for (const event of activeEvents) {
+          const amplitude = getCurrentEventStateValue(event, positionMillis, s => s.amplitude);
+          maxAmplitude = Math.max(maxAmplitude, amplitude);
+        }
+        this.leds[0] = Colors.Black.overlay(Colors.White, maxAmplitude);
       }
     }
 
