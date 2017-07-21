@@ -1,7 +1,7 @@
 import {BaseComponent} from './base';
 import * as React from 'react';
 import * as file from '../shared/file/file';
-import {getActiveEvents, getCurrentValue} from '../shared/file/file-usage';
+import {getActiveEvents, getCurrentEventStateValue} from '../shared/file/file-usage';
 import * as util from '../shared/util/util';
 
 export interface LayerVisualizationProps {
@@ -71,7 +71,7 @@ export class LayerVisualization extends BaseComponent<LayerVisualizationProps, {
 
   private getCurrentState(event: file.CueFileEvent<VisualisedState>): VisualisedState {
     return {
-      width: getCurrentValue(event, this.props.positionMillis, s => s.width)
+      width: getCurrentEventStateValue(event, this.props.positionMillis, s => s.width)
     };
   }
 

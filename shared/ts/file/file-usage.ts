@@ -59,7 +59,7 @@ export function getActiveEvents<T>(
  *
  * TODO: Change this to a sample period rather than the current point in time
  */
-export function getCurrentValue<T>(
+export function getCurrentEventStateValue<T>(
     event: file.CueFileEvent<T>,
     positionMillis: number,
     extract: (state: T) => number): number {
