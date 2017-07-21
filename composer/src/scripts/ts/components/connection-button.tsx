@@ -102,7 +102,7 @@ export class ConnectionButton extends React.Component<ConnectionButtonProps, Con
 
   private sendPlayStateIfChanged(props: ConnectionButtonProps) {
     if (!this.endpoint) return;
-    const newState = this.props.playState.caseOf({
+    const newState = props.playState.caseOf({
       just: state => state,
       none: () => null
     });
