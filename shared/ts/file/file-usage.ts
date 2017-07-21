@@ -52,3 +52,30 @@ export function getActiveEvents<T>(
   }
   return active;
 }
+
+/**
+ * Given a particular event and way to extract a numeric value from a state of
+ * the event, find out what that value should be for the given positionMillis.
+ *
+ * TODO: Change this to a sample period rather than the current point in time
+ */
+export function getCurrentValue<T>(
+    event: file.CueFileEvent<T>,
+    positionMillis: number,
+    extract: (state: T) => number): number {
+  // Find the segment we are currently in
+  for (let j = 1; j < event.states.length; j++) {
+    const s1 = event.states[j - 1];
+    const s2 = event.states[j];
+    const s1time = event.timestampMillis + s1.millisDelta;
+    if (s1time > positionMillis)
+      continue;
+    const s2time = event.timestampMillis + s2.millisDelta;
+    if (s2time < positionMillis)
+      break;
+    // Position within this segment
+    const position = (positionMillis - s1time) / (s2time - s1time);
+    return extract(s1.values) * (1 - position) + extract(s2.values) * position;
+  }
+  throw new Error('getCurrentState() called for inactive event');
+}

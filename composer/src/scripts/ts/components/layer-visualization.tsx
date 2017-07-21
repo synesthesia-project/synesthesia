@@ -1,7 +1,7 @@
 import {BaseComponent} from './base';
 import * as React from 'react';
 import * as file from '../shared/file/file';
-import {getActiveEvents} from '../shared/file/file-usage';
+import {getActiveEvents, getCurrentValue} from '../shared/file/file-usage';
 import * as util from '../shared/util/util';
 
 export interface LayerVisualizationProps {
@@ -69,29 +69,10 @@ export class LayerVisualization extends BaseComponent<LayerVisualizationProps, {
     return getActiveEvents(this.processedLayerEvents, this.props.positionMillis);
   }
 
-  /**
-   * TODO: Change this to a sample period rather than the current point in time
-   */
   private getCurrentState(event: file.CueFileEvent<VisualisedState>): VisualisedState {
-    // Find the segment we are currently in
-    for (let j = 1; j < event.states.length; j++) {
-      const s1 = event.states[j - 1];
-      const s2 = event.states[j];
-      const time = this.props.positionMillis;
-      const s1time = event.timestampMillis + s1.millisDelta;
-      if (s1time > time)
-        continue;
-      const s2time = event.timestampMillis + s2.millisDelta;
-      if (s2time < time)
-        break;
-      // Position within this segment
-      const position = (time - s1time) / (s2time - s1time);
-      const width = s1.values.width * (1 - position) + s2.values.width * position;
-      return {
-        width
-      };
-    }
-    throw new Error('getCurrentState() called for inactive event');
+    return {
+      width: getCurrentValue(event, this.props.positionMillis, s => s.width)
+    };
   }
 
   public render() {
