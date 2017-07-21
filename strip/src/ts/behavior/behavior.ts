@@ -37,6 +37,7 @@ function getRandomArbitrary(min: number, max: number) {
 }
 
 export interface StripBehaviorState {
+  idleBrightness: number;
   primaryColor: Color;
   secondaryColor: Color;
   sparkleColor: Color;
@@ -70,6 +71,7 @@ export class StripBehavior {
     backend.addDisconnectedListener(this.disconnected.bind(this));
 
     this.state = {
+      idleBrightness: 0.3,
       primaryColor: new Color(50, 0, 255),
       secondaryColor: new Color(255, 0, 50),
       sparkleColor: new Color(255, 255, 255),
@@ -250,7 +252,11 @@ export class StripBehavior {
         } else {
           for (let i = 0; i < leds.length; i++)
             leds[i] = leds[i].overlay(display[i], display[i].a);
-          }
+        }
+      } else {
+        // Decrease the brightness of the strip when idle
+        for (let i = 0; i < leds.length; i++)
+          leds[i] = leds[i].overlay(Colors.Black, 1 - this.state.idleBrightness);
       }
 
       // Update Strip

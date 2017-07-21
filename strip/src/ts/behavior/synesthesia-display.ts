@@ -52,7 +52,7 @@ export class SynesthesiaDisplay {
     }
 
     // Set base background to black at appropriate opacity
-    const bgOpacity = 0.75 - (backgroundBrightness * 0.75);
+    const bgOpacity = 0.9 - (backgroundBrightness * 0.9);
     const backgroundColor = new AlphaColor(0, 0, 0, bgOpacity);
     for (let i = 0; i < this.leds.length; i++) {
       this.leds[i] = backgroundColor;
