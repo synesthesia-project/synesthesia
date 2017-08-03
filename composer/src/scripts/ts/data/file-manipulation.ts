@@ -84,6 +84,13 @@ export function updateStartTimeForSelectedEvents(
   });
 }
 
+export function updateDurationForSelectedEvents(
+    cueFile: CueFile,
+    selection: selection.Selection,
+    newStartTime: number): CueFile {
+  return cueFile;
+}
+
 export function deleteSelectedEvents(
     cueFile: CueFile,
     selection: selection.Selection): CueFile {
