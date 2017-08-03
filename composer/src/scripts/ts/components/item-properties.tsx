@@ -24,6 +24,7 @@ export class EventProperties extends BaseComponent<EventPropertiesProps, {}> {
 
     // Bind callbacks & event listeners
     this.onStartTimeChange = this.onStartTimeChange.bind(this);
+    this.onDurationChange = this.onDurationChange.bind(this);
     this.onDelete = this.onDelete.bind(this);
   }
 

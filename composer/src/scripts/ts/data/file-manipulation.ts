@@ -1,4 +1,4 @@
-import {CueFile, CueFileLayer, CueFileEvent, AnyLayer} from '../shared/file/file';
+import {CueFile, CueFileLayer, CueFileEvent, CueFileEventState, AnyLayer} from '../shared/file/file';
 import * as selection from './selection';
 import * as util from '../shared/util/util';
 
@@ -24,7 +24,7 @@ function buildUpSelectionSet(selection: selection.Selection) {
 function modifyEvents(
     cueFile: CueFile,
     selection: selection.Selection,
-    f: {f<V>(e: CueFileEvent<V>): CueFileEvent<V>}): CueFile {
+    f: {f<K, S, V>(e: CueFileEvent<V>, layer: CueFileLayer<K, S, V>): CueFileEvent<V>}): CueFile {
   const selectedEvents = buildUpSelectionSet(selection);
 
   function doConvertLayer<K, S, V>(
@@ -35,7 +35,7 @@ function modifyEvents(
       settings: layer.settings,
       events: layer.events.map((e, i) => {
         if (selectedEvents.has(i)) {
-          return f.f(e);
+          return f.f(e, layer);
         } else {
           return e;
         }
@@ -98,8 +98,28 @@ export function updateStartTimeForSelectedEvents(
 export function updateDurationForSelectedEvents(
     cueFile: CueFile,
     selection: selection.Selection,
-    newStartTime: number): CueFile {
-  return cueFile;
+    newDuration: number): CueFile {
+
+  // Ignore empty selections
+  if (selection.events.length === 0)
+    return cueFile;
+
+  function setEventDuration<K, S, V>(e: CueFileEvent<V>, layer: CueFileLayer<K, S, V>): CueFileEvent<V> {
+    const states = e.states.length > 0 ? e.states : defaultEventStates(layer);
+    const currentDuration = Math.max.apply(null, states.map(s => s.millisDelta));
+    const stretch = newDuration / currentDuration;
+    return {
+      timestampMillis: e.timestampMillis,
+      states: states.map(s => ({
+        // TODO: ensure that s.millisDelta * (newDuration / currentDuration) === newDuration
+        // for the maximum s.millisDelta (i.e. s.millisDelta === currentDuration)
+        millisDelta: Math.round(s.millisDelta * stretch),
+        values: s.values
+      }))
+    };
+  }
+
+  return modifyEvents(cueFile, selection, {f: setEventDuration});
 }
 
 export function deleteSelectedEvents(
@@ -149,6 +169,19 @@ export function addLayer(file: CueFile): CueFile {
     lengthMillis: file.lengthMillis,
     layers
   });
+}
+
+function defaultEventStates<K, S, V>(layer: CueFileLayer<K, S, V>): CueFileEventState<V>[] {
+  // Type HACK
+  const l = layer as any as AnyLayer;
+  if (l.kind === 'percussion') {
+    return [
+      {millisDelta: 0, values: {amplitude: 1} as any as V},
+      {millisDelta: l.settings.defaultLengthMillis, values: {amplitude: 0} as any as V}
+    ];
+  } else {
+    throw new Error('no default states for layer kind ' + l.kind);
+  }
 }
 
 export function addLayerItem(file: CueFile, layer: number, timestampMillis: number): CueFile {
