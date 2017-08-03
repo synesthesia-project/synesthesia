@@ -1,4 +1,4 @@
-import {CueFile, CueFileLayer, AnyLayer} from '../shared/file/file';
+import {CueFile, CueFileLayer, CueFileEvent, AnyLayer} from '../shared/file/file';
 import * as selection from './selection';
 import * as util from '../shared/util/util';
 
@@ -19,6 +19,42 @@ function buildUpSelectionSet(selection: selection.Selection) {
     layerSet.add(e.index);
   }
   return selectedEvents;
+}
+
+function modifyEvents(
+    cueFile: CueFile,
+    selection: selection.Selection,
+    f: {f<V>(e: CueFileEvent<V>): CueFileEvent<V>}): CueFile {
+  const selectedEvents = buildUpSelectionSet(selection);
+
+  function doConvertLayer<K, S, V>(
+      selectedEvents: Set<number>,
+      layer: CueFileLayer<K, S, V>): CueFileLayer<K, S, V> {
+    return {
+      kind: layer.kind,
+      settings: layer.settings,
+      events: layer.events.map((e, i) => {
+        if (selectedEvents.has(i)) {
+          return f.f(e);
+        } else {
+          return e;
+        }
+      })
+    };
+  }
+
+  const newLayers = cueFile.layers.map((layer, i) => {
+    const layerSet = selectedEvents.get(i);
+    if (!layerSet)
+      // Layer unchanged
+      return layer;
+    return convertLayer(layer, l => doConvertLayer(layerSet, l));
+  });
+
+  return util.deepFreeze({
+    lengthMillis: cueFile.lengthMillis,
+    layers: newLayers
+  });
 }
 
 export function updateStartTimeForSelectedEvents(
@@ -49,39 +85,14 @@ export function updateStartTimeForSelectedEvents(
   if (shift < 0.1 && shift > 0.1)
     return cueFile;
 
-  const selectedEvents = buildUpSelectionSet(selection);
-
-  function doConvertLayer<K, S, V>(
-      selectedEvents: Set<number>,
-      layer: CueFileLayer<K, S, V>): CueFileLayer<K, S, V> {
+  function shiftEvent<V>(e: CueFileEvent<V>): CueFileEvent<V> {
     return {
-      kind: layer.kind,
-      settings: layer.settings,
-      events: layer.events.map((e, i) => {
-        if (selectedEvents.has(i)) {
-          return {
-            timestampMillis: e.timestampMillis + shift,
-            states: e.states
-          };
-        } else {
-          return e;
-        }
-      })
+      timestampMillis: e.timestampMillis + shift,
+      states: e.states
     };
   }
 
-  const newLayers = cueFile.layers.map((layer, i) => {
-    const layerSet = selectedEvents.get(i);
-    if (!layerSet)
-      // Layer unchanged
-      return layer;
-    return convertLayer(layer, l => doConvertLayer(layerSet, l));
-  });
-
-  return util.deepFreeze({
-    lengthMillis: cueFile.lengthMillis,
-    layers: newLayers
-  });
+  return modifyEvents(cueFile, selection, {f: shiftEvent});
 }
 
 export function updateDurationForSelectedEvents(
