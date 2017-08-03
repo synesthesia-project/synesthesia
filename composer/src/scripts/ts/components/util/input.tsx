@@ -2,7 +2,7 @@ import * as React from 'react';
 import {KEYCODES} from '../../util/input';
 
 interface PropertyInputProperties {
-  for?: string;
+  id?: string;
   type: string;
   value: string;
   onChange: (value: string) => void;
@@ -52,7 +52,7 @@ export class DelayedPropigationInput extends React.Component<PropertyInputProper
     return (
       <input
         ref={i => this.ref = i}
-        htmlFor={this.props.for}
+        id={this.props.id}
         type={this.props.type}
         defaultValue={this.props.value}
         onKeyDown={this.onKeyDown}

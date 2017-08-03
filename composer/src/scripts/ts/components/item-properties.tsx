@@ -63,9 +63,9 @@ export class EventProperties extends BaseComponent<EventPropertiesProps, {}> {
           {selectedEvents > 0 ?
             <div className="properties">
               <div className="property">
-                <label id="startTime" title="Start time in milliseconts">Start Time</label>
+                <label htmlFor="startTime" title="Start time in milliseconts">Start Time</label>
                 <DelayedPropigationInput
-                  for="startTime"
+                  id="startTime"
                   type="number"
                   value={String(this.getEarliestStartTime(this.props))}
                   onChange={this.onStartTimeChange}/>
