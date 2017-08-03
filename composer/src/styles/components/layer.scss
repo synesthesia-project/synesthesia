@@ -51,7 +51,7 @@ $button-height: $bar-height - $spacing * 4;
   .timeline {
     display: block;
     margin-left: $layer_side_column_width;
-    margin-right: $layer_side_column_width;
+    margin-right: $visualization_width;
     height: 100%;
     position: relative;
     overflow: hidden;
