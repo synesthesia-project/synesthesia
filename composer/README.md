@@ -19,20 +19,8 @@ google play music).
 
 ## TODO list
 
-* Replace text placeholders with icons (buttons etc...)
-* Add vertical scrolling for layers
-* Introduce Different types of layers
-* Add spread operation for selected events (evenly spread across selection)
-* Handle display of overlapping events on same layer better
-* Advanced manipulation of events:
-  * Manipulate event length
-  * Modify event states, their values, and timestamps
-  * Visualise the event states in a 2d graph in properties panel
-* Save + Load json files
-* Gracefully handle mismatch of media time + file time
-* File/Selection Edit / Undo History
-* Additional Websites for extension functionality (bandcamp, youtube, soundcloud etc...)
-* MIDI Input
+Please see the [GitHub issues](/samlanning/synesthesia/issues) for the list of
+tasks.
 
 ## Special Thanks
 
