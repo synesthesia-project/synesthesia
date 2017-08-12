@@ -69,4 +69,11 @@ export abstract class Endpoint {
     });
   }
 
+  protected sendNotification(notification: Notification) {
+    this.sendMessage({
+      type: 'notification',
+      notification
+    });
+  }
+
 }

@@ -31,7 +31,13 @@ export type StoppedNotification = {
   type: 'stopped';
 };
 
-export type Notification = PlayingNotification | StoppedNotification;
+export type PingStateNotification = {
+  type: 'ping';
+  ping: number;
+  diff: number;
+};
+
+export type Notification = PlayingNotification | StoppedNotification | PingStateNotification;
 
 export type PlayStateNotificationMessage = {
   type: 'notification';

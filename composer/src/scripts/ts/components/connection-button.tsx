@@ -20,6 +20,10 @@ interface ConnectionButtonProps {
 interface ConnectionButtonState {
   state: ConnectionState;
   host: string;
+  lastPingData?: {
+    ping: number;
+    diff: number;
+  };
 }
 
 const DEFAULT_HOST = 'localhost:' + shared.constants.DEFAULT_SYNESTHESIA_PORT;
@@ -79,6 +83,9 @@ export class ConnectionButton extends React.Component<ConnectionButtonProps, Con
             msg => {
               if (socket !== this.socket) throw new Error('socket not open');
               socket.send(JSON.stringify(msg));
+            },
+            (ping, diff) => {
+              this.setState({lastPingData: {ping, diff}});
             });
           socket.onmessage = msg => endpoint.recvMessage(JSON.parse(msg.data));
           socket.onclose = () => {
@@ -138,7 +145,14 @@ export class ConnectionButton extends React.Component<ConnectionButtonProps, Con
       switch (this.state.state) {
         case 'not_connected': return 'Connect to Consumer';
         case 'connecting': return 'Connecting...';
-        case 'connected': return 'Connected to Consumer';
+        case 'connected': {
+          if (this.state.lastPingData) {
+            const ping = this.state.lastPingData.ping;
+            const diff = this.state.lastPingData.diff;
+            return `Connected - Ping: ${ping}ms, Diff: ${diff}ms`;
+          }
+          return 'Connected to Consumer';
+        }
         case 'error': return 'An error ocurred';
       }
     })();

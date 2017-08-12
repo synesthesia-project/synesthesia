@@ -7,8 +7,13 @@ import {Message, Request, Response, PlayStateData, Notification} from './message
  */
 export class ControllerEndpoint extends Endpoint {
 
-  public constructor(sendMessage: (msg: Message) => void) {
+  private readonly recvPingData: (ping: number, diff: number) => void;
+
+  public constructor(
+      sendMessage: (msg: Message) => void,
+      recvPingData: (ping: number, diff: number) => void) {
     super(sendMessage);
+    this.recvPingData = recvPingData;
   }
 
   protected handleRequest(request: Request) {
@@ -28,7 +33,14 @@ export class ControllerEndpoint extends Endpoint {
   }
 
   protected handleNotification(notification: Notification) {
-    console.error('unexpected notification', notification);
+    switch (notification.type) {
+      case 'ping': {
+        this.recvPingData(notification.ping, notification.diff);
+        break;
+      }
+      default:
+        console.error('unknown notification:', notification);
+    }
   }
 
   protected handleClosed() {

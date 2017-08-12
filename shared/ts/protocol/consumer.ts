@@ -77,6 +77,7 @@ export class ConsumerEndpoint extends Endpoint {
         this.latestGoodPing = {
           ping, requestTime, diff
         };
+        this.sendNotification({type: 'ping', ping, diff});
         console.log('updating time difference:', diff);
         this.sendPlayState();
       }
