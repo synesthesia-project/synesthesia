@@ -56,7 +56,12 @@ $properties-spacing: 8px;
       }
 
       button {
+        outline: none;
         @include rect-button-small();
+
+        &.disabled {
+          @include button-disabled();
+        }
       }
     }
   }

@@ -26,6 +26,7 @@ export class EventProperties extends BaseComponent<EventPropertiesProps, {}> {
     this.onStartTimeChange = this.onStartTimeChange.bind(this);
     this.onDurationChange = this.onDurationChange.bind(this);
     this.onDelete = this.onDelete.bind(this);
+    this.onSpread = this.onSpread.bind(this);
   }
 
   private getEvent(e: {layer: number, index: number}) {
@@ -85,6 +86,13 @@ export class EventProperties extends BaseComponent<EventPropertiesProps, {}> {
     ]);
   }
 
+  private onSpread() {
+    this.props.updateCueFileAndSelection(([f, s]) => [
+      fileManipulation.distributeSelectedEvents(f, s),
+      s
+    ]);
+  }
+
   public render() {
     const selectedEvents = this.props.selection.events.length;
     return (
@@ -114,7 +122,10 @@ export class EventProperties extends BaseComponent<EventPropertiesProps, {}> {
                     onChange={this.onDurationChange}/>
                 </div>
               <div className="property">
-                <button onClick={this.onDelete}><Delete/></button>
+                <button onClick={this.onDelete} title="Delete"><Delete/></button>
+              </div>
+              <div className="property" title="Distribute the selected items evenly">
+                <button className={selectedEvents === 1 ? 'disabled' : ''}onClick={this.onSpread}>DISTRIBUTE</button>
               </div>
             </div>
             : null
