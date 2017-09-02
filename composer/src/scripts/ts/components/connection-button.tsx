@@ -141,27 +141,32 @@ export class ConnectionButton extends React.Component<ConnectionButtonProps, Con
 
   public render() {
 
+    const statusText = (() => {
+      if (this.state.state === 'connected' && this.state.lastPingData) {
+        const ping = this.state.lastPingData.ping;
+        const diff = this.state.lastPingData.diff;
+        return <span className="connectionInfo">{ `Ping: ${ping}ms, Diff: ${diff}ms`}</span>;
+      }
+      return null;
+    })();
+
     const buttonTitle = (() => {
       switch (this.state.state) {
         case 'not_connected': return 'Connect to Consumer';
         case 'connecting': return 'Connecting...';
-        case 'connected': {
-          if (this.state.lastPingData) {
-            const ping = this.state.lastPingData.ping;
-            const diff = this.state.lastPingData.diff;
-            return `Connected - Ping: ${ping}ms, Diff: ${diff}ms`;
-          }
-          return 'Connected to Consumer';
-        }
+        case 'connected': return 'Connected to Consumer';
         case 'error': return 'An error ocurred';
       }
     })();
 
     return (
-      <button className="connection-button" title={buttonTitle} onClick={this.onClick}>
-        <SettingsEthernet/>
-        <span className={`indicator ${this.state.state}`} />
-      </button>
+      <div className="flex">
+        {statusText}
+        <button className="connection-button" title={buttonTitle} onClick={this.onClick}>
+          <SettingsEthernet/>
+          <span className={`indicator ${this.state.state}`} />
+        </button>
+      </div>
     );
   }
 }

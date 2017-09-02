@@ -61,11 +61,16 @@
 
   @include connection-button();
 
-  .grow {
+  > .grow {
     flex-grow: 1;
   }
 
-  > span {
+  > .flex {
+    display: flex;
+    align-items: center;
+  }
+
+  > span, > .flex > span {
     margin: $spacing / 2;
     font-size: 14px;
     padding: 0 6px;
