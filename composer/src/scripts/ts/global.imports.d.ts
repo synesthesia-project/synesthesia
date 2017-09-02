@@ -49,6 +49,10 @@ declare module 'react-icons/lib/md/music-note' {
   import Icon from 'react-icons/md/music-note'; export = Icon;
 }
 
+declare module 'react-icons/lib/md/settings' {
+  import Icon from 'react-icons/md/settings'; export = Icon;
+}
+
 declare module 'react-icons/lib/md/tab' {
   import Icon from 'react-icons/md/tab'; export = Icon;
 }

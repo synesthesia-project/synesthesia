@@ -10,6 +10,7 @@ import * as stageState from '../data/stage-state';
 
 import Keyboard = require('react-icons/lib/md/keyboard');
 import MusicNote = require('react-icons/lib/md/music-note');
+import Settings = require('react-icons/lib/md/settings');
 
 export interface LayerState { }
 
@@ -63,10 +64,14 @@ export class Layer extends BaseComponent<LayerProps, LayerState> {
           <link rel="stylesheet" type="text/css" href="styles/components/layer.css"/>
           <div className="side">
             <span
-              className={'toggle-select-button' + (this.isSelected() ? ' selected' : '')}
+              className={'button' + (this.isSelected() ? ' selected' : '')}
+              title="Bind to Keyboard"
               onClick={this.toggleSelect}><Keyboard /></span>
-            <span className={'bind-button' + (this.isBinding() ? ' binding' : '')} onClick={this.requestBind}>
-              <MusicNote/>{binding ? (': ' + binding) : ''}
+            <span className="column">
+              <span className={'button' + (this.isBinding() ? ' selected' : '')} onClick={this.requestBind}>
+                <span>MIDI{binding ? (': ' + binding) : ''}</span>
+              </span>
+              <span className="button grow" title="Settings"><Settings /></span>
             </span>
           </div>
           <LayerVisualization layer={this.props.layer} positionMillis={this.props.positionMillis} />

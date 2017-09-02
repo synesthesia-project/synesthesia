@@ -2,7 +2,6 @@
 @import "../shared/buttons";
 
 $bar-height: 60px;
-$button-height: $bar-height - $spacing * 4;
 
 [data-reactroot] {
   box-sizing: border-box;
@@ -16,7 +15,6 @@ $button-height: $bar-height - $spacing * 4;
     background: $layer_side_bg;
     display: flex;
     flex-direction: row;
-    padding: $spacing;
     align-items: center;
     position: absolute;
     width: $layer_side_column_width;
@@ -25,25 +23,49 @@ $button-height: $bar-height - $spacing * 4;
     left: 0;
     border-right: 1px solid $border-light;
 
-    .toggle-select-button, .bind-button {
+    .button {
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: $spacing;
-      height: $button-height;
-      min-width: $button-height;
+      margin: 0 -1px 0 0;
+      height: 100%;
       @include rect-button();
-    }
+      border-radius: 0;
+      padding: 6px;
+      font-size: 24px;
 
-    .toggle-select-button {
+      span {
+        font-size: 12px;
+      }
+
       &.selected {
         @include button-pressed();
       }
+
+      &:first-child {
+        border-top: none;
+      }
     }
 
-    .bind-button {
-      &.binding {
-        @include button-pressed();
+    .column {
+      height: 100%;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+
+      .button {
+        height: initial;
+        width: 100%;
+        margin-bottom: -1px;
+        font-size: 16px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        &.grow {
+          flex-grow: 1;
+        }
       }
     }
   }
