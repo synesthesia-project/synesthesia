@@ -27,6 +27,7 @@ export interface LayerProps {
   selectionDraggingDiff: number | null;
   // Callbacks
   updateSelection: types.Mutator<selection.Selection>;
+  updateCueFile: types.Mutator<file.CueFile>;
   requestBindingForLayer: (layerKey: number) => void;
   updateSelectionDraggingDiff: (diffMillis: number | null) => void;
 }
@@ -89,6 +90,7 @@ export class Layer extends BaseComponent<LayerProps, LayerState> {
                 layerKey={this.props.layerKey}
                 selection={this.props.selection}
                 updateSelection={this.props.updateSelection}
+                updateCueFile={this.props.updateCueFile}
                 selectionDraggingDiff={this.props.selectionDraggingDiff}
                 updateSelectionDraggingDiff={this.props.updateSelectionDraggingDiff}
                 />

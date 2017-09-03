@@ -1,7 +1,7 @@
 import {BaseComponent} from './base';
 import * as React from 'react';
 import * as file from '../shared/file/file';
-import {getEventDuration} from '../data/file-manipulation';
+import {getEventDuration, shiftSelectedEvents} from '../data/file-manipulation';
 import * as selection from '../data/selection';
 import * as types from '../shared/util/types';
 import * as dragging from './util/dragging';
@@ -16,6 +16,7 @@ export interface LayerItemsProps {
   selectionDraggingDiff: number | null;
   // Callbacks
   updateSelection: types.Mutator<selection.Selection>;
+  updateCueFile: types.Mutator<file.CueFile>;
   updateSelectionDraggingDiff: (diffMillis: number | null) => void;
 }
 
@@ -133,7 +134,11 @@ export class LayerItems extends BaseComponent<LayerItemsProps, LayerItemsState> 
         if (locked) {
           clickOnlyCallback(modifiers);
         } else {
-          // TODO: move selection
+          if (this.timelineSelector) {
+            const position = this.getTimelineSelectorPosition(this.timelineSelector, x);
+            const diffMillis = (position - initPosition) * this.props.file.lengthMillis;
+            this.props.updateCueFile(f => shiftSelectedEvents(f, this.props.selection, diffMillis));
+          }
         }
         this.props.updateSelectionDraggingDiff(null);
       },

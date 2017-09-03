@@ -114,6 +114,7 @@ export class LayersAndTimeline extends BaseComponent<LayersAndTimelineProps, Lay
           midiLayerBindings={this.props.midiLayerBindings}
           selectionDraggingDiff={this.state.selectionDraggingDiff}
           updateSelection={this.props.updateSelection}
+          updateCueFile={this.props.updateCueFile}
           requestBindingForLayer={this.props.requestBindingForLayer}
           updateSelectionDraggingDiff={this.updateSelectionDraggingDiff}
           />

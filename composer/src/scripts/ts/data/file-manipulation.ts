@@ -85,13 +85,26 @@ export function updateStartTimeForSelectedEvents(
     return cueFile;
 
   const shift = newStartTime - start;
+
+  return shiftSelectedEvents(cueFile, selection, shift);
+}
+
+export function shiftSelectedEvents(
+    cueFile: CueFile,
+    selection: selection.Selection,
+    shiftMillis: number): CueFile {
+
+  // Ignore empty selections
+  if (selection.events.length === 0)
+    return cueFile;
+
   // Don't change the file if shifting less than 0.1 ms
-  if (shift < 0.1 && shift > 0.1)
+  if (shiftMillis < 0.1 && shiftMillis > 0.1)
     return cueFile;
 
   function shiftEvent<V>(l: {}, [i, e]: [number, CueFileEvent<V>]): CueFileEvent<V> {
     return {
-      timestampMillis: e.timestampMillis + shift,
+      timestampMillis: e.timestampMillis + shiftMillis,
       states: e.states
     };
   }
