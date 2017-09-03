@@ -99,6 +99,11 @@ export function updateStartTimeForSelectedEvents(
   return modifyEvents(cueFile, selection, {f: shiftEvent});
 }
 
+export function getEventDuration<K, S, V>(layer: CueFileLayer<K, S, V>, e: CueFileEvent<V>) {
+  const states = e.states.length > 0 ? e.states : defaultEventStates(layer);
+  return Math.max.apply(null, states.map(s => s.millisDelta));
+}
+
 export function updateDurationForSelectedEvents(
     cueFile: CueFile,
     selection: selection.Selection,

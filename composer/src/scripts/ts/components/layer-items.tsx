@@ -1,6 +1,7 @@
 import {BaseComponent} from './base';
 import * as React from 'react';
 import * as file from '../shared/file/file';
+import {getEventDuration} from '../data/file-manipulation';
 import * as selection from '../data/selection';
 import * as types from '../shared/util/types';
 import * as dragging from './util/dragging';
@@ -63,6 +64,7 @@ export class LayerItems extends BaseComponent<LayerItemsProps, LayerItemsState> 
     e.preventDefault();
     const start = this.getTimelineSelectorMousePosition(this.timelineSelector, e);
     this.setState({selector: {state: 'dragging', start, end: start}});
+
     dragging.captureDragging(
       (x, y) => {
         if (!this.timelineSelector) return;
@@ -74,8 +76,23 @@ export class LayerItems extends BaseComponent<LayerItemsProps, LayerItemsState> 
         }});
       },
       (x, y, modifiers) => {
-        // TODO: update selection
-        this.props.updateSelection(s => selection.handleItemSelectionChange(s, modifiers, this.props.layerKey, []));
+        if (!this.timelineSelector) return;
+        const latestPosition = this.getTimelineSelectorPosition(this.timelineSelector, x);
+        // Calculate the items that are within the selection
+        const startTimestamp = Math.min(start, latestPosition) * this.props.file.lengthMillis;
+        const endTimestamp = Math.max(start, latestPosition) * this.props.file.lengthMillis;
+        const ids = this.props.layer.events
+          // Wrap the index in with the item so that we can retain it during filtering
+          .map((item, i) => ({item, i}))
+          // Filter to only the events that are within the selection
+          .filter(i => {
+            const item = i.item;
+            const duration = getEventDuration(this.props.layer, item);
+            return (item.timestampMillis + duration) > startTimestamp && item.timestampMillis < endTimestamp;
+          })
+          // Map once again to extract the IDs of the events
+          .map((item, i) => item.i);
+        this.props.updateSelection(s => selection.handleItemSelectionChange(s, modifiers, this.props.layerKey, ids));
         this.setState({selector: {state: 'nothing'}});
       },
       (x, y) => {
