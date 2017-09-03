@@ -5,6 +5,7 @@ import {getEventDuration} from '../data/file-manipulation';
 import * as selection from '../data/selection';
 import * as types from '../shared/util/types';
 import * as dragging from './util/dragging';
+import {ActiveModifierKeys} from '../util/input';
 
 export interface LayerItemsProps {
   // Properties
@@ -12,8 +13,10 @@ export interface LayerItemsProps {
   file: file.CueFile;
   layer: file.AnyLayer;
   layerKey: number;
+  selectionDraggingDiff: number | null;
   // Callbacks
   updateSelection: types.Mutator<selection.Selection>;
+  updateSelectionDraggingDiff: (diffMillis: number | null) => void;
 }
 
 export interface LayerItemsState {
@@ -107,6 +110,38 @@ export class LayerItems extends BaseComponent<LayerItemsProps, LayerItemsState> 
     this.setState({selector: {state: 'hover', position}});
   }
 
+  private onSelectedEventMouseDown(
+      e: React.MouseEvent<{}>,
+      clickOnlyCallback: (modifiers: ActiveModifierKeys) => void) {
+    if (!this.timelineSelector) return;
+    const initX = e.pageX;
+    const initPosition = this.getTimelineSelectorPosition(this.timelineSelector, initX);
+    let locked = true;
+    dragging.captureDragging(
+      (x, y) => {
+        // Unlock once dragged enough
+        if (locked &&
+          (x < initX - dragging.MIN_DRAG_THRESHOLD || x > initX + dragging.MIN_DRAG_THRESHOLD))
+          locked = false;
+        if (!locked && this.timelineSelector) {
+          const position = this.getTimelineSelectorPosition(this.timelineSelector, x);
+          const diffMillis = (position - initPosition) * this.props.file.lengthMillis;
+          this.props.updateSelectionDraggingDiff(diffMillis);
+        }
+      },
+      (x, y, modifiers) => {
+        if (locked) {
+          clickOnlyCallback(modifiers);
+        } else {
+          // TODO: move selection
+        }
+        this.props.updateSelectionDraggingDiff(null);
+      },
+      (x, y) => this.props.updateSelectionDraggingDiff(null),
+      'move'
+    );
+  }
+
   public render() {
     // Items that are selected for this layer
     const selectedEvents = new Set(
@@ -114,6 +149,7 @@ export class LayerItems extends BaseComponent<LayerItemsProps, LayerItemsState> 
       .filter(e => e.layer === this.props.layerKey)
       .map(e => e.index)
     );
+    const extraItems: JSX.Element[] = [];
     const items = this.props.layer.events.map((item, i) => {
       let length = 0;
       if (item.states.length !== 0) {
@@ -123,13 +159,45 @@ export class LayerItems extends BaseComponent<LayerItemsProps, LayerItemsState> 
         // Get default length of items
         length = this.props.layer.settings.defaultLengthMillis;
       }
+      const selected = selectedEvents.has(i);
       const position = item.timestampMillis / this.props.file.lengthMillis;
       const style: React.CSSProperties = {
         left: position * 100 + '%',
         width: (length / this.props.file.lengthMillis) * 100 + '%',
       };
+      let dragging = false;
+      if (selected && this.props.selectionDraggingDiff !== null) {
+        dragging = true;
+        // Add overlay for moving selection
+        const overlayPosition = (item.timestampMillis + this.props.selectionDraggingDiff) /
+          this.props.file.lengthMillis;
+        const overlayStyle = {
+          left: overlayPosition * 100 + '%',
+          width: style.width
+        };
+        extraItems.push(
+          <div
+            key={extraItems.length}
+            className="item overlay"
+            style={overlayStyle} />
+        );
+      }
+      const handleItemSelectionChange = (m: ActiveModifierKeys) =>
+        this.props.updateSelection(s =>
+          selection.handleItemSelectionChange(s, m, this.props.layerKey, [i]));
       const onClick = (e: React.MouseEvent<{}>) => {
-        this.props.updateSelection(s => selection.handleItemSelectionChange(s, e, this.props.layerKey, [i]));
+        if (!selected)
+          handleItemSelectionChange(e);
+      };
+      const onMouseDown = (e: React.MouseEvent<{}>) => {
+        if (selected)
+          this.onSelectedEventMouseDown(
+            e,
+            // Only select / deselect item in selection if ctrl key is pressed
+            modifiers => {
+              if (modifiers.ctrlKey) handleItemSelectionChange(modifiers);
+            }
+        );
       };
       let inDraggingSelection = false;
       if (this.state.selector.state === 'dragging') {
@@ -142,10 +210,12 @@ export class LayerItems extends BaseComponent<LayerItemsProps, LayerItemsState> 
           key={i}
           className={
             'item' +
-            (selectedEvents.has(i) ? ' selected' : '') +
+            (selected ? ' selected' : '') +
+            (dragging ? ' dragging' : '') +
             (inDraggingSelection ? ' active' : '')}
           style={style}
-          onClick={onClick} />
+          onClick={onClick}
+          onMouseDown={onMouseDown}/>
         );
     });
 
@@ -189,6 +259,7 @@ export class LayerItems extends BaseComponent<LayerItemsProps, LayerItemsState> 
             {selectorIndicator}
           </div>
           {items}
+          {extraItems}
         </div>
       </externals.ShadowDOM>
     );

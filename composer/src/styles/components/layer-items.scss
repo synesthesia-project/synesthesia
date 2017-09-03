@@ -64,6 +64,7 @@ $button-height: $bar-height - $spacing * 4;
 
     &.selected {
       background-color: rgba(#fff, 0.7);
+      cursor: move;
     }
 
     &.active {
@@ -74,6 +75,16 @@ $button-height: $bar-height - $spacing * 4;
         background-color: rgba($hint, 0.8);
         border-color: rgba(#fff, 0.4);
       }
+    }
+
+    &.dragging {
+      border-width: 0;
+      background-color: rgba(#666, 0.4);
+    }
+
+    &.overlay {
+      background-color: rgba($hint, 0.4);
+      border-color: $hint;
     }
   }
 }

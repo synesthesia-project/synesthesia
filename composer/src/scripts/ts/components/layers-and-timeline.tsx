@@ -29,6 +29,11 @@ export interface LayersAndTimelineState {
   /** Current position in milliseconds, updated every so often based on frame-rate */
   positionMillis: number;
   mousePosition: func.Maybe<number>;
+  /**
+   * If the user is currently dragging the selected elements, then
+   * this is the difference in milliseconds
+   */
+  selectionDraggingDiff: number | null;
 }
 
 export class LayersAndTimeline extends BaseComponent<LayersAndTimelineProps, LayersAndTimelineState> {
@@ -39,9 +44,11 @@ export class LayersAndTimeline extends BaseComponent<LayersAndTimelineProps, Lay
     super();
     this.state = {
       positionMillis: 0,
-      mousePosition: func.none()
+      mousePosition: func.none(),
+      selectionDraggingDiff: null
     };
     this.updateMouseHover = this.updateMouseHover.bind(this);
+    this.updateSelectionDraggingDiff = this.updateSelectionDraggingDiff.bind(this);
   }
 
   public componentDidMount() {
@@ -88,6 +95,10 @@ export class LayersAndTimeline extends BaseComponent<LayersAndTimelineProps, Lay
     this.setState({mousePosition});
   }
 
+  private updateSelectionDraggingDiff(selectionDraggingDiff: number | null): void {
+    this.setState({selectionDraggingDiff});
+  }
+
   public render() {
     let layers = this.props.file.caseOf({
       just: cueFile => cueFile.layers.map((layer, i) =>
@@ -101,8 +112,10 @@ export class LayersAndTimeline extends BaseComponent<LayersAndTimelineProps, Lay
           positionMillis={this.state.positionMillis}
           bindingLayer={this.props.bindingLayer}
           midiLayerBindings={this.props.midiLayerBindings}
+          selectionDraggingDiff={this.state.selectionDraggingDiff}
           updateSelection={this.props.updateSelection}
           requestBindingForLayer={this.props.requestBindingForLayer}
+          updateSelectionDraggingDiff={this.updateSelectionDraggingDiff}
           />
       ),
       none: () => []

@@ -24,9 +24,11 @@ export interface LayerProps {
   positionMillis: number;
   bindingLayer: func.Maybe<number>;
   midiLayerBindings: {input: string, note: number, layer: number}[];
+  selectionDraggingDiff: number | null;
   // Callbacks
   updateSelection: types.Mutator<selection.Selection>;
   requestBindingForLayer: (layerKey: number) => void;
+  updateSelectionDraggingDiff: (diffMillis: number | null) => void;
 }
 
 export class Layer extends BaseComponent<LayerProps, LayerState> {
@@ -87,6 +89,8 @@ export class Layer extends BaseComponent<LayerProps, LayerState> {
                 layerKey={this.props.layerKey}
                 selection={this.props.selection}
                 updateSelection={this.props.updateSelection}
+                selectionDraggingDiff={this.props.selectionDraggingDiff}
+                updateSelectionDraggingDiff={this.props.updateSelectionDraggingDiff}
                 />
             </div>
           </div>
