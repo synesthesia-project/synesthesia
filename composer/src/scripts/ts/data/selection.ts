@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as util from '../shared/util/util';
+import {ActiveModifierKeys} from '../util/input';
 
 type ItemsSelection = {layer: number, index: number}[];
 
@@ -46,11 +47,11 @@ export function toggleLayer(selection: Selection, layer: number): Selection  {
 
 export function handleItemSelectionChange(
     selection: Selection,
-    e: React.MouseEvent<{}>,
+    modifiers: ActiveModifierKeys,
     layer: number,
     itemIndexes: number[]): Selection  {
   let events: ItemsSelection;
-  if (e.ctrlKey) {
+  if (modifiers.ctrlKey) {
     // Toggle each item in the list
     const existingIndexesForLayer = new Set(
       selection.events.filter(i => i.layer === layer).map(i => i.index)
@@ -62,7 +63,7 @@ export function handleItemSelectionChange(
     events = events.concat(
       itemIndexes.filter(i => !existingIndexesForLayer.has(i)).map(index => ({layer, index}))
     );
-  } else if (e.shiftKey) {
+  } else if (modifiers.shiftKey) {
     // Add to existing items (but ensure no duplicates)
     const existingIndexesForLayer = new Set(
       selection.events.filter(i => i.layer === layer).map(i => i.index)

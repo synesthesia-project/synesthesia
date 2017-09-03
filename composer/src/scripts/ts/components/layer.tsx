@@ -76,6 +76,7 @@ export class Layer extends BaseComponent<LayerProps, LayerState> {
           </div>
           <LayerVisualization layer={this.props.layer} positionMillis={this.props.positionMillis} />
           <div className="timeline">
+            <div className="timeline-selector" />
             <div className="timeline-zoom" style={{
                 left: (- zoomMargin.left * 100) + '%',
                 right: (- zoomMargin.right * 100) + '%'

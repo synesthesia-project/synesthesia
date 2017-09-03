@@ -9,22 +9,71 @@ $button-height: $bar-height - $spacing * 4;
   height: 100%;
   width: 100%;
 
+  .timeline-selector {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0);
+    transition: background 0.2s;
+
+    &:hover, &.dragging {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .indicator {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 20%;
+      background: rgba($hint, 0.2);
+
+      .side {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: $hint;
+
+        &.left {
+          left: -1px;
+        }
+
+        &.right {
+          right: -1px;
+        }
+      }
+    }
+  }
+
   .item {
     position: absolute;
     top: 0;
     margin-left: -1px;
     width: 1px;
     height: calc(100% - 2px);
-    background-color: #444;
-    border: 1px solid #666;
+    background-color: rgba(#666, 0.8);
+    border: 1px solid rgba(#fff, 0.4);
     cursor: pointer;
 
     &:hover {
-      background-color: #666;
+      background-color:  rgba(#CCC, 0.5);
     }
 
     &.selected {
-      background-color: #999;
+      background-color: rgba(#fff, 0.7);
+    }
+
+    &.active {
+      background-color: rgba($hint, 0.4);
+      border-color: $hint;
+
+      &.selected {
+        background-color: rgba($hint, 0.8);
+        border-color: rgba(#fff, 0.4);
+      }
     }
   }
 }

@@ -4,3 +4,8 @@ export const KEYCODES = {
   SPACE: 32,
   DEL: 46
 };
+
+export interface ActiveModifierKeys {
+  ctrlKey: boolean;
+  shiftKey: boolean;
+}
