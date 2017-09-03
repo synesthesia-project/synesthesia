@@ -251,8 +251,8 @@ export class Stage extends BaseComponent<StageProps, StageState> {
     });
   }
 
-  private requestBindingForLayer(layerKey: number) {
-    this.setState({bindingLayer: func.just(layerKey)});
+  private requestBindingForLayer(layerKey: number | null) {
+    this.setState({bindingLayer: func.maybeFrom(layerKey)});
   }
 
   public render() {

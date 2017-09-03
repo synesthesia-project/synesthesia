@@ -28,7 +28,7 @@ export interface LayerProps {
   // Callbacks
   updateSelection: types.Mutator<selection.Selection>;
   updateCueFile: types.Mutator<file.CueFile>;
-  requestBindingForLayer: (layerKey: number) => void;
+  requestBindingForLayer: (layerKey: number | null) => void;
   updateSelectionDraggingDiff: (diffMillis: number | null) => void;
 }
 
@@ -39,7 +39,7 @@ export class Layer extends BaseComponent<LayerProps, LayerState> {
 
     // Bind callbacks & event listeners
     this.toggleSelect = this.toggleSelect.bind(this);
-    this.requestBind = this.requestBind.bind(this);
+    this.toggleRequestBind = this.toggleRequestBind.bind(this);
   }
 
   private isSelected() {
@@ -71,7 +71,7 @@ export class Layer extends BaseComponent<LayerProps, LayerState> {
               title="Bind to Keyboard"
               onClick={this.toggleSelect}><Keyboard /></span>
             <span className="column">
-              <span className={'button' + (this.isBinding() ? ' selected' : '')} onClick={this.requestBind}>
+              <span className={'button' + (this.isBinding() ? ' selected' : '')} onClick={this.toggleRequestBind}>
                 <span>MIDI{binding ? (': ' + binding) : ''}</span>
               </span>
               <span className="button grow" title="Settings"><Settings /></span>
@@ -105,8 +105,13 @@ export class Layer extends BaseComponent<LayerProps, LayerState> {
     this.props.updateSelection(s => selection.toggleLayer(s, this.props.layerKey));
   }
 
-  private requestBind() {
-    this.props.requestBindingForLayer(this.props.layerKey);
+  private toggleRequestBind() {
+    return this.props.bindingLayer.caseOf({
+      just: layerKey => this.props.requestBindingForLayer(
+        layerKey === this.props.layerKey ? null : this.props.layerKey
+      ),
+      none: () => this.props.requestBindingForLayer(this.props.layerKey)
+    });
   }
 
 }

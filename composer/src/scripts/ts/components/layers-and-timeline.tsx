@@ -22,7 +22,7 @@ export interface LayersAndTimelineProps {
   layersRef: (ref: HTMLDivElement) => void;
   updateCueFile: types.Mutator<file.CueFile>;
   updateSelection: types.Mutator<selection.Selection>;
-  requestBindingForLayer: (layerKey: number) => void;
+  requestBindingForLayer: (layerKey: number | null) => void;
 }
 
 export interface LayersAndTimelineState {
