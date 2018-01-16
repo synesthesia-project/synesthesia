@@ -1,0 +1,4 @@
+extraction:
+  javascript:
+    index:
+      typescript: true
