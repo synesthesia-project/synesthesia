@@ -1,4 +1,2 @@
-extraction:
-  javascript:
-    index:
-      typescript: true
+queries:
+- include: "*"
