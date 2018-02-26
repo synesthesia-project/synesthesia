@@ -1,6 +1,7 @@
 import {BaseComponent} from './base';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import {styled, ThemeProvider, defaultTheme} from './styling';
 
 import * as shared from '../shared';
 
@@ -22,7 +23,10 @@ import * as midi from '../midi/midi';
 import {KEYCODES} from '../util/input';
 
 
-export interface StageProps {  }
+export interface StageProps {
+  className?: string;
+}
+
 export interface StageState {
   playState: PlayState;
   cueFile: func.Maybe<file.CueFile>;
@@ -258,50 +262,55 @@ export class Stage extends BaseComponent<StageProps, StageState> {
   public render() {
 
     return (
-      <externals.ShadowDOM>
-        <div>
-          <link rel="stylesheet" type="text/css" href="styles/components/stage.css"/>
-          <Overlays />
-          <FileSource
-            file={this.state.cueFile}
-            playState={this.state.playState}
-            playStateUpdated={this.playStateUpdated}
-            fileLoaded={this.fileLoaded}
-            />
-          <LayersAndTimeline
-            file={this.state.cueFile}
-            playState={this.state.playState}
+      <div className={this.props.className}>
+        <Overlays />
+        <FileSource
+          file={this.state.cueFile}
+          playState={this.state.playState}
+          playStateUpdated={this.playStateUpdated}
+          fileLoaded={this.fileLoaded}
+          />
+        <LayersAndTimeline
+          file={this.state.cueFile}
+          playState={this.state.playState}
+          selection={this.state.selection}
+          state={this.state.state}
+          bindingLayer={this.state.bindingLayer}
+          midiLayerBindings={this.state.midiLayerBindings}
+          updateSelection={this.updateSelection}
+          timelineRef={timeline => this.timeline = timeline}
+          layersRef={layers => this.layers = layers}
+          updateCueFile={this.updateCueFile}
+          requestBindingForLayer={this.requestBindingForLayer}
+          />
+        {this.state.cueFile.caseOf({
+          just: file => <EventProperties
+            file={file}
             selection={this.state.selection}
-            state={this.state.state}
-            bindingLayer={this.state.bindingLayer}
-            midiLayerBindings={this.state.midiLayerBindings}
-            updateSelection={this.updateSelection}
-            timelineRef={timeline => this.timeline = timeline}
-            layersRef={layers => this.layers = layers}
-            updateCueFile={this.updateCueFile}
-            requestBindingForLayer={this.requestBindingForLayer}
-            />
-          {this.state.cueFile.caseOf({
-            just: file => <EventProperties
-              file={file}
-              selection={this.state.selection}
-              updateCueFileAndSelection={this.updateCueFileAndSelection} />,
-            none: () => null
-          })}
-          <Player
-            ref={player => this.player = player}
-            zoom={this.state.state.zoom}
-            playState={this.state.playState}
-            />
-        </div>
-      </externals.ShadowDOM>
+            updateCueFileAndSelection={this.updateCueFileAndSelection} />,
+          none: () => null
+        })}
+        <Player
+          ref={player => this.player = player}
+          zoom={this.state.state.zoom}
+          playState={this.state.playState}
+          />
+      </div>
     );
   }
 }
 
+const StyledStage = styled(Stage)`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+`;
+
 export function setup() {
   ReactDOM.render(
-    <Stage />,
+    <ThemeProvider theme={defaultTheme}>
+      <StyledStage />
+    </ThemeProvider>,
     document.getElementById('root')
   );
 }

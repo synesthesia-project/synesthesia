@@ -1,4 +1,5 @@
 import {BaseComponent} from './base';
+import {styled} from './styling';
 import {Layer} from './layer';
 import {Timeline} from './timeline';
 import * as React from 'react';
@@ -11,6 +12,7 @@ import * as playState from '../data/play-state';
 
 export interface LayersAndTimelineProps {
   // Properties
+  className?: string;
   selection: selection.Selection;
   file: func.Maybe<file.CueFile>;
   state: stageState.StageState;
@@ -36,7 +38,7 @@ export interface LayersAndTimelineState {
   selectionDraggingDiff: number | null;
 }
 
-export class LayersAndTimeline extends BaseComponent<LayersAndTimelineProps, LayersAndTimelineState> {
+class LayersAndTimeline extends BaseComponent<LayersAndTimelineProps, LayersAndTimelineState> {
 
   private updateInterval: number;
 
@@ -127,7 +129,7 @@ export class LayersAndTimeline extends BaseComponent<LayersAndTimelineProps, Lay
     const playerPosition = this.props.file.fmap(file => this.state.positionMillis / file.lengthMillis);
 
     return (
-      <div id="main">
+      <div className={this.props.className}>
         <div
           className="layers"
           ref={layers => this.props.layersRef(layers)}>
@@ -166,3 +168,74 @@ export class LayersAndTimeline extends BaseComponent<LayersAndTimelineProps, Lay
   }
 
 }
+
+const StyledLayersAndTimeline = styled(LayersAndTimeline)`
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+
+  > .layers {
+    flex-grow: 1;
+    position: relative;
+    overflow-y: hidden;
+
+    &::before, &::after {
+      box-sizing: border-box;
+      content: "";
+      display: block;
+      background: ${p => p.theme.layerSideBg};
+      position: absolute;
+      height: 100%;
+      top: 0;
+      z-index: -100;
+      opacity: 0.6;
+      box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.3);
+    }
+
+    &::before {
+      width: ${p => p.theme.layerSideColumnWidthPx}px;
+      left: 0;
+      border-right: 1px solid ${p => p.theme.borderLight};
+    }
+
+    &::after {
+      width: ${p => p.theme.visualizationWidthPx}px;
+      right: 0;
+      border-left: 1px solid ${p => p.theme.borderLight};
+    }
+
+    > .overlay {
+      position: absolute;
+      pointer-events: none;
+      top: 0;
+      bottom: 0;
+      left: ${p => p.theme.layerSideColumnWidthPx}px;
+      right: ${p => p.theme.visualizationWidthPx}px;
+      overflow: hidden;
+
+      > .zoom {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 50%;
+        left: -50%;
+
+        > .marker {
+          position: absolute;
+          height: 100%;
+          width: 1px;
+
+          &.player-position {
+            background: rgba(255, 255, 255, 0.2);
+          }
+
+          &.mouse {
+            background: rgba(255, 255, 255, 0.4);
+          }
+        }
+      }
+    }
+  }
+`;
+
+export {StyledLayersAndTimeline as LayersAndTimeline};
