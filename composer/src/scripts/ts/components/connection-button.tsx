@@ -4,6 +4,7 @@ import {ControllerEndpoint} from '../shared/protocol';
 
 import * as file from '../shared/file/file';
 import * as func from '../data/functional';
+import {styled} from './styling';
 
 import {PlayState, PlayStateData} from '../data/play-state';
 import {overlays} from './util/overlays';
@@ -13,6 +14,7 @@ import SettingsEthernet = require('react-icons/lib/md/settings-ethernet');
 type ConnectionState = 'not_connected' | 'connecting' | 'connected' | 'error';
 
 interface ConnectionButtonProps {
+  className?: string;
   playState: PlayState;
   file: func.Maybe<file.CueFile>;
 }
@@ -28,7 +30,7 @@ interface ConnectionButtonState {
 
 const DEFAULT_HOST = 'localhost:' + shared.constants.DEFAULT_SYNESTHESIA_PORT;
 
-export class ConnectionButton extends React.Component<ConnectionButtonProps, ConnectionButtonState> {
+class ConnectionButton extends React.Component<ConnectionButtonProps, ConnectionButtonState> {
 
   private socket: WebSocket | null = null;
   private endpoint: ControllerEndpoint | null = null;
@@ -160,7 +162,7 @@ export class ConnectionButton extends React.Component<ConnectionButtonProps, Con
     })();
 
     return (
-      <div className="flex">
+      <div className={this.props.className}>
         {statusText}
         <button className="connection-button" title={buttonTitle} onClick={this.onClick}>
           <SettingsEthernet/>
@@ -170,3 +172,38 @@ export class ConnectionButton extends React.Component<ConnectionButtonProps, Con
     );
   }
 }
+
+const StyledConnectionButton = styled(ConnectionButton)`
+  display: flex;
+  align-items: center;
+
+  > .connection-button {
+    > .indicator {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      margin-left: 7px;
+      border-radius: 10px;
+
+      &.not_connected {
+        border:1px solid #999;
+        width: 4px;
+        height: 4px;
+      }
+
+      &.connecting {
+        background-color: ${p => p.theme.colorAmber};
+      }
+
+      &.connected {
+        background-color: ${p => p.theme.colorGreen};
+      }
+
+      &.error {
+        background-color: ${p => p.theme.colorRed};
+      }
+    }
+  }
+`;
+
+export {StyledConnectionButton as ConnectionButton};

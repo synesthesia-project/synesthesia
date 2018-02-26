@@ -1,5 +1,6 @@
 import {BaseComponent} from './base';
 import * as React from 'react';
+import {styled, buttonDisabled, rectButton, buttonPressed} from './styling';
 
 import * as file from '../shared/file/file';
 import {validateFile} from '../shared/file/file-validation';
@@ -15,6 +16,7 @@ import Tab = require('react-icons/lib/md/tab');
 import {ConnectionButton} from './connection-button';
 
 export interface FileSourceProps {
+  className?: string;
   file: func.Maybe<file.CueFile>;
   playState: PlayState;
   // Callbacks
@@ -28,7 +30,7 @@ interface FileSourceState {
   description: string;
 }
 
-export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
+class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
 
   private controls: PlayStateControls;
 
@@ -86,33 +88,30 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
 
   public render() {
     return (
-      <externals.ShadowDOM>
-        <div>
-          <link rel="stylesheet" type="text/css" href="styles/components/file-source.css"/>
-          <input id="file_picker" type="file" onChange={this.loadAudioFile} />
-          <label htmlFor="file_picker"><FolderOpen/> Open Audio File</label>
-          <audio id="audio"
-            onCanPlay={this.updatePlayState}
-            onPlaying={this.updatePlayState}
-            onPause={this.updatePlayState}
-            />
-          <button className={
-              'connectToCompanion' +
-              (this.state.companion.isJust() ? ' pressed' : '') +
-              (this.state.companionAllowed ? '' : ' disabled')} onClick={this.toggleCompanion}>
-            <Tab/> Connect To Tabs
-          </button>
-          {this.state.companionAllowed ?
-            null :
-            <span className="companionDisabled" title="Run as a chrome extension to enable.">Tab Connector Disabled</span>
-          }
-          <span className="description">{this.state.description}</span>
-          <span className="grow"/>
-          <ConnectionButton file={this.props.file} playState={this.props.playState} />
-          <button onClick={this.openFile} title="Open"><FolderOpen/></button>
-          <button className={this.props.file.isJust() ? '' : 'disabled'} onClick={this.saveFile} title="Save"><Save/></button>
-        </div>
-      </externals.ShadowDOM>
+      <div className={this.props.className}>
+        <input id="file_picker" type="file" onChange={this.loadAudioFile} />
+        <label htmlFor="file_picker"><FolderOpen/> Open Audio File</label>
+        <audio id="audio"
+          onCanPlay={this.updatePlayState}
+          onPlaying={this.updatePlayState}
+          onPause={this.updatePlayState}
+          />
+        <button className={
+            'connectToCompanion' +
+            (this.state.companion.isJust() ? ' pressed' : '') +
+            (this.state.companionAllowed ? '' : ' disabled')} onClick={this.toggleCompanion}>
+          <Tab/> Connect To Tabs
+        </button>
+        {this.state.companionAllowed ?
+          null :
+          <span className="companionDisabled" title="Run as a chrome extension to enable.">Tab Connector Disabled</span>
+        }
+        <span className="description">{this.state.description}</span>
+        <span className="grow"/>
+        <ConnectionButton file={this.props.file} playState={this.props.playState} />
+        <button onClick={this.openFile} title="Open"><FolderOpen/></button>
+        <button className={this.props.file.isJust() ? '' : 'disabled'} onClick={this.saveFile} title="Save"><Save/></button>
+      </div>
     );
   }
 
@@ -205,3 +204,76 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
     this.state.companion.fmap(companion => companion.disconnect());
   }
 }
+
+const StyledFileSource = styled(FileSource)`
+  display: block;
+  background-color: ${p => p.theme.bgLight1};
+  border-bottom: 1px solid ${p => p.theme.borderDark};
+  box-shadow: 0px 1px 8px 0px rgba(0,0,0,0.3);
+  z-index:100;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: ${p => p.theme.spacingPx / 2}px;
+
+  input {
+  	width: 0.1px;
+  	height: 0.1px;
+  	opacity: 0;
+  	overflow: hidden;
+  	position: absolute;
+  	z-index: -1;
+    margin: ${p => p.theme.spacingPx / 2}px;
+
+    & + label {
+      margin: ${p => p.theme.spacingPx / 2}px;
+      ${rectButton}
+
+      > svg {
+        margin-right: 5px;
+      }
+    }
+  }
+
+  button {
+    ${rectButton}
+    margin: ${p => p.theme.spacingPx / 2}px;
+    outline: none;
+
+    &.pressed {
+      ${buttonPressed}
+    }
+
+    &.disabled {
+      ${buttonDisabled}
+
+      &.connectToCompanion {
+        display: none;
+      }
+    }
+
+    &.connectToCompanion {
+      > svg {
+        margin-right: 5px;
+      }
+    }
+  }
+
+  > .grow {
+    flex-grow: 1;
+  }
+
+  > span, > .flex > span {
+    margin: ${p => p.theme.spacingPx / 2}px;
+    font-size: 14px;
+    padding: 0 6px;
+    opacity: 0.8;
+
+    &.companionDisabled {
+      color: ${p => p.theme.colorRed};
+    }
+  }
+`;
+
+export {StyledFileSource as FileSource};
+
