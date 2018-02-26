@@ -34,8 +34,8 @@ export class ConnectionButton extends React.Component<ConnectionButtonProps, Con
   private endpoint: ControllerEndpoint | null = null;
   private lastSentState: PlayStateData | null = null;
 
-  public constructor() {
-    super();
+  public constructor(props: ConnectionButtonProps) {
+    super(props);
     this.state = {
       state: 'not_connected',
       host: DEFAULT_HOST

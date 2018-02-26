@@ -28,8 +28,8 @@ export interface TimelineProps {
 
 export class Timeline extends BaseComponent<TimelineProps, TimelineState> {
 
-  constructor() {
-    super();
+  constructor(props: TimelineProps) {
+    super(props);
 
     // Bind callbacks & event listeners
     this.addLayerClicked = this.addLayerClicked.bind(this);

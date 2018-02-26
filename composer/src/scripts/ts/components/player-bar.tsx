@@ -32,8 +32,8 @@ export class PlayerBar extends BaseComponent<PlayerBarProps, PlayerBarState> {
   private _$fill: JQuery;
   private _$button: JQuery;
 
-  constructor() {
-    super();
+  constructor(props: PlayerBarProps) {
+    super(props);
     this.state = {
       dragging: false
     };

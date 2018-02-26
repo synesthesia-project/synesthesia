@@ -6,7 +6,6 @@ var bower = require('gulp-bower');
 var sourcemaps = require('gulp-sourcemaps');
 var ts = require('gulp-typescript');
 var tslint = require('gulp-tslint');
-var typings = require("gulp-typings");
 var sass = require('gulp-sass');
 var runSequence = require('run-sequence');
 var webpack = require('webpack');
@@ -30,16 +29,12 @@ gulp.task('bower', function() {
   return bower();
 });
 
-gulp.task("typings", function(){
-  return gulp.src("./typings.json").pipe(typings());
-});
-
 gulp.task("copy-js", function(){
   return gulp.src("./src/scripts/js/*.js")
     .pipe(gulp.dest('.tmp/scripts'))
 });
 
-gulp.task('ts', ['typings'], function () {
+gulp.task('ts', function () {
     return tsProject.src()
       .pipe(sourcemaps.init())
       .pipe(tsProject())

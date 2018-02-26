@@ -32,8 +32,8 @@ export class FileSource extends BaseComponent<FileSourceProps, FileSourceState> 
 
   private controls: PlayStateControls;
 
-  constructor() {
-    super();
+  constructor(props: FileSourceProps) {
+    super(props);
     this.state = {
       companion: func.none(),
       companionAllowed: true,

@@ -6,7 +6,7 @@
 interface ShadowDomInstance extends React.Component<{
   include?: string[]
 }, {}> {}
-type ShadowDOMConstructor = { new (): ShadowDomInstance };
+type ShadowDOMConstructor = { new (): ShadowDomInstance & any };
 
 interface Externals {
   ShadowDOM: ShadowDOMConstructor;

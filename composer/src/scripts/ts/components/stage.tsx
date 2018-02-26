@@ -37,9 +37,9 @@ export class Stage extends BaseComponent<StageProps, StageState> {
   private readonly midi = new midi.Midi();
 
   // Refd Elements (used for event geometry)
-  private timeline: Timeline;
-  private player: Player;
-  private layers: HTMLDivElement;
+  private timeline: Timeline | null;
+  private player: Player | null;
+  private layers: HTMLDivElement | null;
 
   constructor(props: StageProps) {
     super(props);
@@ -115,8 +115,8 @@ export class Stage extends BaseComponent<StageProps, StageState> {
       // Prevent all default mouse wheel behaviour
       e.preventDefault();
 
-      // Don't do any zoom behaviour if timeline isn't setup
-      if (!this.timeline)
+      // Don't do any zoom behaviour if any required component
+      if (!this.timeline || !this.player || !this.layers)
         return;
 
       // Work out where the mouse is currently positioned

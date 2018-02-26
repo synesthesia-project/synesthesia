@@ -31,8 +31,8 @@ export class LayerItems extends BaseComponent<LayerItemsProps, LayerItemsState> 
 
   private timelineSelector: JQuery | null = null;
 
-  constructor() {
-    super();
+  constructor(props: LayerItemsProps) {
+    super(props);
     this.state = {
       selector: {state: 'nothing'}
     };

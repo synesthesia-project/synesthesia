@@ -34,8 +34,8 @@ export interface LayerProps {
 
 export class Layer extends BaseComponent<LayerProps, LayerState> {
 
-  constructor() {
-    super();
+  constructor(props: LayerProps) {
+    super(props);
 
     // Bind callbacks & event listeners
     this.toggleSelect = this.toggleSelect.bind(this);

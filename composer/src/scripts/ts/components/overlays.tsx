@@ -5,7 +5,7 @@ import {OverlaysManager, setOverlaysManager} from './util/overlays';
 export class Overlays extends React.Component<{}, {}> implements OverlaysManager {
 
   public constructor() {
-    super();
+    super({});
     setOverlaysManager(this);
   }
 

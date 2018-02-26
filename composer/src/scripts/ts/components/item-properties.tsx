@@ -19,8 +19,8 @@ interface EventPropertiesProps {
 
 export class EventProperties extends BaseComponent<EventPropertiesProps, {}> {
 
-  public constructor() {
-    super();
+  public constructor(props: EventPropertiesProps) {
+    super(props);
 
     // Bind callbacks & event listeners
     this.onStartTimeChange = this.onStartTimeChange.bind(this);

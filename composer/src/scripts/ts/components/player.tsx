@@ -33,8 +33,8 @@ export class Player extends BaseComponent<PlayerProps, PlayerState> {
   private _$elapsedTime: JQuery;
   private _$duration: JQuery;
 
-  constructor() {
-    super();
+  constructor(props: PlayerProps) {
+    super(props);
     this.state = {
       scrubbingPosition: func.none()
     };

@@ -17,10 +17,10 @@ export class DelayedPropigationInput extends React.Component<PropertyInputProper
   /* True when propigating the result of a user-triggered event upwards */
   private changing = false;
 
-  private ref: HTMLInputElement;
+  private ref: HTMLInputElement | null;
 
-  public constructor() {
-    super();
+  public constructor(props: PropertyInputProperties) {
+    super(props);
 
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onBlur = this.onBlur.bind(this);

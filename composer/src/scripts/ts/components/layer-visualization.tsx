@@ -24,8 +24,8 @@ export class LayerVisualization extends BaseComponent<LayerVisualizationProps, {
   /** The normalized layer event data */
   private processedLayerEvents: file.CueFileEvent<VisualisedState>[];
 
-  constructor() {
-    super();
+  constructor(props: LayerVisualizationProps) {
+    super(props);
   }
 
   private processLayerIfNeeded() {

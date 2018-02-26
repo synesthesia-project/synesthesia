@@ -18,8 +18,8 @@ export interface LayersAndTimelineProps {
   bindingLayer: func.Maybe<number>;
   midiLayerBindings: {input: string, note: number, layer: number}[];
   // Callbacks
-  timelineRef: (ref: Timeline) => void;
-  layersRef: (ref: HTMLDivElement) => void;
+  timelineRef: (ref: Timeline | null) => void;
+  layersRef: (ref: HTMLDivElement | null) => void;
   updateCueFile: types.Mutator<file.CueFile>;
   updateSelection: types.Mutator<selection.Selection>;
   requestBindingForLayer: (layerKey: number | null) => void;
@@ -40,8 +40,8 @@ export class LayersAndTimeline extends BaseComponent<LayersAndTimelineProps, Lay
 
   private updateInterval: number;
 
-  constructor() {
-    super();
+  constructor(props: LayersAndTimelineProps) {
+    super(props);
     this.state = {
       positionMillis: 0,
       mousePosition: func.none(),
