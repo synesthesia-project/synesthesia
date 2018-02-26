@@ -1,11 +1,16 @@
 import * as React from 'react';
+import {styled} from './styling';
 
 import {OverlaysManager, setOverlaysManager} from './util/overlays';
 
-export class Overlays extends React.Component<{}, {}> implements OverlaysManager {
+interface OverlaysProps {
+  className?: string;
+}
 
-  public constructor() {
-    super({});
+class Overlays extends React.Component<OverlaysProps, {}> implements OverlaysManager {
+
+  public constructor(props: OverlaysProps) {
+    super(props);
     setOverlaysManager(this);
   }
 
@@ -21,11 +26,12 @@ export class Overlays extends React.Component<{}, {}> implements OverlaysManager
 
   public render() {
     return (
-      <externals.ShadowDOM>
-        <div>
-          <link rel="stylesheet" type="text/css" href="styles/components/overlays.css"/>
-        </div>
-      </externals.ShadowDOM>
+      <div className={this.props.className}>
+      </div>
     );
   }
 }
+
+const StyledOverlays = styled(Overlays)``;
+
+export {StyledOverlays as Overlays};
