@@ -6,18 +6,13 @@ interface AuthData {
   state: string;
 }
 
-const SPOTIFY_AUTH_MESSAGE_TYPE = 'SPOTIFY_AUTH';
-
-interface AuthDataMessage {
-  message: 'SPOTIFY_AUTH';
-  data: AuthData;
-}
+const SPOTIFY_AUTH_STORAGE_KEY = 'spotify_auth';
 
 const CLIENT_ID = 'b12f679a57f5413fb3688dc9bf4d0d04';
 let randomToken: string | null = null;
 
 function redirectUrl() {
-  return chrome.extension.getURL('auth.html');
+  return new URL('auth.html', window.location.href).href;
 }
 
 function generateRandomToken() {
@@ -38,30 +33,23 @@ function authURL() {
 }
 
 export function authSpotify(selectTab: boolean): Promise<string> {
-  if (!chrome.tabs || !chrome.extension) {
-    return Promise.reject('Unable to auth Spotify when not running as extension');
-  }
   return new Promise((resolve, reject) => {
-    const messageHandler = (message: any) => {
-      // Ignore invalid message
-      if (!isValidAuthMessage(message)) return;
+    const storageChangedListener = (event: StorageEvent) => {
+      if (event.key !== SPOTIFY_AUTH_STORAGE_KEY || !event.newValue) return;
+      const data = JSON.parse(event.newValue);
+      if (!isValidAuth(data)) return;
       // Stop listening after first valid message
-      chrome.runtime.onMessage.removeListener(messageHandler);
-      // Switch back to this tab
-      chrome.tabs.getCurrent(tab => {
-        if (tab && tab.id) {
-          chrome.tabs.update(tab.id, {active: true});
-        }
-      });
-      if (message.data.state !== randomToken) {
+      window.removeEventListener('storage', storageChangedListener);
+      // TODO: Switch back to this tab (will require extension code)
+      if (data.state !== randomToken) {
         reject('Tokens did not match');
       } else {
-        resolve(message.data.access_token);
+        resolve(data.access_token);
       }
     };
-    chrome.runtime.onMessage.addListener(messageHandler);
+    window.addEventListener('storage', storageChangedListener);
 
-    chrome.tabs.create({'url': authURL(), 'selected': selectTab});
+    window.open(authURL());
   });
 }
 
@@ -69,18 +57,10 @@ export function isValidAuth(auth: any): auth is AuthData {
   return !!auth.access_token && !!auth.expires_in && !!auth.state;
 }
 
-export function isValidAuthMessage(auth: any): auth is AuthDataMessage {
-  return auth.message === SPOTIFY_AUTH_MESSAGE_TYPE && isValidAuth(auth.data);
-}
-
 /**
  * Receive the auth data from spotify in a different tab, and send it to the
  * composer tab
  */
 export function sendAuthToComposer(data: AuthData) {
-  const message: AuthDataMessage = {
-    message: SPOTIFY_AUTH_MESSAGE_TYPE,
-    data
-  };
-  chrome.runtime.sendMessage(message);
+  localStorage.setItem(SPOTIFY_AUTH_STORAGE_KEY, JSON.stringify(data));
 }
