@@ -22,6 +22,8 @@ import * as fileManipulation from '../data/file-manipulation';
 import * as midi from '../midi/midi';
 import {KEYCODES} from '../util/input';
 
+import {prepareSpotifySDKListener} from '../external/spotify-sdk';
+
 
 export interface StageProps {
   className?: string;
@@ -308,6 +310,9 @@ const StyledStage = styled(Stage)`
 `;
 
 export function setup() {
+  // Needs to be called before the promise is used
+  prepareSpotifySDKListener();
+  // Run App
   ReactDOM.render(
     <ThemeProvider theme={defaultTheme}>
       <StyledStage />

@@ -2,7 +2,8 @@ import {BaseComponent} from './base';
 import * as React from 'react';
 import {styled, buttonDisabled, rectButton, buttonPressed} from './styling';
 
-import * as spotify from '../auth/spotify';
+import * as spotifyAuth from '../auth/spotify';
+import {SpotifySdk, spotifyWebPlaybackSDKReady} from '../external/spotify-sdk';
 import * as file from '../shared/file/file';
 import {validateFile} from '../shared/file/file-validation';
 import * as func from '../data/functional';
@@ -31,6 +32,7 @@ export interface FileSourceProps {
 interface FileSourceState {
   source: Source | null;
   companionAllowed: boolean;
+  spotifyWebPlaybackSDK: SpotifySdk | null;
   description: string;
 }
 
@@ -43,6 +45,7 @@ class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
     this.state = {
       source: null,
       companionAllowed: true,
+      spotifyWebPlaybackSDK: null,
       description: ''
     };
 
@@ -75,6 +78,8 @@ class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
   public componentDidMount() {
     // Automatically connect to extension when starting
     this.toggleCompanion();
+    // Check if Spotify SDK is ready and enables
+    spotifyWebPlaybackSDKReady.then(spotifyWebPlaybackSDK => this.setState({spotifyWebPlaybackSDK}));
   }
 
   public saveFile() {
@@ -110,6 +115,16 @@ class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
         </button>
         <button className={source === 'spotify' ? ' pressed' : ''} onClick={this.toggleSpotify}>
           <SpotifyIcon /> Connect To Remote
+        </button>
+        <button
+          className={
+            (source === 'spotify-local' ? ' pressed' : '') +
+            (this.state.spotifyWebPlaybackSDK !== null ? '' : ' disabled')}
+          onClick={this.toggleSpotifyLocal}
+          title={
+            this.state.spotifyWebPlaybackSDK === null ?
+            'Spotify Local Play is not possible when Synesthesia is run as an extension' : undefined}>
+          <SpotifyIcon /> Play Locally
         </button>
         {this.state.companionAllowed ?
           null :
@@ -196,9 +211,25 @@ class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
     if (this.state.source && this.state.source.sourceKind() === 'spotify') {
       this.state.source.dispose();
     } else {
-      spotify.authSpotify(true).then(
+      spotifyAuth.authSpotify(true).then(
         token => {
           this.setNewSource(new SpotifySource(token));
+        },
+        err => {
+          alert(err);
+        }
+      );
+    }
+  }
+
+  private toggleSpotifyLocal() {
+    if (this.state.spotifyWebPlaybackSDK === null) return;
+    if (this.state.source && this.state.source.sourceKind() === 'spotify-local') {
+      this.state.source.dispose();
+    } else {
+      spotifyAuth.authSpotify(true).then(
+        token => {
+          // TODO: Setup Source
         },
         err => {
           alert(err);
