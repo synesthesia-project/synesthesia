@@ -128,10 +128,6 @@ class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
             'Spotify Local Play is not possible when Synesthesia is run as an extension' : undefined}>
           <SpotifyIcon /> Play Locally
         </button>
-        {this.state.companionAllowed ?
-          null :
-          <span className="companionDisabled" title="Run as a chrome extension to enable.">Tab Connector Disabled</span>
-        }
         <span className="description">{this.state.description}</span>
         <span className="grow"/>
         <ConnectionButton file={this.props.file} playState={this.props.playState} />
@@ -305,10 +301,6 @@ const StyledFileSource = styled(FileSource)`
     font-size: 14px;
     padding: 0 6px;
     opacity: 0.8;
-
-    &.companionDisabled {
-      color: ${p => p.theme.colorRed};
-    }
   }
 `;
 
