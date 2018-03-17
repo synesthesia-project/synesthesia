@@ -8,8 +8,9 @@ import {validateFile} from '../shared/file/file-validation';
 import * as func from '../data/functional';
 import * as storage from '../util/storage';
 import {PlayStateData, PlayState, PlayStateControls, MediaPaused, MediaPlaying} from '../data/play-state';
+import {Source} from '../sources/source';
+import {CompanionSource} from '../sources/companion-source';
 import {getSpotifySource} from '../sources/spotify-source';
-import {CompanionConnection} from '../util/companion';
 
 import Save = require('react-icons/lib/md/save');
 import FolderOpen = require('react-icons/lib/md/folder-open');
@@ -27,7 +28,7 @@ export interface FileSourceProps {
 }
 
 interface FileSourceState {
-  companion: func.Maybe<CompanionConnection>;
+  source: Source | null;
   companionAllowed: boolean;
   description: string;
 }
@@ -39,7 +40,7 @@ class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
   constructor(props: FileSourceProps) {
     super(props);
     this.state = {
-      companion: func.none(),
+      source: null,
       companionAllowed: true,
       description: ''
     };
@@ -89,6 +90,7 @@ class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
   }
 
   public render() {
+    const source = this.state.source ? this.state.source.sourceKind() : 'none';
     return (
       <div className={this.props.className}>
         <input id="file_picker" type="file" onChange={this.loadAudioFile} />
@@ -100,7 +102,7 @@ class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
           />
         <button className={
             'connectToCompanion' +
-            (this.state.companion.isJust() ? ' pressed' : '') +
+            (source === 'companion' ? ' pressed' : '') +
             (this.state.companionAllowed ? '' : ' disabled')} onClick={this.toggleCompanion}>
           <Tab/> Connect To Tabs
         </button>
@@ -158,55 +160,34 @@ class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
       ),
       controls: this.controls
     };
-    this.clearCompanion();
+    // TODO: remove this when audio element uses source
+    this.setState({source: null});
     this.props.playStateUpdated(func.just(state));
   }
 
-  private toggleCompanion() {
-    this.state.companion.caseOf({
-      just: companion => companion.disconnect(),
-      none: () => {
-        let failed = false;
-        const companion = new CompanionConnection(
-          // On Disconnect
-          () => {
-            this.setState({companion: func.none(), description: ''});
-            this.props.playStateUpdated(func.none());
-          },
-          // On State Changed
-          state => {
-            // Update play state
-            this.props.playStateUpdated(state.fmap(state => {
-              const playState: PlayStateData = {
-                durationMillis: state.length,
-                state: state.state === 'paused' ?
-                  func.left({timeMillis: state.stateValue}) :
-                  func.right({effectiveStartTimeMillis: state.stateValue}),
-                controls: companion.getControls()
-              };
-              return playState;
-            }));
-            // Update description
-            this.setState({description: state.caseOf({
-              just: state => state.title + ' - ' + state.artist,
-              none: () => ''
-            })});
-          },
-          // Called when the companion failed to initialise because it
-          // couldn't connect to extension
-          () => failed = true
-        );
-        if (failed) {
-          this.setState({companionAllowed: false});
-        } else {
-          this.setState({companion: func.just(companion)});
-        }
-      }
+  private setNewSource(source: Source) {
+    if (this.state.source) {
+      this.state.source.dispose();
+    }
+    this.setState({source});
+    source.addStateListener(this.props.playStateUpdated);
+    source.addDisconnectedListener(() => {
+      this.setState({source: null});
+      this.props.playStateUpdated(func.none());
     });
   }
 
-  private clearCompanion() {
-    this.state.companion.fmap(companion => companion.disconnect());
+  private toggleCompanion() {
+    if (this.state.source && this.state.source.sourceKind() === 'companion') {
+      this.state.source.dispose();
+    } else {
+      try {
+        this.setNewSource(new CompanionSource());
+      } catch (e) {
+        console.warn(e);
+        this.setState({companionAllowed: false});
+      }
+    }
   }
 
   private connectToSpotify() {

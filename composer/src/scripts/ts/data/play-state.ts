@@ -19,10 +19,13 @@ export interface MediaPlaying {
   effectiveStartTimeMillis: number;
 }
 
-export interface PlayStateData {
+export interface PlayStateDataOnly {
   /** Duration of the media in milliseconds */
   durationMillis: number;
   state: Either<MediaPaused, MediaPlaying>;
+}
+
+export interface PlayStateData extends PlayStateDataOnly {
   controls: PlayStateControls;
 }
 
