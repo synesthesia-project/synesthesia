@@ -8,6 +8,7 @@ import {validateFile} from '../shared/file/file-validation';
 import * as func from '../data/functional';
 import * as storage from '../util/storage';
 import {PlayStateData, PlayState, PlayStateControls, MediaPaused, MediaPlaying} from '../data/play-state';
+import {getSpotifySource} from '../sources/spotify-source';
 import {CompanionConnection} from '../util/companion';
 
 import Save = require('react-icons/lib/md/save');
@@ -212,6 +213,7 @@ class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
     spotify.authSpotify(true).then(
       token => {
         console.log('got token', token);
+        getSpotifySource(token);
       },
       err => {
         alert(err);

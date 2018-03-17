@@ -33,6 +33,7 @@
     "webpack": "1.14.0"
   },
   "dependencies": {
+    "spotify-web-api-js": "^0.23.0",
     "styled-components": "^3.1.6"
   }
 }

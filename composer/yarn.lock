@@ -3407,6 +3407,10 @@ split-string@^3.0.1, split-string@^3.0.2:
   dependencies:
     extend-shallow "^3.0.0"
 
+spotify-web-api-js@^0.23.0:
+  version "0.23.0"
+  resolved "https://registry.npmjs.org/spotify-web-api-js/-/spotify-web-api-js-0.23.0.tgz#7701fbe365bbec56505dfa46c16604f7e4d36408"
+
 sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.npmjs.org/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
