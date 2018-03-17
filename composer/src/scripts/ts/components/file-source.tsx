@@ -11,6 +11,7 @@ import {PlayStateData, PlayState, PlayStateControls, MediaPaused, MediaPlaying} 
 import {Source} from '../sources/source';
 import {CompanionSource} from '../sources/companion-source';
 import {SpotifySource} from '../sources/spotify-source';
+import {SpotifyIcon} from './icons/spotify';
 
 import Save = require('react-icons/lib/md/save');
 import FolderOpen = require('react-icons/lib/md/folder-open');
@@ -108,7 +109,7 @@ class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
           <Tab/> Connect To Tabs
         </button>
         <button className={source === 'spotify' ? ' pressed' : ''} onClick={this.toggleSpotify}>
-          Connect To Spotify
+          <SpotifyIcon /> Connect To Remote
         </button>
         {this.state.companionAllowed ?
           null :
