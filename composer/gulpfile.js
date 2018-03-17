@@ -67,9 +67,12 @@ gulp.task('tslint', function() {
 gulp.task("webpack", ['bower', 'ts', 'copy-js'], function(callback) {
     // run webpack
     webpack({
-        entry: "./.tmp/scripts/main.js",
+        entry: {
+          bundle: "./.tmp/scripts/main.js",
+          auth_callback: "./.tmp/scripts/auth_callback.js",
+        },
         output: {
-            filename: "bundle.js",
+            filename: "[name].js",
             path: __dirname + "/dist"
         },
 
@@ -112,7 +115,8 @@ gulp.task('sass', function () {
 gulp.task("dist", ['webpack', 'sass', 'extension-ts'], function(){
   var copyCoreFiles = gulp.src([
       './src/manifest.json',
-      './src/index.html'
+      './src/index.html',
+      './src/auth.html'
     ])
     .pipe(gulp.dest('dist'));
 

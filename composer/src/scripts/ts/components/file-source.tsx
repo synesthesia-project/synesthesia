@@ -2,6 +2,7 @@ import {BaseComponent} from './base';
 import * as React from 'react';
 import {styled, buttonDisabled, rectButton, buttonPressed} from './styling';
 
+import * as spotify from '../auth/spotify';
 import * as file from '../shared/file/file';
 import {validateFile} from '../shared/file/file-validation';
 import * as func from '../data/functional';
@@ -101,6 +102,9 @@ class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
             (this.state.companion.isJust() ? ' pressed' : '') +
             (this.state.companionAllowed ? '' : ' disabled')} onClick={this.toggleCompanion}>
           <Tab/> Connect To Tabs
+        </button>
+        <button className={'connectToSpotify'} onClick={this.connectToSpotify}>
+          Connect To Spotify
         </button>
         {this.state.companionAllowed ?
           null :
@@ -202,6 +206,17 @@ class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
 
   private clearCompanion() {
     this.state.companion.fmap(companion => companion.disconnect());
+  }
+
+  private connectToSpotify() {
+    spotify.authSpotify(true).then(
+      token => {
+        console.log('got token', token);
+      },
+      err => {
+        alert(err);
+      }
+    );
   }
 }
 
