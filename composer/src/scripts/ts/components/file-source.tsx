@@ -12,6 +12,7 @@ import {PlayStateData, PlayState, PlayStateControls, MediaPaused, MediaPlaying} 
 import {Source} from '../sources/source';
 import {CompanionSource} from '../sources/companion-source';
 import {SpotifySource} from '../sources/spotify-source';
+import {SpotifyLocalSource} from '../sources/spotify-local-source';
 import {SpotifyIcon} from './icons/spotify';
 
 import Save = require('react-icons/lib/md/save');
@@ -71,6 +72,7 @@ class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
     this.updatePlayState = this.updatePlayState.bind(this);
     this.toggleCompanion = this.toggleCompanion.bind(this);
     this.toggleSpotify = this.toggleSpotify.bind(this);
+    this.toggleSpotifyLocal = this.toggleSpotifyLocal.bind(this);
     this.saveFile = this.saveFile.bind(this);
     this.openFile = this.openFile.bind(this);
   }
@@ -229,7 +231,8 @@ class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
     } else {
       spotifyAuth.authSpotify(true).then(
         token => {
-          // TODO: Setup Source
+          if (this.state.spotifyWebPlaybackSDK === null) return;
+          this.setNewSource(new SpotifyLocalSource(this.state.spotifyWebPlaybackSDK, token));
         },
         err => {
           alert(err);

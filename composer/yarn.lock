@@ -54,6 +54,10 @@
   version "16.0.38"
   resolved "https://registry.npmjs.org/@types/react/-/react-16.0.38.tgz#76617433ea10274505f60bb86eddfdd0476ffdc2"
 
+"@types/spotify-web-playback-sdk@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.npmjs.org/@types/spotify-web-playback-sdk/-/spotify-web-playback-sdk-0.1.1.tgz#ed1d9f1c544e979fae0261e4630f4b1cb87c87b0"
+
 "@types/webmidi@2.0.1":
   version "2.0.1"
   resolved "https://registry.npmjs.org/@types/webmidi/-/webmidi-2.0.1.tgz#8283e5c590389123d1807c062080061e2d4292d7"

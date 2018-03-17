@@ -1,8 +1,4 @@
-declare namespace Spotify {
-  class Player {
-
-  }
-}
+/// <reference path="../../../../node_modules/@types/spotify-web-playback-sdk/index.d.ts"/>
 
 export type SpotifySdk = typeof Spotify;
 
