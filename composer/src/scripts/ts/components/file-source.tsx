@@ -10,7 +10,7 @@ import * as storage from '../util/storage';
 import {PlayStateData, PlayState, PlayStateControls, MediaPaused, MediaPlaying} from '../data/play-state';
 import {Source} from '../sources/source';
 import {CompanionSource} from '../sources/companion-source';
-import {getSpotifySource} from '../sources/spotify-source';
+import {SpotifySource} from '../sources/spotify-source';
 
 import Save = require('react-icons/lib/md/save');
 import FolderOpen = require('react-icons/lib/md/folder-open');
@@ -66,6 +66,7 @@ class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
     this.loadAudioFile = this.loadAudioFile.bind(this);
     this.updatePlayState = this.updatePlayState.bind(this);
     this.toggleCompanion = this.toggleCompanion.bind(this);
+    this.toggleSpotify = this.toggleSpotify.bind(this);
     this.saveFile = this.saveFile.bind(this);
     this.openFile = this.openFile.bind(this);
   }
@@ -106,7 +107,7 @@ class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
             (this.state.companionAllowed ? '' : ' disabled')} onClick={this.toggleCompanion}>
           <Tab/> Connect To Tabs
         </button>
-        <button className={'connectToSpotify'} onClick={this.connectToSpotify}>
+        <button className={source === 'spotify' ? ' pressed' : ''} onClick={this.toggleSpotify}>
           Connect To Spotify
         </button>
         {this.state.companionAllowed ?
@@ -190,16 +191,19 @@ class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
     }
   }
 
-  private connectToSpotify() {
-    spotify.authSpotify(true).then(
-      token => {
-        console.log('got token', token);
-        getSpotifySource(token);
-      },
-      err => {
-        alert(err);
-      }
-    );
+  private toggleSpotify() {
+    if (this.state.source && this.state.source.sourceKind() === 'spotify') {
+      this.state.source.dispose();
+    } else {
+      spotify.authSpotify(true).then(
+        token => {
+          this.setNewSource(new SpotifySource(token));
+        },
+        err => {
+          alert(err);
+        }
+      );
+    }
   }
 }
 

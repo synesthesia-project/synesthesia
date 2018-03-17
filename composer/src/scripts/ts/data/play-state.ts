@@ -30,3 +30,14 @@ export interface PlayStateData extends PlayStateDataOnly {
 }
 
 export type PlayState = Maybe<PlayStateData>;
+
+export function playStateDataEquals(a: PlayStateDataOnly, b: PlayStateDataOnly) {
+  return (
+   a.durationMillis === b.durationMillis &&
+   a.state.equals(
+     b.state,
+     (a, b) => a.timeMillis === b.timeMillis,
+     (a, b) => a.effectiveStartTimeMillis === b.effectiveStartTimeMillis
+   )
+ );
+}

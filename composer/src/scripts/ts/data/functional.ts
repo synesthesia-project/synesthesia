@@ -14,6 +14,16 @@ export abstract class Maybe<T> {
   public isNone() {
     return !this.isJust();
   }
+
+  public equals(b: Maybe<T>, equals: (a: T, b: T) => boolean) {
+    return this.caseOf({
+      just: a => b.caseOf({
+        just: b => equals(a, b),
+        none: () => false
+      }),
+      none: () => b.isNone()
+    });
+  }
 }
 
 class None<T> extends Maybe<T> {
@@ -63,18 +73,32 @@ export function maybeFrom<T>(value: T | null | undefined): Maybe<T> {
 
 // Either
 
-export interface Either<L, R> {
-  caseOf<Output>(cases: {
+export abstract class Either<L, R> {
+  public abstract caseOf<Output>(cases: {
     left: (left: L) => Output,
     right: (right: R) => Output
   }): Output;
+
+  public equals(b: Either<L, R>, leftEquals: (a: L, b: L) => boolean, rightEquals: (a: R, b: R) => boolean) {
+    return this.caseOf({
+      left: a => b.caseOf({
+        left: b => leftEquals(a, b),
+        right: () => false
+      }),
+      right: a => b.caseOf({
+        left: () => false,
+        right: b => rightEquals(a, b)
+      })
+    });
+  }
 }
 
-class Left<L, R> implements Either<L, R> {
+class Left<L, R> extends Either<L, R> {
 
   private value: L;
 
   constructor(value: L) {
+    super();
     this.value = value;
   }
 
@@ -86,11 +110,12 @@ class Left<L, R> implements Either<L, R> {
   }
 }
 
-class Right<L, R> implements Either<L, R> {
+class Right<L, R> extends Either<L, R> {
 
   private value: R;
 
   constructor(value: R) {
+    super();
     this.value = value;
   }
 
