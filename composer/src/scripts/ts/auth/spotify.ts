@@ -9,6 +9,14 @@ interface AuthData {
 const SPOTIFY_AUTH_STORAGE_KEY = 'spotify_auth';
 
 const CLIENT_ID = 'b12f679a57f5413fb3688dc9bf4d0d04';
+const SCOPES = [
+  'user-read-playback-state',
+  'user-modify-playback-state',
+  'streaming',
+  'user-read-birthdate',
+  'user-read-email',
+  'user-read-private'
+];
 let randomToken: string | null = null;
 
 function redirectUrl() {
@@ -27,7 +35,7 @@ function authURL() {
     `https://accounts.spotify.com/authorize` +
     `?client_id=${CLIENT_ID}` +
     `&redirect_uri=${redirectUrl()}` +
-    `&scope=user-read-playback-state%20user-modify-playback-state` +
+    `&scope=${SCOPES.join('%20')}` +
     `&response_type=token&state=${generateRandomToken()}`
   );
 }
