@@ -221,6 +221,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
   }
 
   private playStateUpdated(playState: PlayState) {
+    console.log('playStateUpdated', playState);
     this.setState({playState} as StageState);
     // If a file is loaded, update the length of the cue file
     playState.fmap(playState => {
