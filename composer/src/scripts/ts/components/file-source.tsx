@@ -37,7 +37,10 @@ interface FileSourceState {
   description: string;
 }
 
-class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
+class FileSource extends React.Component<FileSourceProps, FileSourceState> {
+
+  private fileInput: HTMLInputElement | null = null;
+  private audio: HTMLAudioElement | null = null;
 
   private controls: PlayStateControls;
 
@@ -52,19 +55,18 @@ class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
 
     // Initialise Controls
     this.controls = {
-      toggle: () => {
-        const audio = this.$audio();
+      toggle: () => this.withAudio(audio => {
         if (audio.paused)
           audio.play();
         else
           audio.pause();
-      },
-      pause: () => {
-        this.$audio().pause();
-      },
-      goToTime: (timeMillis: number) => {
-        this.$audio().currentTime = timeMillis / 1000;
-      }
+      }),
+      pause: () =>
+        this.withAudio(audio => audio.pause())
+      ,
+      goToTime: (timeMillis: number) => this.withAudio(audio => {
+        audio.currentTime = timeMillis / 1000;
+      })
     };
 
     // Bind callbacks & event listeners
@@ -102,9 +104,12 @@ class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
     const source = this.state.source ? this.state.source.sourceKind() : 'none';
     return (
       <div className={this.props.className}>
-        <input id="file_picker" type="file" onChange={this.loadAudioFile} />
+        <input id="file_picker"
+          ref={input => this.fileInput = input}
+          type="file" onChange={this.loadAudioFile} />
         <label htmlFor="file_picker"><FolderOpen/> Open Audio File</label>
         <audio id="audio"
+          ref={audio => this.audio = audio}
           onCanPlay={this.updatePlayState}
           onPlaying={this.updatePlayState}
           onPause={this.updatePlayState}
@@ -137,21 +142,18 @@ class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
     );
   }
 
-  private $fileInput() {
-    return this.$().find('input').get(0) as HTMLInputElement;
-  }
-
-  private $audio() {
-    return this.$().find('audio').get(0) as HTMLAudioElement;
+  private withAudio(fn: (audio: HTMLAudioElement) => void) {
+    if (this.audio)
+      fn(this.audio);
   }
 
   private loadAudioFile() {
-    const files = this.$fileInput().files;
+    if (!this.fileInput || !this.audio) throw new Error('refs not set');
+    const files = this.fileInput.files;
     if (files) {
       const file = files[0];
-      const audio = this.$audio();
-      audio.src = URL.createObjectURL(file);
-      audio.playbackRate = 1;
+      this.audio.src = URL.createObjectURL(file);
+      this.audio.playbackRate = 1;
     } else {
       console.error('no files');
     }
@@ -161,16 +163,17 @@ class FileSource extends BaseComponent<FileSourceProps, FileSourceState> {
    * Update the play state from the audio element, and send it up.
    */
   private updatePlayState() {
-    const audio = this.$audio();
+    if (!this.audio) throw new Error('refs not set');
+    const audio = this.audio;
     const state: PlayStateData = {
-      durationMillis: audio.duration * 1000,
+      durationMillis: this.audio.duration * 1000,
       state: (
-        audio.paused ?
+        this.audio.paused ?
         func.left<MediaPaused, MediaPlaying>({
-          timeMillis: audio.currentTime * 1000
+          timeMillis: this.audio.currentTime * 1000
         }) :
         func.right<MediaPaused, MediaPlaying>({
-          effectiveStartTimeMillis: new Date().getTime() - audio.currentTime * 1000
+          effectiveStartTimeMillis: new Date().getTime() - this.audio.currentTime * 1000
         })
       ),
       controls: this.controls
