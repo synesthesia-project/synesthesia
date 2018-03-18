@@ -1,3 +1,5 @@
+import universalParse from 'id3-parser/lib/universal';
+
 import {Source} from './source';
 
 import {PlayStateDataOnly} from '../data/play-state';
@@ -24,6 +26,9 @@ export class FileSource extends Source {
       const file = files[0];
       this.audio.src = URL.createObjectURL(file);
       this.audio.playbackRate = 1;
+      universalParse(this.audio.src).then(tag => {
+        console.log(tag);
+      });
     } else {
       console.error('no files');
     }
