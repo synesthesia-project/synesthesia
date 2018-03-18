@@ -7,9 +7,9 @@ export class FileSource extends Source {
 
   private readonly audio: HTMLAudioElement;
 
-  constructor(file: HTMLInputElement, audio: HTMLAudioElement) {
+  constructor(file: HTMLInputElement) {
     super();
-    this.audio = audio;
+    this.audio = document.createElement('audio');
 
     this.updatePlayState = this.updatePlayState.bind(this);
 

@@ -40,9 +40,6 @@ interface FileSourceState {
 
 class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
 
-  private fileInput: HTMLInputElement | null = null;
-  private audio: HTMLAudioElement | null = null;
-
   constructor(props: FileSourceProps) {
     super(props);
     this.state = {
@@ -86,11 +83,8 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
     const source = this.state.source ? this.state.source.sourceKind() : 'none';
     return (
       <div className={this.props.className}>
-        <input id="file_picker"
-          ref={input => this.fileInput = input}
-          type="file" onChange={this.loadAudioFile} />
+        <input id="file_picker" type="file" onChange={this.loadAudioFile} />
         <label htmlFor="file_picker"><FolderOpen/> Open Audio File</label>
-        <audio ref={audio => this.audio = audio} />
         <button className={
             'connectToCompanion' +
             (source === 'companion' ? ' pressed' : '') +
@@ -119,9 +113,8 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
     );
   }
 
-  private loadAudioFile() {
-    if (!this.fileInput || !this.audio) throw new Error('refs not set');
-    const source = new FileSource(this.fileInput, this.audio);
+  private loadAudioFile(ev: React.ChangeEvent<HTMLInputElement>) {
+    const source = new FileSource(ev.target);
     this.setNewSource(source);
   }
 
