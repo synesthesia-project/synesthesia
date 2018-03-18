@@ -27,7 +27,8 @@ export class SpotifyLocalSource extends Source {
     // Playback status updates
     this.player.addListener('player_state_changed', state => {
       const time = new Date().getTime();
-      console.log('orig', time - state.position, time, state.position);
+      if (state)
+        console.log('orig', time - state.position, time, state.position);
       this.playStateUpdated(
         (state && state.track_window.current_track) ? just<PlayStateDataOnly>({
           durationMillis: state.duration,
