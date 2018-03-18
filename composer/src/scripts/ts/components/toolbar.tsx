@@ -35,7 +35,6 @@ interface FileSourceState {
   source: Source | null;
   companionAllowed: boolean;
   spotifyWebPlaybackSDK: SpotifySdk | null;
-  description: string;
 }
 
 class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
@@ -45,8 +44,7 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
     this.state = {
       source: null,
       companionAllowed: true,
-      spotifyWebPlaybackSDK: null,
-      description: ''
+      spotifyWebPlaybackSDK: null
     };
 
     // Bind callbacks & event listeners
@@ -104,13 +102,24 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
             'Spotify Local Play is not possible when Synesthesia is run as an extension' : undefined}>
           <SpotifyIcon /> Play Locally
         </button>
-        <span className="description">{this.state.description}</span>
+        <span className="description">{this.getTrackDescription()}</span>
         <span className="grow"/>
         <ConnectionButton file={this.props.file} playState={this.props.playState} />
         <button onClick={this.openFile} title="Open"><FolderOpen/></button>
         <button className={this.props.file.isJust() ? '' : 'disabled'} onClick={this.saveFile} title="Save"><Save/></button>
       </div>
     );
+  }
+
+  private getTrackDescription() {
+    return this.props.playState.caseOf({
+      just: state =>
+        state.meta.info ?
+        `${state.meta.info.artist} - ${state.meta.info.title}` :
+        state.meta.id
+      ,
+      none: () => null
+    });
   }
 
   private setNewSource(source: Source) {
