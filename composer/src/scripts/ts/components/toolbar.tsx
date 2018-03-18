@@ -113,11 +113,6 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
     );
   }
 
-  private loadAudioFile(ev: React.ChangeEvent<HTMLInputElement>) {
-    const source = new FileSource(ev.target);
-    this.setNewSource(source);
-  }
-
   private setNewSource(source: Source) {
     if (this.state.source) {
       this.state.source.dispose();
@@ -128,6 +123,12 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
       this.setState({source: null});
       this.props.playStateUpdated(func.none());
     });
+  }
+
+  private loadAudioFile(ev: React.ChangeEvent<HTMLInputElement>) {
+    const source = new FileSource(ev.target);
+    this.setNewSource(source);
+    ev.target.value = '';
   }
 
   private toggleCompanion() {
