@@ -64,8 +64,16 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
   }
 
   public saveFile() {
+    const filename = this.props.playState.caseOf({
+      just: state =>
+        state.meta.info ?
+        `${state.meta.info.artist} - ${state.meta.info.title}.scue` :
+        'song.scue'
+      ,
+      none: () => 'song.scue'
+    });
     this.props.file.fmap(file => {
-      storage.saveStringAsFile(JSON.stringify(file), 'song.scue');
+      storage.saveStringAsFile(JSON.stringify(file), filename);
     });
   }
 
