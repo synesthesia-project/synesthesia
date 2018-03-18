@@ -11,6 +11,7 @@ import * as storage from '../util/storage';
 import {PlayStateData, PlayState, PlayStateControls, MediaPaused, MediaPlaying} from '../data/play-state';
 import {Source} from '../sources/source';
 import {CompanionSource} from '../sources/companion-source';
+import {FileSource} from '../sources/file-source';
 import {SpotifySource} from '../sources/spotify-source';
 import {SpotifyLocalSource} from '../sources/spotify-local-source';
 import {SpotifyIcon} from './icons/spotify';
@@ -37,12 +38,10 @@ interface FileSourceState {
   description: string;
 }
 
-class FileSource extends React.Component<FileSourceProps, FileSourceState> {
+class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
 
   private fileInput: HTMLInputElement | null = null;
   private audio: HTMLAudioElement | null = null;
-
-  private controls: PlayStateControls;
 
   constructor(props: FileSourceProps) {
     super(props);
@@ -53,25 +52,8 @@ class FileSource extends React.Component<FileSourceProps, FileSourceState> {
       description: ''
     };
 
-    // Initialise Controls
-    this.controls = {
-      toggle: () => this.withAudio(audio => {
-        if (audio.paused)
-          audio.play();
-        else
-          audio.pause();
-      }),
-      pause: () =>
-        this.withAudio(audio => audio.pause())
-      ,
-      goToTime: (timeMillis: number) => this.withAudio(audio => {
-        audio.currentTime = timeMillis / 1000;
-      })
-    };
-
     // Bind callbacks & event listeners
     this.loadAudioFile = this.loadAudioFile.bind(this);
-    this.updatePlayState = this.updatePlayState.bind(this);
     this.toggleCompanion = this.toggleCompanion.bind(this);
     this.toggleSpotify = this.toggleSpotify.bind(this);
     this.toggleSpotifyLocal = this.toggleSpotifyLocal.bind(this);
@@ -108,12 +90,7 @@ class FileSource extends React.Component<FileSourceProps, FileSourceState> {
           ref={input => this.fileInput = input}
           type="file" onChange={this.loadAudioFile} />
         <label htmlFor="file_picker"><FolderOpen/> Open Audio File</label>
-        <audio id="audio"
-          ref={audio => this.audio = audio}
-          onCanPlay={this.updatePlayState}
-          onPlaying={this.updatePlayState}
-          onPause={this.updatePlayState}
-          />
+        <audio ref={audio => this.audio = audio} />
         <button className={
             'connectToCompanion' +
             (source === 'companion' ? ' pressed' : '') +
@@ -142,45 +119,10 @@ class FileSource extends React.Component<FileSourceProps, FileSourceState> {
     );
   }
 
-  private withAudio(fn: (audio: HTMLAudioElement) => void) {
-    if (this.audio)
-      fn(this.audio);
-  }
-
   private loadAudioFile() {
     if (!this.fileInput || !this.audio) throw new Error('refs not set');
-    const files = this.fileInput.files;
-    if (files) {
-      const file = files[0];
-      this.audio.src = URL.createObjectURL(file);
-      this.audio.playbackRate = 1;
-    } else {
-      console.error('no files');
-    }
-  }
-
-  /**
-   * Update the play state from the audio element, and send it up.
-   */
-  private updatePlayState() {
-    if (!this.audio) throw new Error('refs not set');
-    const audio = this.audio;
-    const state: PlayStateData = {
-      durationMillis: this.audio.duration * 1000,
-      state: (
-        this.audio.paused ?
-        func.left<MediaPaused, MediaPlaying>({
-          timeMillis: this.audio.currentTime * 1000
-        }) :
-        func.right<MediaPaused, MediaPlaying>({
-          effectiveStartTimeMillis: new Date().getTime() - this.audio.currentTime * 1000
-        })
-      ),
-      controls: this.controls
-    };
-    // TODO: remove this when audio element uses source
-    this.setState({source: null});
-    this.props.playStateUpdated(func.just(state));
+    const source = new FileSource(this.fileInput, this.audio);
+    this.setNewSource(source);
   }
 
   private setNewSource(source: Source) {
@@ -241,7 +183,7 @@ class FileSource extends React.Component<FileSourceProps, FileSourceState> {
   }
 }
 
-const StyledFileSource = styled(FileSource)`
+const StyledToolbar = styled(Toolbar)`
   display: block;
   background-color: ${p => p.theme.bgLight1};
   border-bottom: 1px solid ${p => p.theme.borderDark};
@@ -307,5 +249,5 @@ const StyledFileSource = styled(FileSource)`
   }
 `;
 
-export {StyledFileSource as FileSource};
+export {StyledToolbar as Toolbar};
 

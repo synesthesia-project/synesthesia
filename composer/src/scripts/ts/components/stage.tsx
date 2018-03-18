@@ -9,7 +9,7 @@ import * as func from '../data/functional';
 import {PlayState, PlayStateData} from '../data/play-state';
 
 import {Overlays} from './overlays';
-import {FileSource} from './file-source';
+import {Toolbar} from './toolbar';
 import {Player} from './player';
 import {LayersAndTimeline} from './layers-and-timeline';
 import {Timeline} from './timeline';
@@ -267,7 +267,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
     return (
       <div className={this.props.className}>
         <Overlays />
-        <FileSource
+        <Toolbar
           file={this.state.cueFile}
           playState={this.state.playState}
           playStateUpdated={this.playStateUpdated}

@@ -8,7 +8,7 @@ export abstract class Source {
   private playStateListeners: ((state: PlayState) => void)[] = [];
   private disconnectedListeners: (() => void)[] = [];
 
-  public abstract sourceKind(): 'companion' | 'spotify' | 'spotify-local';
+  public abstract sourceKind(): 'file' | 'companion' | 'spotify' | 'spotify-local';
   protected abstract controls(): PlayStateControls;
   protected abstract disconnect(): void;
 
