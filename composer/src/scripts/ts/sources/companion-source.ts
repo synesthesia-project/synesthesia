@@ -41,7 +41,14 @@ export class CompanionSource extends Source {
           durationMillis: state.length,
           state: state.state === 'paused' ?
           func.left({timeMillis: state.stateValue}) :
-          func.right({effectiveStartTimeMillis: state.stateValue})
+          func.right({effectiveStartTimeMillis: state.stateValue}),
+          meta: {
+            id: `${state.album} - ${state.artist} - ${state.title}`,
+            info: (state.title && state.artist) ? {
+              title: state.title,
+              artist: state.artist
+            } : undefined
+          }
         };
         return playState;
       })

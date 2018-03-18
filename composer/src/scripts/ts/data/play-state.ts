@@ -19,9 +19,19 @@ export interface MediaPlaying {
   effectiveStartTimeMillis: number;
 }
 
+export interface PlayStateTrackMeta {
+  /** A unique identifier */
+  id: string;
+  info?: {
+    title: string;
+    artist: string;
+  };
+}
+
 export interface PlayStateDataOnly {
   /** Duration of the media in milliseconds */
   durationMillis: number;
+  meta: PlayStateTrackMeta;
   state: Either<MediaPaused, MediaPlaying>;
 }
 

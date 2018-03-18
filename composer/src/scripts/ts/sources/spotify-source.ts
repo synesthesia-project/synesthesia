@@ -16,6 +16,7 @@ interface ExtendedSpotifyApi {
     progress_ms: number;
     timestamp: number;
     item?: {
+      id: string;
       name: string;
       duration_ms: number;
       album: {
@@ -59,11 +60,17 @@ export class SpotifySource extends Source {
             // Spotify does not provide an accurate way to get the effective start
             // time of the song (it provides timestamp of last play / pause action, and progress)
             right({effectiveStartTimeMillis: new Date().getTime() - state.progress_ms}) :
-            left({timeMillis: state.progress_ms})
+            left({timeMillis: state.progress_ms}),
+          meta: {
+            id: state.item.id,
+            info: {
+              artist: state.item.artists.map(a => a.name).join(' & '),
+              title: state.item.name
+            }
+          }
         }) : none()
       );
     });
-
   }
 
   public sourceKind(): 'spotify' {

@@ -19,6 +19,7 @@ export abstract class Source {
     const playState: PlayState = state.fmap<PlayStateData>(state => ({
       durationMillis: state.durationMillis,
       state: state.state,
+      meta: state.meta,
       controls: this.controls()
     }));
     this.playState = playState;

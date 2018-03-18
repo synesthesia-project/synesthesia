@@ -2,16 +2,20 @@ import universalParse from 'id3-parser/lib/universal';
 
 import {Source} from './source';
 
-import {PlayStateDataOnly} from '../data/play-state';
+import {PlayStateDataOnly, PlayStateTrackMeta} from '../data/play-state';
 import {just, none, left, right} from '../data/functional';
 
 export class FileSource extends Source {
 
   private readonly audio: HTMLAudioElement;
+  private meta: PlayStateTrackMeta;
 
   constructor(file: HTMLInputElement) {
     super();
     this.audio = document.createElement('audio');
+    this.meta = {
+      id: file.value
+    };
 
     this.updatePlayState = this.updatePlayState.bind(this);
 
@@ -27,7 +31,13 @@ export class FileSource extends Source {
       this.audio.src = URL.createObjectURL(file);
       this.audio.playbackRate = 1;
       universalParse(this.audio.src).then(tag => {
-        console.log(tag);
+        if (tag.artist && tag.title) {
+          this.meta.info = {
+            artist: tag.artist,
+            title: tag.title
+          };
+          this.updatePlayState();
+        }
       });
     } else {
       console.error('no files');
@@ -39,7 +49,6 @@ export class FileSource extends Source {
    */
   private updatePlayState() {
     if (!this.audio) throw new Error('refs not set');
-    const audio = this.audio;
     const state: PlayStateDataOnly = {
       durationMillis: this.audio.duration * 1000,
       state: (
@@ -50,7 +59,8 @@ export class FileSource extends Source {
         right({
           effectiveStartTimeMillis: new Date().getTime() - this.audio.currentTime * 1000
         })
-      )
+      ),
+      meta: this.meta
     };
     this.playStateUpdated(just(state));
   }

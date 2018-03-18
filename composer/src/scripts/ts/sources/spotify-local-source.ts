@@ -1,5 +1,5 @@
 import {Source} from './source';
-import {PlayStateDataOnly} from '../data/play-state';
+import {PlayStateDataOnly, PlayStateTrackMeta} from '../data/play-state';
 import {just, none, left, right} from '../data/functional';
 
 import {SpotifySdk} from '../external/spotify-sdk';
@@ -33,7 +33,8 @@ export class SpotifyLocalSource extends Source {
           durationMillis: state.duration,
           state: state.paused ?
             left({timeMillis: state.position}) :
-            right({effectiveStartTimeMillis: new Date().getTime() - state.position})
+            right({effectiveStartTimeMillis: new Date().getTime() - state.position}),
+          meta: this.metaFromState(state.track_window.current_track)
         }) : none()
       );
       this.updateTimestamp();
@@ -46,6 +47,17 @@ export class SpotifyLocalSource extends Source {
 
     // Connect to the player!
     this.player.connect();
+  }
+
+  private metaFromState(track: Spotify.Track): PlayStateTrackMeta {
+    const info = {
+      artist: track.artists.map(a => a.name).join(' & '),
+      title: track.name
+    };
+    return {
+      id: track.id ? track.id : (info.artist + ' - ' + info.title),
+      info
+    };
   }
 
   private updateTimestamp() {
