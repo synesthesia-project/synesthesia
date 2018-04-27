@@ -15,8 +15,8 @@
   "dependencies": {
     "@types/jquery": "^2.0.41",
     "@types/node": "9.4.6",
-    "@types/ws": "^0.0.39",
+    "@types/ws": "0.0.39",
     "jquery": "^3.2.1",
-    "ws": "^2.2.2"
+    "ws": "2.3.1"
   }
 }

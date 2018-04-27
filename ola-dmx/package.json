@@ -9,9 +9,11 @@
     "gulp-typescript": "^3.1.4",
     "run-sequence": "^1.2.2",
     "tslint": "^5.9.1",
-    "typescript": "^2.7.2"
+    "typescript": "^2.7.2",
+    "@types/node": "9.4.6",
+    "@types/ws": "0.0.39"
   },
   "dependencies": {
-    "@types/node": "9.4.6"
+    "ws": "2.3.1"
   }
 }

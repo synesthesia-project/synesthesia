@@ -17,15 +17,11 @@
   version "2.0.48"
   resolved "https://registry.npmjs.org/@types/jquery/-/jquery-2.0.48.tgz#3e90d8cde2d29015e5583017f7830cb3975b2eef"
 
-"@types/node@*":
+"@types/node@*", "@types/node@9.4.6":
   version "9.4.6"
   resolved "https://registry.npmjs.org/@types/node/-/node-9.4.6.tgz#d8176d864ee48753d053783e4e463aec86b8d82e"
 
-"@types/node@^7.0.12":
-  version "7.0.55"
-  resolved "https://registry.npmjs.org/@types/node/-/node-7.0.55.tgz#7bb6215ff9425a1d714106be9f0d3e0e28829288"
-
-"@types/ws@^0.0.39":
+"@types/ws@0.0.39":
   version "0.0.39"
   resolved "https://registry.npmjs.org/@types/ws/-/ws-0.0.39.tgz#d2386c3475eb64e561137a245a4d1d13b1f69fd1"
   dependencies:
@@ -2449,7 +2445,7 @@ wrappy@1:
   version "1.0.2"
   resolved "https://registry.npmjs.org/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
 
-ws@^2.2.2:
+ws@2.3.1:
   version "2.3.1"
   resolved "https://registry.npmjs.org/ws/-/ws-2.3.1.tgz#6b94b3e447cb6a363f785eaf94af6359e8e81c80"
   dependencies:

@@ -2,7 +2,7 @@ import {spawn, ChildProcess} from 'child_process';
 
 const UNIVERSE_SIZE = 512;
 
-export class Proxy {
+export class DmxProxy {
   private readonly process: ChildProcess;
   // 512 bytes of DMX data + 1 byte for the universe
   private readonly buffer = new Buffer(UNIVERSE_SIZE + 1);
