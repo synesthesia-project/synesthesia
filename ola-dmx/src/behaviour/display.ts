@@ -102,6 +102,11 @@ export class Display {
         if (currentMinGroup)
           groupsToLayers[currentMinGroup.group].push(i);
       }
+      // For every group, if it has no layers, randomly pick one
+      for (const group of Object.keys(groupsToLayers)) {
+        if (groupsToLayers[group].length === 0)
+          groupsToLayers[group].push(Math.floor(Math.random() * this.playState.file.layers.length));
+      }
       // create the layout, do a random chaser for now for every fixture
       const fixtures: FixturePattern[] = this.config.fixtures.map(config => {
         return randomRGBChaseState([PURPLE, BLUE, new RGBColor(200, 100, 0)], groupsToLayers[config.group]);
