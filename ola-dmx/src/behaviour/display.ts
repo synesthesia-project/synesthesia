@@ -8,18 +8,27 @@ import {
   } from '../shared/file/file-usage';
 
 import {DmxProxy} from '../dmx/proxy';
+import * as config from '../config';
 
 const INTERVAL = 1000 / 44;
 
 export class Display {
 
+  private readonly config: config.Config;
   private readonly dmx: DmxProxy;
-  private readonly buffer = new Int8Array(512);
+  // Mapping form universe to buffers
+  private readonly buffers: {[id: number]: Int8Array} = {};
   private state: PlayStateData | null;
 
-  public constructor(dmx: DmxProxy) {
+  public constructor(config: config.Config, dmx: DmxProxy) {
+    this.config = config;
     this.dmx = dmx;
     this.newSynesthesiaPlayState = this.newSynesthesiaPlayState.bind(this);
+    // create one buffer for each universe we have
+    for (const fixture of config.fixtures) {
+      if (!this.buffers[fixture.universe])
+        this.buffers[fixture.universe] = new Int8Array(512);
+    }
   }
 
   public newSynesthesiaPlayState(state: PlayStateData | null): void {
@@ -49,14 +58,26 @@ export class Display {
       }
     }
 
-    this.buffer[2] = 128; // y position
-    this.buffer[5] = 255; // brightness
+    for (const fixture of this.config.fixtures) {
+      if (fixture.group === 'hex-small') {
+        this.setDMXBufferValue(fixture.universe, fixture.startChannel, 255 * brightness | 0);
+      }
+      if (fixture.group === 'hex-med') {
+        this.setDMXBufferValue(fixture.universe, fixture.startChannel + 1, 255 * brightness | 0);
+      }
+      if (fixture.group === 'hex-big') {
+        this.setDMXBufferValue(fixture.universe, fixture.startChannel + 2, 255 * brightness | 0);
+      }
+    }
 
-    this.buffer[7] = 205 * brightness | 0;
-    this.buffer[8] = 100 * brightness | 0;
-    this.buffer[9] = 255 * brightness | 0;
-    this.buffer[10] = 5 * brightness | 0;
-    this.dmx.writeDmx(0, this.buffer);
+    // Write Universes
+    for (const universe of Object.keys(this.buffers)) {
+      this.dmx.writeDmx(Number(universe), this.buffers[universe]);
+    }
+  }
+
+  private setDMXBufferValue(universe: number, channel: number, value: number) {
+    this.buffers[universe][channel - 1] = value;
   }
 
   public run() {
