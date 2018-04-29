@@ -30,7 +30,7 @@ const simpleRgbFixtureChannels: Channel[] = [
 ];
 
 // Small Hexigons
-fixtures.push(...[1, 4, 10, 13, 16, 19, 28, 31, 37, 40, 46, 52, 70, 73].map<Fixture>(startChannel => ({
+fixtures.push(...[1, 4, 10, 13, 16, 19, 28, 31, 37, 40, 46, 52, 70, 73, 79].map<Fixture>(startChannel => ({
   universe: 0,
   startChannel,
   channels: simpleRgbFixtureChannels,

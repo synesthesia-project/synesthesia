@@ -13,8 +13,8 @@ import {RGBColor} from './colors';
 
 const INTERVAL = 1000 / 44;
 
-const PURPLE = new RGBColor(200, 255, 0);
-const BLUE = new RGBColor(0, 255, 50);
+const PURPLE = new RGBColor(200, 0, 255);
+const BLUE = new RGBColor(0, 50, 255);
 
 interface RGBChasePattern {
   patternType: 'rgbChase';
@@ -39,7 +39,7 @@ function randomRGBChaseState(colors: RGBColor[]): RGBChasePattern {
   return {
     patternType: 'rgbChase',
     colors,
-    speed: 0.05,
+    speed: 0.02,
     currentColor: Math.floor(Math.random() * colors.length),
     currentTransitionAmount: Math.random()
   };
@@ -81,15 +81,13 @@ export class Display {
 
   private frame() {
 
-    for (const fixture of this.config.fixtures) {
-      if (fixture.group === 'hex-small') {
-        this.setFixtureRGBColor(fixture, PURPLE);
-      }
-      if (fixture.group === 'hex-med') {
-        this.setFixtureRGBColor(fixture, BLUE);
-      }
-      if (fixture.group === 'hex-big') {
-        this.setFixtureRGBColor(fixture, new RGBColor(50, 0, 200));
+    for (let i = 0; i < this.config.fixtures.length; i++) {
+      const fixture = this.config.fixtures[i];
+      const pattern = this.layout.fixtures[i];
+      if (pattern.patternType === 'rgbChase') {
+        const currentColor = this.calculateRGBChasePatternColor(pattern);
+        this.setFixtureRGBColor(fixture, currentColor);
+        this.incrementRGBChasePatternColor(pattern);
       }
     }
 
@@ -116,6 +114,25 @@ export class Display {
     for (const universe of Object.keys(this.buffers)) {
       this.dmx.writeDmx(Number(universe), this.buffers[universe]);
     }
+  }
+
+  private incrementRGBChasePatternColor(pattern: RGBChasePattern) {
+    pattern.currentTransitionAmount += pattern.speed;
+    if (pattern.currentTransitionAmount >= 1) {
+      pattern.currentTransitionAmount -= 1;
+      pattern.currentColor++;
+      if (pattern.currentColor >= pattern.colors.length) {
+        pattern.currentColor = 0;
+      }
+    }
+  }
+
+  private calculateRGBChasePatternColor(pattern: RGBChasePattern) {
+    const colorA = pattern.colors[pattern.currentColor];
+    const colorBIndex = pattern.currentColor === pattern.colors.length - 1 ?
+      0 : pattern.currentColor + 1;
+    const colorB = pattern.colors[colorBIndex];
+    return colorA.overlay(colorB, pattern.currentTransitionAmount);
   }
 
   private setFixtureRGBColor(fixture: config.Fixture, color: RGBColor) {
