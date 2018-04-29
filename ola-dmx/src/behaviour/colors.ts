@@ -17,3 +17,5 @@ export class RGBColor {
   }
 
 }
+
+export const RGB_BLACK = new RGBColor(0, 0, 0);

@@ -9,7 +9,7 @@ import {
 
 import {DmxProxy} from '../dmx/proxy';
 import * as config from '../config';
-import {RGBColor} from './colors';
+import {RGBColor, RGB_BLACK} from './colors';
 
 const INTERVAL = 1000 / 44;
 
@@ -65,7 +65,7 @@ export class Display {
     }
     // create the layout, do a random chaser for now for every fixture
     const fixtures: FixturePattern[] = config.fixtures.map(config => {
-      return randomRGBChaseState([PURPLE, BLUE]);
+      return randomRGBChaseState([PURPLE, BLUE, new RGBColor(200, 100, 0)]);
     });
 
     this.layout = {fixtures};
@@ -81,15 +81,7 @@ export class Display {
 
   private frame() {
 
-    for (let i = 0; i < this.config.fixtures.length; i++) {
-      const fixture = this.config.fixtures[i];
-      const pattern = this.layout.fixtures[i];
-      if (pattern.patternType === 'rgbChase') {
-        const currentColor = this.calculateRGBChasePatternColor(pattern);
-        this.setFixtureRGBColor(fixture, currentColor);
-        this.incrementRGBChasePatternColor(pattern);
-      }
-    }
+    let percussionBrightness = 0.7;
 
     if (this.playState) {
       const positionMillis = new Date().getTime() - this.playState.effectiveStartTimeMillis;
@@ -108,7 +100,27 @@ export class Display {
           }
         }
       }
+
+      percussionBrightness = brightness;
     }
+
+    for (let i = 0; i < this.config.fixtures.length; i++) {
+      const fixture = this.config.fixtures[i];
+      const pattern = this.layout.fixtures[i];
+      if (pattern.patternType === 'rgbChase') {
+        let currentColor = this.calculateRGBChasePatternColor(pattern);
+        if (fixture.group === 'hex-med' || fixture.group === 'hex-big') {
+          currentColor = currentColor.overlay(RGB_BLACK, 1 - percussionBrightness);
+        } else {
+          const brightness = percussionBrightness * 0.7 + 0.15;
+          currentColor = currentColor.overlay(RGB_BLACK, 1 - brightness);
+        }
+        this.setFixtureRGBColor(fixture, currentColor);
+        this.incrementRGBChasePatternColor(pattern);
+      }
+    }
+
+
 
     // Write Universes
     for (const universe of Object.keys(this.buffers)) {
