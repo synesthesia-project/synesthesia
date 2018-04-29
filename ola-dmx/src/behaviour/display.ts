@@ -9,8 +9,41 @@ import {
 
 import {DmxProxy} from '../dmx/proxy';
 import * as config from '../config';
+import {RGBColor} from './colors';
 
 const INTERVAL = 1000 / 44;
+
+const PURPLE = new RGBColor(200, 255, 0);
+const BLUE = new RGBColor(0, 255, 50);
+
+interface RGBChasePattern {
+  patternType: 'rgbChase';
+  colors: RGBColor[];
+  /* How much we should change between colors per frame */
+  speed: number;
+  currentColor: number;
+  currentTransitionAmount: number;
+}
+
+type FixturePattern = RGBChasePattern;
+
+/*
+ * Describes what we're currently displaying on the fixures, and how we're
+ * taking into account the synesthesia data to modify the display
+ */
+interface Layout {
+  fixtures: FixturePattern[];
+}
+
+function randomRGBChaseState(colors: RGBColor[]): RGBChasePattern {
+  return {
+    patternType: 'rgbChase',
+    colors,
+    speed: 0.05,
+    currentColor: Math.floor(Math.random() * colors.length),
+    currentTransitionAmount: Math.random()
+  };
+}
 
 export class Display {
 
@@ -18,7 +51,8 @@ export class Display {
   private readonly dmx: DmxProxy;
   // Mapping form universe to buffers
   private readonly buffers: {[id: number]: Int8Array} = {};
-  private state: PlayStateData | null;
+  private readonly layout: Layout;
+  private playState: PlayStateData | null;
 
   public constructor(config: config.Config, dmx: DmxProxy) {
     this.config = config;
@@ -29,50 +63,77 @@ export class Display {
       if (!this.buffers[fixture.universe])
         this.buffers[fixture.universe] = new Int8Array(512);
     }
+    // create the layout, do a random chaser for now for every fixture
+    const fixtures: FixturePattern[] = config.fixtures.map(config => {
+      return randomRGBChaseState([PURPLE, BLUE]);
+    });
+
+    this.layout = {fixtures};
   }
 
   public newSynesthesiaPlayState(state: PlayStateData | null): void {
-    this.state = state ? {
+    this.playState = state ? {
       effectiveStartTimeMillis: state.effectiveStartTimeMillis,
       file: prepareFile(state.file)
     } : null;
-    console.log('newSynesthesiaPlayState', this.state );
+    console.log('newSynesthesiaPlayState', this.playState );
   }
 
   private frame() {
-    if (!this.state) return;
-    const positionMillis = new Date().getTime() - this.state.effectiveStartTimeMillis;
-
-    let brightness = 0;
-
-    // Base brightness on percussion layer
-    for (const layer of this.state.file.layers) {
-      if (layer.kind === 'percussion') {
-        const activeEvents = getActiveEvents(layer.events, positionMillis);
-        if (activeEvents.length > 0) {
-          for (const event of activeEvents) {
-            const amplitude = getCurrentEventStateValue(event, positionMillis, s => s.amplitude);
-            brightness = Math.max(brightness, amplitude);
-          }
-        }
-      }
-    }
 
     for (const fixture of this.config.fixtures) {
       if (fixture.group === 'hex-small') {
-        this.setDMXBufferValue(fixture.universe, fixture.startChannel, 255 * brightness | 0);
+        this.setFixtureRGBColor(fixture, PURPLE);
       }
       if (fixture.group === 'hex-med') {
-        this.setDMXBufferValue(fixture.universe, fixture.startChannel + 1, 255 * brightness | 0);
+        this.setFixtureRGBColor(fixture, BLUE);
       }
       if (fixture.group === 'hex-big') {
-        this.setDMXBufferValue(fixture.universe, fixture.startChannel + 2, 255 * brightness | 0);
+        this.setFixtureRGBColor(fixture, new RGBColor(50, 0, 200));
+      }
+    }
+
+    if (this.playState) {
+      const positionMillis = new Date().getTime() - this.playState.effectiveStartTimeMillis;
+
+      let brightness = 0;
+
+      // Base brightness on percussion layer
+      for (const layer of this.playState.file.layers) {
+        if (layer.kind === 'percussion') {
+          const activeEvents = getActiveEvents(layer.events, positionMillis);
+          if (activeEvents.length > 0) {
+            for (const event of activeEvents) {
+              const amplitude = getCurrentEventStateValue(event, positionMillis, s => s.amplitude);
+              brightness = Math.max(brightness, amplitude);
+            }
+          }
+        }
       }
     }
 
     // Write Universes
     for (const universe of Object.keys(this.buffers)) {
       this.dmx.writeDmx(Number(universe), this.buffers[universe]);
+    }
+  }
+
+  private setFixtureRGBColor(fixture: config.Fixture, color: RGBColor) {
+    let rChannel = -1, gChannel = -1, bChannel = -1;
+    for (let i = 0; i < fixture.channels.length; i++) {
+      const channel = fixture.channels[i];
+      if (channel.kind === 'r') {
+        rChannel = fixture.startChannel + i;
+      } else if (channel.kind === 'g') {
+        gChannel = fixture.startChannel + i;
+      } else if (channel.kind === 'b') {
+        bChannel = fixture.startChannel + i;
+      }
+    }
+    if (rChannel >= 0 && gChannel >= 0 && bChannel >= 0) {
+      this.setDMXBufferValue(fixture.universe, rChannel, color.r);
+      this.setDMXBufferValue(fixture.universe, gChannel, color.g);
+      this.setDMXBufferValue(fixture.universe, bChannel, color.b);
     }
   }
 
