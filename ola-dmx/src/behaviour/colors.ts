@@ -16,6 +16,10 @@ export class RGBColor {
     return new RGBColor(r, g, b);
   }
 
+  public transition(other: RGBColor, amount: number): RGBColor {
+    return this.overlay(other, amount);
+  }
+
 }
 
 export const RGB_BLACK = new RGBColor(0, 0, 0);
