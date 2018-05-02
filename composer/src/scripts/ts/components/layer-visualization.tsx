@@ -1,10 +1,12 @@
 import {BaseComponent} from './base';
+import {styled} from './styling';
 import * as React from 'react';
 import * as file from '../shared/file/file';
 import {getActiveEvents, getCurrentEventStateValue} from '../shared/file/file-usage';
 import * as util from '../shared/util/util';
 
 export interface LayerVisualizationProps {
+  className?: string;
   layer: file.AnyLayer;
   positionMillis: number;
 }
@@ -16,7 +18,7 @@ export interface VisualisedState {
   width: number;
 }
 
-export class LayerVisualization extends BaseComponent<LayerVisualizationProps, {}> {
+class LayerVisualization extends BaseComponent<LayerVisualizationProps, {}> {
 
   /** The current layer that we have processed */
   private currentLayer: file.AnyLayer;
@@ -80,13 +82,34 @@ export class LayerVisualization extends BaseComponent<LayerVisualizationProps, {
     const states = this.getCurrentEvents().map(e => this.getCurrentState(e));
     const width = states.length === 0 ? 0 : Math.max.apply(null, states.map(s => s.width));
     return (
-      <externals.ShadowDOM>
-        <div>
-          <link rel="stylesheet" type="text/css" href="styles/components/layer-visualization.css"/>
-          <div className="box" style={{width: (width * 100) + '%'}} />
-        </div>
-      </externals.ShadowDOM>
+      <div className={this.props.className}>
+        <div className="box" style={{width: (width * 100) + '%'}} />
+      </div>
     );
   }
 
 }
+
+const StyledLayerVisualization = styled(LayerVisualization)`
+  width: ${p => p.theme.visualizationWidthPx}px;
+  box-sizing: border-box;
+  background: ${p => p.theme.layerSideBg};
+  display: block;
+  position: absolute;
+  height: 100%;
+  top: 0;
+  right: 0;
+  border-left: 1px solid ${p => p.theme.borderLight};
+
+  .box {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: #fff;
+    width: 0;
+  }
+`;
+
+export {StyledLayerVisualization as LayerVisualization};
