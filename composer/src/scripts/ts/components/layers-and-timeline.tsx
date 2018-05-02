@@ -20,7 +20,7 @@ export interface LayersAndTimelineProps {
   bindingLayer: func.Maybe<number>;
   midiLayerBindings: {input: string, note: number, layer: number}[];
   // Callbacks
-  timelineRef: (ref: Timeline | null) => void;
+  timelineRef: (ref: HTMLDivElement | null) => void;
   layersRef: (ref: HTMLDivElement | null) => void;
   updateCueFile: types.Mutator<file.CueFile>;
   updateSelection: types.Mutator<selection.Selection>;
@@ -152,7 +152,7 @@ class LayersAndTimeline extends BaseComponent<LayersAndTimelineProps, LayersAndT
         </div>
         {this.props.file.caseOf({
           just: cueFile => <Timeline
-            ref={timeline => this.props.timelineRef(timeline)}
+            timelineRef={this.props.timelineRef}
             updateCueFile={this.props.updateCueFile}
             file={cueFile}
             zoom={this.props.state.zoom}

@@ -8,6 +8,9 @@ const {
   ThemeProvider
 } = styledComponents as styledComponents.ThemedStyledComponentsModule<ThemeVariables>;
 
+/** The type of the parameter passed to functions in the tagged template literal */
+export type P = styledComponents.ThemeProps<ThemeVariables>;
+
 export interface ThemeVariables {
   // Colors
   colorGreen: string;
@@ -148,6 +151,12 @@ export const buttonDisabled = css`
 `;
 
 export const rectButton = button;
+
+export const rectIconButton = css`
+  ${rectButton}
+
+  padding: 0;
+`;
 
 export const rectButtonSmall = css`
   ${rectButton}

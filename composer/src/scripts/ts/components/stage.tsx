@@ -43,9 +43,9 @@ export class Stage extends BaseComponent<StageProps, StageState> {
   private readonly midi = new midi.Midi();
 
   // Refd Elements (used for event geometry)
-  private timeline: Timeline | null;
-  private player: Player | null;
-  private layers: HTMLDivElement | null;
+  private timeline: HTMLDivElement | null = null;
+  private player: Player | null = null;
+  private layers: HTMLDivElement | null = null;
 
   constructor(props: StageProps) {
     super(props);
@@ -129,7 +129,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
       const paddingLeft = 100; // width of the side bar
       const mousePosition =
         e.pageY > this.player.getOffset().top ? 'player' :
-        e.pageX > paddingLeft && e.pageY > this.timeline.getOffset().top ? 'timeline' :
+        e.pageX > paddingLeft && e.pageY > $(this.timeline).offset().top ? 'timeline' :
         e.pageX > paddingLeft && e.pageY > $(this.layers).offset().top ? 'layers' : 'none';
 
       const deltaY = (e.originalEvent as WheelEvent).deltaY;
