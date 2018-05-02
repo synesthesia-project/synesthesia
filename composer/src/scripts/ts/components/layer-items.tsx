@@ -1,4 +1,5 @@
 import {BaseComponent} from './base';
+import {styled} from './styling';
 import * as React from 'react';
 import * as file from '../shared/file/file';
 import {getEventDuration, shiftSelectedEvents} from '../data/file-manipulation';
@@ -9,6 +10,7 @@ import {ActiveModifierKeys} from '../util/input';
 
 export interface LayerItemsProps {
   // Properties
+  className?: string;
   selection: selection.Selection;
   file: file.CueFile;
   layer: file.AnyLayer;
@@ -27,7 +29,7 @@ export interface LayerItemsState {
     {state: 'dragging', start: number, end: number};
 }
 
-export class LayerItems extends BaseComponent<LayerItemsProps, LayerItemsState> {
+class LayerItems extends BaseComponent<LayerItemsProps, LayerItemsState> {
 
   private timelineSelector: JQuery | null = null;
 
@@ -251,23 +253,107 @@ export class LayerItems extends BaseComponent<LayerItemsProps, LayerItemsState> 
     })();
 
     return (
-      <externals.ShadowDOM>
-        <div>
-          <link rel="stylesheet" type="text/css" href="styles/components/layer-items.css"/>
-          <div className={'timeline-selector ' + (this.state.selector.state === 'dragging' ? ' dragging' : '')}
-            ref={div => this.timelineSelector = div ? $(div) : null}
-            onMouseEnter={this.onTimelineSelectorMouseOver}
-            onMouseLeave={this.onTimelineSelectorMouseOut}
-            onMouseMove={this.onTimelineSelectorMouseMove}
-            onMouseDown={this.onTimelineSelectorMouseDown}
-            >
-            {selectorIndicator}
-          </div>
-          {items}
-          {extraItems}
+      <div className={this.props.className}>
+        <div className={'timeline-selector ' + (this.state.selector.state === 'dragging' ? ' dragging' : '')}
+          ref={div => this.timelineSelector = div ? $(div) : null}
+          onMouseEnter={this.onTimelineSelectorMouseOver}
+          onMouseLeave={this.onTimelineSelectorMouseOut}
+          onMouseMove={this.onTimelineSelectorMouseMove}
+          onMouseDown={this.onTimelineSelectorMouseDown}
+          >
+          {selectorIndicator}
         </div>
-      </externals.ShadowDOM>
+        {items}
+        {extraItems}
+      </div>
     );
   }
 
 }
+
+const StyledLayerItems = styled(LayerItems)`
+  display: block;
+  height: 100%;
+  width: 100%;
+
+  > .timeline-selector {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0);
+    transition: background 0.2s;
+
+    &:hover, &.dragging {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    > .indicator {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 20%;
+      background: rgba(${p => p.theme.hintRGB}, 0.2);
+
+      > .side {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: ${p => p.theme.hint};
+
+        &.left {
+          left: -1px;
+        }
+
+        &.right {
+          right: -1px;
+        }
+      }
+    }
+  }
+
+  > .item {
+    position: absolute;
+    top: 0;
+    margin-left: -1px;
+    width: 1px;
+    height: calc(100% - 2px);
+    background-color: rgba(102, 102, 102, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+
+    &:hover {
+      background-color:  rgba(204, 204, 204, 0.5);
+    }
+
+    &.selected {
+      background-color: rgba(255, 255, 255, 0.7);
+      cursor: move;
+    }
+
+    &.active {
+      background-color: rgba(${p => p.theme.hintRGB}, 0.4);
+      border-color: ${p => p.theme.hint};
+
+      &.selected {
+        background-color: rgba(${p => p.theme.hintRGB}, 0.8);
+        border-color: rgba(255, 255, 255, 0.4);
+      }
+    }
+
+    &.dragging {
+      border-width: 0;
+      background-color: rgba(102, 102, 102, 0.4);
+    }
+
+    &.overlay {
+      background-color: rgba(${p => p.theme.hintRGB}, 0.4);
+      border-color: ${p => p.theme.hint};
+    }
+  }
+`;
+
+export {StyledLayerItems as LayerItems};

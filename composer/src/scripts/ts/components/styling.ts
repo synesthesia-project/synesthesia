@@ -20,6 +20,7 @@ export interface ThemeVariables {
   borderLight: string;
   borderLighter: string;
   hint: string;
+  hintRGB: string;
   hintDark1: string;
   layerSideBg: string;
   buttonTextNormal: string;
@@ -43,6 +44,7 @@ export const defaultTheme: ThemeVariables = {
 
   // TODO: Colors to replace
   hint: '#4286f4',
+  hintRGB: '66, 134, 244',
   hintDark1: '#2a77f3',
   // END TODO
   layerSideBg: '#303133',
