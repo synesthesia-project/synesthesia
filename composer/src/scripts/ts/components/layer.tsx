@@ -1,4 +1,5 @@
 import {BaseComponent} from './base';
+import {styled, rectButton, buttonPressed} from './styling';
 import {LayerItems} from './layer-items';
 import {LayerVisualization} from './layer-visualization';
 import * as func from '../data/functional';
@@ -16,6 +17,7 @@ export interface LayerState { }
 
 export interface LayerProps {
   // Properties
+  className?: string;
   selection: selection.Selection;
   file: file.CueFile;
   layer: file.AnyLayer;
@@ -32,7 +34,7 @@ export interface LayerProps {
   updateSelectionDraggingDiff: (diffMillis: number | null) => void;
 }
 
-export class Layer extends BaseComponent<LayerProps, LayerState> {
+class Layer extends BaseComponent<LayerProps, LayerState> {
 
   constructor(props: LayerProps) {
     super(props);
@@ -62,42 +64,39 @@ export class Layer extends BaseComponent<LayerProps, LayerState> {
     });
 
     return (
-      <externals.ShadowDOM>
-        <div>
-          <link rel="stylesheet" type="text/css" href="styles/components/layer.css"/>
-          <div className="side">
-            <span
-              className={'button' + (this.isSelected() ? ' selected' : '')}
-              title="Bind to Keyboard"
-              onClick={this.toggleSelect}><Keyboard /></span>
-            <span className="column">
-              <span className={'button' + (this.isBinding() ? ' selected' : '')} onClick={this.toggleRequestBind}>
-                <span>MIDI{binding ? (': ' + binding) : ''}</span>
-              </span>
-              <span className="button grow" title="Settings"><Settings /></span>
+      <div className={this.props.className}>
+        <div className="side">
+          <span
+            className={'button' + (this.isSelected() ? ' selected' : '')}
+            title="Bind to Keyboard"
+            onClick={this.toggleSelect}><Keyboard /></span>
+          <span className="column">
+            <span className={'button' + (this.isBinding() ? ' selected' : '')} onClick={this.toggleRequestBind}>
+              <span>MIDI{binding ? (': ' + binding) : ''}</span>
             </span>
-          </div>
-          <LayerVisualization layer={this.props.layer} positionMillis={this.props.positionMillis} />
-          <div className="timeline">
-            <div className="timeline-selector" />
-            <div className="timeline-zoom" style={{
-                left: (- zoomMargin.left * 100) + '%',
-                right: (- zoomMargin.right * 100) + '%'
-              }}>
-              <LayerItems
-                file={this.props.file}
-                layer={this.props.layer}
-                layerKey={this.props.layerKey}
-                selection={this.props.selection}
-                updateSelection={this.props.updateSelection}
-                updateCueFile={this.props.updateCueFile}
-                selectionDraggingDiff={this.props.selectionDraggingDiff}
-                updateSelectionDraggingDiff={this.props.updateSelectionDraggingDiff}
-                />
-            </div>
+            <span className="button grow" title="Settings"><Settings /></span>
+          </span>
+        </div>
+        <LayerVisualization layer={this.props.layer} positionMillis={this.props.positionMillis} />
+        <div className="timeline">
+          <div className="timeline-selector" />
+          <div className="timeline-zoom" style={{
+              left: (- zoomMargin.left * 100) + '%',
+              right: (- zoomMargin.right * 100) + '%'
+            }}>
+            <LayerItems
+              file={this.props.file}
+              layer={this.props.layer}
+              layerKey={this.props.layerKey}
+              selection={this.props.selection}
+              updateSelection={this.props.updateSelection}
+              updateCueFile={this.props.updateCueFile}
+              selectionDraggingDiff={this.props.selectionDraggingDiff}
+              updateSelectionDraggingDiff={this.props.updateSelectionDraggingDiff}
+              />
           </div>
         </div>
-      </externals.ShadowDOM>
+      </div>
     );
   }
 
@@ -115,3 +114,90 @@ export class Layer extends BaseComponent<LayerProps, LayerState> {
   }
 
 }
+
+const layerBarHeightPx = 60;
+
+const StyledLayer = styled(Layer)`
+  box-sizing: border-box;
+  display: block;
+  height:  ${p => layerBarHeightPx}px;
+  border-bottom: 1px solid ${p => p.theme.borderLight};
+  position: relative;
+
+  > .side {
+    box-sizing: border-box;
+    background: ${p => p.theme.layerSideBg};
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: absolute;
+    width: ${p => p.theme.layerSideColumnWidthPx}px;
+    height: 100%;
+    top: 0;
+    left: 0;
+    border-right: 1px solid ${p => p.theme.borderLight};
+
+    > .button, .column > .button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 -1px 0 0;
+      height: 100%;
+      ${rectButton}
+      border-radius: 0;
+      padding: 6px;
+      font-size: 24px;
+
+      > span {
+        font-size: 12px;
+      }
+
+      &.selected {
+        ${buttonPressed}
+      }
+
+      &:first-child {
+        border-top: none;
+      }
+    }
+
+    > .column {
+      height: 100%;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+
+      > .button {
+        height: initial;
+        width: 100%;
+        margin-bottom: -1px;
+        font-size: 16px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        &.grow {
+          flex-grow: 1;
+        }
+      }
+    }
+  }
+
+  > .timeline {
+    display: block;
+    margin-left: ${p => p.theme.layerSideColumnWidthPx}px;
+    margin-right: ${p => p.theme.visualizationWidthPx}px;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+
+    > .timeline-zoom {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+    }
+  }
+`;
+
+export {StyledLayer as Layer};
