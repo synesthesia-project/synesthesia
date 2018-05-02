@@ -148,3 +148,10 @@ export const buttonDisabled = css`
 `;
 
 export const rectButton = button;
+
+export const rectButtonSmall = css`
+  ${rectButton}
+
+  font-size: 12px;
+  padding: 4px 6px;
+`;
