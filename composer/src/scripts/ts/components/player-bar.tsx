@@ -1,4 +1,3 @@
-import {BaseComponent} from './base';
 import * as React from 'react';
 
 import * as util from '../shared/util/util';
@@ -12,10 +11,12 @@ export interface PlayerBarState {
    * True iff the user is currently dragging the button
    */
   dragging: boolean;
+  trackPosition: number;
 }
 
 export interface PlayerBarProps {
   // Properties
+  className?: string;
   playState: PlayState;
   scrubbingPosition: func.Maybe<number>;
   zoom: stageState.ZoomState;
@@ -23,19 +24,18 @@ export interface PlayerBarProps {
   updateScrubbingPosition: (position: func.Maybe<number>) => void;
 }
 
-export class PlayerBar extends BaseComponent<PlayerBarProps, PlayerBarState> {
+export class PlayerBar extends React.Component<PlayerBarProps, PlayerBarState> {
 
   private updateInterval: number;
 
   // Elements
-  private _$bar: JQuery;
-  private _$fill: JQuery;
-  private _$button: JQuery;
+  private barRef: HTMLDivElement | null = null;
 
   constructor(props: PlayerBarProps) {
     super(props);
     this.state = {
-      dragging: false
+      dragging: false,
+      trackPosition: 0
     };
 
     // Bind callbacks & event listeners
@@ -45,25 +45,39 @@ export class PlayerBar extends BaseComponent<PlayerBarProps, PlayerBarState> {
   }
 
   public componentDidMount() {
-    this.updatePlayerDisplay();
+    this.updateFromPlayState(this.props.playState);
   }
 
-  public componentDidUpdate() {
-    this.updatePlayerDisplay();
+  public componentWillReceiveProps(nextProps: PlayerBarProps) {
+    // Only call updatePlayerDisplay if playState has changed
+    if (this.props.playState !== nextProps.playState)
+      this.updateFromPlayState(nextProps.playState);
   }
 
   public render() {
+    const className =
+      (this.props.className ? this.props.className : '') +
+      (this.state.dragging ? ' dragging' : '') +
+      (this.props.playState.isNone() ? ' disabled' : '');
+    const fillWidth = (util.restrict(this.state.trackPosition, 0, 1) * 100) + '%';
+    const buttonPosition = this.props.scrubbingPosition.caseOf({
+      just: scrubbingPosition => scrubbingPosition,
+      none: () => this.state.trackPosition
+    });
+    const buttonLeft = (util.restrict(buttonPosition, 0, 1) * 100) + '%';
     return (
       <externals.ShadowDOM>
-        <div>
+        <div className={className}>
           <link rel="stylesheet" type="text/css" href="styles/components/player-bar.css"/>
           <div className="zoom" style={{
             left: this.props.zoom.startPoint * 100 + '%',
             right: (1 - this.props.zoom.endPoint) * 100 + '%'
             }}>
           </div>
-          <div className="bar"><div className="fill"></div></div>
-          <div className="button"></div>
+          <div className="bar" ref={bar => this.barRef = bar}>
+            <div className="fill" style={{width: fillWidth}} />
+          </div>
+          <div className="button" style={{left: buttonLeft}} />
           <div className="hit"
             onMouseDown={this.onMouseDown}
             onMouseMove={this.onMouseMove}
@@ -76,7 +90,8 @@ export class PlayerBar extends BaseComponent<PlayerBarProps, PlayerBarState> {
   }
 
   private calculateBarPosition(e: React.MouseEvent<HTMLDivElement>) {
-    const $bar = this.$bar();
+    if (!this.barRef) return 0;
+    const $bar = $(this.barRef);
     const position = (e.pageX - $bar.offset().left) / $bar.width();
     return util.restrict(position, 0, 1);
   }
@@ -89,7 +104,6 @@ export class PlayerBar extends BaseComponent<PlayerBarProps, PlayerBarState> {
     this.setState({
       dragging: true
     });
-    this.$reactRoot().addClass('dragging');
     this.props.updateScrubbingPosition(func.just(this.calculateBarPosition(e)));
   }
 
@@ -111,41 +125,20 @@ export class PlayerBar extends BaseComponent<PlayerBarProps, PlayerBarState> {
     this.setState({
       dragging: false
     });
-    this.$reactRoot().removeClass('dragging');
     this.props.updateScrubbingPosition(func.none());
   }
 
-  private $bar() {
-    if (!this._$bar)
-      this._$bar = this.$().find('.bar');
-    return this._$bar;
-  }
-
-  private $fill() {
-    if (!this._$fill)
-      this._$fill = this.$().find('.fill');
-    return this._$fill;
-  }
-
-  private $button() {
-    if (!this._$button)
-      this._$button = this.$().find('.button');
-    return this._$button;
-  }
-
-  private updatePlayerDisplay() {
+  private updateFromPlayState(playState: PlayState) {
     cancelAnimationFrame(this.updateInterval);
     this.updateInterval = -1;
-    this.props.playState.caseOf({
+    playState.caseOf({
       just: state => {
-        this.$reactRoot().removeClass('disabled');
         state.state.caseOf<void>({
           left: pausedState => this.updateBarPosition(pausedState.timeMillis / state.durationMillis),
           right: playingState => this.initUpdateInterval(state, playingState)
         });
       },
       none: () => {
-        this.$reactRoot().addClass('disabled');
         this.updateBarPosition(0);
       }
     });
@@ -161,21 +154,11 @@ export class PlayerBar extends BaseComponent<PlayerBarProps, PlayerBarState> {
       this.updateBarPosition(elapsed / playState.durationMillis);
       nextFrame = this.updateInterval = requestAnimationFrame(updater);
     };
-    // Pick a nice interval that will show the milliseconds updating
     nextFrame = this.updateInterval = requestAnimationFrame(updater);
-    updater();
   }
 
   private updateBarPosition(trackPosition: number) {
-    // Use scrubbing position if set for button
-    let buttonPosition = this.props.scrubbingPosition.caseOf({
-      just: scrubbingPosition => scrubbingPosition,
-      none: () => trackPosition
-    });
-    this.$fill().css('width', (util.restrict(trackPosition, 0, 1) * 100) + '%');
-    this.$button().css('left', (util.restrict(buttonPosition, 0, 1) * 100) + '%');
+    this.setState({trackPosition});
   }
-
-
 
 }
