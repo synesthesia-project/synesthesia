@@ -52,7 +52,7 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
           <span className="add-button" onClick={this.addLayerClicked}><Add /></span>
         </div>
         <div className="side right" />
-        <div className="timeline">
+        <div className="timeline" ref={t => this.props.timelineRef(t)}>
           <div className="timeline-zoom" style={{
               left: (- zoomMargin.left * 100) + '%',
               right: (- zoomMargin.right * 100) + '%'
