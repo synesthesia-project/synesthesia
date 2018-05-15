@@ -147,14 +147,14 @@ const StyledPlayer = styled(Player)`
   align-items: center;
   padding: ${p => p.theme.spacingPx}px;
 
-  .play-pause {
+  > .play-pause {
     display: block;
     height: ${controlHeight};
     width: ${controlHeight};
     ${rectIconButton}
   }
 
-  .elapsed-time, .duration {
+  > .elapsed-time, > .duration {
     display: inline-block;
     padding: 0 ${p => p.theme.spacingPx}px;
     width: 75px;
@@ -164,12 +164,12 @@ const StyledPlayer = styled(Player)`
 
   &.disabled {
 
-    .play-pause {
+    > .play-pause {
       opacity: 0.5;
       ${buttonDisabled}
     }
 
-    .elapsed-time, .duration {
+    > .elapsed-time, > .duration {
         opacity: 0.5;
     }
   }

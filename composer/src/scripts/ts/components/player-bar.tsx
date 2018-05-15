@@ -174,7 +174,7 @@ const StyledPlayerBar = styled(PlayerBar)`
   margin: 0 ${buttonWidthPx / 2}px;
   cursor: pointer;
 
-  .bar {
+  > .bar {
     position: absolute;
     left: 0;
     right: 0;
@@ -183,7 +183,7 @@ const StyledPlayerBar = styled(PlayerBar)`
     background-color: ${p => p.theme.borderDark};
     border: 1px solid ${p => p.theme.borderDark};
 
-    .fill {
+    > .fill {
       background-color: ${p => p.theme.borderLight};
       position: absolute;
       height: 100%;
@@ -191,7 +191,7 @@ const StyledPlayerBar = styled(PlayerBar)`
     }
   }
 
-  .button {
+  > .button {
     box-sizing: border-box;
     position: absolute;
     top: 0;
@@ -205,7 +205,7 @@ const StyledPlayerBar = styled(PlayerBar)`
   }
 
   // Increase hit-area
-  .hit {
+  > .hit {
     position: absolute;
     top: -5px;
     right: -15px;
@@ -213,7 +213,7 @@ const StyledPlayerBar = styled(PlayerBar)`
     left: -15px;
   }
 
-  .zoom {
+  > .zoom {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -237,21 +237,21 @@ const StyledPlayerBar = styled(PlayerBar)`
   }
 
   &.dragging {
-    .bar {
+    > .bar {
       border-color: ${p => p.theme.hint};
 
-      .fill {
+      > .fill {
         background: ${p => p.theme.hint};
       }
     }
 
-    .button {
+    > .button {
       border-color: ${p => p.theme.hint};
       background: ${p => p.theme.bg};
     }
 
     // Expand hit area to whole screen while dragging
-    .hit {
+    > .hit {
       top: -100vh;
       right: -10vw;
       left: -10vw;
@@ -262,20 +262,20 @@ const StyledPlayerBar = styled(PlayerBar)`
   &.disabled {
     cursor: default;
 
-    .bar {
+    > .bar {
       background-color: ${p => p.theme.bg};
       border-color: ${p => p.theme.bg};
 
-      .fill {
+      > .fill {
         background-color: ${p => p.theme.bg};
       }
     }
 
-    .button {
+    > .button {
       display: none;
     }
 
-    .zoom {
+    > .zoom {
       border-color: ${p => p.theme.bg};
     }
   }
