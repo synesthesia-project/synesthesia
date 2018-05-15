@@ -44,7 +44,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
 
   // Refd Elements (used for event geometry)
   private timeline: HTMLDivElement | null = null;
-  private player: Player | null = null;
+  private player: HTMLDivElement | null = null;
   private layers: HTMLDivElement | null = null;
 
   constructor(props: StageProps) {
@@ -128,7 +128,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
       // Work out where the mouse is currently positioned
       const paddingLeft = 100; // width of the side bar
       const mousePosition =
-        e.pageY > this.player.getOffset().top ? 'player' :
+        e.pageY > $(this.player).offset().top ? 'player' :
         e.pageX > paddingLeft && e.pageY > $(this.timeline).offset().top ? 'timeline' :
         e.pageX > paddingLeft && e.pageY > $(this.layers).offset().top ? 'layers' : 'none';
 
@@ -223,7 +223,6 @@ export class Stage extends BaseComponent<StageProps, StageState> {
   }
 
   private playStateUpdated(playState: PlayState) {
-    console.log('playStateUpdated', playState);
     this.setState({playState} as StageState);
     // If a file is loaded, update the length of the cue file
     playState.fmap(playState => {
@@ -294,7 +293,7 @@ export class Stage extends BaseComponent<StageProps, StageState> {
           none: () => null
         })}
         <Player
-          ref={player => this.player = player}
+          playerRef={player => this.player = player}
           zoom={this.state.state.zoom}
           playState={this.state.playState}
           />

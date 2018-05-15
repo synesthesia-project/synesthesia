@@ -11,32 +11,34 @@ import {PlayerBar} from './player-bar';
 import Pause = require('react-icons/lib/md/pause');
 import Play = require('react-icons/lib/md/play-arrow');
 
+const NO_TIME_STRING = '---';
+
 interface PlayerState {
   /**
    * If the user is currently scrubbing the track, this number will be set to
    * a value in the interval [0, 1] that represents where they are strubbing to.
    */
   scrubbingPosition: func.Maybe<number>;
+  elapsedTimeText: string | null;
 }
 
 interface PlayerProps {
   // Properties
   playState: PlayState;
   zoom: stageState.ZoomState;
+  // Callbacks
+  playerRef: (player: HTMLDivElement | null) => void;
 }
 
-export class Player extends BaseComponent<PlayerProps, PlayerState> {
+export class Player extends React.Component<PlayerProps, PlayerState> {
 
   private updateInterval: any;
-
-  // Elements
-  private _$elapsedTime: JQuery;
-  private _$duration: JQuery;
 
   constructor(props: PlayerProps) {
     super(props);
     this.state = {
-      scrubbingPosition: func.none()
+      scrubbingPosition: func.none(),
+      elapsedTimeText: null
     };
 
     // Bind callbacks & event listeners
@@ -44,12 +46,10 @@ export class Player extends BaseComponent<PlayerProps, PlayerState> {
     this.updateScrubbingPosition = this.updateScrubbingPosition.bind(this);
   }
 
-  public componentDidMount() {
-    this.updatePlayerDisplay();
-  }
-
-  public componentDidUpdate() {
-    this.updatePlayerDisplay();
+  public componentWillReceiveProps(nextProps: PlayerProps) {
+    // Only call updateFromPlayState if playState has changed
+    if (this.props.playState !== nextProps.playState)
+      this.updateFromPlayState(nextProps.playState);
   }
 
   public render() {
@@ -60,21 +60,27 @@ export class Player extends BaseComponent<PlayerProps, PlayerState> {
       }),
       none: () => false
     });
+    const disabled = this.props.playState.isJust();
+    const durationText = this.props.playState.caseOf({
+      just: state => displayMillis(state.durationMillis),
+      none: () => NO_TIME_STRING
+    });
+    const className = (disabled ? ' disabled' : '');
     return (
       <externals.ShadowDOM>
-        <div>
+        <div className={className} ref={div => this.props.playerRef(div)}>
           <link rel="stylesheet" type="text/css" href="styles/components/player.css"/>
           <span className="play-pause" onClick={this.playPauseClicked}>
             { playing ? <Pause /> : <Play /> }
           </span>
-          <span className="elapsed-time"></span>
+          <span className="elapsed-time">{this.state.elapsedTimeText ? this.state.elapsedTimeText : NO_TIME_STRING}</span>
           <PlayerBar
             playState={this.props.playState}
             scrubbingPosition={this.state.scrubbingPosition}
             zoom={this.props.zoom}
             updateScrubbingPosition={this.updateScrubbingPosition}
           ></PlayerBar>
-          <span className="duration"></span>
+          <span className="duration">{durationText}</span>
         </div>
       </externals.ShadowDOM>
     );
@@ -84,33 +90,17 @@ export class Player extends BaseComponent<PlayerProps, PlayerState> {
     this.props.playState.fmap(state => state.controls.toggle());
   }
 
-  private $elapsedTime() {
-    if (!this._$elapsedTime)
-      this._$elapsedTime = this.$().find('.elapsed-time');
-    return this._$elapsedTime;
-  }
-
-  private $duration() {
-    if (!this._$duration)
-      this._$duration = this.$().find('.duration');
-    return this._$duration;
-  }
-
-  private updatePlayerDisplay() {
+  private updateFromPlayState(playState: PlayState) {
     clearInterval(this.updateInterval);
-    this.props.playState.caseOf({
+    playState.caseOf({
       just: state => {
-        this.$reactRoot().removeClass('disabled');
-        this.$duration().text(displayMillis(state.durationMillis));
         state.state.caseOf<void>({
           left: pausedState => this.updateElapsedText(state, pausedState.timeMillis),
           right: playingState => this.initUpdateInterval(state, playingState)
         });
       },
       none: () => {
-        this.$reactRoot().addClass('disabled');
-        this.$elapsedTime().text('---');
-        this.$duration().text('---');
+        this.setState({elapsedTimeText: null});
       }
     });
   }
@@ -137,7 +127,7 @@ export class Player extends BaseComponent<PlayerProps, PlayerState> {
       just: scrubbingPosition => playState.durationMillis * scrubbingPosition,
       none: () => elapsed
     });
-    this.$elapsedTime().text(displayMillis(elapsed));
+    this.setState({elapsedTimeText: displayMillis(elapsed)});
   }
 
   private updateScrubbingPosition(position: func.Maybe<number>) {

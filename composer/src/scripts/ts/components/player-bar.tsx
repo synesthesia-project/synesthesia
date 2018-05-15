@@ -49,7 +49,7 @@ export class PlayerBar extends React.Component<PlayerBarProps, PlayerBarState> {
   }
 
   public componentWillReceiveProps(nextProps: PlayerBarProps) {
-    // Only call updatePlayerDisplay if playState has changed
+    // Only call updateFromPlayState if playState has changed
     if (this.props.playState !== nextProps.playState)
       this.updateFromPlayState(nextProps.playState);
   }
