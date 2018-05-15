@@ -1,4 +1,3 @@
-import {BaseComponent} from './base';
 import {styled, rectButtonSmall, buttonDisabled} from './styling';
 import * as React from 'react';
 import * as file from '../shared/file/file';
@@ -19,7 +18,7 @@ interface EventPropertiesProps {
   updateCueFileAndSelection: types.Mutator<[file.CueFile, selection.Selection]>;
 }
 
-class EventProperties extends BaseComponent<EventPropertiesProps, {}> {
+class EventProperties extends React.Component<EventPropertiesProps, {}> {
 
   public constructor(props: EventPropertiesProps) {
     super(props);

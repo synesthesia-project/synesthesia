@@ -1,4 +1,3 @@
-import {BaseComponent} from './base';
 import {styled} from './styling';
 import * as React from 'react';
 import * as file from '../shared/file/file';
@@ -29,7 +28,7 @@ export interface LayerItemsState {
     {state: 'dragging', start: number, end: number};
 }
 
-class LayerItems extends BaseComponent<LayerItemsProps, LayerItemsState> {
+class LayerItems extends React.Component<LayerItemsProps, LayerItemsState> {
 
   private timelineSelector: JQuery | null = null;
 

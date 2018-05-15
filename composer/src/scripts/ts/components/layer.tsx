@@ -1,4 +1,3 @@
-import {BaseComponent} from './base';
 import {styled, rectButton, buttonPressed} from './styling';
 import {LayerItems} from './layer-items';
 import {LayerVisualization} from './layer-visualization';
@@ -34,7 +33,7 @@ export interface LayerProps {
   updateSelectionDraggingDiff: (diffMillis: number | null) => void;
 }
 
-class Layer extends BaseComponent<LayerProps, LayerState> {
+class Layer extends React.Component<LayerProps, LayerState> {
 
   constructor(props: LayerProps) {
     super(props);

@@ -1,4 +1,3 @@
-import {BaseComponent} from './base';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import {styled, ThemeProvider, defaultTheme} from './styling';
@@ -38,7 +37,7 @@ export interface StageState {
   midiLayerBindings: {input: string, note: number, layer: number}[];
 }
 
-export class Stage extends BaseComponent<StageProps, StageState> {
+export class Stage extends React.Component<StageProps, StageState> {
 
   private readonly midi = new midi.Midi();
 

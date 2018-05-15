@@ -1,4 +1,3 @@
-import {BaseComponent} from './base';
 import {styled} from './styling';
 import {Layer} from './layer';
 import {Timeline} from './timeline';
@@ -38,7 +37,7 @@ export interface LayersAndTimelineState {
   selectionDraggingDiff: number | null;
 }
 
-class LayersAndTimeline extends BaseComponent<LayersAndTimelineProps, LayersAndTimelineState> {
+class LayersAndTimeline extends React.Component<LayersAndTimelineProps, LayersAndTimelineState> {
 
   private updateInterval: number;
 

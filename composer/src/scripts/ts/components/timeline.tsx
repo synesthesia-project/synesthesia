@@ -1,4 +1,3 @@
-import {BaseComponent} from './base';
 import {styled, rectIconButton, P} from './styling';
 import * as React from 'react';
 

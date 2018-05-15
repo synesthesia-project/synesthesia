@@ -1,4 +1,3 @@
-import {BaseComponent} from './base';
 import {styled} from './styling';
 import * as React from 'react';
 import * as file from '../shared/file/file';
@@ -18,7 +17,7 @@ export interface VisualisedState {
   width: number;
 }
 
-class LayerVisualization extends BaseComponent<LayerVisualizationProps, {}> {
+class LayerVisualization extends React.Component<LayerVisualizationProps, {}> {
 
   /** The current layer that we have processed */
   private currentLayer: file.AnyLayer;
