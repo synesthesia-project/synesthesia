@@ -6,7 +6,6 @@ var bower = require('gulp-bower');
 var sourcemaps = require('gulp-sourcemaps');
 var ts = require('gulp-typescript');
 var tslint = require('gulp-tslint');
-var sass = require('gulp-sass');
 var runSequence = require('run-sequence');
 var webpack = require('webpack');
 
@@ -102,17 +101,11 @@ gulp.task("webpack", ['bower', 'ts', 'copy-js'], function(callback) {
     });
 });
 
-gulp.task('sass', function () {
-  return gulp.src('./src/styles/**/*.scss')
-    .pipe(sourcemaps.init())
-    .pipe(sass().on('error', sass.logError))
-    .pipe(sourcemaps.write({
-      sourceRoot: '/src/styles'
-    }))
-    .pipe(gulp.dest('dist/styles'));
+gulp.task('css', function () {
+  return gulp.src('./src/styles/**/*.css').pipe(gulp.dest('dist/styles'));
 });
 
-gulp.task("dist", ['webpack', 'sass', 'extension-ts'], function(){
+gulp.task("dist", ['webpack', 'css', 'extension-ts'], function(){
   var copyCoreFiles = gulp.src([
       './src/manifest.json',
       './src/index.html',
