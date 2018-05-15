@@ -3,17 +3,6 @@
 /// <reference path="../../../node_modules/@types/webmidi/index.d.ts"/>
 /// <reference path="../../extension/ts/proto.d.ts"/>
 
-interface ShadowDomInstance extends React.Component<{
-  include?: string[]
-}, {}> {}
-type ShadowDOMConstructor = { new (): ShadowDomInstance & any };
-
-interface Externals {
-  ShadowDOM: ShadowDOMConstructor;
-}
-
-declare var externals: Externals;
-
 // Icons
 // TODO: Find a better way to do this
 
