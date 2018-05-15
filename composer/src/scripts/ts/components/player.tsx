@@ -1,5 +1,5 @@
-import {BaseComponent} from './base';
 import * as React from 'react';
+import {styled, buttonDisabled, rectIconButton} from './styling';
 
 import * as func from '../data/functional';
 import * as stageState from '../data/stage-state';
@@ -24,13 +24,14 @@ interface PlayerState {
 
 interface PlayerProps {
   // Properties
+  className?: string;
   playState: PlayState;
   zoom: stageState.ZoomState;
   // Callbacks
   playerRef: (player: HTMLDivElement | null) => void;
 }
 
-export class Player extends React.Component<PlayerProps, PlayerState> {
+class Player extends React.Component<PlayerProps, PlayerState> {
 
   private updateInterval: any;
 
@@ -60,29 +61,26 @@ export class Player extends React.Component<PlayerProps, PlayerState> {
       }),
       none: () => false
     });
-    const disabled = this.props.playState.isJust();
+    const disabled = this.props.playState.isNone();
     const durationText = this.props.playState.caseOf({
       just: state => displayMillis(state.durationMillis),
       none: () => NO_TIME_STRING
     });
-    const className = (disabled ? ' disabled' : '');
+    const className = this.props.className + (disabled ? ' disabled' : '');
     return (
-      <externals.ShadowDOM>
-        <div className={className} ref={div => this.props.playerRef(div)}>
-          <link rel="stylesheet" type="text/css" href="styles/components/player.css"/>
-          <span className="play-pause" onClick={this.playPauseClicked}>
-            { playing ? <Pause /> : <Play /> }
-          </span>
-          <span className="elapsed-time">{this.state.elapsedTimeText ? this.state.elapsedTimeText : NO_TIME_STRING}</span>
-          <PlayerBar
-            playState={this.props.playState}
-            scrubbingPosition={this.state.scrubbingPosition}
-            zoom={this.props.zoom}
-            updateScrubbingPosition={this.updateScrubbingPosition}
-          ></PlayerBar>
-          <span className="duration">{durationText}</span>
-        </div>
-      </externals.ShadowDOM>
+      <div className={className} ref={div => this.props.playerRef(div)}>
+        <span className="play-pause" onClick={this.playPauseClicked}>
+          { playing ? <Pause /> : <Play /> }
+        </span>
+        <span className="elapsed-time">{this.state.elapsedTimeText ? this.state.elapsedTimeText : NO_TIME_STRING}</span>
+        <PlayerBar
+          playState={this.props.playState}
+          scrubbingPosition={this.state.scrubbingPosition}
+          zoom={this.props.zoom}
+          updateScrubbingPosition={this.updateScrubbingPosition}
+        ></PlayerBar>
+        <span className="duration">{durationText}</span>
+      </div>
     );
   }
 
@@ -136,7 +134,45 @@ export class Player extends React.Component<PlayerProps, PlayerState> {
     });
   }
 
-
-
-
 }
+
+const controlHeight = '30px';
+
+const StyledPlayer = styled(Player)`
+  background-color: ${p => p.theme.bgLight1};
+  border-top: 1px solid ${p => p.theme.borderDark};
+  z-index: 100;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: ${p => p.theme.spacingPx}px;
+
+  .play-pause {
+    display: block;
+    height: ${controlHeight};
+    width: ${controlHeight};
+    ${rectIconButton}
+  }
+
+  .elapsed-time, .duration {
+    display: inline-block;
+    padding: 0 ${p => p.theme.spacingPx}px;
+    width: 75px;
+    font-size: 15px;
+    text-align: center;
+  }
+
+  &.disabled {
+
+    .play-pause {
+      opacity: 0.5;
+      ${buttonDisabled}
+    }
+
+    .elapsed-time, .duration {
+        opacity: 0.5;
+    }
+  }
+`;
+
+export {StyledPlayer as Player};
