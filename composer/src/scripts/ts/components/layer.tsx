@@ -31,6 +31,7 @@ export interface LayerProps {
   updateCueFile: types.Mutator<file.CueFile>;
   requestBindingForLayer: (layerKey: number | null) => void;
   updateSelectionDraggingDiff: (diffMillis: number | null) => void;
+  openLayerOptions: (layerKey: number) => void;
 }
 
 class Layer extends React.Component<LayerProps, LayerState> {
@@ -41,6 +42,7 @@ class Layer extends React.Component<LayerProps, LayerState> {
     // Bind callbacks & event listeners
     this.toggleSelect = this.toggleSelect.bind(this);
     this.toggleRequestBind = this.toggleRequestBind.bind(this);
+    this.openLayerOptions = this.openLayerOptions.bind(this);
   }
 
   private isSelected() {
@@ -73,7 +75,7 @@ class Layer extends React.Component<LayerProps, LayerState> {
             <span className={'button' + (this.isBinding() ? ' selected' : '')} onClick={this.toggleRequestBind}>
               <span>MIDI{binding ? (': ' + binding) : ''}</span>
             </span>
-            <span className="button grow" title="Settings"><Settings /></span>
+            <span className="button grow" title="Settings" onClick={this.openLayerOptions}><Settings /></span>
           </span>
         </div>
         <LayerVisualization layer={this.props.layer} positionMillis={this.props.positionMillis} />
@@ -110,6 +112,10 @@ class Layer extends React.Component<LayerProps, LayerState> {
       ),
       none: () => this.props.requestBindingForLayer(this.props.layerKey)
     });
+  }
+
+  private openLayerOptions() {
+    this.props.openLayerOptions(this.props.layerKey);
   }
 
 }

@@ -24,6 +24,7 @@ export interface LayersAndTimelineProps {
   updateCueFile: types.Mutator<file.CueFile>;
   updateSelection: types.Mutator<selection.Selection>;
   requestBindingForLayer: (layerKey: number | null) => void;
+  openLayerOptions: (layerKey: number) => void;
 }
 
 export interface LayersAndTimelineState {
@@ -118,6 +119,7 @@ class LayersAndTimeline extends React.Component<LayersAndTimelineProps, LayersAn
           updateCueFile={this.props.updateCueFile}
           requestBindingForLayer={this.props.requestBindingForLayer}
           updateSelectionDraggingDiff={this.updateSelectionDraggingDiff}
+          openLayerOptions={this.props.openLayerOptions}
           />
       ),
       none: () => []

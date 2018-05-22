@@ -22,6 +22,7 @@ export interface ThemeVariables {
   borderDark: string;
   borderLight: string;
   borderLighter: string;
+  borderLighterer: string;
   hint: string;
   hintRGB: string;
   hintDark1: string;
@@ -44,6 +45,7 @@ export const defaultTheme: ThemeVariables = {
   borderDark: '#151516',
   borderLight: '#1c1d1d',
   borderLighter: '#252524',
+  borderLighterer: '#6b6b67',
 
   // TODO: Colors to replace
   hint: '#4286f4',

@@ -13,6 +13,7 @@ import {Player} from './player';
 import {LayersAndTimeline} from './layers-and-timeline';
 import {Timeline} from './timeline';
 import {EventProperties} from './item-properties';
+import {LayerOptionsPopup} from './popups/layer-options-popup';
 
 import * as file from '../shared/file/file';
 import * as selection from '../data/selection';
@@ -35,6 +36,7 @@ export interface StageState {
   state: stageState.StageState;
   bindingLayer: func.Maybe<number>;
   midiLayerBindings: {input: string, note: number, layer: number}[];
+  layerOptionsOpen: number | null;
 }
 
 export class Stage extends React.Component<StageProps, StageState> {
@@ -54,7 +56,8 @@ export class Stage extends React.Component<StageProps, StageState> {
       selection: selection.initialSelection(),
       state: stageState.initialState(),
       bindingLayer: func.none(),
-      midiLayerBindings: []
+      midiLayerBindings: [],
+      layerOptionsOpen: null
     };
 
     // Bind callbacks & event listeners
@@ -64,6 +67,8 @@ export class Stage extends React.Component<StageProps, StageState> {
     this.updateSelection = this.updateSelection.bind(this);
     this.updateCueFileAndSelection = this.updateCueFileAndSelection.bind(this);
     this.requestBindingForLayer = this.requestBindingForLayer.bind(this);
+    this.openLayerOptions = this.openLayerOptions.bind(this);
+    this.closeLayerOptions = this.closeLayerOptions.bind(this);
 
     shared.protocol.messages.test();
   }
@@ -260,11 +265,22 @@ export class Stage extends React.Component<StageProps, StageState> {
     this.setState({bindingLayer: func.maybeFrom(layerKey)});
   }
 
+  private openLayerOptions(layerKey: number) {
+    this.setState({layerOptionsOpen: layerKey});
+  }
+
+  private closeLayerOptions() {
+    this.setState({layerOptionsOpen: null});
+  }
+
   public render() {
+    const popup = (this.state.layerOptionsOpen !== null) ?
+                  {element: <LayerOptionsPopup />, dismiss: this.closeLayerOptions} :
+                  null;
 
     return (
       <div className={this.props.className}>
-        <Overlays />
+        <Overlays popup={popup} />
         <Toolbar
           file={this.state.cueFile}
           playState={this.state.playState}
@@ -283,6 +299,7 @@ export class Stage extends React.Component<StageProps, StageState> {
           layersRef={layers => this.layers = layers}
           updateCueFile={this.updateCueFile}
           requestBindingForLayer={this.requestBindingForLayer}
+          openLayerOptions={this.openLayerOptions}
           />
         {this.state.cueFile.caseOf({
           just: file => <EventProperties
