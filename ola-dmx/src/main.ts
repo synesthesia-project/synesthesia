@@ -3,7 +3,7 @@ import {join} from 'path';
 import {Display} from './behaviour/display';
 import {DmxProxy} from './dmx/proxy';
 import {SynesthesiaListener} from './listener/listener';
-import {getConfig} from './config';
+import {getConfig} from './config/home';
 
 const PYTHON_PROXY = join(__dirname, '/proxy.py');
 
