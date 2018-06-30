@@ -1,13 +1,25 @@
-export type ChannelKind = 'r' | 'g' | 'b';
-
-import {ChannelKind, Channel, Fixture, Group, Config} from './';
+import {Channel, Fixture, Group, Config} from './';
 
 const fixtures: Fixture[] = [];
 
 const simpleRgbFixtureChannels: Channel[] = [
-  {kind: 'r'},
-  {kind: 'g'},
-  {kind: 'b'}
+  {kind: 'color', color: 'r'},
+  {kind: 'color', color: 'g'},
+  {kind: 'color', color: 'b'}
+];
+
+const movingHeadOneFixtureChannels: Channel[] = [
+  {kind: 'movement', dimension: 'level'},
+  {kind: 'static', value: 0},
+  {kind: 'movement', dimension: 'vertical'},
+  {kind: 'static', value: 0},
+  {kind: 'speed'},
+  {kind: 'static', value: 255},
+  {kind: 'strobe'},
+  {kind: 'color', color: 'r'},
+  {kind: 'color', color: 'g'},
+  {kind: 'color', color: 'b'},
+  {kind: 'color', color: 'w'}
 ];
 
 const config: Config = {
@@ -50,10 +62,21 @@ const config: Config = {
       channels: simpleRgbFixtureChannels,
       group: 'par'
     },
+    {
+      universe: 0,
+      startChannel: 100,
+      channels: movingHeadOneFixtureChannels,
+      group: 'moving-head'
+    },
   ],
-  groups: [{
+  groups: [
+    {
     id: 'par'
-  }]
+    },
+    {
+      id: 'moving-head-1'
+    }
+  ]
 };
 
 export function getConfig() {

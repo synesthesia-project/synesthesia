@@ -192,12 +192,14 @@ export class Display {
     let rChannel = -1, gChannel = -1, bChannel = -1;
     for (let i = 0; i < fixture.channels.length; i++) {
       const channel = fixture.channels[i];
-      if (channel.kind === 'r') {
-        rChannel = fixture.startChannel + i;
-      } else if (channel.kind === 'g') {
-        gChannel = fixture.startChannel + i;
-      } else if (channel.kind === 'b') {
-        bChannel = fixture.startChannel + i;
+      if (channel.kind === 'color') {
+        if (channel.color === 'r') {
+          rChannel = fixture.startChannel + i;
+        } else if (channel.color === 'g') {
+          gChannel = fixture.startChannel + i;
+        } else if (channel.color === 'b') {
+          bChannel = fixture.startChannel + i;
+        }
       }
     }
     if (rChannel >= 0 && gChannel >= 0 && bChannel >= 0) {

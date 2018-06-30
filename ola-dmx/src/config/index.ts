@@ -1,8 +1,27 @@
-export type ChannelKind = 'r' | 'g' | 'b';
-
-export interface Channel {
-  kind: 'r' | 'g' | 'b';
+interface StaticChannel {
+  kind: 'static';
+  value: number;
 }
+
+interface ColourChannel {
+  kind: 'color';
+  color: 'r' | 'g' | 'b' | 'w';
+}
+
+interface MovementChannel {
+  kind: 'movement';
+  dimension: 'level' | 'vertical';
+}
+
+interface SpeedChannel {
+  kind: 'speed';
+}
+
+interface StrobeChannel {
+  kind: 'strobe';
+}
+
+export type Channel = StaticChannel | ColourChannel | MovementChannel | SpeedChannel | StrobeChannel;
 
 export interface Fixture {
   universe: number;
@@ -25,9 +44,9 @@ export interface Config {
 const fixtures: Fixture[] = [];
 
 const simpleRgbFixtureChannels: Channel[] = [
-  {kind: 'r'},
-  {kind: 'g'},
-  {kind: 'b'}
+  {kind: 'color', color: 'r'},
+  {kind: 'color', color: 'g'},
+  {kind: 'color', color: 'b'}
 ];
 
 // Small Hexigons
