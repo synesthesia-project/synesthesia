@@ -9,6 +9,7 @@ export interface Fixture {
   startChannel: number;
   channels: Channel[];
   group: string;
+  brightness?: number;
 }
 
 export interface Group {

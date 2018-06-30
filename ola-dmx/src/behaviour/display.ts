@@ -156,6 +156,8 @@ export class Display {
           }
         }
         currentColor = currentColor.overlay(RGB_BLACK, 1 - brightness);
+        if (fixture.brightness !== undefined)
+          currentColor = currentColor.overlay(RGB_BLACK, 1 - fixture.brightness);
         this.setFixtureRGBColor(fixture, currentColor);
         this.incrementRGBChasePatternColor(pattern);
       }

@@ -10,16 +10,47 @@ const simpleRgbFixtureChannels: Channel[] = [
   {kind: 'b'}
 ];
 
-// Small Hexigons
-fixtures.push(...[1, 4, 7, 10, 13, 16].map<Fixture>(startChannel => ({
-  universe: 0,
-  startChannel,
-  channels: simpleRgbFixtureChannels,
-  group: 'par'
-})));
-
 const config: Config = {
-  fixtures,
+  fixtures: [
+    {
+      universe: 0,
+      startChannel: 1,
+      channels: simpleRgbFixtureChannels,
+      group: 'par'
+    },
+    {
+      universe: 0,
+      startChannel: 4,
+      channels: simpleRgbFixtureChannels,
+      group: 'par',
+      brightness: 0.1
+    },
+    {
+      universe: 0,
+      startChannel: 7,
+      channels: simpleRgbFixtureChannels,
+      group: 'par',
+      brightness: 0
+    },
+    {
+      universe: 0,
+      startChannel: 10,
+      channels: simpleRgbFixtureChannels,
+      group: 'par'
+    },
+    {
+      universe: 0,
+      startChannel: 13,
+      channels: simpleRgbFixtureChannels,
+      group: 'par'
+    },
+    {
+      universe: 0,
+      startChannel: 16,
+      channels: simpleRgbFixtureChannels,
+      group: 'par'
+    },
+  ],
   groups: [{
     id: 'par'
   }]
