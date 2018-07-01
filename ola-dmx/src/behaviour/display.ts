@@ -31,14 +31,25 @@ interface RGBChasePattern {
   targetLayers: number[];
 }
 
-type FixturePattern = RGBChasePattern;
+type FixtureColorPattern = RGBChasePattern;
+
+interface FixtureMovementPattern {
+  stage: number;
+  /** Number of frames the stage has been active for */
+  stageTime: number;
+}
+
+interface FixtureLayout {
+  color: FixtureColorPattern;
+  movement?: FixtureMovementPattern;
+}
 
 /*
  * Describes what we're currently displaying on the fixures, and how we're
  * taking into account the synesthesia data to modify the display
  */
 interface Layout {
-  fixtures: FixturePattern[];
+  fixtures: FixtureLayout[];
 }
 
 function randomRGBChaseState(colors: RGBColor[], targetLayers: number[]): RGBChasePattern {
@@ -71,9 +82,9 @@ export class Display {
         this.buffers[fixture.universe] = new Int8Array(512);
     }
     // create the layout, do a random chaser for now for every fixture
-    const fixtures: FixturePattern[] = config.fixtures.map(config => {
-      return randomRGBChaseState([PURPLE, BLUE, new RGBColor(200, 100, 0)], [-1]);
-    });
+    const fixtures: FixtureLayout[] = config.fixtures.map(config => ({
+      color: randomRGBChaseState([PURPLE, BLUE, new RGBColor(200, 100, 0)], [-1])
+    }));
 
     this.layout = {fixtures};
   }
@@ -108,9 +119,9 @@ export class Display {
           groupsToLayers[group].push(Math.floor(Math.random() * this.playState.file.layers.length));
       }
       // create the layout, do a random chaser for now for every fixture
-      const fixtures: FixturePattern[] = this.config.fixtures.map(config => {
-        return randomRGBChaseState([PURPLE, BLUE, new RGBColor(200, 100, 0)], groupsToLayers[config.group]);
-      });
+      const fixtures: FixtureLayout[] = this.config.fixtures.map(config => ({
+        color: randomRGBChaseState([PURPLE, BLUE, new RGBColor(200, 100, 0)], groupsToLayers[config.group])
+      }));
 
       this.layout = {fixtures};
     }
@@ -143,12 +154,15 @@ export class Display {
 
     for (let i = 0; i < this.config.fixtures.length; i++) {
       const fixture = this.config.fixtures[i];
-      const pattern = this.layout.fixtures[i];
-      if (pattern.patternType === 'rgbChase') {
-        let currentColor = this.calculateRGBChasePatternColor(pattern);
+      const layout = this.layout.fixtures[i];
+
+      // Update colour
+      if (layout.color.patternType === 'rgbChase') {
+        const colorPattern = layout.color;
+        let currentColor = this.calculateRGBChasePatternColor(colorPattern);
         let brightness = 0.7;
-        if (layerStates.length > 0 && pattern.targetLayers.length > 0) {
-          brightness = Math.max.apply(null, pattern.targetLayers.map(layer =>
+        if (layerStates.length > 0 && colorPattern.targetLayers.length > 0) {
+          brightness = Math.max.apply(null, colorPattern.targetLayers.map(layer =>
             layerStates[layer].brightness
           ));
           if (fixture.group === 'hex-small') {
@@ -159,7 +173,7 @@ export class Display {
         if (fixture.brightness !== undefined)
           currentColor = currentColor.overlay(RGB_BLACK, 1 - fixture.brightness);
         this.setFixtureRGBColor(fixture, currentColor);
-        this.incrementRGBChasePatternColor(pattern);
+        this.incrementRGBChasePatternColor(colorPattern);
       }
 
       // Update static static channels
@@ -167,6 +181,40 @@ export class Display {
         const channel = fixture.channels[i];
         if (channel.kind === 'static') {
           this.setDMXBufferValue(fixture.universe, fixture.startChannel + i, channel.value);
+        }
+      }
+
+      // Update movement
+      if (fixture.movement && fixture.movement.stages.length > 0) {
+        if (!layout.movement) {
+          layout.movement = {
+            stage: 0, stageTime: 0
+          };
+        }
+
+        const stage = fixture.movement.stages[layout.movement.stage];
+
+        // Set channel values
+        let stageChannelIndex = 0;
+        for (let i = 0; i < fixture.channels.length; i++) {
+          const channel = fixture.channels[i];
+          if (channel.kind === 'movement' && stageChannelIndex < stage.channelValues.length) {
+            const val = stage.channelValues[stageChannelIndex];
+            stageChannelIndex++;
+            this.setDMXBufferValue(fixture.universe, fixture.startChannel + i, val);
+          } else if (channel.kind === 'speed') {
+            this.setDMXBufferValue(fixture.universe, fixture.startChannel + i, stage.speed);
+          }
+        }
+
+        // Increment Stage
+        layout.movement.stageTime++;
+        if (layout.movement.stageTime > fixture.movement.stageInterval) {
+          layout.movement.stage++;
+          layout.movement.stageTime = 0;
+          if (layout.movement.stage >= fixture.movement.stages.length) {
+            layout.movement.stage = 0;
+          }
         }
       }
     }

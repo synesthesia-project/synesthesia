@@ -66,6 +66,14 @@ const config: Config = {
       universe: 0,
       startChannel: 100,
       channels: movingHeadOneFixtureChannels,
+      movement: {
+        stageInterval: 60,
+        stages: [
+          {speed: 0, channelValues: [100, 40]},
+          {speed: 200, channelValues: [10, 60]},
+          {speed: 100, channelValues: [200, 80]}
+        ]
+      },
       group: 'moving-head'
     },
   ],
