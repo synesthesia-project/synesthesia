@@ -10,12 +10,9 @@ import {
 import {DmxProxy} from '../dmx/proxy';
 import * as config from '../config';
 import * as util from '../util';
-import {RGBColor, RGB_BLACK} from './colors';
+import {RGBColor, RGB_BLACK, randomRGBColorPallete} from './colors';
 
 const INTERVAL = 1000 / 44;
-
-const PURPLE = new RGBColor(200, 0, 255);
-const BLUE = new RGBColor(0, 50, 255);
 
 interface LayerState {
   brightness: number;
@@ -60,8 +57,8 @@ function randomRGBChaseState(colors: RGBColor[], targetLayers: number[]): RGBCha
   return {
     patternType: 'rgbChase',
     colors,
-    waitTime: 44,
-    transitionTime: 60,
+    waitTime: 0,
+    transitionTime: 20,
     currentColor: Math.floor(Math.random() * colors.length),
     currentColorTime: util.randomInt(0, 40 + 20),
     targetLayers
@@ -87,8 +84,9 @@ export class Display {
         this.buffers[fixture.universe] = new Int8Array(512);
     }
     // create the layout, do a random chaser for now for every fixture
+    const colorPallete = randomRGBColorPallete();
     const fixtures: FixtureLayout[] = config.fixtures.map(config => ({
-      color: randomRGBChaseState([PURPLE, BLUE, new RGBColor(200, 100, 0)], [-1])
+      color: randomRGBChaseState(colorPallete, [-1])
     }));
 
     this.layout = {fixtures};
@@ -124,8 +122,9 @@ export class Display {
           groupsToLayers[group].push(Math.floor(Math.random() * this.playState.file.layers.length));
       }
       // create the layout, do a random chaser for now for every fixture
+      const colorPallete = randomRGBColorPallete();
       const fixtures: FixtureLayout[] = this.config.fixtures.map(config => ({
-        color: randomRGBChaseState([PURPLE, BLUE, new RGBColor(200, 100, 0)], groupsToLayers[config.group])
+        color: randomRGBChaseState(colorPallete, groupsToLayers[config.group])
       }));
 
       this.layout = {fixtures};

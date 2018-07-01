@@ -34,15 +34,13 @@ const config: Config = {
       universe: 0,
       startChannel: 4,
       channels: simpleRgbFixtureChannels,
-      group: 'par',
-      brightness: 0.1
+      group: 'par'
     },
     {
       universe: 0,
       startChannel: 7,
       channels: simpleRgbFixtureChannels,
-      group: 'par',
-      brightness: 0
+      group: 'par'
     },
     {
       universe: 0,
