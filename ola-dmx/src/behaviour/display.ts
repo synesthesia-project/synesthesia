@@ -9,6 +9,7 @@ import {
 
 import {DmxProxy} from '../dmx/proxy';
 import * as config from '../config';
+import * as util from '../util';
 import {RGBColor, RGB_BLACK} from './colors';
 
 const INTERVAL = 1000 / 44;
@@ -23,10 +24,13 @@ interface LayerState {
 interface RGBChasePattern {
   patternType: 'rgbChase';
   colors: RGBColor[];
-  /** How much we should change between colors per frame */
-  speed: number;
+  /** How many frames should we wait before transitioning */
+  waitTime: number;
+  /** How many frames should it take to transition */
+  transitionTime: number;
   currentColor: number;
-  currentTransitionAmount: number;
+  /** Number of frames we've been on the current color for */
+  currentColorTime: number;
   /** Which synesthesia layers are affecting the display of this pattern */
   targetLayers: number[];
 }
@@ -56,9 +60,10 @@ function randomRGBChaseState(colors: RGBColor[], targetLayers: number[]): RGBCha
   return {
     patternType: 'rgbChase',
     colors,
-    speed: 0.02,
+    waitTime: 44,
+    transitionTime: 60,
     currentColor: Math.floor(Math.random() * colors.length),
-    currentTransitionAmount: Math.random(),
+    currentColorTime: util.randomInt(0, 40 + 20),
     targetLayers
   };
 }
@@ -226,9 +231,9 @@ export class Display {
   }
 
   private incrementRGBChasePatternColor(pattern: RGBChasePattern) {
-    pattern.currentTransitionAmount += pattern.speed;
-    if (pattern.currentTransitionAmount >= 1) {
-      pattern.currentTransitionAmount -= 1;
+    pattern.currentColorTime ++;
+    if (pattern.currentColorTime >= pattern.waitTime + pattern.transitionTime) {
+      pattern.currentColorTime = 0;
       pattern.currentColor++;
       if (pattern.currentColor >= pattern.colors.length) {
         pattern.currentColor = 0;
@@ -237,11 +242,13 @@ export class Display {
   }
 
   private calculateRGBChasePatternColor(pattern: RGBChasePattern) {
+    if (pattern.currentColorTime < pattern.waitTime)
+      return pattern.colors[pattern.currentColor];
     const colorA = pattern.colors[pattern.currentColor];
     const colorBIndex = pattern.currentColor === pattern.colors.length - 1 ?
       0 : pattern.currentColor + 1;
     const colorB = pattern.colors[colorBIndex];
-    return colorA.transition(colorB, pattern.currentTransitionAmount);
+    return colorA.transition(colorB, (pattern.currentColorTime - pattern.waitTime) / pattern.transitionTime);
   }
 
   private setFixtureRGBColor(fixture: config.Fixture, color: RGBColor) {
