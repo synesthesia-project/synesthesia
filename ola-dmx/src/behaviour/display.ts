@@ -161,6 +161,14 @@ export class Display {
         this.setFixtureRGBColor(fixture, currentColor);
         this.incrementRGBChasePatternColor(pattern);
       }
+
+      // Update static static channels
+      for (let i = 0; i < fixture.channels.length; i++) {
+        const channel = fixture.channels[i];
+        if (channel.kind === 'static') {
+          this.setDMXBufferValue(fixture.universe, fixture.startChannel + i, channel.value);
+        }
+      }
     }
 
     // Write Universes
