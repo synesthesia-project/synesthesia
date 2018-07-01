@@ -58,7 +58,7 @@ function randomRGBChaseState(colors: RGBColor[], targetLayers: number[]): RGBCha
     patternType: 'rgbChase',
     colors,
     waitTime: 0,
-    transitionTime: 20,
+    transitionTime: 60,
     currentColor: Math.floor(Math.random() * colors.length),
     currentColorTime: util.randomInt(0, 40 + 20),
     targetLayers
