@@ -59,12 +59,12 @@ interface Layout {
   fixtures: FixtureLayout[];
 }
 
-function randomRGBChaseState(colors: RGBColor[], targetLayers: number[]): RGBChasePattern {
+function randomRGBChaseState(colors: RGBColor[], targetLayers: number[], waitTime: number, transitionTime: number): RGBChasePattern {
   return {
     patternType: 'rgbChase',
     colors,
-    waitTime: 0,
-    transitionTime: 60,
+    waitTime,
+    transitionTime,
     currentColor: Math.floor(Math.random() * colors.length),
     currentColorTime: util.randomInt(0, 40 + 20),
     targetLayers
@@ -92,7 +92,7 @@ export class Display {
     // create the layout, do a random chaser for now for every fixture
     const colorPallete = randomRGBColorPallete();
     const fixtures: FixtureLayout[] = config.fixtures.map(config => ({
-      color: randomRGBChaseState(colorPallete, [-1])
+      color: randomRGBChaseState(colorPallete, [-1], 0, 40)
     }));
 
     this.layout = {fixtures};
@@ -132,7 +132,7 @@ export class Display {
       // create the layout, do a random chaser for now for every fixture
       const colorPallete = randomRGBColorPallete();
       const fixtures: FixtureLayout[] = this.config.fixtures.map(config => ({
-        color: randomRGBChaseState(colorPallete, groupsToLayers[config.group])
+        color: randomRGBChaseState(colorPallete, groupsToLayers[config.group], 0, 40)
       }));
 
       this.layout = {fixtures};
@@ -142,8 +142,10 @@ export class Display {
 
   private randomizeColours() {
     const colorPallete = randomRGBColorPallete();
+    const wait = util.randomInt(0, 40);
+    const transition = util.randomInt(20, 40);
     for (const fixture of this.layout.fixtures) {
-      const color = randomRGBChaseState(colorPallete, fixture.color.targetLayers);
+      const color = randomRGBChaseState(colorPallete, fixture.color.targetLayers, wait, transition);
       fixture.nextColor = {color, frame: 0, transitionTime: 60};
     }
   }

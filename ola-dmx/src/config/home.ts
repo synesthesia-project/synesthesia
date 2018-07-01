@@ -8,6 +8,13 @@ const simpleRgbFixtureChannels: Channel[] = [
   {kind: 'color', color: 'b'}
 ];
 
+const simpleRgbFixtureChannels2: Channel[] = [
+  {kind: 'static', value: 255}, // dimmer
+  {kind: 'color', color: 'r'},
+  {kind: 'color', color: 'g'},
+  {kind: 'color', color: 'b'}
+];
+
 const movingHeadOneFixtureChannels: Channel[] = [
   {kind: 'movement', dimension: 'level'},
   {kind: 'static', value: 0},
@@ -104,6 +111,12 @@ const config: Config = {
       },
       group: 'moving-head'
     },
+      {
+        universe: 0,
+        startChannel: 60,
+        channels: simpleRgbFixtureChannels2,
+        group: 'par'
+      },
   ],
   groups: [
     {
