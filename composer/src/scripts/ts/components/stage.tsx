@@ -146,9 +146,9 @@ export class Stage extends React.Component<StageProps, StageState> {
         const pos = (e.pageX - paddingLeft) / ($(window).width() - paddingLeft);
 
         if (deltaY < 0)
-          this.setState({state: stageState.zoomIn(this.state.state, pos)} as StageState);
+          this.setState(prevState => ({state: stageState.zoomIn(prevState.state, pos)} as StageState));
         else
-          this.setState({state: stageState.zoomOut(this.state.state, pos)} as StageState);
+          this.setState(prevState => ({state: stageState.zoomOut(prevState.state, pos)} as StageState));
         return;
       }
 
@@ -156,17 +156,17 @@ export class Stage extends React.Component<StageProps, StageState> {
 
       if ((mousePosition === 'layers' || mousePosition === 'timeline')  && deltaY !== 0) {
         if (deltaY < 0)
-          this.setState({state: stageState.zoomMoveLeft(this.state.state)} as StageState);
+          this.setState(prevState => ({state: stageState.zoomMoveLeft(prevState.state)} as StageState));
         else
-          this.setState({state: stageState.zoomMoveRight(this.state.state)} as StageState);
+          this.setState(prevState => ({state: stageState.zoomMoveRight(prevState.state)} as StageState));
         return;
       }
 
       if (mousePosition === 'layers' && deltaX !== 0) {
         if (deltaX < 0)
-          this.setState({state: stageState.zoomMoveLeft(this.state.state)} as StageState);
+          this.setState(prevState => ({state: stageState.zoomMoveLeft(prevState.state)} as StageState));
         else
-          this.setState({state: stageState.zoomMoveRight(this.state.state)} as StageState);
+          this.setState(prevState => ({state: stageState.zoomMoveRight(prevState.state)} as StageState));
         return;
       }
     });
@@ -179,13 +179,13 @@ export class Stage extends React.Component<StageProps, StageState> {
         this.state.bindingLayer.caseOf({
           just: layerKey => {
             // Bind this note to that layer
-            this.setState({
+            this.setState(prevState => ({
               bindingLayer: func.none(),
-              midiLayerBindings: this.state.midiLayerBindings
+              midiLayerBindings: prevState.midiLayerBindings
                 // Remove existing bindings for this layer or note
                 .filter(b => b.layer !== layerKey && (b.input !== input || b.note !== note))
                 .concat({input, note, layer: layerKey})
-            });
+            }));
           },
           none: () => {
             this.state.midiLayerBindings.map(b => {
@@ -251,7 +251,7 @@ export class Stage extends React.Component<StageProps, StageState> {
   }
 
   private updateSelection(mutator: (selection: selection.Selection) => selection.Selection) {
-    this.setState({selection: mutator(this.state.selection)} as StageState);
+    this.setState(prevState => ({selection: mutator(prevState.selection)} as StageState));
   }
 
   private updateCueFileAndSelection(mutator: (current: [file.CueFile, selection.Selection]) => [file.CueFile, selection.Selection]) {

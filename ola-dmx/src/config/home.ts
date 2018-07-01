@@ -1,4 +1,4 @@
-import {Channel, Fixture, Group, Config} from './';
+import {Channel, Fixture, Config} from './';
 
 const fixtures: Fixture[] = [];
 

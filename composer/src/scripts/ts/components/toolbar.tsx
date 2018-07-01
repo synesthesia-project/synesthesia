@@ -7,7 +7,7 @@ import * as file from '../shared/file/file';
 import {validateFile} from '../shared/file/file-validation';
 import * as func from '../data/functional';
 import * as storage from '../util/storage';
-import {PlayStateData, PlayState, PlayStateControls, MediaPaused, MediaPlaying} from '../data/play-state';
+import {PlayState} from '../data/play-state';
 import {Source} from '../sources/source';
 import {CompanionSource} from '../sources/companion-source';
 import {FileSource} from '../sources/file-source';

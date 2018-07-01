@@ -1,7 +1,6 @@
 import {PlayStateData} from '../shared/protocol/messages';
 import {CueFile} from '../shared/file/file';
 import {
-    PreparedFile,
     prepareFile,
     getActiveEvents,
     getCurrentEventStateValue
@@ -91,7 +90,6 @@ export class Display {
 
       // Assign a group to each layer
       for (let i = 0; i < this.playState.file.layers.length; i++) {
-        const layer = this.playState.file.layers[i];
         // find the group with the least number of layers
         let currentMinGroup: {group: string, layersCount: number} | null = null;
         for (const group of Object.keys(groupsToLayers)) {
