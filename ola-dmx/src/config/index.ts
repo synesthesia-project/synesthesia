@@ -23,12 +23,23 @@ interface StrobeChannel {
 
 export type Channel = StaticChannel | ColourChannel | MovementChannel | SpeedChannel | StrobeChannel;
 
+interface FixtureMovement {
+  /** Number of frames to be in each stage */
+  stageInterval: number;
+  stages: {
+    speed: number;
+    /** DMX values for each of the movement channels */
+    channelValues: number[];
+  }[];
+}
+
 export interface Fixture {
   universe: number;
   startChannel: number;
   channels: Channel[];
   group: string;
   brightness?: number;
+  movement?: FixtureMovement;
 }
 
 export interface Group {

@@ -8,12 +8,11 @@ import {
 
 import {DmxProxy} from '../dmx/proxy';
 import * as config from '../config';
-import {RGBColor, RGB_BLACK} from './colors';
+import * as util from '../util';
+import {RGBColor, RGB_BLACK, randomRGBColorPallete} from './colors';
 
 const INTERVAL = 1000 / 44;
-
-const PURPLE = new RGBColor(200, 0, 255);
-const BLUE = new RGBColor(0, 50, 255);
+const CHANGE_INTERVAL = 60 * 1000;
 
 interface LayerState {
   brightness: number;
@@ -22,31 +21,51 @@ interface LayerState {
 interface RGBChasePattern {
   patternType: 'rgbChase';
   colors: RGBColor[];
-  /** How much we should change between colors per frame */
-  speed: number;
+  /** How many frames should we wait before transitioning */
+  waitTime: number;
+  /** How many frames should it take to transition */
+  transitionTime: number;
   currentColor: number;
-  currentTransitionAmount: number;
+  /** Number of frames we've been on the current color for */
+  currentColorTime: number;
   /** Which synesthesia layers are affecting the display of this pattern */
   targetLayers: number[];
 }
 
-type FixturePattern = RGBChasePattern;
+type FixtureColorPattern = RGBChasePattern;
+
+interface FixtureMovementPattern {
+  stage: number;
+  /** Number of frames the stage has been active for */
+  stageTime: number;
+}
+
+interface FixtureLayout {
+  color: FixtureColorPattern;
+  nextColor?: {
+    color: FixtureColorPattern;
+    frame: number;
+    transitionTime: number;
+  };
+  movement?: FixtureMovementPattern;
+}
 
 /*
  * Describes what we're currently displaying on the fixures, and how we're
  * taking into account the synesthesia data to modify the display
  */
 interface Layout {
-  fixtures: FixturePattern[];
+  fixtures: FixtureLayout[];
 }
 
-function randomRGBChaseState(colors: RGBColor[], targetLayers: number[]): RGBChasePattern {
+function randomRGBChaseState(colors: RGBColor[], targetLayers: number[], waitTime: number, transitionTime: number): RGBChasePattern {
   return {
     patternType: 'rgbChase',
     colors,
-    speed: 0.02,
+    waitTime,
+    transitionTime,
     currentColor: Math.floor(Math.random() * colors.length),
-    currentTransitionAmount: Math.random(),
+    currentColorTime: util.randomInt(0, 40 + 20),
     targetLayers
   };
 }
@@ -70,11 +89,14 @@ export class Display {
         this.buffers[fixture.universe] = new Int8Array(512);
     }
     // create the layout, do a random chaser for now for every fixture
-    const fixtures: FixturePattern[] = config.fixtures.map(config => {
-      return randomRGBChaseState([PURPLE, BLUE, new RGBColor(200, 100, 0)], [-1]);
-    });
+    const colorPallete = randomRGBColorPallete();
+    const fixtures: FixtureLayout[] = config.fixtures.map(config => ({
+      color: randomRGBChaseState(colorPallete, [-1], 0, 40)
+    }));
 
     this.layout = {fixtures};
+
+    setInterval(this.randomizeColours.bind(this), CHANGE_INTERVAL);
   }
 
   public newSynesthesiaPlayState(state: PlayStateData | null): void {
@@ -106,13 +128,44 @@ export class Display {
           groupsToLayers[group].push(Math.floor(Math.random() * this.playState.file.layers.length));
       }
       // create the layout, do a random chaser for now for every fixture
-      const fixtures: FixturePattern[] = this.config.fixtures.map(config => {
-        return randomRGBChaseState([PURPLE, BLUE, new RGBColor(200, 100, 0)], groupsToLayers[config.group]);
-      });
+      const colorPallete = randomRGBColorPallete();
+      const fixtures: FixtureLayout[] = this.config.fixtures.map(config => ({
+        color: randomRGBChaseState(colorPallete, groupsToLayers[config.group], 0, 40)
+      }));
 
       this.layout = {fixtures};
     }
     console.log('newSynesthesiaPlayState', this.playState );
+  }
+
+  private randomizeColours() {
+    const colorPallete = randomRGBColorPallete();
+    const wait = util.randomInt(0, 40);
+    const transition = util.randomInt(20, 40);
+    for (const fixture of this.layout.fixtures) {
+      const color = randomRGBChaseState(colorPallete, fixture.color.targetLayers, wait, transition);
+      fixture.nextColor = {color, frame: 0, transitionTime: 60};
+    }
+  }
+
+  private calculateAndIncrementPatternColor(layerStates: LayerState[], fixture: config.Fixture, pattern: FixtureColorPattern): RGBColor {
+    if (pattern.patternType === 'rgbChase') {
+      const colorPattern = pattern;
+      let currentColor = this.calculateRGBChasePatternColor(colorPattern);
+      let brightness = 0.7;
+      if (layerStates.length > 0 && colorPattern.targetLayers.length > 0) {
+        brightness = Math.max.apply(null, colorPattern.targetLayers.map(layer =>
+          layerStates[layer].brightness
+        ));
+        if (fixture.group === 'hex-small') {
+          brightness = brightness * 0.7 + 0.15;
+        }
+      }
+      currentColor = currentColor.overlay(RGB_BLACK, 1 - brightness);
+      this.incrementRGBChasePatternColor(colorPattern);
+      return currentColor;
+    }
+    throw new Error('not implemnted');
   }
 
   private frame() {
@@ -141,30 +194,63 @@ export class Display {
 
     for (let i = 0; i < this.config.fixtures.length; i++) {
       const fixture = this.config.fixtures[i];
-      const pattern = this.layout.fixtures[i];
-      if (pattern.patternType === 'rgbChase') {
-        let currentColor = this.calculateRGBChasePatternColor(pattern);
-        let brightness = 0.7;
-        if (layerStates.length > 0 && pattern.targetLayers.length > 0) {
-          brightness = Math.max.apply(null, pattern.targetLayers.map(layer =>
-            layerStates[layer].brightness
-          ));
-          if (fixture.group === 'hex-small') {
-            brightness = brightness * 0.7 + 0.15;
-          }
+      const layout = this.layout.fixtures[i];
+
+      // Update colour
+      let color = this.calculateAndIncrementPatternColor(layerStates, fixture, layout.color);
+      if (layout.nextColor) {
+        const nextColor = this.calculateAndIncrementPatternColor(layerStates, fixture, layout.nextColor.color);
+        console.log('overlay', layout.nextColor.frame / layout.nextColor.transitionTime);
+        color = color.overlay(nextColor, layout.nextColor.frame / layout.nextColor.transitionTime);
+        layout.nextColor.frame++;
+        if (layout.nextColor.frame >= layout.nextColor.transitionTime) {
+          layout.color = layout.nextColor.color;
+          layout.nextColor = undefined;
         }
-        currentColor = currentColor.overlay(RGB_BLACK, 1 - brightness);
-        if (fixture.brightness !== undefined)
-          currentColor = currentColor.overlay(RGB_BLACK, 1 - fixture.brightness);
-        this.setFixtureRGBColor(fixture, currentColor);
-        this.incrementRGBChasePatternColor(pattern);
       }
+      if (fixture.brightness !== undefined)
+        color = color.overlay(RGB_BLACK, 1 - fixture.brightness);
+      this.setFixtureRGBColor(fixture, color);
 
       // Update static static channels
       for (let i = 0; i < fixture.channels.length; i++) {
         const channel = fixture.channels[i];
         if (channel.kind === 'static') {
           this.setDMXBufferValue(fixture.universe, fixture.startChannel + i, channel.value);
+        }
+      }
+
+      // Update movement
+      if (fixture.movement && fixture.movement.stages.length > 0) {
+        if (!layout.movement) {
+          layout.movement = {
+            stage: 0, stageTime: 0
+          };
+        }
+
+        const stage = fixture.movement.stages[layout.movement.stage];
+
+        // Set channel values
+        let stageChannelIndex = 0;
+        for (let i = 0; i < fixture.channels.length; i++) {
+          const channel = fixture.channels[i];
+          if (channel.kind === 'movement' && stageChannelIndex < stage.channelValues.length) {
+            const val = stage.channelValues[stageChannelIndex];
+            stageChannelIndex++;
+            this.setDMXBufferValue(fixture.universe, fixture.startChannel + i, val);
+          } else if (channel.kind === 'speed') {
+            this.setDMXBufferValue(fixture.universe, fixture.startChannel + i, stage.speed);
+          }
+        }
+
+        // Increment Stage
+        layout.movement.stageTime++;
+        if (layout.movement.stageTime > fixture.movement.stageInterval) {
+          layout.movement.stage++;
+          layout.movement.stageTime = 0;
+          if (layout.movement.stage >= fixture.movement.stages.length) {
+            layout.movement.stage = 0;
+          }
         }
       }
     }
@@ -176,9 +262,9 @@ export class Display {
   }
 
   private incrementRGBChasePatternColor(pattern: RGBChasePattern) {
-    pattern.currentTransitionAmount += pattern.speed;
-    if (pattern.currentTransitionAmount >= 1) {
-      pattern.currentTransitionAmount -= 1;
+    pattern.currentColorTime ++;
+    if (pattern.currentColorTime >= pattern.waitTime + pattern.transitionTime) {
+      pattern.currentColorTime = 0;
       pattern.currentColor++;
       if (pattern.currentColor >= pattern.colors.length) {
         pattern.currentColor = 0;
@@ -187,11 +273,13 @@ export class Display {
   }
 
   private calculateRGBChasePatternColor(pattern: RGBChasePattern) {
+    if (pattern.currentColorTime < pattern.waitTime)
+      return pattern.colors[pattern.currentColor];
     const colorA = pattern.colors[pattern.currentColor];
     const colorBIndex = pattern.currentColor === pattern.colors.length - 1 ?
       0 : pattern.currentColor + 1;
     const colorB = pattern.colors[colorBIndex];
-    return colorA.transition(colorB, pattern.currentTransitionAmount);
+    return colorA.transition(colorB, (pattern.currentColorTime - pattern.waitTime) / pattern.transitionTime);
   }
 
   private setFixtureRGBColor(fixture: config.Fixture, color: RGBColor) {
