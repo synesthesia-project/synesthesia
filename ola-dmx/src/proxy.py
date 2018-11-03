@@ -14,5 +14,5 @@ wrapper = ClientWrapper()
 client = wrapper.Client()
 
 while True:
-    bytes = bytearray(sys.stdin.read(UNIVERSE_SIZE + 1))
+    bytes = bytearray(sys.stdin.buffer.read(UNIVERSE_SIZE + 1))
     client.SendDmx(bytes[0], array.array('B', bytes[1:]), DmxSent)

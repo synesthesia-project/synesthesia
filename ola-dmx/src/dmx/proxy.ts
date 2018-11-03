@@ -9,7 +9,7 @@ export class DmxProxy {
 
   public constructor(proxyPath: string) {
     // -u makes python treat stdio as binary
-    this.process = spawn('python2', ['-u', proxyPath]);
+    this.process = spawn('python3', ['-u', proxyPath]);
     this.process.stdout.on('data', (data) => {
       console.log(`stdout: ${data}`);
     });
