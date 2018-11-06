@@ -18,6 +18,14 @@ export class RGBColor {
     return new RGBColor(r, g, b);
   }
 
+  /** Combine the colours in an additive manner */
+  public add(other: RGBColor): RGBColor {
+    const r = Math.max(0, Math.min(255, Math.round((1 - (1 - this.r / 255) * (1 - other.r / 255)) * 255)));
+    const g = Math.max(0, Math.min(255, Math.round((1 - (1 - this.g / 255) * (1 - other.g / 255)) * 255)));
+    const b = Math.max(0, Math.min(255, Math.round((1 - (1 - this.b / 255) * (1 - other.b / 255)) * 255)));
+    return new RGBColor(r, g, b);
+  }
+
   public transition(other: RGBColor, amount: number): RGBColor {
     return this.overlay(other, amount);
   }

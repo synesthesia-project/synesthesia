@@ -14,6 +14,7 @@ import {RGBColor, RGB_BLACK, randomRGBColorPallete} from './colors';
 const INTERVAL = 1000 / 44;
 const CHANGE_INTERVAL = 60 * 1000;
 
+/** The state of a particular layer in a synesthesia track, to be used to inform any fixture using this information how to display itself */
 interface LayerState {
   brightness: number;
 }
@@ -38,6 +39,8 @@ interface RGBChasePattern {
 
 type FixturePattern = RGBChasePattern;
 
+type LayeredFixturePattern = FixturePattern[];
+
 interface FixtureMovementPattern {
   stage: number;
   /** Number of frames the stage has been active for */
@@ -45,9 +48,10 @@ interface FixtureMovementPattern {
 }
 
 interface FixtureLayout {
-  color: FixturePattern;
-  nextColor?: {
-    color: FixturePattern;
+  /** The layers that contribute to the colour pattern displayed for this fixture */
+  pattern: LayeredFixturePattern;
+  nextPattern?: {
+    pattern: LayeredFixturePattern;
     frame: number;
     transitionTime: number;
   };
@@ -99,7 +103,7 @@ export class Display {
     const colorPallete = randomRGBColorPallete();
     const timing = {waitTime: 0, transitionTime: 40};
     const fixtures: FixtureLayout[] = config.fixtures.map(config => ({
-      color: randomRGBChaseState(colorPallete, [-1], timing)
+      pattern: [randomRGBChaseState(colorPallete, [-1], timing)]
     }));
 
     this.layout = {masterBrightness: 1, colorPallete, timing, fixtures};
@@ -121,7 +125,6 @@ export class Display {
             this.layout.masterBrightness = 0;
           }
         }
-        console.log(this.layout.masterBrightness);
       },
       10);
   }
@@ -161,8 +164,8 @@ export class Display {
       );
 
       for (let i = 0; i < this.layout.fixtures.length; i++) {
-        this.layout.fixtures[i].color = fixturePatterns[i];
-        this.layout.fixtures[i].nextColor = undefined;
+        this.layout.fixtures[i].pattern = [fixturePatterns[i]];
+        this.layout.fixtures[i].nextPattern = undefined;
       }
     }
     console.log('newSynesthesiaPlayState', this.playState );
@@ -174,33 +177,40 @@ export class Display {
   private transitionToNextPattern() {
     const colorPallete = this.layout.colorPallete = randomRGBColorPallete();
     for (const fixture of this.layout.fixtures) {
-      const color = randomRGBChaseState(colorPallete, fixture.color.targetLayers, this.layout.timing);
-      fixture.nextColor = {color, frame: 0, transitionTime: 60};
+      const pattern: LayeredFixturePattern = fixture.pattern.map(layer =>
+        randomRGBChaseState(colorPallete, layer.targetLayers, this.layout.timing)
+      );
+      fixture.nextPattern = {pattern, frame: 0, transitionTime: 60};
     }
   }
 
-  private calculateAndIncrementPatternState(layerStates: LayerState[], fixture: config.Fixture, pattern: FixturePattern): RGBColor {
-    if (pattern.patternType === 'rgbChase') {
-      const colorPattern = pattern;
-      let currentColor = this.calculateRGBChasePatternColor(colorPattern);
-      let brightness = 0.7;
-      if (layerStates.length > 0 && colorPattern.targetLayers.length > 0) {
-        brightness = Math.max.apply(null, colorPattern.targetLayers.map(layer =>
-          layerStates[layer].brightness
-        ));
-        if (fixture.group === 'hex-small') {
-          brightness = brightness * 0.7 + 0.15;
+  private calculateAndIncrementPatternState(layerStates: LayerState[], fixture: config.Fixture, pattern: LayeredFixturePattern): RGBColor {
+    let color = RGB_BLACK;
+    for (const layer of pattern) {
+      if (layer.patternType === 'rgbChase') {
+        let currentColor = this.calculateRGBChasePatternColor(layer);
+        let brightness = 1;
+        if (layerStates.length > 0 && layer.targetLayers.length > 0) {
+          brightness = Math.max.apply(null, layer.targetLayers.map(layer =>
+            layerStates[layer].brightness
+          ));
+          if (fixture.group === 'hex-small') {
+            brightness = brightness * 0.7 + 0.15;
+          }
         }
+        currentColor = currentColor.overlay(RGB_BLACK, 1 - brightness);
+        this.incrementRGBChasePatternColor(layer);
+        color = color.add(currentColor);
+      } else {
+        throw new Error('not implemnted');
       }
-      currentColor = currentColor.overlay(RGB_BLACK, 1 - brightness);
-      this.incrementRGBChasePatternColor(colorPattern);
-      return currentColor;
     }
-    throw new Error('not implemnted');
+    return color;
   }
 
   private frame() {
 
+    /** The current states of the layers of the synesthesia track, if currently playing something */
     let layerStates: LayerState[] = [];
 
     if (this.playState) {
@@ -227,15 +237,14 @@ export class Display {
       const fixture = this.config.fixtures[i];
       const layout = this.layout.fixtures[i];
 
-      // Update colour
-      let color = this.calculateAndIncrementPatternState(layerStates, fixture, layout.color);
-      if (layout.nextColor) {
-        const nextColor = this.calculateAndIncrementPatternState(layerStates, fixture, layout.nextColor.color);
-        color = color.overlay(nextColor, layout.nextColor.frame / layout.nextColor.transitionTime);
-        layout.nextColor.frame++;
-        if (layout.nextColor.frame >= layout.nextColor.transitionTime) {
-          layout.color = layout.nextColor.color;
-          layout.nextColor = undefined;
+      let color = this.calculateAndIncrementPatternState(layerStates, fixture, layout.pattern);
+      if (layout.nextPattern) {
+        const nextColor = this.calculateAndIncrementPatternState(layerStates, fixture, layout.nextPattern.pattern);
+        color = color.overlay(nextColor, layout.nextPattern.frame / layout.nextPattern.transitionTime);
+        layout.nextPattern.frame++;
+        if (layout.nextPattern.frame >= layout.nextPattern.transitionTime) {
+          layout.pattern = layout.nextPattern.pattern;
+          layout.nextPattern = undefined;
         }
       }
       if (fixture.brightness !== undefined)
