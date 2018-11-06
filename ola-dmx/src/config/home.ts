@@ -82,6 +82,54 @@ const config: Config = {
     },
     {
       universe: 0,
+      startChannel: 19,
+      channels: simpleRgbFixtureChannels,
+      group: 'par'
+    },
+    {
+      universe: 0,
+      startChannel: 22,
+      channels: simpleRgbFixtureChannels,
+      group: 'par'
+    },
+    // START: 4 Bar Flex
+    {
+      universe: 0,
+      startChannel: 25,
+      channels: [
+        {kind: 'static', value: 0}, // Mode / Pattern
+        {kind: 'static', value: 255}, // Dimmer
+        {kind: 'static', value: 0}, // strobe
+      ],
+      group: 'par'
+    },
+    {
+      universe: 0,
+      startChannel: 28,
+      channels: simpleRgbFixtureChannels,
+      group: 'par'
+    },
+    {
+      universe: 0,
+      startChannel: 31,
+      channels: simpleRgbFixtureChannels,
+      group: 'par'
+    },
+    {
+      universe: 0,
+      startChannel: 34,
+      channels: simpleRgbFixtureChannels,
+      group: 'par'
+    },
+    {
+      universe: 0,
+      startChannel: 37,
+      channels: simpleRgbFixtureChannels,
+      group: 'par'
+    },
+    // END: 4 Bar Flex
+    {
+      universe: 0,
       startChannel: 40,
       channels: movingHeadTwoFixtureChannels,
       movement: {
@@ -111,12 +159,12 @@ const config: Config = {
       },
       group: 'moving-head'
     },
-      {
-        universe: 0,
-        startChannel: 60,
-        channels: simpleRgbFixtureChannels2,
-        group: 'par'
-      },
+    {
+      universe: 0,
+      startChannel: 60,
+      channels: simpleRgbFixtureChannels2,
+      group: 'par'
+    },
   ],
   groups: [
     {

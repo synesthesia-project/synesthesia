@@ -55,6 +55,7 @@ interface FixtureLayout {
  * taking into account the synesthesia data to modify the display
  */
 interface Layout {
+  colorPallete: RGBColor[];
   fixtures: FixtureLayout[];
 }
 
@@ -76,7 +77,7 @@ export class Display {
   private readonly dmx: DmxProxy;
   // Mapping form universe to buffers
   private readonly buffers: {[id: number]: Int8Array} = {};
-  private layout: Layout;
+  private readonly layout: Layout;
   private playState: PlayStateData | null;
 
   public constructor(config: config.Config, dmx: DmxProxy) {
@@ -94,9 +95,16 @@ export class Display {
       color: randomRGBChaseState(colorPallete, [-1], 0, 40)
     }));
 
-    this.layout = {fixtures};
+    this.layout = {colorPallete, fixtures};
 
-    setInterval(this.randomizeColours.bind(this), CHANGE_INTERVAL);
+    setInterval(this.transitionToNextPattern.bind(this), CHANGE_INTERVAL);
+    // setInterval(
+    //   () => {
+    //     // Cycle color palette
+    //     const c = this.layout.colorPallete.pop();
+    //     if (c) this.layout.colorPallete.unshift(c);
+    //   },
+    //   1500);
   }
 
   public newSynesthesiaPlayState(state: PlayStateData | null): void {
@@ -133,13 +141,16 @@ export class Display {
         color: randomRGBChaseState(colorPallete, groupsToLayers[config.group], 0, 40)
       }));
 
-      this.layout = {fixtures};
+      this.layout.fixtures = fixtures;
     }
     console.log('newSynesthesiaPlayState', this.playState );
   }
 
-  private randomizeColours() {
-    const colorPallete = randomRGBColorPallete();
+  /**
+   * Generate a new random pattern / display, and transition all fixtures to it
+   */
+  private transitionToNextPattern() {
+    const colorPallete = this.layout.colorPallete = randomRGBColorPallete();
     const wait = util.randomInt(0, 40);
     const transition = util.randomInt(20, 40);
     for (const fixture of this.layout.fixtures) {
