@@ -217,7 +217,6 @@ export class Display {
       let color = this.calculateAndIncrementPatternState(layerStates, fixture, layout.color);
       if (layout.nextColor) {
         const nextColor = this.calculateAndIncrementPatternState(layerStates, fixture, layout.nextColor.color);
-        console.log('overlay', layout.nextColor.frame / layout.nextColor.transitionTime);
         color = color.overlay(nextColor, layout.nextColor.frame / layout.nextColor.transitionTime);
         layout.nextColor.frame++;
         if (layout.nextColor.frame >= layout.nextColor.transitionTime) {
