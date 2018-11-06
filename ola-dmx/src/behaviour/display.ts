@@ -36,7 +36,7 @@ interface RGBChasePattern {
   targetLayers: number[];
 }
 
-type FixtureColorPattern = RGBChasePattern;
+type FixturePattern = RGBChasePattern;
 
 interface FixtureMovementPattern {
   stage: number;
@@ -45,9 +45,9 @@ interface FixtureMovementPattern {
 }
 
 interface FixtureLayout {
-  color: FixtureColorPattern;
+  color: FixturePattern;
   nextColor?: {
-    color: FixtureColorPattern;
+    color: FixturePattern;
     frame: number;
     transitionTime: number;
   };
@@ -142,11 +142,14 @@ export class Display {
       }
       // create the layout, do a random chaser for now for every fixture
       const colorPallete = randomRGBColorPallete();
-      const fixtures: FixtureLayout[] = this.config.fixtures.map(config => ({
-        color: randomRGBChaseState(colorPallete, groupsToLayers[config.group], this.layout.timing)
-      }));
+      const fixturePatterns: RGBChasePattern[] = this.config.fixtures.map(config =>
+        randomRGBChaseState(colorPallete, groupsToLayers[config.group], this.layout.timing)
+      );
 
-      this.layout.fixtures = fixtures;
+      for (let i = 0; i < this.layout.fixtures.length; i++) {
+        this.layout.fixtures[i].color = fixturePatterns[i];
+        this.layout.fixtures[i].nextColor = undefined;
+      }
     }
     console.log('newSynesthesiaPlayState', this.playState );
   }
@@ -162,7 +165,7 @@ export class Display {
     }
   }
 
-  private calculateAndIncrementPatternColor(layerStates: LayerState[], fixture: config.Fixture, pattern: FixtureColorPattern): RGBColor {
+  private calculateAndIncrementPatternState(layerStates: LayerState[], fixture: config.Fixture, pattern: FixturePattern): RGBColor {
     if (pattern.patternType === 'rgbChase') {
       const colorPattern = pattern;
       let currentColor = this.calculateRGBChasePatternColor(colorPattern);
@@ -211,9 +214,9 @@ export class Display {
       const layout = this.layout.fixtures[i];
 
       // Update colour
-      let color = this.calculateAndIncrementPatternColor(layerStates, fixture, layout.color);
+      let color = this.calculateAndIncrementPatternState(layerStates, fixture, layout.color);
       if (layout.nextColor) {
-        const nextColor = this.calculateAndIncrementPatternColor(layerStates, fixture, layout.nextColor.color);
+        const nextColor = this.calculateAndIncrementPatternState(layerStates, fixture, layout.nextColor.color);
         console.log('overlay', layout.nextColor.frame / layout.nextColor.transitionTime);
         color = color.overlay(nextColor, layout.nextColor.frame / layout.nextColor.transitionTime);
         layout.nextColor.frame++;
