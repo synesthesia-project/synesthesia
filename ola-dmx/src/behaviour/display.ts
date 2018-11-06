@@ -109,24 +109,6 @@ export class Display {
     this.layout = {masterBrightness: 1, colorPallete, timing, fixtures};
 
     setInterval(this.transitionToNextPattern.bind(this), CHANGE_INTERVAL);
-    let up = false;
-    setInterval(
-      () => {
-        if (up) {
-          this.layout.masterBrightness += 0.01;
-          if (this.layout.masterBrightness > 1) {
-            up = false;
-            this.layout.masterBrightness = 1;
-          }
-        } else {
-          this.layout.masterBrightness -= 0.01;
-          if (this.layout.masterBrightness < 0) {
-            up = true;
-            this.layout.masterBrightness = 0;
-          }
-        }
-      },
-      10);
   }
 
   public newSynesthesiaPlayState(state: PlayStateData | null): void {
