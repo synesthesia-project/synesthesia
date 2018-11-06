@@ -18,13 +18,17 @@ interface LayerState {
   brightness: number;
 }
 
-interface RGBChasePattern {
-  patternType: 'rgbChase';
-  colors: RGBColor[];
+interface RGBChaseTiming {
   /** How many frames should we wait before transitioning */
   waitTime: number;
   /** How many frames should it take to transition */
   transitionTime: number;
+}
+
+interface RGBChasePattern {
+  patternType: 'rgbChase';
+  colors: RGBColor[];
+  timing: RGBChaseTiming;
   currentColor: number;
   /** Number of frames we've been on the current color for */
   currentColorTime: number;
@@ -56,15 +60,15 @@ interface FixtureLayout {
  */
 interface Layout {
   colorPallete: RGBColor[];
+  timing: RGBChaseTiming;
   fixtures: FixtureLayout[];
 }
 
-function randomRGBChaseState(colors: RGBColor[], targetLayers: number[], waitTime: number, transitionTime: number): RGBChasePattern {
+function randomRGBChaseState(colors: RGBColor[], targetLayers: number[], timing: RGBChaseTiming): RGBChasePattern {
   return {
     patternType: 'rgbChase',
     colors,
-    waitTime,
-    transitionTime,
+    timing,
     currentColor: Math.floor(Math.random() * colors.length),
     currentColorTime: util.randomInt(0, 40 + 20),
     targetLayers
@@ -91,11 +95,12 @@ export class Display {
     }
     // create the layout, do a random chaser for now for every fixture
     const colorPallete = randomRGBColorPallete();
+    const timing = {waitTime: 0, transitionTime: 40};
     const fixtures: FixtureLayout[] = config.fixtures.map(config => ({
-      color: randomRGBChaseState(colorPallete, [-1], 0, 40)
+      color: randomRGBChaseState(colorPallete, [-1], timing)
     }));
 
-    this.layout = {colorPallete, fixtures};
+    this.layout = {colorPallete, timing, fixtures};
 
     setInterval(this.transitionToNextPattern.bind(this), CHANGE_INTERVAL);
     // setInterval(
@@ -138,7 +143,7 @@ export class Display {
       // create the layout, do a random chaser for now for every fixture
       const colorPallete = randomRGBColorPallete();
       const fixtures: FixtureLayout[] = this.config.fixtures.map(config => ({
-        color: randomRGBChaseState(colorPallete, groupsToLayers[config.group], 0, 40)
+        color: randomRGBChaseState(colorPallete, groupsToLayers[config.group], this.layout.timing)
       }));
 
       this.layout.fixtures = fixtures;
@@ -151,10 +156,8 @@ export class Display {
    */
   private transitionToNextPattern() {
     const colorPallete = this.layout.colorPallete = randomRGBColorPallete();
-    const wait = util.randomInt(0, 40);
-    const transition = util.randomInt(20, 40);
     for (const fixture of this.layout.fixtures) {
-      const color = randomRGBChaseState(colorPallete, fixture.color.targetLayers, wait, transition);
+      const color = randomRGBChaseState(colorPallete, fixture.color.targetLayers, this.layout.timing);
       fixture.nextColor = {color, frame: 0, transitionTime: 60};
     }
   }
@@ -274,7 +277,7 @@ export class Display {
 
   private incrementRGBChasePatternColor(pattern: RGBChasePattern) {
     pattern.currentColorTime ++;
-    if (pattern.currentColorTime >= pattern.waitTime + pattern.transitionTime) {
+    if (pattern.currentColorTime >= pattern.timing.waitTime + pattern.timing.transitionTime) {
       pattern.currentColorTime = 0;
       pattern.currentColor++;
       if (pattern.currentColor >= pattern.colors.length) {
@@ -284,13 +287,13 @@ export class Display {
   }
 
   private calculateRGBChasePatternColor(pattern: RGBChasePattern) {
-    if (pattern.currentColorTime < pattern.waitTime)
+    if (pattern.currentColorTime < pattern.timing.waitTime)
       return pattern.colors[pattern.currentColor];
     const colorA = pattern.colors[pattern.currentColor];
     const colorBIndex = pattern.currentColor === pattern.colors.length - 1 ?
       0 : pattern.currentColor + 1;
     const colorB = pattern.colors[colorBIndex];
-    return colorA.transition(colorB, (pattern.currentColorTime - pattern.waitTime) / pattern.transitionTime);
+    return colorA.transition(colorB, (pattern.currentColorTime - pattern.timing.waitTime) / pattern.timing.transitionTime);
   }
 
   private setFixtureRGBColor(fixture: config.Fixture, color: RGBColor) {
