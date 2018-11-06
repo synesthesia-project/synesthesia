@@ -59,6 +59,8 @@ interface FixtureLayout {
  * taking into account the synesthesia data to modify the display
  */
 interface Layout {
+  /** Value from 0 to 1 representing brightness of the whole display */
+  masterBrightness: number;
   colorPallete: RGBColor[];
   timing: RGBChaseTiming;
   fixtures: FixtureLayout[];
@@ -100,16 +102,28 @@ export class Display {
       color: randomRGBChaseState(colorPallete, [-1], timing)
     }));
 
-    this.layout = {colorPallete, timing, fixtures};
+    this.layout = {masterBrightness: 1, colorPallete, timing, fixtures};
 
     setInterval(this.transitionToNextPattern.bind(this), CHANGE_INTERVAL);
-    // setInterval(
-    //   () => {
-    //     // Cycle color palette
-    //     const c = this.layout.colorPallete.pop();
-    //     if (c) this.layout.colorPallete.unshift(c);
-    //   },
-    //   1500);
+    let up = false;
+    setInterval(
+      () => {
+        if (up) {
+          this.layout.masterBrightness += 0.01;
+          if (this.layout.masterBrightness > 1) {
+            up = false;
+            this.layout.masterBrightness = 1;
+          }
+        } else {
+          this.layout.masterBrightness -= 0.01;
+          if (this.layout.masterBrightness < 0) {
+            up = true;
+            this.layout.masterBrightness = 0;
+          }
+        }
+        console.log(this.layout.masterBrightness);
+      },
+      10);
   }
 
   public newSynesthesiaPlayState(state: PlayStateData | null): void {
@@ -299,6 +313,7 @@ export class Display {
   }
 
   private setFixtureRGBColor(fixture: config.Fixture, color: RGBColor) {
+    const adjustedColor = color.overlay(RGB_BLACK, 1 - this.layout.masterBrightness);
     let rChannel = -1, gChannel = -1, bChannel = -1;
     for (let i = 0; i < fixture.channels.length; i++) {
       const channel = fixture.channels[i];
@@ -313,9 +328,9 @@ export class Display {
       }
     }
     if (rChannel >= 0 && gChannel >= 0 && bChannel >= 0) {
-      this.setDMXBufferValue(fixture.universe, rChannel, color.r);
-      this.setDMXBufferValue(fixture.universe, gChannel, color.g);
-      this.setDMXBufferValue(fixture.universe, bChannel, color.b);
+      this.setDMXBufferValue(fixture.universe, rChannel, adjustedColor.r);
+      this.setDMXBufferValue(fixture.universe, gChannel, adjustedColor.g);
+      this.setDMXBufferValue(fixture.universe, bChannel, adjustedColor.b);
     }
   }
 
