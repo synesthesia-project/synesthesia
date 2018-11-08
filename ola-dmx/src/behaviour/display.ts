@@ -181,6 +181,7 @@ export class Display {
     }));
 
     setInterval(this.transitionToNextPattern.bind(this), CHANGE_INTERVAL);
+    setInterval(this.pickNextColorPalette.bind(this), CHANGE_INTERVAL * 3);
   }
 
   public newSynesthesiaPlayState(state: PlayStateData | null): void {
@@ -236,10 +237,14 @@ export class Display {
     }
   }
 
+  private pickNextColorPalette() {
+    this.layout.colorPallete = randomRGBColorPallete();
+  }
+
   private generateNextPattern(): LayeredFixturePattern[] {
-    const colorPallete = this.layout.colorPallete = randomRGBColorPallete();
+    const colorPallete = this.layout.colorPallete;
     const patterns = ['rgbChase' as 'rgbChase', 'chaseAndSprite' as 'chaseAndSprite', 'sprite' as 'sprite'];
-    let pattern = patterns[Math.floor(Math.random() * patterns.length)];
+    let pattern = randomThing(patterns);
     const positionRange = calculatePositionRange(this.layout.fixtures);
     const sprites: Sprite[] = [];
     if (pattern === 'chaseAndSprite') {
