@@ -67,15 +67,40 @@ interface FixtureMovementPattern {
   stageTime: number;
 }
 
+type Pattern = {
+  type: 'single';
+  /** Current Pattern */
+  pattern: LayeredFixturePattern;
+} | {
+  type: 'transition';
+  /** Current Pattern */
+  pattern: Pattern;
+  next: LayeredFixturePattern;
+  frame: number;
+  transitionTime: number;
+};
+
+function singlePattern(pattern: LayeredFixturePattern): Pattern {
+  return {
+    type: 'single',
+    pattern
+  };
+}
+
+function transition(prev: Pattern, next: LayeredFixturePattern): Pattern {
+  return {
+    type: 'transition',
+    pattern: prev,
+    next,
+    frame: 0,
+    transitionTime: 60
+  };
+}
+
 interface FixtureLayout {
   config: config.Fixture;
   /** The layers that contribute to the colour pattern displayed for this fixture */
-  pattern: LayeredFixturePattern;
-  nextPattern?: {
-    pattern: LayeredFixturePattern;
-    frame: number;
-    transitionTime: number;
-  };
+  pattern: Pattern;
   movement?: FixtureMovementPattern;
 }
 
@@ -170,14 +195,14 @@ export class Display {
     // create the layout, do a random chaser for now for every fixture
     const colorPallete = randomRGBColorPallete();
     const timing = {waitTime: 0, transitionTime: 40};
-    const fixtures: FixtureLayout[] = config.fixtures.map(config => ({config, pattern: []}));
+    const fixtures: FixtureLayout[] = config.fixtures.map(config => ({config, pattern: singlePattern([])}));
 
     this.layout = {masterBrightness: 1, sprites: new Set<Sprite>(), colorPallete, timing, fixtures};
 
     // Calculation of next coolor requires layout to be ready
     this.layout.fixtures = this.generateNextPattern().map((pattern, i) => ({
       config: config.fixtures[i],
-      pattern
+      pattern: singlePattern(pattern)
     }));
 
     setInterval(this.transitionToNextPattern.bind(this), CHANGE_INTERVAL);
@@ -220,8 +245,7 @@ export class Display {
       }));
 
       for (let i = 0; i < this.layout.fixtures.length; i++) {
-        this.layout.fixtures[i].pattern = [fixturePatterns[i]];
-        this.layout.fixtures[i].nextPattern = undefined;
+        this.layout.fixtures[i].pattern = singlePattern([fixturePatterns[i]]);
       }
     }
     console.log('newSynesthesiaPlayState', this.playState );
@@ -233,7 +257,7 @@ export class Display {
   private transitionToNextPattern() {
     const pattern = this.generateNextPattern();
     for (let i = 0; i < this.layout.fixtures.length; i++) {
-      this.layout.fixtures[i].nextPattern = {pattern: pattern[i], frame: 0, transitionTime: 60};
+      this.layout.fixtures[i].pattern = transition(this.layout.fixtures[i].pattern, pattern[i]);
     }
   }
 
@@ -258,7 +282,7 @@ export class Display {
     }
     return this.layout.fixtures.map(fixture => {
       let targetLayers: number[] = [];
-      for (const layer of fixture.pattern) {
+      for (const layer of (fixture.pattern.type === 'single' ? fixture.pattern.pattern : fixture.pattern.next)) {
         if (layer.pattern.patternType === 'rgbChase')
           targetLayers = layer.pattern.targetLayers;
       }
@@ -292,7 +316,8 @@ export class Display {
     });
   }
 
-  private calculateAndIncrementPatternState(layerStates: LayerState[], fixture: config.Fixture, pattern: LayeredFixturePattern): RGBColor {
+  private calculateAndIncrementLayeredFixturePattern(
+      layerStates: LayerState[], fixture: config.Fixture, pattern: LayeredFixturePattern): RGBColor {
     let color = RGB_BLACK;
     for (const layer of pattern) {
       if (layer.pattern.patternType === 'rgbChase') {
@@ -318,6 +343,21 @@ export class Display {
       }
     }
     return color;
+  }
+
+  private calculateAndIncrementPatternState(layerStates: LayerState[], fixture: config.Fixture, parent: {pattern: Pattern}): RGBColor {
+    if (parent.pattern.type === 'single') {
+      return this.calculateAndIncrementLayeredFixturePattern(layerStates, fixture, parent.pattern.pattern);
+    } else {
+      const prevColor =  this.calculateAndIncrementPatternState(layerStates, fixture, parent.pattern);
+      const nextColor = this.calculateAndIncrementLayeredFixturePattern(layerStates, fixture, parent.pattern.next);
+      const color = prevColor.overlay(nextColor, parent.pattern.frame / parent.pattern.transitionTime);
+      parent.pattern.frame++;
+      if (parent.pattern.frame >= parent.pattern.transitionTime) {
+        parent.pattern = singlePattern(parent.pattern.next);
+      }
+      return color;
+    }
   }
 
   private frame() {
@@ -358,16 +398,7 @@ export class Display {
       const fixture = this.config.fixtures[i];
       const layout = this.layout.fixtures[i];
 
-      let color = this.calculateAndIncrementPatternState(layerStates, fixture, layout.pattern);
-      if (layout.nextPattern) {
-        const nextColor = this.calculateAndIncrementPatternState(layerStates, fixture, layout.nextPattern.pattern);
-        color = color.overlay(nextColor, layout.nextPattern.frame / layout.nextPattern.transitionTime);
-        layout.nextPattern.frame++;
-        if (layout.nextPattern.frame >= layout.nextPattern.transitionTime) {
-          layout.pattern = layout.nextPattern.pattern;
-          layout.nextPattern = undefined;
-        }
-      }
+      let color = this.calculateAndIncrementPatternState(layerStates, fixture, layout);
       if (fixture.brightness !== undefined)
         color = color.overlay(RGB_BLACK, 1 - fixture.brightness);
       this.setFixtureRGBColor(fixture, color);
