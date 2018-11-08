@@ -354,6 +354,8 @@ export class Display {
       const color = prevColor.overlay(nextColor, parent.pattern.frame / parent.pattern.transitionTime);
       parent.pattern.frame++;
       if (parent.pattern.frame >= parent.pattern.transitionTime) {
+        // TODO: When finishing the transition, garbage collect certain things,
+        // e.g. sprites used in parent.pattern.pattern (which we dereference here)
         parent.pattern = singlePattern(parent.pattern.next);
       }
       return color;
