@@ -39,6 +39,7 @@ export interface Fixture {
   channels: Channel[];
   group: string;
   brightness?: number;
+  position?: number;
   movement?: FixtureMovement;
 }
 

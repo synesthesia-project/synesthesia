@@ -48,37 +48,43 @@ const config: Config = {
       universe: 0,
       startChannel: 1,
       channels: simpleRgbFixtureChannels,
-      group: 'par'
+      group: 'par',
+      position: 1
     },
     {
       universe: 0,
       startChannel: 4,
       channels: simpleRgbFixtureChannels,
-      group: 'par'
+      group: 'par',
+      position: 2
     },
     {
       universe: 0,
       startChannel: 7,
       channels: simpleRgbFixtureChannels,
-      group: 'par'
+      group: 'par',
+      position: 3
     },
     {
       universe: 0,
       startChannel: 10,
       channels: simpleRgbFixtureChannels,
-      group: 'par'
+      group: 'par',
+      position: 6
     },
     {
       universe: 0,
       startChannel: 13,
       channels: simpleRgbFixtureChannels,
-      group: 'par'
+      group: 'par',
+      position: 5
     },
     {
       universe: 0,
       startChannel: 16,
       channels: simpleRgbFixtureChannels,
-      group: 'par'
+      group: 'par',
+      position: 4
     },
     {
       universe: 0,

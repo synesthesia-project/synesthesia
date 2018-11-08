@@ -14,6 +14,8 @@ import {RGBColor, RGB_BLACK, randomRGBColorPallete} from './colors';
 const INTERVAL = 1000 / 44;
 const CHANGE_INTERVAL = 60 * 1000;
 
+const SPRITE_SIZE = 1;
+
 /** The state of a particular layer in a synesthesia track, to be used to inform any fixture using this information how to display itself */
 interface LayerState {
   brightness: number;
@@ -37,7 +39,21 @@ interface RGBChasePattern {
   targetLayers: number[];
 }
 
-type FixturePattern = RGBChasePattern;
+interface Sprite {
+  color: RGBColor;
+  position: number;
+  minPosition: number;
+  maxPosition: number;
+  speed: number;
+}
+
+interface SpritePattern {
+  patternType: 'sprite';
+  sprite: Sprite;
+  position: number;
+}
+
+type FixturePattern = RGBChasePattern | SpritePattern;
 
 type LayeredFixturePattern = FixturePattern[];
 
@@ -48,6 +64,7 @@ interface FixtureMovementPattern {
 }
 
 interface FixtureLayout {
+  config: config.Fixture;
   /** The layers that contribute to the colour pattern displayed for this fixture */
   pattern: LayeredFixturePattern;
   nextPattern?: {
@@ -66,6 +83,7 @@ interface Layout {
   /** Value from 0 to 1 representing brightness of the whole display */
   masterBrightness: number;
   colorPallete: RGBColor[];
+  sprites: Set<Sprite>;
   timing: RGBChaseTiming;
   fixtures: FixtureLayout[];
 }
@@ -79,6 +97,49 @@ function randomRGBChaseState(colors: RGBColor[], targetLayers: number[], timing:
     currentColorTime: util.randomInt(0, 40 + 20),
     targetLayers
   };
+}
+
+function randomSprite(colors: RGBColor[], position: {min: number; max: number}): Sprite {
+  return {
+    color: new RGBColor(255, 255, 255), // colors[Math.floor(Math.random() * colors.length)],
+    position: position.min + (position.max - position.min) * Math.random(),
+    minPosition: position.min - SPRITE_SIZE,
+    maxPosition: position.max + SPRITE_SIZE,
+    speed: 0.1
+  };
+}
+
+function randomSpriteState(fixture: FixtureLayout & {config: {position: number}}, sprite: Sprite): SpritePattern {
+  return {
+    patternType: 'sprite',
+    sprite,
+    position: fixture.config.position
+  };
+}
+
+function calculatePositionRange(fixtures: FixtureLayout[]) {
+  let val: {min: number, max: number} | null = null;
+  if (fixtures.length === 0) return {min: 0, max: 0};
+  for (const f of fixtures) {
+    if (!f.config.position) continue;
+    if (!val) {
+      val = {min: f.config.position, max: f.config.position};
+    } else {
+      val.min = Math.min(val.min, f.config.position);
+      val.max = Math.max(val.max, f.config.position);
+    }
+  }
+  if (!val) return {min: 0, max: 0};
+  return val;
+}
+
+function positionedFixture(fixture: FixtureLayout): fixture is FixtureLayout & {config: {position: number}} {
+   return !!fixture.config.position;
+}
+
+/** between 0 and 1 */
+function calculateProximity(sprite: Sprite, position: number): number {
+  return Math.max(0, SPRITE_SIZE - Math.abs(sprite.position - position));
 }
 
 export class Display {
@@ -102,11 +163,15 @@ export class Display {
     // create the layout, do a random chaser for now for every fixture
     const colorPallete = randomRGBColorPallete();
     const timing = {waitTime: 0, transitionTime: 40};
-    const fixtures: FixtureLayout[] = config.fixtures.map(config => ({
-      pattern: [randomRGBChaseState(colorPallete, [-1], timing)]
-    }));
+    const fixtures: FixtureLayout[] = config.fixtures.map(config => ({config, pattern: []}));
 
-    this.layout = {masterBrightness: 1, colorPallete, timing, fixtures};
+    this.layout = {masterBrightness: 1, sprites: new Set<Sprite>(), colorPallete, timing, fixtures};
+
+    // Calculation of next coolor requires layout to be ready
+    this.layout.fixtures = this.generateNextPattern().map((pattern, i) => ({
+      config: config.fixtures[i],
+      pattern
+    }));
 
     setInterval(this.transitionToNextPattern.bind(this), CHANGE_INTERVAL);
   }
@@ -157,13 +222,37 @@ export class Display {
    * Generate a new random pattern / display, and transition all fixtures to it
    */
   private transitionToNextPattern() {
-    const colorPallete = this.layout.colorPallete = randomRGBColorPallete();
-    for (const fixture of this.layout.fixtures) {
-      const pattern: LayeredFixturePattern = fixture.pattern.map(layer =>
-        randomRGBChaseState(colorPallete, layer.targetLayers, this.layout.timing)
-      );
-      fixture.nextPattern = {pattern, frame: 0, transitionTime: 60};
+    const pattern = this.generateNextPattern();
+    for (let i = 0; i < this.layout.fixtures.length; i++) {
+      this.layout.fixtures[i].nextPattern = {pattern: pattern[i], frame: 0, transitionTime: 60};
     }
+  }
+
+  private generateNextPattern(): LayeredFixturePattern[] {
+    const colorPallete = this.layout.colorPallete = randomRGBColorPallete();
+    const showSprite = true; // Math.random() > 6;
+    const positionRange = calculatePositionRange(this.layout.fixtures);
+    let sprite = randomSprite(colorPallete, positionRange);
+    if (showSprite) this.layout.sprites.add(sprite);
+    return this.layout.fixtures.map(fixture => {
+      let targetLayers: number[] = [];
+      for (const layer of fixture.pattern) {
+        if (layer.patternType === 'rgbChase')
+          targetLayers = layer.targetLayers;
+      }
+      if (showSprite && positionedFixture(fixture)) {
+        const pattern: LayeredFixturePattern = [
+          randomRGBChaseState(colorPallete, targetLayers, this.layout.timing),
+          randomSpriteState(fixture, sprite)
+        ];
+        return pattern;
+      } else {
+        const pattern: LayeredFixturePattern = [
+          randomRGBChaseState(colorPallete, targetLayers, this.layout.timing)
+        ];
+        return pattern;
+      }
+    });
   }
 
   private calculateAndIncrementPatternState(layerStates: LayerState[], fixture: config.Fixture, pattern: LayeredFixturePattern): RGBColor {
@@ -183,6 +272,10 @@ export class Display {
         currentColor = currentColor.overlay(RGB_BLACK, 1 - brightness);
         this.incrementRGBChasePatternColor(layer);
         color = color.add(currentColor);
+      } else if (layer.patternType === 'sprite') {
+        const proximity = calculateProximity(layer.sprite, layer.position);
+        // Alter colour brightness as appropriate
+        color = color.add(RGB_BLACK.overlay(layer.sprite.color, proximity));
       } else {
         throw new Error('not implemnted');
       }
@@ -213,6 +306,14 @@ export class Display {
           }
         }
       }
+    }
+
+    // Increment global states
+    for (const sprite of this.layout.sprites) {
+      sprite.position += sprite.speed;
+      if (sprite.position > sprite.maxPosition)
+        sprite.position = sprite.minPosition;
+      console.log('SpritePosition:', sprite.position);
     }
 
     for (let i = 0; i < this.config.fixtures.length; i++) {
