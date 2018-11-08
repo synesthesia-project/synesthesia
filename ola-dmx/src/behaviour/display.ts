@@ -12,7 +12,7 @@ import * as util from '../util';
 import {RGBColor, RGB_BLACK, RGB_WHITE, randomRGBColorPallete} from './colors';
 
 const INTERVAL = 1000 / 44;
-const CHANGE_INTERVAL = 60 * 1000;
+const CHANGE_INTERVAL = 5000; // 60 * 1000;
 
 /** The state of a particular layer in a synesthesia track, to be used to inform any fixture using this information how to display itself */
 interface LayerState {
@@ -103,7 +103,7 @@ function randomRGBChaseState(colors: RGBColor[], targetLayers: number[], timing:
   };
 }
 
-function randomSprite(color: RGBColor, position: {min: number; max: number}, speed = 0.5, size = 1.5): Sprite {
+function randomSprite(color: RGBColor, position: {min: number; max: number}, speed = 0.2, size = 1.5): Sprite {
   return {
     color,
     position: position.min + (position.max - position.min) * Math.random(),
@@ -243,7 +243,7 @@ export class Display {
     const positionRange = calculatePositionRange(this.layout.fixtures);
     const sprites: Sprite[] = [];
     if (pattern === 'chaseAndSprite') {
-      sprites[0] = randomSprite(Math.random() > 0.6 ? RGB_WHITE : randomThing(colorPallete), positionRange);
+      sprites[0] = randomSprite(Math.random() > 0.6 ? RGB_WHITE : randomThing(colorPallete), positionRange, Math.random() * 0.3 + 0.05);
       this.layout.sprites.add(sprites[0]);
     }
     if (pattern === 'sprite') {
@@ -251,14 +251,9 @@ export class Display {
       if (Math.random() > 0.5) sprites[0].speed *= -1;
       this.layout.sprites.add(sprites[0]);
     }
-    console.log(this.layout.fixtures);
     return this.layout.fixtures.map(fixture => {
       let targetLayers: number[] = [];
       for (const layer of fixture.pattern) {
-        if (!layer) {
-          console.log('empty layer');
-          continue;
-        }
         if (layer.pattern.patternType === 'rgbChase')
           targetLayers = layer.pattern.targetLayers;
       }
@@ -294,12 +289,7 @@ export class Display {
 
   private calculateAndIncrementPatternState(layerStates: LayerState[], fixture: config.Fixture, pattern: LayeredFixturePattern): RGBColor {
     let color = RGB_BLACK;
-    console.log(pattern);
     for (const layer of pattern) {
-      if (!layer) {
-        console.log('empty layer 2');
-        continue;
-      }
       if (layer.pattern.patternType === 'rgbChase') {
         let currentColor = this.calculateRGBChasePatternColor(layer.pattern);
         let brightness = 1;
