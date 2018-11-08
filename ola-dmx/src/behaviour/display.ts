@@ -14,8 +14,6 @@ import {RGBColor, RGB_BLACK, RGB_WHITE, randomRGBColorPallete} from './colors';
 const INTERVAL = 1000 / 44;
 const CHANGE_INTERVAL = 60 * 1000;
 
-const SPRITE_SIZE = 1.5;
-
 /** The state of a particular layer in a synesthesia track, to be used to inform any fixture using this information how to display itself */
 interface LayerState {
   brightness: number;
@@ -42,6 +40,7 @@ interface RGBChasePattern {
 interface Sprite {
   color: RGBColor;
   position: number;
+  size: number;
   minPosition: number;
   maxPosition: number;
   speed: number;
@@ -104,16 +103,18 @@ function randomRGBChaseState(colors: RGBColor[], targetLayers: number[], timing:
   };
 }
 
-function randomSprite(colors: RGBColor[], position: {min: number; max: number}): Sprite {
-  const color = Math.random() > 0.6 ? RGB_WHITE : colors[Math.floor(Math.random() * colors.length)];
+function randomSprite(color: RGBColor, position: {min: number; max: number}, speed = 0.5, size = 1.5): Sprite {
   return {
     color,
     position: position.min + (position.max - position.min) * Math.random(),
-    minPosition: position.min - SPRITE_SIZE,
-    maxPosition: position.max + SPRITE_SIZE,
-    speed: 0.5
+    size,
+    minPosition: position.min - size,
+    maxPosition: position.max + size,
+    speed
   };
 }
+
+const randomThing = <T>(list: T[]) => list[Math.floor(Math.random() * list.length)];
 
 function randomSpriteState(fixture: FixtureLayout & {config: {position: number}}, sprite: Sprite): SpritePattern {
   return {
@@ -145,7 +146,7 @@ function positionedFixture(fixture: FixtureLayout): fixture is FixtureLayout & {
 
 /** between 0 and 1 */
 function calculateProximity(sprite: Sprite, position: number): number {
-  return Math.max(0, SPRITE_SIZE - Math.abs(sprite.position - position));
+  return Math.max(0, sprite.size - Math.abs(sprite.position - position));
 }
 
 export class Display {
@@ -237,27 +238,47 @@ export class Display {
 
   private generateNextPattern(): LayeredFixturePattern[] {
     const colorPallete = this.layout.colorPallete = randomRGBColorPallete();
-    const showSprite = true; // Math.random() > 6;
+    const patterns = ['rgbChase' as 'rgbChase', 'chaseAndSprite' as 'chaseAndSprite', 'sprite' as 'sprite'];
+    let pattern = patterns[Math.floor(Math.random() * patterns.length)];
     const positionRange = calculatePositionRange(this.layout.fixtures);
-    let sprite = randomSprite(colorPallete, positionRange);
-    if (showSprite) this.layout.sprites.add(sprite);
+    const sprites: Sprite[] = [];
+    if (pattern === 'chaseAndSprite') {
+      sprites[0] = randomSprite(Math.random() > 0.6 ? RGB_WHITE : randomThing(colorPallete), positionRange);
+      this.layout.sprites.add(sprites[0]);
+    }
+    if (pattern === 'sprite') {
+      sprites[0] = randomSprite(randomThing(colorPallete), positionRange, Math.random() * 0.3 + 0.03, Math.random() * 1 + 0.5);
+      if (Math.random() > 0.5) sprites[0].speed *= -1;
+      this.layout.sprites.add(sprites[0]);
+    }
+    console.log(this.layout.fixtures);
     return this.layout.fixtures.map(fixture => {
       let targetLayers: number[] = [];
       for (const layer of fixture.pattern) {
+        if (!layer) {
+          console.log('empty layer');
+          continue;
+        }
         if (layer.pattern.patternType === 'rgbChase')
           targetLayers = layer.pattern.targetLayers;
       }
-      if (showSprite && positionedFixture(fixture)) {
+      if (pattern === 'chaseAndSprite' && positionedFixture(fixture)) {
         const pattern: LayeredFixturePattern = [
           {
             pattern: randomRGBChaseState(colorPallete, targetLayers, this.layout.timing),
             opacity: 0.7
           },
           {
-            pattern: randomSpriteState(fixture, sprite),
+            pattern: randomSpriteState(fixture, sprites[0]),
             opacity: 1
           }
         ];
+        return pattern;
+      } else if (pattern === 'sprite' && positionedFixture(fixture)) {
+        const pattern: LayeredFixturePattern = sprites.map(sprite => ({
+          pattern: randomSpriteState(fixture, sprite),
+          opacity: 1
+        }));
         return pattern;
       } else {
         const pattern: LayeredFixturePattern = [
@@ -273,7 +294,12 @@ export class Display {
 
   private calculateAndIncrementPatternState(layerStates: LayerState[], fixture: config.Fixture, pattern: LayeredFixturePattern): RGBColor {
     let color = RGB_BLACK;
+    console.log(pattern);
     for (const layer of pattern) {
+      if (!layer) {
+        console.log('empty layer 2');
+        continue;
+      }
       if (layer.pattern.patternType === 'rgbChase') {
         let currentColor = this.calculateRGBChasePatternColor(layer.pattern);
         let brightness = 1;
@@ -329,6 +355,8 @@ export class Display {
       sprite.position += sprite.speed;
       if (sprite.position > sprite.maxPosition)
         sprite.position = sprite.minPosition;
+      if (sprite.position < sprite.minPosition)
+        sprite.position = sprite.maxPosition;
     }
 
     for (let i = 0; i < this.config.fixtures.length; i++) {
