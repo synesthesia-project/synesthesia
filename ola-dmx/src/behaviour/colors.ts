@@ -70,6 +70,7 @@ function hslToRgb(hue: number, saturation: number, lightness: number): RGBColor 
 }
 
 export const RGB_BLACK = new RGBColor(0, 0, 0);
+export const RGB_WHITE = new RGBColor(255, 255, 255);
 export const RGB_PURPLE = new RGBColor(200, 0, 255);
 export const RGB_BLUE = new RGBColor(0, 50, 255);
 
