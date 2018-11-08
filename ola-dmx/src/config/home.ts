@@ -113,25 +113,29 @@ const config: Config = {
       universe: 0,
       startChannel: 28,
       channels: simpleRgbFixtureChannels,
-      group: 'par'
+      group: 'par',
+      position: 10
     },
     {
       universe: 0,
       startChannel: 31,
       channels: simpleRgbFixtureChannels,
-      group: 'par'
+      group: 'par',
+      position: 9
     },
     {
       universe: 0,
       startChannel: 34,
       channels: simpleRgbFixtureChannels,
-      group: 'par'
+      group: 'par',
+      position: 8
     },
     {
       universe: 0,
       startChannel: 37,
       channels: simpleRgbFixtureChannels,
-      group: 'par'
+      group: 'par',
+      position: 7
     },
     // END: 4 Bar Flex
     {

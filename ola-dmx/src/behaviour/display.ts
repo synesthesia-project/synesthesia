@@ -14,7 +14,7 @@ import {RGBColor, RGB_BLACK, randomRGBColorPallete} from './colors';
 const INTERVAL = 1000 / 44;
 const CHANGE_INTERVAL = 60 * 1000;
 
-const SPRITE_SIZE = 1;
+const SPRITE_SIZE = 1.5;
 
 /** The state of a particular layer in a synesthesia track, to be used to inform any fixture using this information how to display itself */
 interface LayerState {
@@ -105,7 +105,7 @@ function randomSprite(colors: RGBColor[], position: {min: number; max: number}):
     position: position.min + (position.max - position.min) * Math.random(),
     minPosition: position.min - SPRITE_SIZE,
     maxPosition: position.max + SPRITE_SIZE,
-    speed: 0.1
+    speed: 0.5
   };
 }
 
