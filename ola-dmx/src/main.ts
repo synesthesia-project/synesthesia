@@ -1,4 +1,5 @@
 import {join} from 'path';
+import * as lightDesk from '@samlanning/synesthesia-light-desk';
 
 import {Display} from './behaviour/display';
 import {DmxProxy} from './dmx/proxy';
@@ -14,3 +15,5 @@ const display = new Display(getConfig(), proxy);
 const consumer = new SynesthesiaListener(display.newSynesthesiaPlayState);
 
 display.run();
+
+const desk = new lightDesk.LightDesk();

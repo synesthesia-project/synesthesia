@@ -1,3 +1,5 @@
-export class LightDisplay {
-  // TODO
+export class LightDesk {
+  constructor() {
+    console.log('New Light Desk!');
+  }
 }
