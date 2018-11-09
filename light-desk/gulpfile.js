@@ -30,7 +30,7 @@ gulp.task('tslint', function() {
   return gulp.src(['src/**/*.ts'])
   .pipe(tslint({
     formatter: 'verbose',
-    configuration: '../../tslint.json'
+    configuration: '../tslint.json'
   }))
   .on('error', handleError)
   .pipe(tslint.report());
@@ -40,11 +40,11 @@ gulp.task("webpack", ['ts'], function(callback) {
     // run webpack
     webpack({
         entry: {
-          bundle: "./.tmp/main.js",
+          bundle: "./.tmp/frontend/main.js",
         },
         output: {
             filename: "[name].js",
-            path: __dirname + "/build"
+            path: __dirname + "/build/frontend"
         },
 
         // Enable sourcemaps for debugging webpack's output.
@@ -71,14 +71,14 @@ gulp.task("webpack", ['ts'], function(callback) {
 });
 
 gulp.task('copy-static', function () {
-    return gulp.src(['src/index.html', 'src/index.css']).pipe(gulp.dest('build/'));
+    return gulp.src(['src/frontend/static/index.html', 'src/frontend/static/index.css']).pipe(gulp.dest('build/frontend'));
 });
 
 gulp.task('copy-libs', function () {
     return gulp.src([
       'node_modules/react/dist/react.js',
       'node_modules/react-dom/dist/react-dom.js'
-    ]).pipe(gulp.dest('build/lib'));
+    ]).pipe(gulp.dest('build/frontend/lib'));
 });
 
 gulp.task('default', function(callback) {

@@ -1,7 +1,7 @@
 {
-  "name": "synesthesia-ola-dmx",
+  "name": "@samlanning/light-desk",
   "version": "0.0.1",
-  "description": "touch screen control UI for synesthesia",
+  "description": "Control lights and stuff",
   "devDependencies": {
     "@types/react": "^16.0.38",
     "@types/react-dom": "^16.0.4",
