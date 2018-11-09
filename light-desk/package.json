@@ -1,7 +1,19 @@
 {
-  "name": "@samlanning/light-desk",
+  "name": "@samlanning/synesthesia-light-desk",
   "version": "0.0.1",
   "description": "Control lights and stuff",
+  "license": "MIT",
+  "main": "build/backend/index.js",
+  "types": "build/backend/index.d.js",
+  "author": {
+    "name" : "Sam Lanning",
+    "email" : "sam@samlanning.com",
+    "url" : "https://samlanning.com/"
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/samlanning/synesthesia.git"
+  },
   "devDependencies": {
     "@types/react": "^16.0.38",
     "@types/react-dom": "^16.0.4",
