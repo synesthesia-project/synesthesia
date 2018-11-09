@@ -19,7 +19,7 @@ google play music).
 
 ## TODO list
 
-Please see the [GitHub issues](/samlanning/synesthesia/issues) for the list of
+Please see the [GitHub issues](https://github.com/samlanning/synesthesia/issues) for the list of
 tasks.
 
 ## Special Thanks
