@@ -6,7 +6,8 @@ var tslint = require('gulp-tslint');
 var runSequence = require('run-sequence');
 var webpack = require('webpack');
 
-var tsProject = ts.createProject('src/tsconfig.json');
+var frontendTsProject = ts.createProject('src/frontend/tsconfig.json');
+var backendTsProject = ts.createProject('src/backend/tsconfig.json');
 
 // Utility Functions
 
@@ -20,10 +21,16 @@ gulp.task('clean', function() {
         .pipe(clean());
 });
 
-gulp.task('ts', function () {
-    return tsProject.src()
-      .pipe(tsProject())
-      .pipe(gulp.dest('.tmp/'));
+gulp.task('frontend-ts', function () {
+    return frontendTsProject.src()
+      .pipe(frontendTsProject())
+      .pipe(gulp.dest('.tmp/frontend/'));
+});
+
+gulp.task('backend-ts', function () {
+    return backendTsProject.src()
+      .pipe(backendTsProject())
+      .pipe(gulp.dest('.tmp/backend/'));
 });
 
 gulp.task('tslint', function() {
@@ -36,7 +43,7 @@ gulp.task('tslint', function() {
   .pipe(tslint.report());
 });
 
-gulp.task("webpack", ['ts'], function(callback) {
+gulp.task("frontend-webpack", ['frontend-ts'], function(callback) {
     // run webpack
     webpack({
         entry: {
@@ -55,36 +62,24 @@ gulp.task("webpack", ['ts'], function(callback) {
                 { test: /\.js$/, loader: "source-map" }
             ]
         },
-
-        // // When importing a module whose path matches one of the following, just
-        // // assume a corresponding global variable exists and use that instead.
-        // // This is important because it allows us to avoid bundling all of our
-        // // dependencies, which allows browsers to cache those libraries between builds.
-        externals: {
-            "react": "React",
-            "react-dom": "ReactDOM"
-        },
     }, function(err, stats) {
         if(err) throw new gutil.PluginError("webpack", err);
         callback();
     });
 });
 
-gulp.task('copy-static', function () {
+gulp.task('frontend-copy-static', function () {
     return gulp.src(['src/frontend/static/index.html', 'src/frontend/static/index.css']).pipe(gulp.dest('build/frontend'));
 });
 
-gulp.task('copy-libs', function () {
-    return gulp.src([
-      'node_modules/react/dist/react.js',
-      'node_modules/react-dom/dist/react-dom.js'
-    ]).pipe(gulp.dest('build/frontend/lib'));
+gulp.task('backend-copy', ['backend-ts'], function () {
+    return gulp.src(['.tmp/backend/**/*']).pipe(gulp.dest('build/backend'));
 });
 
 gulp.task('default', function(callback) {
   runSequence(
     'clean',
-    ['webpack', 'copy-static', 'copy-libs'],
+    ['frontend-webpack', 'frontend-copy-static', 'backend-copy'],
     'tslint',
     callback);
 });
