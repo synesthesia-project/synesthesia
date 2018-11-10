@@ -17,3 +17,12 @@ const consumer = new SynesthesiaListener(display.newSynesthesiaPlayState);
 display.run();
 
 const desk = new lightDesk.LightDesk();
+
+const g = new lightDesk.Group();
+desk.setRoot(g);
+
+const s = new lightDesk.Slider();
+g.addChild(s);
+
+const s2 = new lightDesk.Slider();
+g.addChild(s2);
