@@ -2,7 +2,9 @@ import * as React from 'react';
 
 import * as proto from '../../shared/proto';
 
+import {Label} from './label';
 import {Slider} from './slider';
+
 import {styled} from './styling';
 
 interface Props {
@@ -30,6 +32,8 @@ class Group extends React.Component<Props, {}> {
     switch (info.component) {
       case 'group':
       return <StyledGroup key={info.key} info={info} sendMessage={this.props.sendMessage} />;
+      case 'label':
+      return <Label key={info.key} info={info} />;
       case 'slider':
       return <Slider key={info.key} info={info} sendMessage={this.props.sendMessage} />;
     }

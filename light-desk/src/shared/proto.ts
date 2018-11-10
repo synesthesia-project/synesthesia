@@ -16,7 +16,12 @@ export interface SliderComponent extends BaseComponent {
   value: number | null;
 }
 
-export type Component = GroupComponent | SliderComponent;
+export interface LabelComponent extends BaseComponent {
+  component: 'label';
+  text: string;
+}
+
+export type Component = GroupComponent | SliderComponent | LabelComponent;
 
 export interface UpdateTreeMsg {
   type: 'update_tree';

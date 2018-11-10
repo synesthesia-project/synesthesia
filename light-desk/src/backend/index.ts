@@ -75,4 +75,5 @@ export class LightDesk implements Parent {
 // Export components
 export {Component} from './components/base';
 export {Group} from './components/group';
+export {Label} from './components/label';
 export {Slider} from './components/slider';

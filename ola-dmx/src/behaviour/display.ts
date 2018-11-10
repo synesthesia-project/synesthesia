@@ -510,6 +510,8 @@ export class Display {
   public getLightDesk(): lightDesk.Group {
     const deskGroup = new lightDesk.Group();
 
+    deskGroup.addChild(new lightDesk.Label('Master Dimmer'));
+
     const masterBrightness = new lightDesk.Slider(this.layout.masterBrightness, 0, 1, 0.05);
     masterBrightness.addListener(value => this.layout.masterBrightness = value);
     deskGroup.addChild(masterBrightness);
