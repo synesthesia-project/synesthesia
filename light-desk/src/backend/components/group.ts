@@ -1,11 +1,23 @@
+import {extend} from 'lodash';
+
 import * as proto from '../../shared/proto';
 import {IDMap} from '../util/id-map';
 
 import {Component, Parent} from './base';
 
+const DEFAULT_STYLE: proto.GroupComponentStyle = {
+  direction: 'horizontal'
+};
+
 export class Group extends Component implements Parent {
 
   private readonly children: Component[] = [];
+  private readonly style: proto.GroupComponentStyle;
+
+  public constructor(style: Partial<proto.GroupComponentStyle> = {}) {
+    super();
+    this.style = extend({}, DEFAULT_STYLE, style);
+  }
 
   public addChild(component: Component) {
     this.children.push(component);
@@ -18,6 +30,7 @@ export class Group extends Component implements Parent {
     return {
       component: 'group',
       key: idMap.getId(this),
+      style: this.style,
       children: this.children.map(c => c.getProtoInfo(idMap))
     };
   }

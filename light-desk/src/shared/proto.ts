@@ -3,9 +3,14 @@ interface BaseComponent {
   key: number;
 }
 
+export interface GroupComponentStyle {
+  direction: 'horizontal' | 'vertical';
+}
+
 export interface GroupComponent extends BaseComponent {
   component: 'group';
   children: Component[];
+  style: GroupComponentStyle;
 }
 
 export interface SliderComponent extends BaseComponent {

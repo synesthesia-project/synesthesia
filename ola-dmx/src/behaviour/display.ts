@@ -507,14 +507,30 @@ export class Display {
     setInterval(this.frame.bind(this), INTERVAL);
   }
 
-  public getLightDesk(): lightDesk.Group {
-    const deskGroup = new lightDesk.Group();
+  private timeIntervalLightDeskGroup(label: string) {
+    const group = new lightDesk.Group();
 
-    deskGroup.addChild(new lightDesk.Label('Master Dimmer'));
+    group.addChild(new lightDesk.Label(label));
+    group.addChild(new lightDesk.Label('Tickbox'));
+    group.addChild(new lightDesk.Label('Period'));
+
+    return group;
+  }
+
+  public getLightDesk(): lightDesk.Group {
+    const deskGroup = new lightDesk.Group({direction: 'vertical'});
+
+    deskGroup.addChild(this.timeIntervalLightDeskGroup('Auto Transition'));
+    deskGroup.addChild(this.timeIntervalLightDeskGroup('Auto Randomize Colors'));
+
+    const dimmersGroup = new lightDesk.Group();
+    deskGroup.addChild(dimmersGroup);
+
+    dimmersGroup.addChild(new lightDesk.Label('Master Dimmer'));
 
     const masterBrightness = new lightDesk.Slider(this.layout.masterBrightness, 0, 1, 0.05);
     masterBrightness.addListener(value => this.layout.masterBrightness = value);
-    deskGroup.addChild(masterBrightness);
+    dimmersGroup.addChild(masterBrightness);
 
     return deskGroup;
   }

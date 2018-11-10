@@ -43,7 +43,13 @@ class Group extends React.Component<Props, {}> {
 const StyledGroup = styled(Group)`
   background: #222;
   border: 1px solid #444;
-  padding: ${p => p.theme.spacingPx}px;
+  padding: ${p => p.theme.spacingPx / 2}px;
+  display: flex;
+  flex-direction: ${p => p.info.style.direction === 'vertical' ? 'column' : 'row'};
+
+  > * {
+    margin: ${p => p.theme.spacingPx / 2}px;
+  }
 `;
 
 export {StyledGroup as Group};
