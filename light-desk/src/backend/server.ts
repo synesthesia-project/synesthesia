@@ -8,8 +8,6 @@ import * as proto from '../shared/proto';
 const STATIC_DIR = path.resolve(__dirname, '../frontend');
 
 const STATIC_FILES: {[id: string]: [string, string]} = {
-  '/': ['index.html', 'text/html'],
-  '/index.css': ['index.css', 'text/css'],
   '/bundle.js': ['bundle.js', 'text/javascript'],
   '/bundle.js.map': ['bundle.js.map', 'text/plain']
 };
@@ -36,6 +34,21 @@ export class Server {
     this.onClosedConnection = onClosedConnection;
 
     this.server = http.createServer((request, response) => {
+      if (request.url === '/') {
+        const content = `
+          <html>
+            <head>
+              <title>Light Desk</title>
+            </head>
+            <body>
+              <div id="root"></div>
+              <script type="text/javascript" src="/bundle.js"></script>
+            </body>
+          </html>`;
+        response.writeHead(200, { 'Content-Type': 'text/html' });
+        response.end(content, 'utf-8');
+        return;
+      }
       if (request.url) {
         const f = STATIC_FILES[request.url];
         if (f) {

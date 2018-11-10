@@ -75,10 +75,6 @@ gulp.task("frontend-webpack", ['frontend-ts'], function(callback) {
     });
 });
 
-gulp.task('frontend-copy-static', function () {
-    return gulp.src(['src/frontend/static/index.html', 'src/frontend/static/index.css']).pipe(gulp.dest('build/frontend'));
-});
-
 gulp.task('backend-copy', ['backend-ts'], function () {
     return gulp.src(['.tmp/backend/**/*']).pipe(gulp.dest('build/backend'));
 });
@@ -90,7 +86,7 @@ gulp.task('shared-copy', ['shared-ts'], function () {
 gulp.task('default', function(callback) {
   runSequence(
     'clean',
-    ['frontend-webpack', 'frontend-copy-static', 'backend-copy', 'shared-copy'],
+    ['frontend-webpack', 'backend-copy', 'shared-copy'],
     'tslint',
     callback);
 });

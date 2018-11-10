@@ -1,17 +1,24 @@
 import * as React from 'react';
 
-import {ThemeProvider, defaultTheme, styled} from './styling';
+import * as proto from '../../shared/proto';
 
-interface StageProps {
+import {ThemeProvider, defaultTheme, styled} from './styling';
+import {Group} from './group';
+
+interface Props {
   className?: string;
 }
 
-class Stage extends React.Component<StageProps, {}> {
+interface State {
+  root: proto.GroupComponent | null;
+}
 
-  public contructor() {
-    const socket = new WebSocket(`ws://${window.location.hostname}:${window.location.port}`);
-    socket.onmessage = event => {
-      console.log('msg', event.data);
+class Stage extends React.Component<Props, State> {
+
+  public constructor(props: Props) {
+    super(props);
+    this.state = {
+      root: null
     };
   }
 
@@ -19,14 +26,26 @@ class Stage extends React.Component<StageProps, {}> {
     console.log('mounted, opening socket');
     const socket = new WebSocket(`ws://${window.location.hostname}:${window.location.port}`);
     socket.onmessage = event => {
-      console.log('msg', event.data);
+      console.log('message', event.data);
+      this.handleMessage(JSON.parse(event.data));
     };
+  }
+
+  private handleMessage(msg: proto.ServerMessage) {
+    console.log('handleMessage', msg);
+    switch (msg.type) {
+      case 'update_tree':
+        this.setState({root: msg.root});
+        return;
+    }
   }
 
   public render() {
     return (
       <div className={this.props.className}>
-        Hello There!
+        {this.state.root ?
+          <Group info={this.state.root} /> :
+          <div className="no-root">No root has been added to the light desk</div>}
       </div>
     );
   }
@@ -37,12 +56,13 @@ const StyledStage = styled(Stage)`
   height: 100%;
   background-color: #333;
   color: #fff;
+  padding: ${p => p.theme.spacingPx}px;
 `;
 
 export function rootComponent() {
   return (
     <ThemeProvider theme={defaultTheme}>
-      <StyledStage/>
+      <StyledStage />
     </ThemeProvider>
   );
 }
