@@ -31,7 +31,12 @@ export interface LabelComponent extends BaseComponent {
   text: string;
 }
 
-export type Component = GroupComponent | SliderComponent | LabelComponent;
+export interface ButtonComponent extends BaseComponent {
+  component: 'button';
+  text: string;
+}
+
+export type Component = GroupComponent | SliderComponent | LabelComponent | ButtonComponent;
 
 export interface UpdateTreeMsg {
   type: 'update_tree';
@@ -50,6 +55,10 @@ export interface SliderUpdateMessage extends BaseClientComponentMessage {
   value: number;
 }
 
-export type ClientComponentMessage = SliderUpdateMessage;
+export interface ButtonPressMessage extends BaseClientComponentMessage {
+  component: 'button';
+}
+
+export type ClientComponentMessage = SliderUpdateMessage | ButtonPressMessage;
 
 export type ClientMessage = ClientComponentMessage;

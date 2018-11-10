@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import * as proto from '../../shared/proto';
 
+import {Button} from './button';
 import {Label} from './label';
 import {Slider} from './slider';
 
@@ -30,6 +31,8 @@ class Group extends React.Component<Props, {}> {
 
   private childComponent(info: proto.Component): JSX.Element {
     switch (info.component) {
+      case 'button':
+      return <Button key={info.key} info={info} sendMessage={this.props.sendMessage} />;
       case 'group':
       return <StyledGroup key={info.key} info={info} sendMessage={this.props.sendMessage} />;
       case 'label':

@@ -33,6 +33,7 @@ export class Slider extends Component {
   }
 
   public handleMessage(message: proto.ClientComponentMessage) {
+    if (message.component !== 'slider') return;
     this.value = Math.max(this.min, Math.min(this.max, message.value));
     for (const l of this.listeners) {
       l(this.value);

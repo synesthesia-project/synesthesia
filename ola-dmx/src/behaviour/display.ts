@@ -11,10 +11,12 @@ import {
 import {DmxProxy} from '../dmx/proxy';
 import * as config from '../config';
 import * as util from '../util';
+
 import {RGBColor, RGB_BLACK, RGB_WHITE, randomRGBColorPallete} from './colors';
+import {Interval} from './interval';
 
 const INTERVAL = 1000 / 44;
-const CHANGE_INTERVAL = 5000; // 60 * 1000;
+const CHANGE_INTERVAL = 60 * 1000;
 
 /** The state of a particular layer in a synesthesia track, to be used to inform any fixture using this information how to display itself */
 interface LayerState {
@@ -185,6 +187,9 @@ export class Display {
   private readonly layout: Layout;
   private playState: PlayStateData | null;
 
+  private readonly transitionInterval: Interval;
+  private readonly colorInterval: Interval;
+
   public constructor(config: config.Config, dmx: DmxProxy) {
     this.config = config;
     this.dmx = dmx;
@@ -207,8 +212,8 @@ export class Display {
       pattern: singlePattern(pattern)
     }));
 
-    setInterval(this.transitionToNextPattern.bind(this), CHANGE_INTERVAL);
-    setInterval(this.pickNextColorPalette.bind(this), CHANGE_INTERVAL * 3);
+    this.transitionInterval = new Interval(this.transitionToNextPattern.bind(this), CHANGE_INTERVAL);
+    this.colorInterval = new Interval(this.pickNextColorPalette.bind(this), CHANGE_INTERVAL * 3);
   }
 
   public newSynesthesiaPlayState(state: PlayStateData | null): void {
@@ -507,22 +512,11 @@ export class Display {
     setInterval(this.frame.bind(this), INTERVAL);
   }
 
-  private timeIntervalLightDeskGroup(label: string) {
-    const group = new lightDesk.Group();
-
-    group.addChild(new lightDesk.Label(label, {bold: true}));
-    group.addChild(new lightDesk.Label('Automatically:'));
-    group.addChild(new lightDesk.Label('Tickbox'));
-    group.addChild(new lightDesk.Label('Period'));
-
-    return group;
-  }
-
   public getLightDesk(): lightDesk.Group {
     const deskGroup = new lightDesk.Group({direction: 'vertical'});
 
-    deskGroup.addChild(this.timeIntervalLightDeskGroup('Transition'));
-    deskGroup.addChild(this.timeIntervalLightDeskGroup('Randomize Colors'));
+    deskGroup.addChild(this.transitionInterval.lightDeskGroup('Transition'));
+    deskGroup.addChild(this.colorInterval.lightDeskGroup('Randomize Color'));
 
     const dimmersGroup = new lightDesk.Group();
     deskGroup.addChild(dimmersGroup);
