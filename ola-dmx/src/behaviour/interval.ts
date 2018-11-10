@@ -27,7 +27,10 @@ export class Interval {
 
       group.addChild(new lightDesk.Label(label, {bold: true}));
       group.addChild(new lightDesk.Label('Automatically:'));
-      group.addChild(new lightDesk.Label('Tickbox'));
+      group.addChild(new lightDesk.Switch('on').addListener(state => {
+        this.enabled = state === 'on';
+        this.resetTimeout();
+      }));
       group.addChild(new lightDesk.Label('Period'));
       group.addChild(new lightDesk.Button('Trigger').addListener(this.callee));
 

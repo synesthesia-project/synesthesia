@@ -5,6 +5,7 @@ import * as proto from '../../shared/proto';
 import {Button} from './button';
 import {Label} from './label';
 import {Slider} from './slider';
+import {Switch} from './switch';
 
 import {styled} from './styling';
 
@@ -39,6 +40,8 @@ class Group extends React.Component<Props, {}> {
       return <Label key={info.key} info={info} />;
       case 'slider':
       return <Slider key={info.key} info={info} sendMessage={this.props.sendMessage} />;
+      case 'switch':
+      return <Switch key={info.key} info={info} sendMessage={this.props.sendMessage} />;
     }
   }
 }

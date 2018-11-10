@@ -36,7 +36,12 @@ export interface ButtonComponent extends BaseComponent {
   text: string;
 }
 
-export type Component = GroupComponent | SliderComponent | LabelComponent | ButtonComponent;
+export interface SwitchComponent extends BaseComponent {
+  component: 'switch';
+  state: 'on' | 'off';
+}
+
+export type Component = GroupComponent | SliderComponent | LabelComponent | ButtonComponent | SwitchComponent;
 
 export interface UpdateTreeMsg {
   type: 'update_tree';
@@ -59,6 +64,10 @@ export interface ButtonPressMessage extends BaseClientComponentMessage {
   component: 'button';
 }
 
-export type ClientComponentMessage = SliderUpdateMessage | ButtonPressMessage;
+export interface SwitchToggleMessage extends BaseClientComponentMessage {
+  component: 'switch';
+}
+
+export type ClientComponentMessage = SliderUpdateMessage | ButtonPressMessage | SwitchToggleMessage;
 
 export type ClientMessage = ClientComponentMessage;
