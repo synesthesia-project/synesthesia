@@ -9,8 +9,8 @@ export interface GroupComponentStyle {
 
 export interface GroupComponent extends BaseComponent {
   component: 'group';
-  children: Component[];
   style: GroupComponentStyle;
+  children: Component[];
 }
 
 export interface SliderComponent extends BaseComponent {
@@ -21,8 +21,13 @@ export interface SliderComponent extends BaseComponent {
   value: number | null;
 }
 
+export interface LabelComponentStyle {
+  bold?: boolean;
+}
+
 export interface LabelComponent extends BaseComponent {
   component: 'label';
+  style: LabelComponentStyle;
   text: string;
 }
 

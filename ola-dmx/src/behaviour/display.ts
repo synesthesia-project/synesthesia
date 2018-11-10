@@ -510,7 +510,8 @@ export class Display {
   private timeIntervalLightDeskGroup(label: string) {
     const group = new lightDesk.Group();
 
-    group.addChild(new lightDesk.Label(label));
+    group.addChild(new lightDesk.Label(label, {bold: true}));
+    group.addChild(new lightDesk.Label('Automatically:'));
     group.addChild(new lightDesk.Label('Tickbox'));
     group.addChild(new lightDesk.Label('Period'));
 
@@ -520,8 +521,8 @@ export class Display {
   public getLightDesk(): lightDesk.Group {
     const deskGroup = new lightDesk.Group({direction: 'vertical'});
 
-    deskGroup.addChild(this.timeIntervalLightDeskGroup('Auto Transition'));
-    deskGroup.addChild(this.timeIntervalLightDeskGroup('Auto Randomize Colors'));
+    deskGroup.addChild(this.timeIntervalLightDeskGroup('Transition'));
+    deskGroup.addChild(this.timeIntervalLightDeskGroup('Randomize Colors'));
 
     const dimmersGroup = new lightDesk.Group();
     deskGroup.addChild(dimmersGroup);
