@@ -3,6 +3,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as WebSocket from 'ws';
 
+import * as proto from '../shared/proto';
+
 const STATIC_DIR = path.resolve(__dirname, '../frontend');
 
 const STATIC_FILES: {[id: string]: [string, string]} = {
@@ -12,14 +14,26 @@ const STATIC_FILES: {[id: string]: [string, string]} = {
   '/bundle.js.map': ['bundle.js.map', 'text/plain']
 };
 
+export interface Connection {
+  sendMessage(msg: proto.ServerMessage): void;
+}
+
 export class Server {
 
   private readonly port: number;
+  private readonly onNewConnection: (connection: Connection) => void;
+  private readonly onClosedConnection: (connection: Connection) => void;
   private readonly server: http.Server;
   private readonly wss: WebSocket.Server;
 
-  public constructor(port: number) {
+  public constructor(
+      port: number,
+      onNewConnection: (connection: Connection) => void,
+      onClosedConnection: (connection: Connection) => void
+  ) {
     this.port = port;
+    this.onNewConnection = onNewConnection;
+    this.onClosedConnection = onClosedConnection;
 
     this.server = http.createServer((request, response) => {
       if (request.url) {
@@ -38,9 +52,7 @@ export class Server {
       server: this.server
     });
 
-    this.wss.on('connection', ws =>
-      ws.on('message', msg => this.handleMessage(ws, msg))
-    );
+    this.wss.on('connection', this.handleConnection.bind(this));
   }
 
   public start() {
@@ -65,6 +77,16 @@ export class Server {
         response.end(content, 'utf-8');
       }
     });
+  }
+
+  private handleConnection(ws: WebSocket) {
+    const connection: Connection = {
+      sendMessage: msg => ws.send(JSON.stringify(msg))
+    };
+    this.onNewConnection(connection);
+    console.log('new connection');
+    ws.on('message', msg => this.handleMessage(ws, msg));
+    ws.on('close', () => this.onClosedConnection(connection));
   }
 
   private handleMessage(ws: WebSocket, data: any) {

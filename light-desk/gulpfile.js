@@ -8,6 +8,7 @@ var webpack = require('webpack');
 
 var frontendTsProject = ts.createProject('src/frontend/tsconfig.json');
 var backendTsProject = ts.createProject('src/backend/tsconfig.json');
+var sharedTsProject = ts.createProject('src/shared/tsconfig.json');
 
 // Utility Functions
 
@@ -31,6 +32,12 @@ gulp.task('backend-ts', function () {
     return backendTsProject.src()
       .pipe(backendTsProject())
       .pipe(gulp.dest('.tmp/backend/'));
+});
+
+gulp.task('shared-ts', function () {
+    return sharedTsProject.src()
+      .pipe(sharedTsProject())
+      .pipe(gulp.dest('.tmp/shared/'));
 });
 
 gulp.task('tslint', function() {
@@ -76,10 +83,14 @@ gulp.task('backend-copy', ['backend-ts'], function () {
     return gulp.src(['.tmp/backend/**/*']).pipe(gulp.dest('build/backend'));
 });
 
+gulp.task('shared-copy', ['shared-ts'], function () {
+    return gulp.src(['.tmp/shared/**/*']).pipe(gulp.dest('build/shared'));
+});
+
 gulp.task('default', function(callback) {
   runSequence(
     'clean',
-    ['frontend-webpack', 'frontend-copy-static', 'backend-copy'],
+    ['frontend-webpack', 'frontend-copy-static', 'backend-copy', 'shared-copy'],
     'tslint',
     callback);
 });

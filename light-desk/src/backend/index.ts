@@ -1,7 +1,7 @@
 import {Group} from './components/group';
-import {IdMap} from './util/id-map';
+import {IDMap} from './util/id-map';
 
-import {Server} from './server';
+import {Connection, Server} from './server';
 
 const DEFAULT_PORT = 1337;
 
@@ -12,11 +12,12 @@ export class LightDesk {
   /**
    * Mapping from components to unique IDs that identify them
    */
-  private readonly componentIDMap = new IdMap();
+  private readonly componentIDMap = new IDMap();
+  private readonly connections = new Set<Connection>();
 
   constructor(port = DEFAULT_PORT) {
     console.log('Starting light desk on port:', port);
-    this.server = new Server(port);
+    this.server = new Server(port, this.onNewConnection.bind(this), this.onClosedConnection.bind(this));
     this.server.start();
   }
 
@@ -27,6 +28,22 @@ export class LightDesk {
     }
     this.rootGroup = group;
   }
+
+  private onNewConnection(connection: Connection) {
+    this.connections.add(connection);
+    if (this.rootGroup) {
+      connection.sendMessage({
+        type: 'update_tree',
+        root: this.rootGroup.getProtoInfo(this.componentIDMap)
+      });
+    }
+  }
+
+  private onClosedConnection(connection: Connection) {
+    console.log('removing connection');
+    this.connections.delete(connection);
+  }
+
 }
 
 // Export components

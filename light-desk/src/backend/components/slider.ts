@@ -1,3 +1,6 @@
+import * as proto from '../../shared/proto';
+import {IDMap} from '../util/id-map';
+
 import {Component} from './base';
 
 export class Slider extends Component {
@@ -10,5 +13,15 @@ export class Slider extends Component {
     this.min = min;
     this.max = max;
     this.step = step;
+  }
+
+  public getProtoInfo(idMap: IDMap): proto.Component {
+    return {
+      component: 'slider',
+      key: idMap.getId(this),
+      min: this.min,
+      max: this.max,
+      step: this.step
+    };
   }
 }

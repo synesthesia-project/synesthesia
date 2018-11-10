@@ -7,6 +7,22 @@ interface StageProps {
 }
 
 class Stage extends React.Component<StageProps, {}> {
+
+  public contructor() {
+    const socket = new WebSocket(`ws://${window.location.hostname}:${window.location.port}`);
+    socket.onmessage = event => {
+      console.log('msg', event.data);
+    };
+  }
+
+  public componentDidMount() {
+    console.log('mounted, opening socket');
+    const socket = new WebSocket(`ws://${window.location.hostname}:${window.location.port}`);
+    socket.onmessage = event => {
+      console.log('msg', event.data);
+    };
+  }
+
   public render() {
     return (
       <div className={this.props.className}>
