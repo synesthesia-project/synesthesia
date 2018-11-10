@@ -21,8 +21,8 @@ const desk = new lightDesk.LightDesk();
 const g = new lightDesk.Group();
 desk.setRoot(g);
 
-const s = new lightDesk.Slider();
+const s = new lightDesk.Slider(0);
 g.addChild(s);
 
-const s2 = new lightDesk.Slider();
+const s2 = new lightDesk.Slider(10);
 g.addChild(s2);

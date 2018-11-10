@@ -21,17 +21,20 @@ export class Server {
   private readonly port: number;
   private readonly onNewConnection: (connection: Connection) => void;
   private readonly onClosedConnection: (connection: Connection) => void;
+  private readonly onMessage: (connection: Connection, message: proto.ClientMessage) => void;
   private readonly server: http.Server;
   private readonly wss: WebSocket.Server;
 
   public constructor(
       port: number,
       onNewConnection: (connection: Connection) => void,
-      onClosedConnection: (connection: Connection) => void
+      onClosedConnection: (connection: Connection) => void,
+      onMessage: (connection: Connection, message: proto.ClientMessage) => void
   ) {
     this.port = port;
     this.onNewConnection = onNewConnection;
     this.onClosedConnection = onClosedConnection;
+    this.onMessage = onMessage;
 
     this.server = http.createServer((request, response) => {
       if (request.url === '/') {
@@ -98,12 +101,8 @@ export class Server {
     };
     this.onNewConnection(connection);
     console.log('new connection');
-    ws.on('message', msg => this.handleMessage(ws, msg));
+    ws.on('message', msg => this.onMessage(connection, JSON.parse(msg)));
     ws.on('close', () => this.onClosedConnection(connection));
-  }
-
-  private handleMessage(ws: WebSocket, data: any) {
-    console.log('got message:', data);
   }
 
 }

@@ -13,6 +13,7 @@ export interface SliderComponent extends BaseComponent {
   min: number;
   max: number;
   step: number;
+  value: number | null;
 }
 
 export type Component = GroupComponent | SliderComponent;
@@ -23,3 +24,17 @@ export interface UpdateTreeMsg {
 }
 
 export type ServerMessage = UpdateTreeMsg;
+
+export interface BaseClientComponentMessage {
+  type: 'component_message';
+  componentKey: number;
+}
+
+export interface SliderUpdateMessage extends BaseClientComponentMessage {
+  component: 'slider';
+  value: number;
+}
+
+export type ClientComponentMessage = SliderUpdateMessage;
+
+export type ClientMessage = ClientComponentMessage;

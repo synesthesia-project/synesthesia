@@ -11,6 +11,7 @@ interface Props {
 
 interface State {
   root: proto.GroupComponent | null;
+  sendMessage: ((msg: proto.ClientMessage) => void) | null;
 }
 
 class Stage extends React.Component<Props, State> {
@@ -18,7 +19,8 @@ class Stage extends React.Component<Props, State> {
   public constructor(props: Props) {
     super(props);
     this.state = {
-      root: null
+      root: null,
+      sendMessage: null
     };
   }
 
@@ -29,6 +31,7 @@ class Stage extends React.Component<Props, State> {
       console.log('message', event.data);
       this.handleMessage(JSON.parse(event.data));
     };
+    this.setState({sendMessage: msg => socket.send(JSON.stringify(msg))});
   }
 
   private handleMessage(msg: proto.ServerMessage) {
@@ -44,7 +47,7 @@ class Stage extends React.Component<Props, State> {
     return (
       <div className={this.props.className}>
         {this.state.root ?
-          <Group info={this.state.root} /> :
+          <Group info={this.state.root} sendMessage={this.state.sendMessage} /> :
           <div className="no-root">No root has been added to the light desk</div>}
       </div>
     );

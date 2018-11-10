@@ -8,6 +8,7 @@ import {styled} from './styling';
 interface Props {
   className?: string;
   info: proto.GroupComponent;
+  sendMessage: ((msg: proto.ClientMessage) => void) | null;
 }
 
 class Group extends React.Component<Props, {}> {
@@ -28,9 +29,9 @@ class Group extends React.Component<Props, {}> {
   private childComponent(info: proto.Component): JSX.Element {
     switch (info.component) {
       case 'group':
-      return <StyledGroup key={info.key} info={info} />;
+      return <StyledGroup key={info.key} info={info} sendMessage={this.props.sendMessage} />;
       case 'slider':
-      return <Slider key={info.key} info={info} />;
+      return <Slider key={info.key} info={info} sendMessage={this.props.sendMessage} />;
     }
   }
 }
