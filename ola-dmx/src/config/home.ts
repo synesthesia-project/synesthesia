@@ -183,7 +183,10 @@ const config: Config = {
     {
       id: 'moving-head-1'
     }
-  ]
+  ],
+  settings: {
+    blackoutTransitionTime: 1000
+  }
 };
 
 export function getConfig() {

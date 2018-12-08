@@ -51,6 +51,10 @@ export interface Group {
 export interface Config {
   fixtures: Fixture[];
   groups: Group[];
+  settings: {
+    /** How many milliseconds it should take to come in and out of blackout */
+    blackoutTransitionTime: 1000;
+  };
 }
 
 const fixtures: Fixture[] = [];
@@ -94,7 +98,10 @@ const config: Config = {
       {id: 'hex-med'},
       {id: 'hex-small'}
     ]
-  }]
+  }],
+  settings: {
+    blackoutTransitionTime: 1000
+  }
 };
 
 export function getConfig() {

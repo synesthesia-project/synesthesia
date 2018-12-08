@@ -32,9 +32,9 @@ export class Behaviour {
             if (state !== newState) {
               state = newState;
               if (state === 'on') {
-                this.display.setMasterBrightness(1);
+                this.display.setBlackout(false);
               } else {
-                this.display.setMasterBrightness(0);
+                this.display.setBlackout(true);
               }
             }
           }

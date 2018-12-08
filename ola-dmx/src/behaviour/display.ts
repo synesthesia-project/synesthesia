@@ -119,6 +119,15 @@ interface Layout {
   sprites: Set<Sprite>;
   timing: RGBChaseTiming;
   fixtures: FixtureLayout[];
+  blackout: boolean;
+  /**
+   * Brightness used for blackout fading in / out
+   */
+  blackoutBrightness: number;
+  /**
+   * How long it takes to fade in / out from blackout
+   */
+  blackoutTransitionTime: number;
 }
 
 function randomRGBChaseState(colors: RGBColor[], targetLayers: number[], timing: RGBChaseTiming): RGBChasePattern {
@@ -210,7 +219,17 @@ export class Display {
     const timing = {waitTime: 0, transitionTime: 40};
     const fixtures: FixtureLayout[] = config.fixtures.map(config => ({config, pattern: singlePattern([])}));
 
-    this.layout = {masterBrightness: 1, sprites: new Set<Sprite>(), colorPallete, timing, fixtures};
+    this.layout = {
+      masterBrightness: 1,
+      sprites: new Set<Sprite>(),
+      colorPallete,
+      timing,
+      fixtures,
+      blackout: false,
+      // Start with 0 so it fades in on start
+      blackoutBrightness: 0,
+      blackoutTransitionTime: config.settings.blackoutTransitionTime
+    };
 
     // Calculation of next coolor requires layout to be ready
     this.layout.fixtures = this.generateNextPattern().map((pattern, i) => ({
@@ -401,6 +420,15 @@ export class Display {
     }
 
     // Increment global states
+    const blackoutAdjust = 1 / this.layout.blackoutTransitionTime * INTERVAL;
+    if (this.layout.blackout && this.layout.blackoutBrightness > 0) {
+      this.layout.blackoutBrightness -= blackoutAdjust;
+      if (this.layout.blackoutBrightness < 0) this.layout.blackoutBrightness = 0;
+    } else if (!this.layout.blackout && this.layout.blackoutBrightness < 1) {
+      this.layout.blackoutBrightness += blackoutAdjust;
+      if (this.layout.blackoutBrightness > 1) this.layout.blackoutBrightness = 1;
+    }
+
     for (const sprite of this.layout.sprites) {
       sprite.position += sprite.speed;
       if (sprite.position > sprite.maxPosition)
@@ -489,7 +517,9 @@ export class Display {
   }
 
   private setFixtureRGBColor(fixture: config.Fixture, color: RGBColor) {
-    const adjustedColor = color.overlay(RGB_BLACK, 1 - this.layout.masterBrightness);
+    const adjustedColor = color
+      .overlay(RGB_BLACK, 1 - this.layout.masterBrightness)
+      .overlay(RGB_BLACK, 1 - this.layout.blackoutBrightness);
     let rChannel = -1, gChannel = -1, bChannel = -1;
     for (let i = 0; i < fixture.channels.length; i++) {
       const channel = fixture.channels[i];
@@ -555,6 +585,11 @@ export class Display {
         listener.masterBrightnessChanges(value);
       }
     }
+  }
+
+  public setBlackout(value: boolean) {
+    console.log('Set Blackout:', value);
+    this.layout.blackout = value;
   }
 
 
