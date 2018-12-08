@@ -17,6 +17,7 @@ interface State {
     brightness: number;
   };
   groups: StateGroup[];
+  autoToggleLights: boolean;
 }
 
 interface Desk {
@@ -35,7 +36,8 @@ export class Behaviour {
       state: 'unknown',
       brightness: 1
     },
-    groups: []
+    groups: [],
+    autoToggleLights: true
   };
 
   private desk: null | Desk = null;
@@ -103,7 +105,17 @@ export class Behaviour {
       lightGroupToLabel: new Map()
     };
 
-    homeControl.addChild(this.desk.externalLightsState);
+    const settings = new lightDesk.Group({direction: 'horizontal'});
+
+    const autoToggleLights = new lightDesk.Switch('on');
+    autoToggleLights.addListener(state => {
+      this.state.autoToggleLights = state === 'on';
+    });
+
+    settings.addChild(this.desk.externalLightsState);
+    settings.addChild(new lightDesk.Label('Auto Toggle:'));
+    settings.addChild(autoToggleLights);
+    homeControl.addChild(settings);
     homeControl.addChild(this.desk.lightGroupsArea);
     this.addGroupDeskStuff(this.desk, this.state.groups);
 
@@ -116,7 +128,7 @@ export class Behaviour {
     for (const light of lights.lights) {
       if (!light.id) continue;
       states.set(light.id, light.state.on ? 'on' : 'off');
-      if (light.name === 'Downstairs Living Room 1') {
+      if (this.state.autoToggleLights && light.name === 'Downstairs Living Room 1') {
         const newState = light.state.on ? 'on' : 'off';
         if (this.state.externalLignts.state !== newState) {
           this.state.externalLignts.state = newState;
