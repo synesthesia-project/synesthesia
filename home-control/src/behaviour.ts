@@ -9,6 +9,7 @@ interface StateGroup {
   name: string;
   lights: string[];
   state: 'unknown' | 'on' | 'off';
+  brightness: number;
 }
 
 interface State {
@@ -23,7 +24,7 @@ interface State {
 interface Desk {
   externalLightsState: lightDesk.Label;
   lightGroupsArea: lightDesk.Group;
-  lightGroupToComponents: Map<string, {toggle: lightDesk.Switch}>;
+  lightGroupToComponents: Map<string, {toggle: lightDesk.Switch; brightness: lightDesk.Slider}>;
 }
 
 export class Behaviour {
@@ -66,7 +67,8 @@ export class Behaviour {
           id: group.id,
           name: group.name,
           lights: group.lights,
-          state: 'unknown'
+          state: 'unknown',
+          brightness: 0
         });
       }
       if (this.desk) {
@@ -88,7 +90,13 @@ export class Behaviour {
       });
       group.addChild(toggle);
 
-      desk.lightGroupToComponents.set(lightGroup.id, {toggle});
+      const brightness = new lightDesk.Slider(0, 0, 1, 0.05);
+      brightness.addListener(value => {
+        this.hue.setGroupLightState(lightGroup.id, lightState.create().brightness(value * 255));
+      });
+      group.addChild(brightness);
+
+      desk.lightGroupToComponents.set(lightGroup.id, {toggle, brightness});
       desk.lightGroupsArea.addChild(group);
     }
   }
@@ -126,10 +134,12 @@ export class Behaviour {
 
   private async interval() {
     const lights = await this.hue.lights();
-    const states = new Map<string, 'on'|'off'>();
+    const states = new Map<string, {state: 'on'|'off', brightness: number}>();
     for (const light of lights.lights) {
       if (!light.id) continue;
-      states.set(light.id, light.state.on ? 'on' : 'off');
+      const state = light.state.on ? 'on' : 'off';
+      const brightness = light.state.bri / 255;
+      states.set(light.id, {state, brightness});
       if (this.state.autoToggleLights && light.name === 'Downstairs Living Room 1') {
         const newState = light.state.on ? 'on' : 'off';
         if (this.state.externalLignts.state !== newState) {
@@ -147,14 +157,27 @@ export class Behaviour {
     }
     for (const group of this.state.groups) {
       let newState: 'on' | 'off' = 'off';
+      const brightnesses: number[] = [];
       for (const l of group.lights) {
-        if (states.get(l) === 'on') newState = 'on';
+        const state = states.get(l);
+        if (!state) continue;
+        if (state.state === 'on') newState = 'on';
+        brightnesses.push(state.brightness);
       }
+      if (brightnesses.length === 0) continue;
+      const brightness = brightnesses.reduce((a, b) => a + b, 0) / brightnesses.length;
       if (group.state !== newState) {
         group.state = newState;
         if (this.desk) {
           const components = this.desk.lightGroupToComponents.get(group.id);
           if (components) components.toggle.setValue(newState);
+        }
+      }
+      if (group.brightness !== brightness) {
+        group.brightness = brightness;
+        if (this.desk) {
+          const components = this.desk.lightGroupToComponents.get(group.id);
+          if (components) components.brightness.setValue(brightness);
         }
       }
     }
