@@ -24,8 +24,7 @@ export class Interval {
   public lightDeskGroup(label: string) {
     if (!this.lightDesk) {
       const group = new lightDesk.Group();
-
-      group.addChild(new lightDesk.Label(label, {bold: true}));
+      group.setTitle(label);
       group.addChild(new lightDesk.Label('Automatically:'));
       group.addChild(new lightDesk.Switch('on').addListener(state => {
         this.enabled = state === 'on';

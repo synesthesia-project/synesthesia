@@ -6,6 +6,7 @@ interface BaseComponent {
 export interface GroupComponentStyle {
   direction: 'horizontal' | 'vertical';
   wrap?: boolean;
+  noBorder?: boolean;
 }
 
 export interface GroupComponent extends BaseComponent {

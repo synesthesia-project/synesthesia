@@ -590,8 +590,11 @@ export class Display {
 
     const deskGroup = new lightDesk.Group({direction: 'vertical'});
 
-    deskGroup.addChild(this.transitionInterval.lightDeskGroup('Transition'));
-    deskGroup.addChild(this.colorInterval.lightDeskGroup('Randomize Color'));
+    const intervals = new lightDesk.Group({direction: 'horizontal', noBorder: true});
+    deskGroup.addChild(intervals);
+
+    intervals.addChild(this.transitionInterval.lightDeskGroup('Transition'));
+    intervals.addChild(this.colorInterval.lightDeskGroup('Randomize Color'));
 
     const dimmersGroup = new lightDesk.Group();
     deskGroup.addChild(dimmersGroup);

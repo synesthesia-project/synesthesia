@@ -18,8 +18,9 @@ interface Props {
   color: GroupColor;
 }
 
-function nextColor(color: GroupColor): GroupColor {
-  switch (color) {
+function nextColor(props: Props): GroupColor {
+  if (props.info.style.noBorder) return props.color;
+  switch (props.color) {
     case 'dark': return 'lighter';
     case 'lighter': return 'dark';
     case 'lighterer': return 'dark';
@@ -35,7 +36,7 @@ class Group extends React.Component<Props, {}> {
 
   public render() {
     return (
-      <div className={this.props.className}>
+      <div className={this.props.className + (this.props.info.style.noBorder ? ' no-border' : '')}>
         {this.props.info.title ? (
           <div className="title">{this.props.info.title}</div>
         ) : null}
@@ -51,7 +52,7 @@ class Group extends React.Component<Props, {}> {
       case 'button':
       return <Button key={info.key} info={info} sendMessage={this.props.sendMessage} />;
       case 'group':
-      return <StyledGroup key={info.key} info={info} sendMessage={this.props.sendMessage} color={nextColor(this.props.color)} />;
+      return <StyledGroup key={info.key} info={info} sendMessage={this.props.sendMessage} color={nextColor(this.props)} />;
       case 'label':
       return <Label key={info.key} info={info} />;
       case 'slider':
@@ -82,6 +83,17 @@ const StyledGroup = styled(Group)`
 
     > * {
       margin: ${p => p.theme.spacingPx / 2}px;
+    }
+  }
+
+  &.no-border {
+    background: none;
+    border: none;
+    margin: 0 !important;
+
+    > .children {
+      padding: 0;
+      box-shadow: none;
     }
   }
 `;
