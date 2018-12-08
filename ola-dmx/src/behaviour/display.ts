@@ -17,6 +17,7 @@ import {Interval} from './interval';
 
 const INTERVAL = 1000 / 44;
 const CHANGE_INTERVAL = 60 * 1000;
+const BRIGHTNESS_TRANSITION_STEP = 0.03;
 
 /** The state of a particular layer in a synesthesia track, to be used to inform any fixture using this information how to display itself */
 interface LayerState {
@@ -115,6 +116,8 @@ interface FixtureLayout {
 interface Layout {
   /** Value from 0 to 1 representing brightness of the whole display */
   masterBrightness: number;
+  /** If set, then transition the value of the masterBrightness to the given brightness */
+  transitionMasterBrightness: number | null;
   colorPallete: RGBColor[];
   sprites: Set<Sprite>;
   timing: RGBChaseTiming;
@@ -228,6 +231,7 @@ export class Display {
 
     this.layout = {
       masterBrightness: 1,
+      transitionMasterBrightness: null,
       sprites: new Set<Sprite>(),
       colorPallete,
       timing,
@@ -427,6 +431,8 @@ export class Display {
     }
 
     // Increment global states
+
+    // Adjust brightness for blackout if transitioning
     const blackoutAdjust = 1 / this.layout.blackoutTransitionTime * INTERVAL;
     if (this.layout.blackout && this.layout.blackoutBrightness > 0) {
       this.layout.blackoutBrightness -= blackoutAdjust;
@@ -436,6 +442,29 @@ export class Display {
       if (this.layout.blackoutBrightness > 1) this.layout.blackoutBrightness = 1;
     }
 
+    // Transition master brightness if needed
+    if (this.layout.transitionMasterBrightness !== null) {
+      if (this.layout.masterBrightness < this.layout.transitionMasterBrightness) {
+        this.layout.masterBrightness += BRIGHTNESS_TRANSITION_STEP;
+        if (this.layout.masterBrightness > this.layout.transitionMasterBrightness) {
+          this.layout.masterBrightness = this.layout.transitionMasterBrightness;
+          this.layout.transitionMasterBrightness = null;
+        }
+      } else {
+        this.layout.masterBrightness -= BRIGHTNESS_TRANSITION_STEP;
+        if (this.layout.masterBrightness < this.layout.transitionMasterBrightness) {
+          this.layout.masterBrightness = this.layout.transitionMasterBrightness;
+          this.layout.transitionMasterBrightness = null;
+        }
+      }
+      for (const listener of this.listeners) {
+        if (listener.masterBrightnessChanges) {
+          listener.masterBrightnessChanges(this.layout.masterBrightness);
+        }
+      }
+    }
+
+    // Move sprites
     for (const sprite of this.layout.sprites) {
       sprite.position += sprite.speed;
       if (sprite.position > sprite.maxPosition)
@@ -444,6 +473,7 @@ export class Display {
         sprite.position = sprite.maxPosition;
     }
 
+    // Calculate the state for each fixture
     for (let i = 0; i < this.config.fixtures.length; i++) {
       const fixture = this.config.fixtures[i];
       const layout = this.layout.fixtures[i];
@@ -599,11 +629,17 @@ export class Display {
   public setMasterBrightness(value: number) {
     value = Math.max(0, Math.min(1, value));
     this.layout.masterBrightness = value;
+    this.layout.transitionMasterBrightness = null;
     for (const listener of this.listeners) {
       if (listener.masterBrightnessChanges) {
         listener.masterBrightnessChanges(value);
       }
     }
+  }
+
+  public transitionMasterBrightness(value: number) {
+    value = Math.max(0, Math.min(1, value));
+    this.layout.transitionMasterBrightness = value;
   }
 
   public setBlackout(value: boolean) {

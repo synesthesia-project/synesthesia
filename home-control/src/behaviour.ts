@@ -159,7 +159,7 @@ export class Behaviour {
         }
         if (this.state.externalLignts.brightness !== brightness) {
           this.state.externalLignts.brightness = brightness;
-          this.display.setMasterBrightness(brightness);
+          this.display.transitionMasterBrightness(brightness);
         }
       }
     }
