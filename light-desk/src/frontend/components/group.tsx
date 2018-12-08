@@ -9,10 +9,21 @@ import {Switch} from './switch';
 
 import {styled} from './styling';
 
+type GroupColor = 'dark' | 'lighter' | 'lighterer';
+
 interface Props {
   className?: string;
   info: proto.GroupComponent;
   sendMessage: ((msg: proto.ClientMessage) => void) | null;
+  color: GroupColor;
+}
+
+function nextColor(color: GroupColor): GroupColor {
+  switch (color) {
+    case 'dark': return 'lighter';
+    case 'lighter': return 'lighterer';
+    case 'lighterer': return 'dark';
+  }
 }
 
 class Group extends React.Component<Props, {}> {
@@ -35,7 +46,7 @@ class Group extends React.Component<Props, {}> {
       case 'button':
       return <Button key={info.key} info={info} sendMessage={this.props.sendMessage} />;
       case 'group':
-      return <StyledGroup key={info.key} info={info} sendMessage={this.props.sendMessage} />;
+      return <StyledGroup key={info.key} info={info} sendMessage={this.props.sendMessage} color={nextColor(this.props.color)} />;
       case 'label':
       return <Label key={info.key} info={info} />;
       case 'slider':
@@ -47,11 +58,12 @@ class Group extends React.Component<Props, {}> {
 }
 
 const StyledGroup = styled(Group)`
-  background: #222;
+  background: ${p => p.color === 'dark' ? '#222' : p.color === 'lighter' ? '#292929' : '#333'};
   border: 1px solid #444;
   padding: ${p => p.theme.spacingPx / 2}px;
   display: flex;
   flex-direction: ${p => p.info.style.direction === 'vertical' ? 'column' : 'row'};
+  flex-wrap: ${p => p.info.style.wrap ? 'wrap' : 'nowrap'};
 
   > * {
     margin: ${p => p.theme.spacingPx / 2}px;

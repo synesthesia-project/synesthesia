@@ -115,7 +115,7 @@ export class Behaviour {
 
     this.desk = {
       externalLightsState: new lightDesk.Label('External Lights:'),
-      lightGroupsArea: new lightDesk.Group({direction: 'vertical'}),
+      lightGroupsArea: new lightDesk.Group({direction: 'horizontal', wrap: true}),
       lightGroupToComponents: new Map()
     };
 

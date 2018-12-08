@@ -47,7 +47,7 @@ class Stage extends React.Component<Props, State> {
     return (
       <div className={this.props.className}>
         {this.state.root ?
-          <Group info={this.state.root} sendMessage={this.state.sendMessage} /> :
+          <Group info={this.state.root} sendMessage={this.state.sendMessage} color="dark" /> :
           <div className="no-root">No root has been added to the light desk</div>}
       </div>
     );
