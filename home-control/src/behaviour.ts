@@ -157,6 +157,10 @@ export class Behaviour {
             this.display.setBlackout(true);
           }
         }
+        if (this.state.externalLignts.brightness !== brightness) {
+          this.state.externalLignts.brightness = brightness;
+          this.display.setMasterBrightness(brightness);
+        }
       }
     }
     for (const group of this.state.groups) {
