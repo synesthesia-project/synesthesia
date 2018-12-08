@@ -596,19 +596,28 @@ export class Display {
     const dimmersGroup = new lightDesk.Group();
     deskGroup.addChild(dimmersGroup);
 
-    dimmersGroup.addChild(new lightDesk.Label('Master Dimmer:'));
-
     const masterBrightness = new lightDesk.Slider(this.layout.masterBrightness, 0, 1, 0.05);
     this.addListener({
       masterBrightnessChanges: value => masterBrightness.setValue(value)
     });
     masterBrightness.addListener(value => this.setMasterBrightness(value));
+    dimmersGroup.addChild(new lightDesk.Label('Master Dimmer:'));
     dimmersGroup.addChild(masterBrightness);
 
     const blackout = new lightDesk.Switch('off');
     blackout.addListener(blackout => this.setBlackout(blackout === 'on'));
     dimmersGroup.addChild(new lightDesk.Label('Blackout:'));
     dimmersGroup.addChild(blackout);
+
+    const waitTime = new lightDesk.Slider(this.layout.timing.waitTime, 0, 600, 5);
+    waitTime.addListener(value => this.layout.timing.waitTime = value);
+    dimmersGroup.addChild(new lightDesk.Label('Delay Time:'));
+    dimmersGroup.addChild(waitTime);
+
+    const transitionTime = new lightDesk.Slider(this.layout.timing.transitionTime, 0, 600, 5);
+    transitionTime.addListener(value => this.layout.timing.transitionTime = value);
+    dimmersGroup.addChild(new lightDesk.Label('Transition Time:'));
+    dimmersGroup.addChild(transitionTime);
 
     this.desk = {
       desk: deskGroup,
