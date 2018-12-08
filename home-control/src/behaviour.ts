@@ -1,3 +1,4 @@
+import {throttle} from 'lodash';
 import * as lightDesk from '@samlanning/synesthesia-light-desk';
 import * as ola from '@samlanning/synesthesia-ola-dmx';
 import {HueApi, lightState} from 'node-hue-api';
@@ -91,9 +92,12 @@ export class Behaviour {
       group.addChild(toggle);
 
       const brightness = new lightDesk.Slider(0, 0, 1, 0.05);
-      brightness.addListener(value => {
+      const updateBrightness = (value: number) => {
+        console.log('update brightness:', value);
         this.hue.setGroupLightState(lightGroup.id, lightState.create().bri(Math.round(value * 255)));
-      });
+      };
+      // Only update brightness at most once every 500 ms
+      brightness.addListener(throttle(updateBrightness, 500));
       group.addChild(brightness);
 
       desk.lightGroupToComponents.set(lightGroup.id, {toggle, brightness});
