@@ -59,3 +59,93 @@ body {
 `;
 
 export { styled, css, injectGlobal, keyframes, ThemeProvider };
+
+
+const buttonStateNormal = css`
+  color: ${p => p.theme.textNormal};
+  background: linear-gradient(to bottom, #4f5053, #343436);
+  text-shadow: 0 -1px rgba(0, 0, 0, 0.7);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 1px 0 0 rgba(0,0,0,0.25);
+`;
+
+const buttonStateNormalHover = css`
+  color: ${p => p.theme.textNormal};
+  outline-color: rgba(243, 243, 245, 0.3);
+  background: linear-gradient(to bottom, #5e6064, #393A3B);
+  text-shadow: 0 -1px rgba(0, 0, 0, 0.7);
+`;
+
+const buttonStateNormalActive = css`
+  color: #ffffff;
+  outline-color: rgba(255, 255, 255, 0.3);
+  background: linear-gradient(to bottom, #242525, #37383A);
+  text-shadow: 0 -1px rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), 0 1px 0 0 rgba(255,255,255,0.15);
+  transition-duration: 50ms;
+`;
+
+const buttonStatePressed = css`
+  ${buttonStateNormalActive}
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1), 0 1px 0 0 rgba(255,255,255,0.15);
+`;
+
+const buttonStatePressedHover = css`
+  ${buttonStateNormalActive}
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1), 0 1px 0 0 rgba(255,255,255,0.15);
+  background: linear-gradient(to bottom, #282929, #414243);
+`;
+
+const buttonStatePressedActive = buttonStateNormalActive;
+
+const buttonStateDisabled = css`
+  ${buttonStateNormal}
+
+  cursor: default;
+  background: ${p => p.theme.bg} !important;
+  color: rgba(${p => p.theme.textNormal}, 0.4);
+`;
+
+const button = css`
+  position: relative;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: all 200ms;
+  padding: 6px 8px;
+  border-radius: 3px;
+  border: 1px solid ${p => p.theme.borderDark};
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  ${buttonStateNormal}
+
+  &:hover {
+    ${buttonStateNormalHover}
+  }
+
+  &:active {
+    ${buttonStateNormalActive}
+  }
+`;
+
+export const buttonPressed = css`
+  ${buttonStatePressed}
+
+  &:hover {
+    ${buttonStatePressedHover}
+  }
+
+  &:active {
+    ${buttonStatePressedActive}
+  }
+`;
+
+export const buttonDisabled = css`
+  ${buttonStateDisabled}
+
+  &:hover, &:active {
+    ${buttonStateDisabled}
+  }
+`;
+
+export const rectButton = button;

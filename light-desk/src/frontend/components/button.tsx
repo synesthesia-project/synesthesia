@@ -4,7 +4,7 @@ import * as proto from '../../shared/proto';
 
 import {KEYS} from '../util/keys';
 
-import {styled} from './styling';
+import {styled, rectButton} from './styling';
 
 interface Props {
   className?: string;
@@ -22,9 +22,7 @@ class Button extends React.Component<Props, {}> {
 
   public render() {
     return (
-      <div className={this.props.className}>
-        <button onClick={this.onClick}>{this.props.info.text}</button>
-      </div>
+      <button className={this.props.className} onClick={this.onClick}>{this.props.info.text}</button>
     );
   }
 
@@ -40,7 +38,9 @@ class Button extends React.Component<Props, {}> {
 }
 
 const StyledButton = styled(Button)`
-
+  ${rectButton}
+  outline: none;
+  height: 30px;
 `;
 
 export {StyledButton as Button};

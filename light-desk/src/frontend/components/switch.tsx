@@ -51,6 +51,7 @@ const StyledSwitch = styled(Switch)`
   position: relative;
   overflow: hidden;
   width: ${BUTTON_WIDTH + TEXT_WIDTH}px;
+  min-width: ${BUTTON_WIDTH + TEXT_WIDTH}px;
   height: ${SWITCH_HEIGHT}px;
   border-radius: 3px;
   border: 1px solid ${p => p.theme.borderDark};
