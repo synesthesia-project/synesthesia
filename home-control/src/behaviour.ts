@@ -92,7 +92,7 @@ export class Behaviour {
 
       const brightness = new lightDesk.Slider(0, 0, 1, 0.05);
       brightness.addListener(value => {
-        this.hue.setGroupLightState(lightGroup.id, lightState.create().brightness(value * 255));
+        this.hue.setGroupLightState(lightGroup.id, lightState.create().bri(Math.round(value * 255)));
       });
       group.addChild(brightness);
 
