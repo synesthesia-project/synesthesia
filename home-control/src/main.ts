@@ -1,20 +1,37 @@
-
 import * as lightDesk from '@samlanning/synesthesia-light-desk';
 import * as ola from '@samlanning/synesthesia-ola-dmx';
 
-// import {Display} from './behaviour/display';
-// import {DmxProxy} from './dmx/proxy';
-// import {SynesthesiaListener} from './listener/listener';
-// import {getConfig} from './config/home';
+import {getHue, discoverBridges} from './hue/hue';
+import {getConfig} from './config';
 
-console.log('heeelooo');
+console.log('Hello!');
 
-const display = new ola.Display(ola.getConfig(), ola.getProxy());
+async function run() {
 
-const consumer = new ola.SynesthesiaListener(display.newSynesthesiaPlayState);
+  const config = await getConfig();
 
-display.run();
+  if (!config) {
+    console.log('No configuration, time to make one!');
+    discoverBridges();
+    return;
+  }
 
-const desk = new lightDesk.LightDesk();
-// desk.setRoot(new lightDesk.Group({direction: 'vertical'}));
-desk.setRoot(display.getLightDesk());
+  const h = getHue(config.hueHost, config.hueToken);
+
+  const hueConfig = await h.config();
+
+  console.log('hueConfig', hueConfig);
+
+  const display = new ola.Display(ola.getConfig(), ola.getProxy());
+
+  const consumer = new ola.SynesthesiaListener(display.newSynesthesiaPlayState);
+
+  display.run();
+
+  const desk = new lightDesk.LightDesk();
+  // desk.setRoot(new lightDesk.Group({direction: 'vertical'}));
+  desk.setRoot(display.getLightDesk());
+
+}
+
+run();
