@@ -78,6 +78,7 @@ const StyledGroup = styled(Group)`
     flex-direction: ${p => p.info.style.direction === 'vertical' ? 'column' : 'row'};
     flex-wrap: ${p => p.info.style.wrap ? 'wrap' : 'nowrap'};
     box-shadow: inset 0px 0px 8px 0px rgba(0,0,0,0.3);
+    ${p => p.info.style.direction === 'vertical' ? '' : 'align-items: center;'}
 
     > * {
       margin: ${p => p.theme.spacingPx / 2}px;

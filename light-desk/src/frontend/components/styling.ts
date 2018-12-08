@@ -21,6 +21,7 @@ export interface ThemeVariables {
   borderLighter: string;
   borderLighterer: string;
   hint: string;
+  hintDark1: string;
   textNormal: string;
   // Sizing
   spacingPx: number;
@@ -38,6 +39,7 @@ export const defaultTheme: ThemeVariables = {
   borderLighter: '#252524',
   borderLighterer: '#6b6b67',
   hint: '#4286f4',
+  hintDark1: '#2a77f3',
   textNormal: '#F3F3F5',
   spacingPx: 15
 };
