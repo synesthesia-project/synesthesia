@@ -38,4 +38,10 @@ export class Switch extends Component {
     this.listeners.add(listener);
     return this;
   }
+
+  public setValue(state: 'on' | 'off') {
+    if (state === this.state) return;
+    this.state = state;
+    this.updateTree();
+  }
 }

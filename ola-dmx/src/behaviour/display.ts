@@ -191,6 +191,11 @@ export interface DisplayListener {
   masterBrightnessChanges?: (brightness: number) => void;
 }
 
+interface Desk {
+  desk: lightDesk.Group;
+  blackout: lightDesk.Switch;
+}
+
 export class Display {
 
   private readonly config: config.Config;
@@ -204,6 +209,8 @@ export class Display {
   private readonly colorInterval: Interval;
 
   private readonly listeners = new Set<DisplayListener>();
+
+  private desk: Desk | null = null;
 
   public constructor(config: config.Config, dmx: DmxProxy) {
     this.config = config;
@@ -549,6 +556,8 @@ export class Display {
   }
 
   public getLightDesk(): lightDesk.Group {
+    if (this.desk) return this.desk.desk;
+
     const deskGroup = new lightDesk.Group({direction: 'vertical'});
 
     deskGroup.addChild(this.transitionInterval.lightDeskGroup('Transition'));
@@ -557,7 +566,7 @@ export class Display {
     const dimmersGroup = new lightDesk.Group();
     deskGroup.addChild(dimmersGroup);
 
-    dimmersGroup.addChild(new lightDesk.Label('Master Dimmer'));
+    dimmersGroup.addChild(new lightDesk.Label('Master Dimmer:'));
 
     const masterBrightness = new lightDesk.Slider(this.layout.masterBrightness, 0, 1, 0.05);
     this.addListener({
@@ -565,6 +574,16 @@ export class Display {
     });
     masterBrightness.addListener(value => this.setMasterBrightness(value));
     dimmersGroup.addChild(masterBrightness);
+
+    const blackout = new lightDesk.Switch('off');
+    blackout.addListener(blackout => this.setBlackout(blackout === 'on'));
+    dimmersGroup.addChild(new lightDesk.Label('Blackout:'));
+    dimmersGroup.addChild(blackout);
+
+    this.desk = {
+      desk: deskGroup,
+      blackout
+    };
 
     return deskGroup;
   }
@@ -590,6 +609,8 @@ export class Display {
   public setBlackout(value: boolean) {
     console.log('Set Blackout:', value);
     this.layout.blackout = value;
+    if (this.desk)
+      this.desk.blackout.setValue(value ? 'on' : 'off');
   }
 
 
