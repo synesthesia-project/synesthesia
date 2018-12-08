@@ -23,7 +23,7 @@ interface State {
 interface Desk {
   externalLightsState: lightDesk.Label;
   lightGroupsArea: lightDesk.Group;
-  lightGroupToLabel: Map<string, lightDesk.Label>;
+  lightGroupToComponents: Map<string, {toggle: lightDesk.Switch}>;
 }
 
 export class Behaviour {
@@ -78,15 +78,17 @@ export class Behaviour {
   private addGroupDeskStuff(desk: Desk, lightGroups: StateGroup[]) {
     for (const lightGroup of lightGroups) {
       const group = new lightDesk.Group({direction: 'horizontal'});
+
       const label = new lightDesk.Label(lightGroup.name);
-      desk.lightGroupToLabel.set(lightGroup.id, label);
       group.addChild(label);
 
-      const button = new lightDesk.Button('Toggle');
-      button.addListener(() => {
-        this.hue.setGroupLightState(lightGroup.id, lightState.create().on(lightGroup.state !== 'on'));
+      const toggle = new lightDesk.Switch('on');
+      toggle.addListener(value => {
+        this.hue.setGroupLightState(lightGroup.id, lightState.create().on(value === 'on'));
       });
-      group.addChild(button);
+      group.addChild(toggle);
+
+      desk.lightGroupToComponents.set(lightGroup.id, {toggle});
       desk.lightGroupsArea.addChild(group);
     }
   }
@@ -102,7 +104,7 @@ export class Behaviour {
     this.desk = {
       externalLightsState: new lightDesk.Label('External Lights:'),
       lightGroupsArea: new lightDesk.Group({direction: 'vertical'}),
-      lightGroupToLabel: new Map()
+      lightGroupToComponents: new Map()
     };
 
     const settings = new lightDesk.Group({direction: 'horizontal'});
@@ -151,8 +153,8 @@ export class Behaviour {
       if (group.state !== newState) {
         group.state = newState;
         if (this.desk) {
-          const label = this.desk.lightGroupToLabel.get(group.id);
-          if (label) label.setText(`${group.name}: ${newState}`);
+          const components = this.desk.lightGroupToComponents.get(group.id);
+          if (components) components.toggle.setValue(newState);
         }
       }
     }
