@@ -2,7 +2,7 @@ import * as WebSocket from 'ws';
 import * as shared from '../shared';
 import {ConsumerEndpoint} from '../shared/protocol';
 
-type StateListener = (state: shared.protocol.messages.PlayStateData | null) => void;
+export type StateListener = (state: shared.protocol.messages.PlayStateData | null) => void;
 
 class SynesthesiaConsumerProtocol {
 

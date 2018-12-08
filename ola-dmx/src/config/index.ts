@@ -1,29 +1,29 @@
-interface StaticChannel {
+export interface StaticChannel {
   kind: 'static';
   value: number;
 }
 
-interface ColourChannel {
+export interface ColourChannel {
   kind: 'color';
   color: 'r' | 'g' | 'b' | 'w';
 }
 
-interface MovementChannel {
+export interface MovementChannel {
   kind: 'movement';
   dimension: 'level' | 'vertical';
 }
 
-interface SpeedChannel {
+export interface SpeedChannel {
   kind: 'speed';
 }
 
-interface StrobeChannel {
+export interface StrobeChannel {
   kind: 'strobe';
 }
 
 export type Channel = StaticChannel | ColourChannel | MovementChannel | SpeedChannel | StrobeChannel;
 
-interface FixtureMovement {
+export interface FixtureMovement {
   /** Number of frames to be in each stage */
   stageInterval: number;
   stages: {
