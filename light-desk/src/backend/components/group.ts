@@ -13,6 +13,7 @@ export class Group extends Component implements Parent {
 
   private readonly children: Component[] = [];
   private readonly style: proto.GroupComponentStyle;
+  private title: string | undefined = undefined;
 
   public constructor(style: Partial<proto.GroupComponentStyle> = {}) {
     super();
@@ -26,10 +27,16 @@ export class Group extends Component implements Parent {
     // TODO: prevent loops
   }
 
+  public setTitle(title: string) {
+    this.title = title;
+    this.updateTree();
+  }
+
   public getProtoInfo(idMap: IDMap): proto.GroupComponent {
     return {
       component: 'group',
       key: idMap.getId(this),
+      title: this.title,
       style: this.style,
       children: this.children.map(c => c.getProtoInfo(idMap))
     };

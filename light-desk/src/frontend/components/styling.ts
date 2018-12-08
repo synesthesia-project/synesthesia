@@ -9,11 +9,37 @@ const {
 } = styledComponents as styledComponents.ThemedStyledComponentsModule<ThemeVariables>;
 
 export interface ThemeVariables {
+  // Colors
+  colorGreen: string;
+  colorRed: string;
+  colorAmber: string;
+  bgDark1: string;
+  bg: string;
+  bgLight1: string;
+  borderDark: string;
+  borderLight: string;
+  borderLighter: string;
+  borderLighterer: string;
+  hint: string;
+  textNormal: string;
+  // Sizing
   spacingPx: number;
 }
 
 export const defaultTheme: ThemeVariables = {
-  spacingPx: 20
+  colorGreen: '#98c379',
+  colorRed: '#e06c75',
+  colorAmber: '#d19a66',
+  bgDark1: '#252524',
+  bg: '#2a2a2b',
+  bgLight1: '#353638',
+  borderDark: '#151516',
+  borderLight: '#1c1d1d',
+  borderLighter: '#252524',
+  borderLighterer: '#6b6b67',
+  hint: '#4286f4',
+  textNormal: '#F3F3F5',
+  spacingPx: 15
 };
 
 // tslint:disable-next-line: no-unused-expression
@@ -26,6 +52,7 @@ body {
   background: #111;
   margin: 0;
   padding: 0;
+  font-size: 14px;
 }
 `;
 

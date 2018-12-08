@@ -21,7 +21,7 @@ interface Props {
 function nextColor(color: GroupColor): GroupColor {
   switch (color) {
     case 'dark': return 'lighter';
-    case 'lighter': return 'lighterer';
+    case 'lighter': return 'dark';
     case 'lighterer': return 'dark';
   }
 }
@@ -36,7 +36,12 @@ class Group extends React.Component<Props, {}> {
   public render() {
     return (
       <div className={this.props.className}>
-        {this.props.info.children.map(this.childComponent)}
+        {this.props.info.title ? (
+          <div className="title">{this.props.info.title}</div>
+        ) : null}
+        <div className="children">
+          {this.props.info.children.map(this.childComponent)}
+        </div>
       </div>
     );
   }
@@ -58,15 +63,25 @@ class Group extends React.Component<Props, {}> {
 }
 
 const StyledGroup = styled(Group)`
-  background: ${p => p.color === 'dark' ? '#222' : p.color === 'lighter' ? '#292929' : '#333'};
-  border: 1px solid #444;
-  padding: ${p => p.theme.spacingPx / 2}px;
-  display: flex;
-  flex-direction: ${p => p.info.style.direction === 'vertical' ? 'column' : 'row'};
-  flex-wrap: ${p => p.info.style.wrap ? 'wrap' : 'nowrap'};
+  background: ${p => p.color === 'dark' ? p.theme.bgDark1 : p.color === 'lighter' ?  p.theme.bg :  p.theme.bgLight1};
+  border: 1px solid ${p => p.theme.borderDark};
 
-  > * {
-    margin: ${p => p.theme.spacingPx / 2}px;
+  > .title {
+    padding: 5px;
+    background: ${p => p.theme.borderDark};
+    border-bottom: 1px solid ${p => p.theme.borderDark};
+  }
+
+  > .children {
+    padding: ${p => p.theme.spacingPx / 2}px;
+    display: flex;
+    flex-direction: ${p => p.info.style.direction === 'vertical' ? 'column' : 'row'};
+    flex-wrap: ${p => p.info.style.wrap ? 'wrap' : 'nowrap'};
+    box-shadow: inset 0px 0px 8px 0px rgba(0,0,0,0.3);
+
+    > * {
+      margin: ${p => p.theme.spacingPx / 2}px;
+    }
   }
 `;
 

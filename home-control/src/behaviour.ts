@@ -82,8 +82,7 @@ export class Behaviour {
     for (const lightGroup of lightGroups) {
       const group = new lightDesk.Group({direction: 'horizontal'});
 
-      const label = new lightDesk.Label(lightGroup.name);
-      group.addChild(label);
+      group.setTitle(lightGroup.name);
 
       const toggle = new lightDesk.Switch('on');
       toggle.addListener(value => {

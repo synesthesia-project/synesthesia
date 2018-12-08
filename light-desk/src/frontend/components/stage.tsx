@@ -58,7 +58,7 @@ const StyledStage = styled(Stage)`
   width: 100%;
   height: 100%;
   background-color: #333;
-  color: #fff;
+  color: ${p => p.theme.textNormal};
   padding: ${p => p.theme.spacingPx}px;
 `;
 

@@ -10,6 +10,7 @@ export interface GroupComponentStyle {
 
 export interface GroupComponent extends BaseComponent {
   component: 'group';
+  title?: string;
   style: GroupComponentStyle;
   children: Component[];
 }
