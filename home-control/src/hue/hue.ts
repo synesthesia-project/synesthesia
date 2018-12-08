@@ -1,5 +1,4 @@
 import * as hue from 'node-hue-api';
-console.log(hue);
 
 const LOCAL_LOOKUP_TIMEOUT = 5000;
 

@@ -4,6 +4,8 @@ import * as ola from '@samlanning/synesthesia-ola-dmx';
 import {getHue, discoverBridges} from './hue/hue';
 import {getConfig} from './config';
 
+import {Behaviour} from './behaviour';
+
 console.log('Hello!');
 
 async function run() {
@@ -18,19 +20,16 @@ async function run() {
 
   const h = getHue(config.hueHost, config.hueToken);
 
-  const hueConfig = await h.config();
-
-  console.log('hueConfig', hueConfig);
-
   const display = new ola.Display(ola.getConfig(), ola.getProxy());
 
   const consumer = new ola.SynesthesiaListener(display.newSynesthesiaPlayState);
 
-  display.run();
+  const behaviour = new Behaviour(h, display);
 
   const desk = new lightDesk.LightDesk();
-  // desk.setRoot(new lightDesk.Group({direction: 'vertical'}));
-  desk.setRoot(display.getLightDesk());
+  desk.setRoot(behaviour.getLightDesk());
+
+  behaviour.run();
 
 }
 

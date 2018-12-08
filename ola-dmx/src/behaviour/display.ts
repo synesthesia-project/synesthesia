@@ -178,6 +178,10 @@ function calculateProximity(sprite: Sprite, position: number): number {
   return Math.max(0, sprite.size - Math.abs(sprite.position - position));
 }
 
+export interface DisplayListener {
+  masterBrightnessChanges?: (brightness: number) => void;
+}
+
 export class Display {
 
   private readonly config: config.Config;
@@ -189,6 +193,8 @@ export class Display {
 
   private readonly transitionInterval: Interval;
   private readonly colorInterval: Interval;
+
+  private readonly listeners = new Set<DisplayListener>();
 
   public constructor(config: config.Config, dmx: DmxProxy) {
     this.config = config;
@@ -524,9 +530,32 @@ export class Display {
     dimmersGroup.addChild(new lightDesk.Label('Master Dimmer'));
 
     const masterBrightness = new lightDesk.Slider(this.layout.masterBrightness, 0, 1, 0.05);
-    masterBrightness.addListener(value => this.layout.masterBrightness = value);
+    this.addListener({
+      masterBrightnessChanges: value => masterBrightness.setValue(value)
+    });
+    masterBrightness.addListener(value => this.setMasterBrightness(value));
     dimmersGroup.addChild(masterBrightness);
 
     return deskGroup;
   }
+
+  public addListener(listener: DisplayListener) {
+    this.listeners.add(listener);
+  }
+
+  public removeListener(listener: DisplayListener) {
+    this.listeners.delete(listener);
+  }
+
+  public setMasterBrightness(value: number) {
+    value = Math.max(0, Math.min(1, value));
+    this.layout.masterBrightness = value;
+    for (const listener of this.listeners) {
+      if (listener.masterBrightnessChanges) {
+        listener.masterBrightnessChanges(value);
+      }
+    }
+  }
+
+
 }
