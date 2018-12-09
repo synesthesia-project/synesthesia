@@ -2,9 +2,9 @@ import * as React from 'react';
 
 import * as proto from '../../shared/proto';
 
-import {KEYS} from '../util/keys';
+import {styled, rectButton, buttonStateNormalActive, touchIndicatorNormal, touchIndicatorTouching} from './styling';
 
-import {styled, rectButton} from './styling';
+const TOUCH_INDICATOR_CLASS = 'touch-indicator';
 
 interface Props {
   className?: string;
@@ -12,21 +12,38 @@ interface Props {
   sendMessage: ((msg: proto.ClientMessage) => void) | null;
 }
 
-class Button extends React.Component<Props, {}> {
+interface State {
+  touching: boolean;
+}
+
+class Button extends React.Component<Props, State> {
 
   public constructor(props: Props) {
     super(props);
+    this.state = {
+      touching: false
+    };
 
     this.onClick = this.onClick.bind(this);
+    this.onTouchStart = this.onTouchStart.bind(this);
+    this.onTouchEnd = this.onTouchEnd.bind(this);
   }
 
   public render() {
+    let className = this.props.className ? this.props.className : '';
     return (
-      <button className={this.props.className} onClick={this.onClick}>{this.props.info.text}</button>
+      <div
+        className={className + (this.state.touching ? ' touching' : '')}
+        onClick={this.onClick}
+        onTouchStart={this.onTouchStart}
+        onTouchEnd={this.onTouchEnd}>
+        <div className={TOUCH_INDICATOR_CLASS} />
+        {this.props.info.text}
+      </div>
     );
   }
 
-  private onClick(event: React.MouseEvent<HTMLButtonElement>) {
+  private click() {
     if (!this.props.sendMessage) return;
     console.log('sending message');
     this.props.sendMessage({
@@ -35,12 +52,41 @@ class Button extends React.Component<Props, {}> {
       component: 'button'
     });
   }
+
+  private onClick(event: React.MouseEvent<HTMLDivElement>) {
+    this.click();
+  }
+
+  private onTouchStart(event: React.TouchEvent<HTMLDivElement>) {
+    event.preventDefault();
+    this.setState({touching: true});
+  }
+
+  private onTouchEnd(event: React.TouchEvent<HTMLDivElement>) {
+    event.preventDefault();
+    this.setState({touching: false});
+    this.click();
+  }
 }
 
 const StyledButton = styled(Button)`
   ${rectButton}
   outline: none;
   height: 30px;
+  position: relative;
+  overflow: visible;
+
+  .${TOUCH_INDICATOR_CLASS} {
+    ${touchIndicatorNormal}
+  }
+
+  &.touching {
+    ${buttonStateNormalActive}
+
+    .${TOUCH_INDICATOR_CLASS} {
+      ${touchIndicatorTouching}
+    }
+  }
 `;
 
 export {StyledButton as Button};

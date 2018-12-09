@@ -2,8 +2,6 @@ import * as React from 'react';
 
 import * as proto from '../../shared/proto';
 
-import {KEYS} from '../util/keys';
-
 import {styled} from './styling';
 
 interface Props {

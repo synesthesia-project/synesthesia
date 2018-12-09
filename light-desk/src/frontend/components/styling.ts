@@ -21,6 +21,7 @@ export interface ThemeVariables {
   borderLighter: string;
   borderLighterer: string;
   hint: string;
+  hintRGB: string;
   hintDark1: string;
   textNormal: string;
   // Sizing
@@ -39,6 +40,7 @@ export const defaultTheme: ThemeVariables = {
   borderLighter: '#252524',
   borderLighterer: '#6b6b67',
   hint: '#4286f4',
+  hintRGB: '66, 134, 244',
   hintDark1: '#2a77f3',
   textNormal: '#F3F3F5',
   spacingPx: 15
@@ -55,13 +57,17 @@ body {
   margin: 0;
   padding: 0;
   font-size: 14px;
+
+  &.touch-mode * {
+    cursor: none !important;
+  }
 }
 `;
 
 export { styled, css, injectGlobal, keyframes, ThemeProvider };
 
 
-const buttonStateNormal = css`
+export const buttonStateNormal = css`
   color: ${p => p.theme.textNormal};
   background: linear-gradient(to bottom, #4f5053, #343436);
   text-shadow: 0 -1px rgba(0, 0, 0, 0.7);
@@ -75,7 +81,7 @@ const buttonStateNormalHover = css`
   text-shadow: 0 -1px rgba(0, 0, 0, 0.7);
 `;
 
-const buttonStateNormalActive = css`
+export const buttonStateNormalActive = css`
   color: #ffffff;
   outline-color: rgba(255, 255, 255, 0.3);
   background: linear-gradient(to bottom, #242525, #37383A);
@@ -149,3 +155,21 @@ export const buttonDisabled = css`
 `;
 
 export const rectButton = button;
+
+export const touchIndicatorNormal = css`
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  left: -6px;
+  bottom: -6px;
+  border-radius: 6px;
+  border: 2px solid rgba(0, 0, 0, 0);
+  background-color: none;
+  transition: border-color 300ms;
+`;
+
+export const touchIndicatorTouching = css`
+  border-color: ${p => p.theme.hint};
+  background-color: rgba(${p => p.theme.hintRGB}, 0.2);
+  transition: border-color 0s;
+`;
