@@ -12,7 +12,7 @@ export function switchToTouchMode(ev: TouchEvent) {
 export function initialiseListeners() {
   window.addEventListener('mousemove', switchToMouseMode);
   window.addEventListener('touchstart', switchToTouchMode, {passive: false});
-  window.addEventListener('contextmenu', (ev) => {
-    ev.preventDefault();
-  });
+  // window.addEventListener('contextmenu', (ev) => {
+  //   ev.preventDefault();
+  // });
 }
