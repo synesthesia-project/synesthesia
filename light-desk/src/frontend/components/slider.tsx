@@ -8,11 +8,12 @@ import {styled, buttonStateNormal, buttonStateNormalHover} from './styling';
 
 const CLASS_STATE_OPEN = 'open';
 const CLASS_SLIDER_DISPLAY = 'slider-display';
-const CLASS_SLIDER_BUTTON = 'slider-button';
+const CLASS_SLIDER_VALUE = 'slider-value';
 
-const OPEN_SLIDER_WIDTH = 300;
+const OPEN_SLIDER_WIDTH = 400;
 const SLIDER_PADDING = 15;
-const OPEN_SLIDER_INNER_WIDTH = OPEN_SLIDER_WIDTH - (SLIDER_PADDING * 2);
+const SLIDER_VALUE_WIDTH = 60;
+const OPEN_SLIDER_INNER_WIDTH = OPEN_SLIDER_WIDTH - (SLIDER_PADDING * 3) - SLIDER_VALUE_WIDTH;
 
 interface Props {
   className?: string;
@@ -66,8 +67,8 @@ class Slider extends React.Component<Props, State> {
             >
           <div className={CLASS_SLIDER_DISPLAY}>
             <div className="inner" style={{width: valueCSSPercent}}/>
-            <div className={CLASS_SLIDER_BUTTON} style={{left: valueCSSPercent}} />
           </div>
+          <div className={CLASS_SLIDER_VALUE}>{valueDisplay}</div>
         </div>
       </div>
     );
@@ -105,7 +106,7 @@ class Slider extends React.Component<Props, State> {
     const value = this.props.info.value === null ? 0 : this.props.info.value;
     /** Value between 0 - 1 representing where between min - max the value is */
     const amnt = (value - this.props.info.min) / (this.props.info.max - this.props.info.min);
-    const innerLeft = (cursorStartPosition - amnt * OPEN_SLIDER_INNER_WIDTH - SLIDER_PADDING) + 'px';
+    const innerLeft = (cursorStartPosition - amnt * OPEN_SLIDER_INNER_WIDTH - SLIDER_PADDING * 2 - SLIDER_VALUE_WIDTH) + 'px';
     this.setState((_, props) => ({
       openState: {startValue: props.info.value, startX: cursorStartPosition, innerLeft},
       newValueDiff: 0
@@ -170,15 +171,22 @@ const StyledSlider = styled(Slider)`
       top: ${(30 - 4 - 1) / 2}px;
       background: ${p => p.theme.bgDark1};
       border: 1px solid ${p => p.theme.borderDark};
+      transition: left 200ms;
 
       > .inner {
         height: 100%;
         background: ${p => p.theme.hint};
       }
+    }
 
-      > .${CLASS_SLIDER_BUTTON} {
-        position: absolute;
-      }
+    > .${CLASS_SLIDER_VALUE} {
+      position: absolute;
+      left: right: ${SLIDER_PADDING}px;
+      width: ${SLIDER_VALUE_WIDTH}px;
+      line-height: 30px;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 200ms;
     }
 
     &:hover {
@@ -192,6 +200,14 @@ const StyledSlider = styled(Slider)`
     .inner {
       background: ${p => p.theme.bgDark1};
       width: ${OPEN_SLIDER_WIDTH}px;
+
+      > .${CLASS_SLIDER_DISPLAY} {
+        left: ${SLIDER_PADDING * 2 + SLIDER_VALUE_WIDTH}px;
+      }
+
+      > .${CLASS_SLIDER_VALUE} {
+        opacity: 1;
+      }
     }
   }
 `;
