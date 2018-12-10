@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import * as proto from '../../shared/proto';
+import {play} from '../audio';
 
 import {styled, touchIndicatorNormal, touchIndicatorTouching} from './styling';
 
@@ -66,6 +67,7 @@ class Switch extends React.Component<Props, State> {
   }
 
   private onTouchStart(event: React.TouchEvent<HTMLDivElement>) {
+    play('touch');
     event.preventDefault();
     this.setState({touching: true});
   }
@@ -74,6 +76,7 @@ class Switch extends React.Component<Props, State> {
     event.preventDefault();
     this.setState({touching: false});
     this.click();
+    play(this.props.info.state === 'on' ? 'powerDown' : 'powerUp');
   }
 }
 

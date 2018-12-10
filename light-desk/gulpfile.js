@@ -83,10 +83,14 @@ gulp.task('shared-copy', ['shared-ts'], function () {
     return gulp.src(['.tmp/shared/**/*']).pipe(gulp.dest('build/shared'));
 });
 
+gulp.task('frontend-audio-copy', ['shared-ts'], function () {
+    return gulp.src(['src/frontend/audio/**/*']).pipe(gulp.dest('build/frontend/audio'));
+});
+
 gulp.task('default', function(callback) {
   runSequence(
     'clean',
-    ['frontend-webpack', 'backend-copy', 'shared-copy'],
+    ['frontend-webpack', 'frontend-audio-copy', 'backend-copy', 'shared-copy'],
     'tslint',
     callback);
 });

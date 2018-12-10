@@ -6,6 +6,7 @@ import * as WebSocket from 'ws';
 import * as proto from '../shared/proto';
 
 const STATIC_DIR = path.resolve(__dirname, '../frontend');
+const AUDIO_DIR = path.resolve(STATIC_DIR, 'audio/freesound');
 
 const STATIC_FILES: {[id: string]: [string, string]} = {
   '/bundle.js': ['bundle.js', 'text/javascript'],
@@ -52,10 +53,19 @@ export class Server {
         response.end(content, 'utf-8');
         return;
       }
-      if (request.url) {
+      if (request.url && request.url.startsWith('/')) {
         const f = STATIC_FILES[request.url];
         if (f) {
-          this.sendStaticFile(f[0], response, f[1]);
+          this.sendStaticFile(path.join(STATIC_DIR, f[0]), response, f[1]);
+          return;
+        }
+        const staticPath = path.normalize(path.join(STATIC_DIR, request.url.substr(1)));
+        if (staticPath.startsWith(AUDIO_DIR)) {
+          const contentType =
+            staticPath.endsWith('.wav') ? 'audio/wav' :
+            staticPath.endsWith('.ogg') ? 'audio/ogg' :
+            'application/octet-stream';
+          this.sendStaticFile(staticPath, response, contentType);
           return;
         }
       }
@@ -78,7 +88,7 @@ export class Server {
   }
 
   private sendStaticFile(file: string, response: http.ServerResponse, contentType: string) {
-    fs.readFile(path.join(STATIC_DIR, file), function(error, content) {
+    fs.readFile(file, function(error, content) {
       if (error) {
         if (error.code === 'ENOENT') {
           response.writeHead(404, { 'Content-Type': 'text/plain' });

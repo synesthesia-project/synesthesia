@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import * as proto from '../../shared/proto';
 import * as util from '../util/util';
+import {play} from '../audio';
 
 import {KEYS} from '../util/keys';
 import {styled, buttonStateNormal, buttonStateNormalHover} from './styling';
@@ -90,6 +91,7 @@ class Slider extends React.Component<Props, State> {
   }
 
   private onTouchStart(e: React.TouchEvent<HTMLDivElement>) {
+    play('touch');
     for (const touch of Array.from(e.changedTouches)) {
       const originalPageX = touch.pageX;
       const cursorPosition = this.getRelativeCursorPosition(e.currentTarget, touch.pageX);
@@ -97,7 +99,10 @@ class Slider extends React.Component<Props, State> {
       util.trackTouch(
         touch,
         p => this.onMove(p.pageX - originalPageX),
-        p => this.onUp(p.pageX - originalPageX));
+        p => {
+          play('beep2');
+          this.onUp(p.pageX - originalPageX);
+        });
       return;
     }
   }

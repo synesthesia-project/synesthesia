@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import * as proto from '../../shared/proto';
+import {play} from '../audio';
 
 import {styled, rectButton, buttonStateNormalActive, touchIndicatorNormal, touchIndicatorTouching} from './styling';
 
@@ -58,6 +59,7 @@ class Button extends React.Component<Props, State> {
   }
 
   private onTouchStart(event: React.TouchEvent<HTMLDivElement>) {
+    play('touch');
     event.preventDefault();
     this.setState({touching: true});
   }
@@ -66,6 +68,7 @@ class Button extends React.Component<Props, State> {
     event.preventDefault();
     this.setState({touching: false});
     this.click();
+    play('beep2');
   }
 }
 
