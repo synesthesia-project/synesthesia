@@ -35,6 +35,7 @@ class Slider extends React.Component<Props, State> {
     };
 
     this.onMouseDown = this.onMouseDown.bind(this);
+    this.onTouchStart = this.onTouchStart.bind(this);
   }
 
   private displayValue(value: number) {
@@ -60,7 +61,7 @@ class Slider extends React.Component<Props, State> {
     return (
       <div className={classes.join(' ')}>
         <div className="inner"
-            onMouseDown={this.onMouseDown}
+            onMouseDown={this.onMouseDown} onTouchStart={this.onTouchStart}
             style={this.state.openState ? {left: this.state.openState.innerLeft} : {}}
             >
           <div className={CLASS_SLIDER_DISPLAY}>
@@ -85,6 +86,19 @@ class Slider extends React.Component<Props, State> {
     util.trackMouseDown(
       p => this.onMove(p.pageX - originalPageX),
       p => this.onUp(p.pageX - originalPageX));
+  }
+
+  private onTouchStart(e: React.TouchEvent<HTMLDivElement>) {
+    for (const touch of Array.from(e.changedTouches)) {
+      const originalPageX = touch.pageX;
+      const cursorPosition = this.getRelativeCursorPosition(e.currentTarget, touch.pageX);
+      this.onDown(cursorPosition);
+      util.trackTouch(
+        touch,
+        p => this.onMove(p.pageX - originalPageX),
+        p => this.onUp(p.pageX - originalPageX));
+      return;
+    }
   }
 
   private onDown(cursorStartPosition: number) {
