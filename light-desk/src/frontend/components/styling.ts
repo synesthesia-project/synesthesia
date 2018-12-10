@@ -74,7 +74,7 @@ export const buttonStateNormal = css`
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 1px 0 0 rgba(0,0,0,0.25);
 `;
 
-const buttonStateNormalHover = css`
+export const buttonStateNormalHover = css`
   color: ${p => p.theme.textNormal};
   outline-color: rgba(243, 243, 245, 0.3);
   background: linear-gradient(to bottom, #5e6064, #393A3B);
