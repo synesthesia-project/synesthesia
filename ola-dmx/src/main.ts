@@ -1,5 +1,5 @@
 import {join} from 'path';
-import * as lightDesk from '@samlanning/synesthesia-light-desk';
+import * as lightDesk from '@synesthesia-project/light-desk';
 
 import {Display} from './behaviour/display';
 import {DmxProxy} from './dmx/proxy';

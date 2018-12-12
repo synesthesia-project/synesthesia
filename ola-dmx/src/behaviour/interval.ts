@@ -1,4 +1,4 @@
-import * as lightDesk from '@samlanning/synesthesia-light-desk';
+import * as lightDesk from '@synesthesia-project/light-desk';
 
 export class Interval {
 

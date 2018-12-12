@@ -1,5 +1,5 @@
 import {throttle} from 'lodash';
-import * as lightDesk from '@samlanning/synesthesia-light-desk';
+import * as lightDesk from '@synesthesia-project/light-desk';
 import * as ola from '@samlanning/synesthesia-ola-dmx';
 import {HueApi, lightState} from 'node-hue-api';
 

@@ -1,4 +1,4 @@
-import * as lightDesk from '@samlanning/synesthesia-light-desk';
+import * as lightDesk from '@synesthesia-project/light-desk';
 
 import {PlayStateData} from '../shared/protocol/messages';
 import {CueFile} from '../shared/file/file';

@@ -29,10 +29,6 @@ Core synesthesia libraries and type definitions
 
 Timeline composition GUI app to manually create synesthesia "cue" files for your own songs.
 
-## [light-desk](light-desk)
-
-GUI app to control a lights etc...
-
 ## [ola-dmx](ola-dmx)
 
 Synesthesia client that controls DMX fixtures using [Open Lighting Architecture](https://www.openlighting.org/ola/)
