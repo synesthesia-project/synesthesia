@@ -3,8 +3,8 @@ import {styled, buttonDisabled, rectButton, buttonPressed} from './styling';
 
 import * as spotifyAuth from '../auth/spotify';
 import {SpotifySdk, spotifyWebPlaybackSDKReady} from '../external/spotify-sdk';
-import * as file from '../shared/file/file';
-import {validateFile} from '../shared/file/file-validation';
+import * as file from '@synesthesia-project/core/file';
+import {validateFile} from '@synesthesia-project/core/file/file-validation';
 import * as func from '../data/functional';
 import * as storage from '../util/storage';
 import {PlayState} from '../data/play-state';

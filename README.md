@@ -16,13 +16,12 @@ of the project can be found here: <https://www.youtube.com/watch?v=egsswPi8yio>
 
 # Components
 
-## [shared](shared)
+## [core](core)
 
 Core synesthesia libraries and type definitions
 
 **TODO:**
 
-* Move to `synesthesia` and setup as proper node / npm module
 * Make usable by other projects, publish to npm etc...
 
 ## [composer](composer)

@@ -3,9 +3,9 @@ import {LayerItems} from './layer-items';
 import {LayerVisualization} from './layer-visualization';
 import * as func from '../data/functional';
 import * as React from 'react';
-import * as file from '../shared/file/file';
+import * as file from '@synesthesia-project/core/file';
 import * as selection from '../data/selection';
-import * as types from '../shared/util/types';
+import * as util from '@synesthesia-project/core/util';
 import * as stageState from '../data/stage-state';
 
 import Keyboard = require('react-icons/lib/md/keyboard');
@@ -27,8 +27,8 @@ export interface LayerProps {
   midiLayerBindings: {input: string, note: number, layer: number}[];
   selectionDraggingDiff: number | null;
   // Callbacks
-  updateSelection: types.Mutator<selection.Selection>;
-  updateCueFile: types.Mutator<file.CueFile>;
+  updateSelection: util.Mutator<selection.Selection>;
+  updateCueFile: util.Mutator<file.CueFile>;
   requestBindingForLayer: (layerKey: number | null) => void;
   updateSelectionDraggingDiff: (diffMillis: number | null) => void;
   openLayerOptions: (layerKey: number) => void;

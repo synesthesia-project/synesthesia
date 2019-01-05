@@ -1,6 +1,7 @@
-import {CueFile, CueFileLayer, CueFileEvent, CueFileEventState, AnyLayer} from '../shared/file/file';
+import {CueFile, CueFileLayer, CueFileEvent, CueFileEventState, AnyLayer} from '@synesthesia-project/core/file';
 import * as selection from './selection';
-import * as util from '../shared/util/util';
+import * as util from '@synesthesia-project/core/util';
+
 
 function convertLayer<L, K, V>(l: CueFileLayer<L, K, V>, f: (l: CueFileLayer<L, K, V>) => CueFileLayer<L, K, V>): AnyLayer {
   return f(l as any as CueFileLayer<L, K, V>) as any as AnyLayer;

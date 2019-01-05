@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {styled} from './styling';
 
-import * as util from '../shared/util/util';
+import * as util from '@synesthesia-project/core/util';
 
 import * as func from '../data/functional';
 import * as stageState from '../data/stage-state';

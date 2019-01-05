@@ -1,9 +1,9 @@
 import {styled} from './styling';
 import * as React from 'react';
-import * as file from '../shared/file/file';
+import * as file from '@synesthesia-project/core/file';
 import {getEventDuration, shiftSelectedEvents} from '../data/file-manipulation';
 import * as selection from '../data/selection';
-import * as types from '../shared/util/types';
+import * as util from '@synesthesia-project/core/util';
 import * as dragging from './util/dragging';
 import {ActiveModifierKeys} from '../util/input';
 
@@ -16,8 +16,8 @@ export interface LayerItemsProps {
   layerKey: number;
   selectionDraggingDiff: number | null;
   // Callbacks
-  updateSelection: types.Mutator<selection.Selection>;
-  updateCueFile: types.Mutator<file.CueFile>;
+  updateSelection: util.Mutator<selection.Selection>;
+  updateCueFile: util.Mutator<file.CueFile>;
   updateSelectionDraggingDiff: (diffMillis: number | null) => void;
 }
 

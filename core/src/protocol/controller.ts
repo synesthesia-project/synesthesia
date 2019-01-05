@@ -16,8 +16,8 @@ export class ControllerEndpoint extends Endpoint {
     this.recvPingData = recvPingData;
   }
 
-  protected handleRequest(request: Request) {
-    return new Promise<Response>((resolve, reject) => {
+  protected handleRequest(request: Request): Promise<Response> {
+    return new Promise((resolve, reject) => {
       switch (request.type) {
         case 'ping': {
           const response: Response = {

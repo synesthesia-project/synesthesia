@@ -37,6 +37,7 @@ gulp.task('ts', function () {
     return tsProject.src()
       .pipe(sourcemaps.init())
       .pipe(tsProject())
+      .on('error', handleError)
       .pipe(sourcemaps.write({
         sourceRoot: '/src/scripts/ts'
       }))

@@ -25,7 +25,13 @@ steps:
   displayName: 'build dependency: light-desk'
 
 - script: |
+    yarn --cwd core install
+    gulp default --gulpfile core/gulpfile.js
+  displayName: 'build core'
+
+- script: |
     yarn --cwd composer install
+    git checkout composer/node_modules
     gulp default --gulpfile composer/gulpfile.js
   displayName: 'build composer'
 

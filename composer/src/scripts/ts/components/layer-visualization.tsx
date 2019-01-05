@@ -1,8 +1,8 @@
 import {styled} from './styling';
 import * as React from 'react';
-import * as file from '../shared/file/file';
-import {getActiveEvents, getCurrentEventStateValue} from '../shared/file/file-usage';
-import * as util from '../shared/util/util';
+import * as file from '@synesthesia-project/core/file';
+import {getActiveEvents, getCurrentEventStateValue} from '@synesthesia-project/core/file/file-usage';
+import * as util from '@synesthesia-project/core/util';
 
 export interface LayerVisualizationProps {
   className?: string;
