@@ -21,6 +21,7 @@ gulp.task('clean', function() {
 gulp.task('ts', function () {
     return tsProject.src()
       .pipe(tsProject())
+      .on('error', handleError)
       .pipe(gulp.dest('build/'));
 });
 
