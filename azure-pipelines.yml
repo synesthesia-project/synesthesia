@@ -1,0 +1,40 @@
+# Node.js with gulp
+# Build a Node.js project using the gulp task runner.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+- master
+
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '8.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    git submodule update --init
+  displayName: 'setup git submodules'
+
+- script: |
+    yarn --cwd external/light-desk install
+    gulp default --gulpfile external/light-desk/gulpfile.js
+  displayName: 'build dependency: light-desk'
+
+- script: |
+    yarn --cwd composer install
+    gulp default --gulpfile composer/gulpfile.js
+  displayName: 'build composer'
+
+- script: |
+    yarn --cwd ola-dmx install
+    gulp default --gulpfile ola-dmx/gulpfile.js
+  displayName: 'build ola-dmx'
+
+- script: |
+    yarn --cwd home-control install
+    gulp default --gulpfile home-control/gulpfile.js
+  displayName: 'build home-control'
