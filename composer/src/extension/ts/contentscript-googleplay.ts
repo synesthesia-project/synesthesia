@@ -28,20 +28,23 @@
   // Listen to mutations of paper-slider for accurate timing
   const paperSliderObserver = new MutationObserver((mutations) => {
     const now = new Date().getTime(); // get current timestamp ASAP
-    let slider: Node | null = null;
+    let slider: Element | null = null;
     for (const m of mutations) {
-      if (m.attributeName === 'value') {
+      if (m.attributeName === 'value' && m.target instanceof Element) {
         slider = m.target;
         break;
       }
     }
     if (slider) {
       // Record timestamps
-      const value = Number(slider.attributes.getNamedItem('value').value);
+      const attrValue = slider.attributes.getNamedItem('value');
+      const attrValueMax = slider.attributes.getNamedItem('aria-valuemax');
+      if (!attrValue || !attrValueMax) return;
+      const value = Number(attrValue.value);
       paperSliderValues = {
         value,
         effectiveStartTime: now - value,
-        max: Number(slider.attributes.getNamedItem('aria-valuemax').value)
+        max: Number(attrValueMax.value)
       };
     }
     console.log('values:', paperSliderValues);
