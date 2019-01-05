@@ -20,3 +20,5 @@ export function deepFreeze<T>(o: T): T {
 
   return o;
 }
+
+export type Mutator<T> = (mutator: (orig: T) => T) => void;

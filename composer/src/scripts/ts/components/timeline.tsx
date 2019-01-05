@@ -4,10 +4,9 @@ import * as React from 'react';
 import * as func from '../data/functional';
 import * as playState from '../data/play-state';
 import * as stageState from '../data/stage-state';
-import * as file from '../shared/file/file';
+import * as file from '@synesthesia-project/core/file';
 import * as fileManipulation from '../data/file-manipulation';
-import * as types from '../shared/util/types';
-import * as util from '../shared/util/util';
+import * as util from '@synesthesia-project/core/util';
 
 import Add = require('react-icons/lib/md/add');
 
@@ -23,7 +22,7 @@ export interface TimelineProps {
   positionMillis: number;
   // Callbacks
   timelineRef: (ref: HTMLDivElement | null) => void;
-  updateCueFile: types.Mutator<file.CueFile>;
+  updateCueFile: util.Mutator<file.CueFile>;
   updateMouseHover: (pos: func.Maybe<number>) => void;
   mousePosition: func.Maybe<number>;
 }

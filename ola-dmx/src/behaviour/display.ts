@@ -1,12 +1,12 @@
 import * as lightDesk from '@synesthesia-project/light-desk';
 
-import {PlayStateData} from '../shared/protocol/messages';
-import {CueFile} from '../shared/file/file';
+import {PlayStateData} from '@synesthesia-project/core/protocol/messages';
+import {CueFile} from '@synesthesia-project/core/file';
 import {
     prepareFile,
     getActiveEvents,
     getCurrentEventStateValue
-  } from '../shared/file/file-usage';
+  } from '@synesthesia-project/core/file/file-usage';
 
 import {DmxProxy} from '../dmx/proxy';
 import * as config from '../config';

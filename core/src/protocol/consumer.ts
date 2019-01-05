@@ -24,8 +24,8 @@ export class ConsumerEndpoint extends Endpoint {
     this.updateTimeDifference();
   }
 
-  protected handleRequest(request: Request) {
-    return new Promise<Response>((resolve, reject) => {
+  protected handleRequest(request: Request): Promise<Response> {
+    return new Promise((resolve, reject) => {
       reject(new Error('unknown request type'));
     });
   }

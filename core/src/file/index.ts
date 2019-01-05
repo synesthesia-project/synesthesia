@@ -1,11 +1,11 @@
-import * as util from '../util/util';
+import * as util from '../util';
 
 export interface CueFile {
   lengthMillis: number;
   layers: AnyLayer[];
 }
 
-export interface CueFileLayer<LayerKind, LayerSettings, EventStateValues>{
+export interface CueFileLayer<LayerKind, LayerSettings, EventStateValues> {
   kind: LayerKind;
   settings: LayerSettings;
   events: CueFileEvent<EventStateValues>[];

@@ -1,8 +1,8 @@
 import * as WebSocket from 'ws';
-import * as shared from '../shared';
-import {ConsumerEndpoint} from '../shared/protocol';
+import * as constants from '@synesthesia-project/core/constants';
+import {ConsumerEndpoint, messages} from '@synesthesia-project/core/protocol';
 
-export type StateListener = (state: shared.protocol.messages.PlayStateData | null) => void;
+export type StateListener = (state: messages.PlayStateData | null) => void;
 
 class SynesthesiaConsumerProtocol {
 
@@ -29,12 +29,12 @@ export class SynesthesiaConsumerServer {
   public constructor(stateUpdated: StateListener) {
     const wss = new WebSocket.Server({
       perMessageDeflate: false,
-      port: shared.constants.DEFAULT_SYNESTHESIA_PORT
+      port: constants.DEFAULT_SYNESTHESIA_PORT
     });
 
     wss.on('connection', connection => {
       const url = connection.upgradeReq.url;
-      if (url === shared.constants.SYNESTHESIA_WEBSOCKET_PATH) {
+      if (url === constants.SYNESTHESIA_WEBSOCKET_PATH) {
         const proto = new SynesthesiaConsumerProtocol(connection, stateUpdated);
         return;
       }

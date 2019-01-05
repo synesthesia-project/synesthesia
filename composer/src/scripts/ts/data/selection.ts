@@ -1,5 +1,4 @@
-import * as React from 'react';
-import * as util from '../shared/util/util';
+import * as util from '@synesthesia-project/core/util';
 import {ActiveModifierKeys} from '../util/input';
 
 type ItemsSelection = {layer: number, index: number}[];

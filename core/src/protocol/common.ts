@@ -57,8 +57,8 @@ export abstract class Endpoint {
 
   protected abstract handleClosed(): void;
 
-  protected sendRequest(request: Request) {
-    return new Promise<Response>(resolve => {
+  protected sendRequest(request: Request): Promise<Response> {
+    return new Promise(resolve => {
       const requestId = this.nextRequestId++;
       this.pendingRequests.set(requestId, {resolve});
       this.sendMessage({

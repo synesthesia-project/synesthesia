@@ -1,10 +1,10 @@
 import {styled, rectButtonSmall, buttonDisabled} from './styling';
 import * as React from 'react';
-import * as file from '../shared/file/file';
+import * as file from '@synesthesia-project/core/file';
 import * as selection from '../data/selection';
 import * as text from '../display/text';
 import * as fileManipulation from '../data/file-manipulation';
-import * as types from '../shared/util/types';
+import * as util from '@synesthesia-project/core/util';
 import {DelayedPropigationInput} from './util/input';
 
 import Delete = require('react-icons/lib/md/delete');
@@ -15,7 +15,7 @@ interface EventPropertiesProps {
   selection: selection.Selection;
   file: file.CueFile;
   // Callbacks
-  updateCueFileAndSelection: types.Mutator<[file.CueFile, selection.Selection]>;
+  updateCueFileAndSelection: util.Mutator<[file.CueFile, selection.Selection]>;
 }
 
 class EventProperties extends React.Component<EventPropertiesProps, {}> {

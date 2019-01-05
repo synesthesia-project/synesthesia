@@ -1,8 +1,8 @@
 import * as React from 'react';
-import * as shared from '../shared';
-import {ControllerEndpoint} from '../shared/protocol';
+import * as constants from '@synesthesia-project/core/constants';
+import {ControllerEndpoint} from '@synesthesia-project/core/protocol';
 
-import * as file from '../shared/file/file';
+import * as file from '@synesthesia-project/core/file';
 import * as func from '../data/functional';
 import {styled} from './styling';
 
@@ -28,7 +28,7 @@ interface ConnectionButtonState {
   };
 }
 
-const DEFAULT_HOST = 'localhost:' + shared.constants.DEFAULT_SYNESTHESIA_PORT;
+const DEFAULT_HOST = 'localhost:' + constants.DEFAULT_SYNESTHESIA_PORT;
 
 class ConnectionButton extends React.Component<ConnectionButtonProps, ConnectionButtonState> {
 
@@ -69,7 +69,7 @@ class ConnectionButton extends React.Component<ConnectionButtonProps, Connection
           host,
           state: 'connecting'
         });
-        const path = shared.constants.SYNESTHESIA_WEBSOCKET_PATH;
+        const path = constants.SYNESTHESIA_WEBSOCKET_PATH;
         console.log('got string: ', host);
         const socket = this.socket = new WebSocket(`ws://${host}${path}`);
         this.socket.onerror = (err) => {

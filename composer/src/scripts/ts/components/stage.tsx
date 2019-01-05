@@ -2,8 +2,6 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import {styled, ThemeProvider, defaultTheme} from './styling';
 
-import * as shared from '../shared';
-
 import * as func from '../data/functional';
 import {PlayState, PlayStateData} from '../data/play-state';
 
@@ -11,11 +9,11 @@ import {Overlays} from './overlays';
 import {Toolbar} from './toolbar';
 import {Player} from './player';
 import {LayersAndTimeline} from './layers-and-timeline';
-import {Timeline} from './timeline';
 import {EventProperties} from './item-properties';
 import {LayerOptionsPopup} from './popups/layer-options-popup';
 
-import * as file from '../shared/file/file';
+import * as file from '@synesthesia-project/core/file';
+import * as protocol from '@synesthesia-project/core/protocol';
 import * as selection from '../data/selection';
 import * as stageState from '../data/stage-state';
 import * as fileManipulation from '../data/file-manipulation';
@@ -70,7 +68,7 @@ export class Stage extends React.Component<StageProps, StageState> {
     this.openLayerOptions = this.openLayerOptions.bind(this);
     this.closeLayerOptions = this.closeLayerOptions.bind(this);
 
-    shared.protocol.messages.test();
+    protocol.messages.test();
   }
 
   public componentDidMount() {

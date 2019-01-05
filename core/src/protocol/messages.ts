@@ -1,4 +1,4 @@
-import {CueFile} from '../file/file';
+import {CueFile} from '../file';
 
 export function test() {
   console.log('hello world');

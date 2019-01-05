@@ -3,9 +3,9 @@ import {Layer} from './layer';
 import {Timeline} from './timeline';
 import * as React from 'react';
 import * as func from '../data/functional';
-import * as file from '../shared/file/file';
+import * as file from '@synesthesia-project/core/file';
 import * as selection from '../data/selection';
-import * as types from '../shared/util/types';
+import * as util from '@synesthesia-project/core/util';
 import * as stageState from '../data/stage-state';
 import * as playState from '../data/play-state';
 
@@ -21,8 +21,8 @@ export interface LayersAndTimelineProps {
   // Callbacks
   timelineRef: (ref: HTMLDivElement | null) => void;
   layersRef: (ref: HTMLDivElement | null) => void;
-  updateCueFile: types.Mutator<file.CueFile>;
-  updateSelection: types.Mutator<selection.Selection>;
+  updateCueFile: util.Mutator<file.CueFile>;
+  updateSelection: util.Mutator<selection.Selection>;
   requestBindingForLayer: (layerKey: number | null) => void;
   openLayerOptions: (layerKey: number) => void;
 }
