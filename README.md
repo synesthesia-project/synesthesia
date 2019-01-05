@@ -2,7 +2,7 @@
 
 
 [![Total Alerts](https://img.shields.io/lgtm/alerts/g/samlanning/synesthesia.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/samlanning/synesthesia/alerts/)
-[![Language Grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/samlanning/synesthesia.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/samlanning/synesthesia/context:javascript)
+[![Language Grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/samlanning/synesthesia.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/samlanning/synesthesia/context:javascript) [![Build Status](https://dev.azure.com/synesthesia--project/synesthesia/_apis/build/status/synesthesia%20builds?branchName=master)](https://dev.azure.com/synesthesia--project/synesthesia/_build/latest?definitionId=2?branchName=master)
 
 Synesthesia is a lighting & Sound project. A 5 minute lightning talk
 of the project can be found here: <https://www.youtube.com/watch?v=egsswPi8yio>
