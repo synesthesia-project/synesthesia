@@ -57,6 +57,14 @@ A Node.js library for creating control panels for controlling lighting and other
 
 A chrome extension controller for synesthesia
 
+### [ola-dmx]()
+
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/synesthesia-project/ola-dmx.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/synesthesia-project/ola-dmx/alerts/)
+[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/synesthesia-project/ola-dmx.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/synesthesia-project/ola-dmx/context:javascript)
+[![Build Status](https://dev.azure.com/synesthesia--project/synesthesia/_apis/build/status/ola-dmx?branchName=master)](https://dev.azure.com/synesthesia--project/synesthesia/_build/latest?definitionId=y?branchName=master)
+
+Synesthesia consumer that controls dmx lighting using Open Lighting Architecture
+
 # Old Code
 
 This repo still contains some code that eventually needs to be moved out:
@@ -64,10 +72,6 @@ This repo still contains some code that eventually needs to be moved out:
 ## [home-control](home-control)
 
 A personal lighting project for controlling lights at home that I (Sam) still haven't moved out.
-
-## [ola-dmx](ola-dmx)
-
-Synesthesia client that controls DMX fixtures using [Open Lighting Architecture](https://www.openlighting.org/ola/)
 
 ## [strip](strip)
 
