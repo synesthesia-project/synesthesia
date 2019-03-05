@@ -1,5 +1,6 @@
 import {PlayStateData} from '../shared/protocol/messages';
 import {CueFile} from '../shared/file/file';
+import {CueFile as CueFile2} from '../shared/file/file';
 import {
     PreparedFile,
     prepareFile,
