@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "yarn --cwd core run build"
+  },
+  "workspaces": [
+    "core"
+  ]
+}
