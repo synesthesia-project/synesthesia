@@ -9,6 +9,7 @@
     "url": "https://github.com/samlanning/core.git"
   },
   "scripts": {
+    "clean": "gulp clean",
     "build": "gulp"
   },
   "devDependencies": {
