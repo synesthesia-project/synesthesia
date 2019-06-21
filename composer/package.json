@@ -37,6 +37,7 @@
     "webpack": "1.14.0"
   },
   "dependencies": {
+    "@synesthesia-project/core": "^0.0.2",
     "@types/lodash": "^4.14.120",
     "@types/spotify-web-playback-sdk": "^0.1.1",
     "id3-parser": "^2.0.0",
