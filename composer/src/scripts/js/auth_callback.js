@@ -1,0 +1,1 @@
+require('./auth/callback').start();

@@ -1,0 +1,13 @@
+{
+  "name": "synesthesia-composer",
+  "description": "composition tool for synesthesia",
+  "authors": [
+    "Sam Lanning <sam@samlanning.com>"
+  ],
+  "private": true,
+  "devDependencies": {
+    "requirejs": "^2.2.0",
+    "jquery": "^3.1.0",
+    "react": "^15.3.2"
+  }
+}
