@@ -11,6 +11,7 @@ steps:
   displayName: 'Install Node.js'
 
 - script: |
+    yarn -v
     yarn
     yarn run build
   displayName: 'install packages and build all workspaces'
