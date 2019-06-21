@@ -21,9 +21,11 @@ Is is also used for higher-level project discussions and to keep track of the wo
 
 [![Total Alerts](https://img.shields.io/lgtm/alerts/g/synesthesia-project/core.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/synesthesia-project/core/alerts/)
 [![Language Grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/synesthesia-project/core.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/synesthesia-project/core/context:javascript)
-[![Build Status](https://dev.azure.com/synesthesia--project/synesthesia/_apis/build/status/core?branchName=master)](https://dev.azure.com/synesthesia--project/synesthesia/_build/latest?definitionId=3?branchName=master)
+[![Build Status](https://dev.azure.com/synesthesia--project/synesthesia/_apis/build/status/core?branchName=master)](https://dev.azure.com/synesthesia--project/synesthesia/_build/latest?definitionId=3?branchName=master) [![](https://img.shields.io/npm/v/@synesthesia-project/core.svg)](https://www.npmjs.com/package/@synesthesia-project/core)
 
 ### [composer](composer)
+
+[![](https://img.shields.io/npm/v/@synesthesia-project/composer.svg)](https://www.npmjs.com/package/@synesthesia-project/composer)
 
 Create and edit synesthesia cue files
 

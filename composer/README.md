@@ -1,5 +1,7 @@
 # Synesthesia Composer
 
+[![](https://img.shields.io/npm/v/@synesthesia-project/composer.svg)](https://www.npmjs.com/package/@synesthesia-project/composer)
+
 This is the composer part of the synesthesia project.
 
 ## Building / Usage
