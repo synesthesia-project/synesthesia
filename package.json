@@ -8,6 +8,7 @@
     "core",
     "core/examples/consumer",
     "core/examples/controller",
-    "composer"
+    "composer",
+    "server"
   ]
 }
