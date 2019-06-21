@@ -3,7 +3,8 @@
   "scripts": {
     "clean": "yarn workspaces run clean",
     "build": "yarn workspaces run build",
-    "test": "yarn --cwd server run test"
+    "test": "yarn --cwd server run test",
+    "server": "node server/build/main"
   },
   "workspaces": [
     "core",
