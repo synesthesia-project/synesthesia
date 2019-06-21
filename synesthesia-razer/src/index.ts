@@ -3,6 +3,9 @@ import { PlayStateData } from '@synesthesia-project/core/lib/protocols/broadcast
 import { CueFile } from '@synesthesia-project/core/lib/file';
 import * as usage from '@synesthesia-project/core/lib/file/file-usage';
 import { DEFAULT_SYNESTHESIA_PORT } from '@synesthesia-project/core/lib/constants';
+
+import { LocalCommunicationsConsumer } from '@synesthesia-project/core/lib/local';
+
 import * as WebSocket from 'ws';
 import * as openrazer from 'openrazer';
 
@@ -21,15 +24,23 @@ export class Display {
   public constructor() {
     this.frame = this.frame.bind(this);
 
-    const endpoint = this.connect();
-    endpoint.then(endpoint => {
-      console.log('endpoint ready', endpoint);
+    const local = new LocalCommunicationsConsumer();
+
+    local.on('new-server', port => {
+      console.log(`New server started on port ${port}`);
+      const endpoint = this.connectToServer(port);
+      endpoint
+        .catch(err => console.error(`Could not connect to server on port: ${port}`))
+        .then(() => console.log(`Connected to server on port: ${port}`));
     });
+
+    const endpoint = this.connectToServer(DEFAULT_SYNESTHESIA_PORT);
+    endpoint.catch(err => console.error(`Could not connect to server on port: ${DEFAULT_SYNESTHESIA_PORT}`));
   }
 
-  private connect(): Promise<DownstreamEndpoint> {
+  private connectToServer(port: number): Promise<DownstreamEndpoint> {
     return new Promise((resolve, reject) => {
-      const ws = new WebSocket(`ws://localhost:${DEFAULT_SYNESTHESIA_PORT}/listen`);
+      const ws = new WebSocket(`ws://localhost:${port}/listen`);
       ws.addEventListener('open', () => {
         const endpoint = new DownstreamEndpoint(
           msg => ws.send(JSON.stringify(msg)),
@@ -54,7 +65,6 @@ export class Display {
         resolve(endpoint);
       });
       ws.addEventListener('error', err => {
-        console.error(err);
         reject(err);
       });
       ws.addEventListener('close', err => {

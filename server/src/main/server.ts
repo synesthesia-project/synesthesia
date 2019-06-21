@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as http from 'http';
 import * as WebSocket from 'ws';
 import { BROADCAST_UPSTREAM_WEBSOCKET_PATH, CONTROLLER_WEBSOCKET_PATH, COMPOSER_PATH } from '@synesthesia-project/core/lib/constants';
+import { LocalCommunicationsServer } from '@synesthesia-project/core/lib/local';
 
 import * as composer from '@synesthesia-project/composer';
 
@@ -13,11 +14,13 @@ import {ServerState} from './state/state';
 
 export class Server {
 
-    private readonly state: ServerState;
+  private readonly state: ServerState;
 
-    private readonly port: number;
-    private readonly server: http.Server;
-    private readonly wss: WebSocket.Server;
+  private readonly port: number;
+  private readonly local: LocalCommunicationsServer;
+  private readonly server: http.Server;
+  private readonly wss: WebSocket.Server;
+
 
     public constructor(
         port: number,
@@ -25,6 +28,7 @@ export class Server {
     ) {
         this.port = port;
         this.state = new ServerState(dataDir);
+        this.local = new LocalCommunicationsServer();
 
         this.server = http.createServer((request, response) => {
 
@@ -68,9 +72,10 @@ export class Server {
     }
 
     public start() {
-        this.server.listen(this.port, () => {
-            console.log('Synesthesia Server Started on port: ' + this.port);
-        });
+      this.server.listen(this.port, () => {
+        console.log('Synesthesia Server Started on port: ' + this.port);
+        this.local.notifyConsumers(this.port);
+      });
     }
 
     private sendStaticFile(file: string, response: http.ServerResponse, contentType: string) {
