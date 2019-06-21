@@ -11,6 +11,10 @@ steps:
   displayName: 'Install Node.js'
 
 - script: |
+    git submodule update --init --recursive
+  displayName: 'setup git submodules'
+  
+- script: |
     yarn -v
     yarn
     yarn run build
