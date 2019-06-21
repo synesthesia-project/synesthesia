@@ -14,7 +14,8 @@
   },
   "scripts": {
     "clean": "gulp clean",
-    "build": "gulp"
+    "build": "gulp",
+    "test": "rm -rf build/data; mocha build/test/**/*.js"
   },
   "devDependencies": {
     "@types/ws": "0.0.39",

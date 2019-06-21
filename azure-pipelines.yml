@@ -21,5 +21,9 @@ steps:
   displayName: 'install packages and build all workspaces'
   
 - script: |
+    yarn run test
+  displayName: 'Run unit tests'
+  
+- script: |
     yarn run clean
   displayName: 'Check clean script'

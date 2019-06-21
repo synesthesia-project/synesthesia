@@ -2,7 +2,8 @@
   "private": true,
   "scripts": {
     "clean": "yarn workspaces run clean",
-    "build": "yarn workspaces run build"
+    "build": "yarn workspaces run build",
+    "test": "yarn --cwd server run test"
   },
   "workspaces": [
     "core",
