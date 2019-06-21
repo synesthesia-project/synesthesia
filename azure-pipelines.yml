@@ -19,3 +19,7 @@ steps:
     yarn
     yarn run build
   displayName: 'install packages and build all workspaces'
+  
+- script: |
+    yarn run clean
+  displayName: 'Check clean script'
