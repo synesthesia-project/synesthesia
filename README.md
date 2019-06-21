@@ -14,15 +14,18 @@ of the project can be found here: <https://www.youtube.com/watch?v=egsswPi8yio>
 
 ## This Repository
 
-This repository was the original repository that contained all syntesthesia-project related code. Now that most development happens in individual repositories, this one is used for higher-level project discussions and to keep track of the work that needs to be done using issues and [this kanban board](https://github.com/synesthesia-project/synesthesia/projects/2), as well as non-development related stuff (e.g. branding assets).
-
-## Other Repositories
+This repository contains most of the syntesthesia-project related code, either directly or as submodules.
+Is is also used for higher-level project discussions and to keep track of the work that needs to be done using issues and [this kanban board](https://github.com/synesthesia-project/synesthesia/projects/2), as well as non-development related stuff (e.g. branding assets).
 
 ### [core](https://github.com/synesthesia-project/core)
 
 [![Total Alerts](https://img.shields.io/lgtm/alerts/g/synesthesia-project/core.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/synesthesia-project/core/alerts/)
 [![Language Grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/synesthesia-project/core.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/synesthesia-project/core/context:javascript)
 [![Build Status](https://dev.azure.com/synesthesia--project/synesthesia/_apis/build/status/core?branchName=master)](https://dev.azure.com/synesthesia--project/synesthesia/_build/latest?definitionId=3?branchName=master)
+
+### [composer](composer)
+
+Create and edit synesthesia cue files
 
 Core synesthesia libraries and type definitions
 
@@ -33,14 +36,6 @@ Core synesthesia libraries and type definitions
 [![Build Status](https://dev.azure.com/synesthesia--project/synesthesia/_apis/build/status/server?branchName=master)](https://dev.azure.com/synesthesia--project/synesthesia/_build/latest?definitionId=5?branchName=master)
 
 Central component of the synesthesia project
-
-### [composer](https://github.com/synesthesia-project/composer)
-
-[![Total Alerts](https://img.shields.io/lgtm/alerts/g/synesthesia-project/composer.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/synesthesia-project/composer/alerts/)
-[![Language Grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/synesthesia-project/composer.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/synesthesia-project/composer/context:javascript)
-[![Build Status](https://dev.azure.com/synesthesia--project/synesthesia/_apis/build/status/composer?branchName=master)](https://dev.azure.com/synesthesia--project/synesthesia/_build/latest?definitionId=4?branchName=master)
-
-Create and edit synesthesia cue files
 
 ### [light-desk](https://github.com/synesthesia-project/light-desk)
 
