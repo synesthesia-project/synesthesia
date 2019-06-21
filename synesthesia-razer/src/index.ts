@@ -76,19 +76,23 @@ export class Display {
 
     if (this.keyboard) {
       let amplitude = 0;
-      for (const layer of this.state.playState.layers) {
-        const f = this.state.files.get(layer.fileHash);
-        if (!f) continue;
-        const t = (timestampMillis - layer.effectiveStartTimeMillis) * layer.playSpeed;
-        for (const fLayer of f.layers) {
-          const activeEvents = usage.getActiveEvents(fLayer.events, t);
-          for (const e of activeEvents) {
-            const a = usage.getCurrentEventStateValue(e, t, state => state.amplitude);
-            amplitude = Math.max(amplitude, a);
+      if (this.state.playState.layers.length === 0) {
+        this.keyboard.setMatrixBrightness(255);
+      } else {
+        for (const layer of this.state.playState.layers) {
+          const f = this.state.files.get(layer.fileHash);
+          if (!f) continue;
+          const t = (timestampMillis - layer.effectiveStartTimeMillis) * layer.playSpeed;
+          for (const fLayer of f.layers) {
+            const activeEvents = usage.getActiveEvents(fLayer.events, t);
+            for (const e of activeEvents) {
+              const a = usage.getCurrentEventStateValue(e, t, state => state.amplitude);
+              amplitude = Math.max(amplitude, a);
+            }
           }
         }
+        this.keyboard.setMatrixBrightness(10 + amplitude * 205);
       }
-      this.keyboard.setMatrixBrightness(10 + amplitude * 205);
     }
   }
 }
