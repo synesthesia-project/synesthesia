@@ -1,9 +1,12 @@
 {
   "private": true,
   "scripts": {
-    "build": "yarn --cwd core run build"
+    "clean": "yarn workspaces run clean",
+    "build": "yarn workspaces run build"
   },
   "workspaces": [
-    "core"
+    "core",
+    "core/examples/consumer",
+    "core/examples/controller"
   ]
 }
