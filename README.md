@@ -35,6 +35,10 @@ Create and edit synesthesia cue files
 
 Central component of the synesthesia project
 
+### [synesthesia-razer](synesthesia-razer)
+
+A synesthesia consumer for Razer Peripherals
+
 ### [light-desk](https://github.com/synesthesia-project/light-desk)
 
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/synesthesia-project/light-desk.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/synesthesia-project/light-desk/alerts/)
