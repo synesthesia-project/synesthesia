@@ -9,7 +9,7 @@
     "url": "https://samlanning.com/"
   },
   "scripts": {
-    "clean": "gulp",
+    "clean": "gulp clean",
     "build": "gulp",
     "run": "node build"
   },
