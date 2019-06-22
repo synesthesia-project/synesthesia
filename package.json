@@ -12,6 +12,7 @@
     "core/examples/controller",
     "composer",
     "server",
+    "openrazer",
     "synesthesia-razer"
   ]
 }

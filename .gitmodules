@@ -4,3 +4,6 @@
 [submodule "core"]
 	path = core
 	url = https://github.com/synesthesia-project/core
+[submodule "openrazer"]
+	path = openrazer
+	url = https://github.com/synesthesia-project/openrazer.git
