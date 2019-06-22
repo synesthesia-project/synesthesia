@@ -27,7 +27,7 @@
   "dependencies": {
     "@synesthesia-project/core": "^0.0.2",
     "@types/ws": "^6.0.1",
-    "openrazer": "^0.0.2",
+    "openrazer": "^0.0.5",
     "ws": "^7.0.1"
   }
 }
