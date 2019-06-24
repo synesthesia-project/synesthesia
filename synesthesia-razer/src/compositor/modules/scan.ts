@@ -8,15 +8,10 @@ export default class ScanModule<State> implements CompositorModule<State> {
 
   private readonly color: ((state: State) => RGBAColor) | RGBAColor;
 
-  private origin = {
-    time: new Date().getTime(),
-    xRatio: 0
-  };
-
   /**
    * map ratio per second
    */
-  private speed = 0.5;
+  private speed = -0.5;
   private beamFadeWidth = 0.1;
   /**
    * Number of seconds between each "scan"
@@ -34,6 +29,11 @@ export default class ScanModule<State> implements CompositorModule<State> {
    * When outside the bounds, how much should be shifted to "correct"
    */
   private xRatioShift = this.xRatioMax - this.xRatioMin;
+
+  private origin = {
+    time: new Date().getTime(),
+    xRatio: -this.beamFadeWidth
+  };
 
   public constructor(color: ((state: State) => RGBAColor) | RGBAColor) {
     this.color = color;
