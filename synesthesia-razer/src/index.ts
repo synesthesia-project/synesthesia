@@ -121,9 +121,12 @@ export class Display {
       const compositor = new Compositor<{ row: number, col: number }, {}>(
         {
           root: new AddModule([
-            new FillModule(new RGBAColor(255, 0, 0, 1)),
-            new ScanModule(new RGBAColor(255, 255, 0, 1), { speed: 0.5 }),
-            new ScanModule(new RGBAColor(255, 255, 0, 1), { speed: -0.5 })
+            new FillModule(new RGBAColor(96, 0, 160, 1)),
+            new ScanModule(new RGBAColor(160, 0, 104, 1), { delay: 0, speed: -0.1 }),
+            new ScanModule(new RGBAColor(160, 0, 104, 1), { speed: 0.5 }),
+            new ScanModule(new RGBAColor(160, 0, 104, 1), { delay: 0, speed: 0.2 }),
+            new ScanModule(new RGBAColor(247, 69, 185, 1), { delay: 0, speed: -0.3 }),
+            new ScanModule(new RGBAColor(247, 69, 185, 1), { delay: 1, speed: 0.3 })
           ]),
           pixels
         },
