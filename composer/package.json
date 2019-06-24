@@ -40,7 +40,7 @@
     "run-sequence": "1.2.2",
     "source-map-loader": "0.1.5",
     "tslint": "^5.9.1",
-    "typescript": "^2.7.2",
+    "typescript": "^3.5.2",
     "webpack": "1.14.0"
   },
   "files": [
