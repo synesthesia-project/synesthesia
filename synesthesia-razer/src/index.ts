@@ -10,16 +10,15 @@ import * as WebSocket from 'ws';
 import * as openrazer from 'openrazer';
 
 import { RGBAColor, Compositor, PixelInfo } from './compositor';
+import { SynesthesiaPlayState } from './compositor/modules';
 import FillModule from './compositor/modules/fill';
 import AddModule from './compositor/modules/add';
 import ScanModule from './compositor/modules/scan';
+import SynesthesiaModulateModule from './compositor/modules/modulate';
 
 export class Display {
 
-  private state: {
-    playState: PlayStateData;
-    files: Map<string, CueFile>;
-  } = {
+  private state: SynesthesiaPlayState = {
     playState: { layers: [] },
     files: new Map()
   };
@@ -27,7 +26,7 @@ export class Display {
   private keyboard: {
     keyboard: openrazer.Keyboard;
     map: openrazer.KeyboardPixelMap;
-    compositor: Compositor<{ row: number, col: number }, {}>;
+    compositor: Compositor<{ row: number, col: number }, { synesthesia: SynesthesiaPlayState }>;
     buffer: { index: number, start: number, colors: openrazer.RGB[] }[];
   } | null = null;
   private x = 0;
@@ -67,6 +66,8 @@ export class Display {
                 }
               }));
               this.state = {playState, files: nextFiles};
+              // Update the state of any compositors
+              if (this.keyboard) this.keyboard.compositor.updateState({ synesthesia: this.state });
             }
           }
         );
@@ -118,19 +119,21 @@ export class Display {
         }
         for (let k = 0; k <= maxKeyIndex; k++) buffer[r].colors[k] = [0, 0, 0];
       }
-      const compositor = new Compositor<{ row: number, col: number }, {}>(
+      const compositor = new Compositor<{ row: number, col: number }, { synesthesia: SynesthesiaPlayState }>(
         {
-          root: new AddModule([
-            new FillModule(new RGBAColor(96, 0, 160, 1)),
-            new ScanModule(new RGBAColor(160, 0, 104, 1), { delay: 0, speed: -0.1 }),
-            new ScanModule(new RGBAColor(160, 0, 104, 1), { speed: 0.5 }),
-            new ScanModule(new RGBAColor(160, 0, 104, 1), { delay: 0, speed: 0.2 }),
-            new ScanModule(new RGBAColor(247, 69, 185, 1), { delay: 0, speed: -0.3 }),
-            new ScanModule(new RGBAColor(247, 69, 185, 1), { delay: 1, speed: 0.3 })
-          ]),
+          root: new SynesthesiaModulateModule(
+            new AddModule([
+              new FillModule(new RGBAColor(96, 0, 160, 1)),
+              new ScanModule(new RGBAColor(160, 0, 104, 1), { delay: 0, speed: -0.1 }),
+              new ScanModule(new RGBAColor(160, 0, 104, 1), { speed: 0.5 }),
+              new ScanModule(new RGBAColor(160, 0, 104, 1), { delay: 0, speed: 0.2 }),
+              new ScanModule(new RGBAColor(247, 69, 185, 1), { delay: 0, speed: -0.3 }),
+              new ScanModule(new RGBAColor(247, 69, 185, 1), { delay: 1, speed: 0.3 })
+            ])
+          ),
           pixels
         },
-        {}
+        { synesthesia: this.state }
       );
       this.keyboard = { keyboard, map, compositor, buffer };
     }

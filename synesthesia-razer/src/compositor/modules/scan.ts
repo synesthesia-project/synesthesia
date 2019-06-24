@@ -1,5 +1,5 @@
 import { RGBAColor, TRANSPARENT } from '../color';
-import { Map, PixelInfo, CompositorModule } from './';
+import { PixelMap, PixelInfo, CompositorModule } from './';
 
 interface ScanOptions {
   /**
@@ -72,7 +72,7 @@ export default class ScanModule<State> implements CompositorModule<State> {
     };
   }
 
-  public render(map: Map, pixels: PixelInfo<unknown>[], state: State): RGBAColor[] {
+  public render(map: PixelMap, pixels: PixelInfo<unknown>[], state: State): RGBAColor[] {
 
     const now = new Date().getTime();
     const diff = now - this.origin.time;

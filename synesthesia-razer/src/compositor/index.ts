@@ -1,4 +1,4 @@
-import { Map, CompositorModule, PixelInfo } from './modules';
+import { PixelMap, CompositorModule, PixelInfo } from './modules';
 import { RGBAColor } from './color';
 
 // Export imports
@@ -14,7 +14,7 @@ type RenderResult<PixelData> = { pixel: PixelInfo<PixelData>, output: RGBAColor 
 export class Compositor<PixelData, State> {
 
   private readonly config: Config<PixelData, State>;
-  private readonly map: Map;
+  private readonly map: PixelMap;
 
   private state: State;
 
@@ -39,6 +39,11 @@ export class Compositor<PixelData, State> {
     return this.config.pixels.map((pixel, i) => ({
       pixel, output: result[i]
     }));
+  }
+
+  public updateState(state: State) {
+    // TODO: transition
+    this.state = state;
   }
 
 }

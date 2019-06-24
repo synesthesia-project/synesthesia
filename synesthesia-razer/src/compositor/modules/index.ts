@@ -1,9 +1,11 @@
+import { PlayStateData } from '@synesthesia-project/core/lib/protocols/broadcast/messages';
+import { CueFile } from '@synesthesia-project/core/lib/file';
 import { RGBAColor } from '../color';
 
 /**
  * Meta information about the pixel map
  */
-export interface Map {
+export interface PixelMap {
   xMin: number;
   xMax: number;
   yMin: number;
@@ -17,5 +19,10 @@ export interface PixelInfo<Data> {
 }
 
 export interface CompositorModule<State> {
-  render(map: Map, pixels: PixelInfo<unknown>[], state: State): RGBAColor[];
+  render(map: PixelMap, pixels: PixelInfo<unknown>[], state: State): RGBAColor[];
+}
+
+export interface SynesthesiaPlayState {
+  playState: PlayStateData;
+  files: Map<string, CueFile>;
 }

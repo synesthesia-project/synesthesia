@@ -1,5 +1,5 @@
 import { RGBAColor } from '../color';
-import { Map, PixelInfo, CompositorModule } from './';
+import { PixelMap, PixelInfo, CompositorModule } from './';
 
 export function alphaCombine(bottom: RGBAColor, top: RGBAColor) {
   if (bottom.alpha === 0) return top;
@@ -26,7 +26,7 @@ export default class AddModule<State> implements CompositorModule<State> {
     this.layers = layers;
   }
 
-  public render(map: Map, pixels: PixelInfo<unknown>[], state: State): RGBAColor[] {
+  public render(map: PixelMap, pixels: PixelInfo<unknown>[], state: State): RGBAColor[] {
     const result = this.layers[0].render(map, pixels, state);
     if (result.length !== pixels.length) throw new Error('Unexpected number of pixels returned');
     for (let l = 1; l < this.layers.length; l++) {
