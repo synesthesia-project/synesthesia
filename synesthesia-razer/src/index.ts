@@ -122,7 +122,8 @@ export class Display {
         {
           root: new AddModule([
             new FillModule(new RGBAColor(255, 0, 0, 1)),
-            new ScanModule(new RGBAColor(255, 255, 0, 1))
+            new ScanModule(new RGBAColor(255, 255, 0, 1), { speed: 0.5 }),
+            new ScanModule(new RGBAColor(255, 255, 0, 1), { speed: -0.5 })
           ]),
           pixels
         },
