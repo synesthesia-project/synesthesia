@@ -9,23 +9,25 @@ import { LocalCommunicationsConsumer } from '@synesthesia-project/core/lib/local
 import * as WebSocket from 'ws';
 import * as openrazer from 'openrazer';
 
+import { RGBAColor, Compositor, PixelInfo } from './compositor';
+import { SynesthesiaPlayState } from './compositor/modules';
+import FillModule from './compositor/modules/fill';
+import AddModule from './compositor/modules/add';
+import ScanModule from './compositor/modules/scan';
+import SynesthesiaModulateModule from './compositor/modules/modulate';
+
 export class Display {
 
-  private state: {
-    playState: PlayStateData;
-    files: Map<string, CueFile>;
-  } = {
+  private state: SynesthesiaPlayState = {
     playState: { layers: [] },
     files: new Map()
   };
 
   private keyboard: {
-    keyboard: openrazer.Keyboard,
-    map: openrazer.KeyboardPixelMap,
-    coords: {
-      xMin: number,
-      xMax: number,
-    }
+    keyboard: openrazer.Keyboard;
+    map: openrazer.KeyboardPixelMap;
+    compositor: Compositor<{ row: number, col: number }, { synesthesia: SynesthesiaPlayState }>;
+    buffer: { index: number, start: number, colors: openrazer.RGB[] }[];
   } | null = null;
   private x = 0;
 
@@ -64,6 +66,8 @@ export class Display {
                 }
               }));
               this.state = {playState, files: nextFiles};
+              // Update the state of any compositors
+              if (this.keyboard) this.keyboard.compositor.updateState({ synesthesia: this.state });
             }
           }
         );
@@ -91,16 +95,47 @@ export class Display {
       if (!map) {
         throw new Error('keyboard has no pixel map');
       }
-      // calculate xMin and xMax
-      const coords = {xMax: -Infinity, xMin: Infinity};
-      for (const row of map.rows) {
+      // Build up list of pixels and prepare buffer
+      const pixels: PixelInfo<{row: number, col: number}>[] = [];
+      const buffer: { index: number, start: number, colors: openrazer.RGB[] }[] = [];
+      for (let r = 0; r < map.rows.length; r++) {
+        const row = map.rows[r];
+        buffer[r] = {
+          index: r,
+          start: 0,
+          colors: []
+        };
+        let maxKeyIndex = 0;
         for (const key of row.keys) {
-          coords.xMax = Math.max(coords.xMax, key.centreX);
-          coords.xMin = Math.min(coords.xMin, key.centreX);
+          maxKeyIndex = Math.max(maxKeyIndex, key.i);
+          pixels.push({
+            x: key.centreX,
+            y: key.centreY,
+            data: {
+              row: r,
+              col: key.i
+            }
+          });
         }
+        for (let k = 0; k <= maxKeyIndex; k++) buffer[r].colors[k] = [0, 0, 0];
       }
-      this.keyboard = { keyboard, map, coords };
-      this.x = coords.xMin - 20;
+      const compositor = new Compositor<{ row: number, col: number }, { synesthesia: SynesthesiaPlayState }>(
+        {
+          root: new SynesthesiaModulateModule(
+            new AddModule([
+              new FillModule(new RGBAColor(96, 0, 160, 1)),
+              new ScanModule(new RGBAColor(160, 0, 104, 1), { delay: 0, speed: -0.1 }),
+              new ScanModule(new RGBAColor(160, 0, 104, 1), { speed: 0.5 }),
+              new ScanModule(new RGBAColor(160, 0, 104, 1), { delay: 0, speed: 0.2 }),
+              new ScanModule(new RGBAColor(247, 69, 185, 1), { delay: 0, speed: -0.3 }),
+              new ScanModule(new RGBAColor(247, 69, 185, 1), { delay: 1, speed: 0.3 })
+            ])
+          ),
+          pixels
+        },
+        { synesthesia: this.state }
+      );
+      this.keyboard = { keyboard, map, compositor, buffer };
     }
   }
 
@@ -109,39 +144,12 @@ export class Display {
     // const timestampMillis = new Date().getTime();
 
     if (this.keyboard) {
-      const rows = this.keyboard.map.rows;
-      this.x += 10;
-      if ( this.x >= this.keyboard.coords.xMax + 100) {
-        this.x = this.keyboard.coords.xMin - 100;
+      const frame = this.keyboard.compositor.renderFrame();
+      for (const p of frame) {
+        this.keyboard.buffer[p.pixel.data.row].colors[p.pixel.data.col] = p.output.toRGB();
       }
-      console.log(this.x);
-      const rowData: { index: number, start: number, colors: openrazer.RGB[]}[] = [];
-      for (let r = 0; r < rows.length; r++) {
-        const row = rows[r];
-        const indexes = row.keys.map(k => k.i);
-        const kMin = Math.min(...indexes);
-        const kMax = Math.max(...indexes);
-        const colors: openrazer.RGB[] = [];
-        for (let k = kMin; k <= kMax; k++) {
-          colors[k - kMin] = [0, 0, 0];
-        }
-        // Set brightness of keys based on bar location
-        for (const key of row.keys) {
-          const distance = Math.abs(this.x - key.centreX);
-          const brightness = Math.max(0, 1 - distance / 50);
-          colors[key.i - kMin] = [
-            Math.round(255 * brightness),
-            0,
-            Math.round(255 * brightness),
-          ];
-        }
-        rowData.push({
-          index: r,
-          start: kMin,
-          colors
-        });
-      }
-      await this.keyboard.keyboard.writeCustomFrame(rowData);
+      await this.keyboard.keyboard.writeCustomFrame(this.keyboard.buffer);
+      // await this.keyboard.keyboard.writeCustomFrame(rowData);
       // let amplitude = 0;
       // if (this.state.playState.layers.length === 0) {
       //   this.keyboard.setMatrixBrightness(255);
