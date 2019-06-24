@@ -10,6 +10,8 @@ import * as WebSocket from 'ws';
 import * as openrazer from 'openrazer';
 
 import { RGBAColor, Compositor, PixelInfo } from './compositor';
+import FillModule from './compositor/modules/fill';
+import AddModule from './compositor/modules/add';
 import ScanModule from './compositor/modules/scan';
 
 export class Display {
@@ -118,7 +120,10 @@ export class Display {
       }
       const compositor = new Compositor<{ row: number, col: number }, {}>(
         {
-          root: new ScanModule(new RGBAColor(255, 255, 0, 1)),
+          root: new AddModule([
+            new FillModule(new RGBAColor(255, 0, 0, 1)),
+            new ScanModule(new RGBAColor(255, 255, 0, 1))
+          ]),
           pixels
         },
         {}
