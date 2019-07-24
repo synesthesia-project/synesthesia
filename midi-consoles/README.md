@@ -15,6 +15,10 @@ Contributions welcome!
 
 ## Supported Consoles
 
+I'm adding support for consoles as and when the need arises,
+if you have a console that does not have support yet,
+you're welcome to contribute!
+
 ### Behringer X-Touch Extender
 
 *(Note: thie library is currently being written)*
