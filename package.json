@@ -11,6 +11,7 @@
     "core/examples/consumer",
     "core/examples/controller",
     "composer",
+    "midi-consoles",
     "server",
     "openrazer",
     "synesthesia-razer"

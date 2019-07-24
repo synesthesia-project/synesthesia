@@ -1,0 +1,35 @@
+{
+  "name": "@synesthesia-project/midi-consoles",
+  "version": "0.0.1",
+  "description": "Library to interact with various MIDI controlers and mixing desks",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "author": {
+    "name": "Sam Lanning",
+    "email": "sam@samlanning.com",
+    "url": "https://samlanning.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/synesthesia-project/synesthesia/tree/master/midi-consoles"
+  },
+  "scripts": {
+    "clean": "gulp clean",
+    "build": "gulp"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-clean": "^0.3.2",
+    "gulp-sourcemaps": "1.6.0",
+    "gulp-tslint": "^8.1.3",
+    "gulp-typescript": "^5.0.0",
+    "run-sequence": "^1.2.2",
+    "tslint": "^5.9.1",
+    "typescript": "^3.5.2"
+  },
+  "dependencies": {
+    "merge2": "^1.2.3",
+    "midi": "^1.0.0"
+  }
+}
