@@ -10,10 +10,10 @@ declare module 'midi' {
      * sysex, timing, and active sensing messages are ignored
      * by default. To enable these message types, pass false for
      * the appropriate type into this function.
-     * 
+     *
      * For example if you want to receive only MIDI Clock beats
      * you should use:
-     * 
+     *
      * @example input.ignoreTypes(true, false, true)
      */
     public ignoreTypes(sysex: boolean, timing: boolean, activeSensing: boolean): void;

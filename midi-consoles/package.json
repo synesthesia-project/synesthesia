@@ -24,7 +24,8 @@
   },
   "scripts": {
     "clean": "gulp clean",
-    "build": "gulp"
+    "build": "gulp",
+    "build-examples": "tsc --project examples/tsconfig.json"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
