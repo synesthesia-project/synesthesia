@@ -31,5 +31,8 @@
   "dependencies": {
     "merge2": "^1.2.3",
     "midi": "^1.0.0"
-  }
+  },
+  "files": [
+    "lib/**/*"
+  ]
 }
