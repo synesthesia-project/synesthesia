@@ -43,6 +43,10 @@ function isChannel(channel: number): channel is Channel {
   return channel >= 0 && channel < 8;
 }
 
+function checkChannel(channel: Channel) {
+  if (!isChannel(channel)) throw new Error('Invalid channel value');
+}
+
 function isChannelOrMaster(channel: number): channel is Channel | Master {
   return isChannel(channel) || channel === 8;
 }
@@ -168,6 +172,17 @@ class MCUProtocol extends Base {
     const l = value & 0x7f;
     const h = (value >> 7) & 0x7f;
     this.sendMidi([0xe0 | channel, l, h]);
+  }
+
+  public setChannelLED(channel: Channel, button: ChannelButton, on: boolean) {
+    checkChannel(channel);
+    const i = (
+      button === 'rec' ? 0x00 :
+      button === 'solo' ? 0x08 :
+      button === 'mute' ? 0x10 :
+      button === 'select' ? 0x18 : 0x20
+    ) + channel;
+    this.sendMidi([0x90, i, on ? 0x7f : 0]);
   }
 
   public addEventListener<E extends EventType>(event: E, listener: Listener<SpecificEvent<E>>) {

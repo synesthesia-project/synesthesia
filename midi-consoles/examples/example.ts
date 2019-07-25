@@ -11,4 +11,19 @@ b.addEventListener('fader', e => {
   b.setFader(c as any, e.value);
 });
 
+const on = new Set<string>();
+
+b.addEventListener('channel-button', e => {
+  if (e.state === 'pressed') {
+    const k = e.channel + e.button;
+    if (on.has(k)) {
+      on.delete(k);
+      b.setChannelLED(e.channel, e.button, false);
+    } else {
+      on.add(k);
+      b.setChannelLED(e.channel, e.button, true);
+    }
+  }
+});
+
 // b.close();
