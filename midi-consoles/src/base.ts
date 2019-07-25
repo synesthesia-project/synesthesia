@@ -1,9 +1,13 @@
 import * as midi from 'midi';
 
+type Listener = (data: number[]) => void;
+
 export class Base {
 
   private readonly input: midi.Input;
   private readonly output: midi.Output;
+
+  private readonly listeners = new Set<Listener>();
 
   public constructor(deviceName: string) {
     this.input = new midi.Input();
@@ -28,11 +32,29 @@ export class Base {
     }
     if (!inputSet) throw new Error('Unknown MIDI Input: ' + deviceName);
     if (!outputSet) throw new Error('Unknown MIDI Output: ' + deviceName);
+
+    this.input.on('message', (delta, message) => this.handleMidi(message));
   }
 
   public close() {
     this.output.closePort();
     this.input.closePort();
+  }
+
+  public addListener(l: Listener) {
+    this.listeners.add(l);
+  }
+
+  public removeListener(l: Listener) {
+    this.listeners.delete(l);
+  }
+
+  private handleMidi(message: number[]) {
+    this.listeners.forEach(l => l(message));
+  }
+
+  public sendMidi(message: number[]) {
+    this.output.sendMessage(message);
   }
 
 }
