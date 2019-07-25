@@ -19,13 +19,20 @@ export type FaderEvent = {
   value: number;
 };
 
-export type ButtonEvent = {
-  type: 'button'
+type ChannelButton = 'v-select' | 'rec' | 'solo' | 'mute' | 'select';
+type ButtonState = 'pressed' | 'released';
+
+export type ChannelButtonEvent = {
+  type: 'channel-button';
+  state: ButtonState;
+  button: ChannelButton;
+  /** value between 0-7 */
+  channel: Channel;
 };
 
 export type Event =
     FaderEvent
-  | ButtonEvent;
+  | ChannelButtonEvent;
 
 type PropType<TObj, TProp extends keyof TObj> = TObj[TProp];
 export type EventType = PropType<Event, 'type'>;
@@ -55,7 +62,7 @@ class MCUProtocol extends Base {
 
   private readonly eventListeners = {
     fader: new Set<Listener<FaderEvent>>(),
-    button: new Set<Listener<ButtonEvent>>()
+    'channel-button': new Set<Listener<ChannelButtonEvent>>()
   };
 
   private readonly faderEchoTimeouts = {
@@ -105,6 +112,29 @@ class MCUProtocol extends Base {
           this.faderEchoDelay
         );
       }
+    }
+
+    // Buttons / Switches
+    if (k === 0x90) {
+      const state: ButtonState = message[2] > 0 ? 'pressed' : 'released'; // usually 0x7f
+      const b = message[1];
+      if (b >= 0 && b < 0x28) {
+        // Channel Button
+        const [channel, button]: [number, ChannelButton] = (
+          b < 0x08 ? [b, 'rec'] :
+          b < 0x10 ? [b - 0x08, 'solo'] :
+          b < 0x18 ? [b - 0x10, 'mute'] :
+          b < 0x20 ? [b - 0x18, 'select'] : [b - 0x20, 'v-select']
+        );
+        if (!isChannel(channel)) throw new Error('internal error: invalid channel produced!');
+        this.handleEvent({
+          type: 'channel-button', state, button, channel
+        });
+      } else {
+        // TODO: implement
+        console.error('Other buttons not yet supported');
+      }
+
     }
   }
 
