@@ -39,6 +39,7 @@
     "typescript": "^3.5.2"
   },
   "dependencies": {
+    "@types/node": "^12.6.8",
     "midi": "^1.0.0"
   },
   "files": [

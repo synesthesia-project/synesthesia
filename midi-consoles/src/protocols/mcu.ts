@@ -58,7 +58,23 @@ class MCUProtocol extends Base {
     button: new Set<Listener<ButtonEvent>>()
   };
 
-  private echoFader = true;
+  private readonly faderEchoTimeouts = {
+    0: null as null | NodeJS.Timeout,
+    1: null as null | NodeJS.Timeout,
+    2: null as null | NodeJS.Timeout,
+    3: null as null | NodeJS.Timeout,
+    4: null as null | NodeJS.Timeout,
+    5: null as null | NodeJS.Timeout,
+    6: null as null | NodeJS.Timeout,
+    7: null as null | NodeJS.Timeout,
+    8: null as null | NodeJS.Timeout,
+  };
+
+  /**
+   * Number of milliseconds to wait before echoing fader position
+   * or negative if disabled.
+   */
+  private faderEchoDelay = 200;
 
   public constructor(deviceName: string) {
     super(deviceName);
@@ -81,20 +97,35 @@ class MCUProtocol extends Base {
       this.handleEvent({
         type: 'fader', channel, value
       });
-      // if (this.echoFader) this.setFader(channel, value);
+      if (this.faderEchoDelay >= 0) {
+        const timeout = this.faderEchoTimeouts[channel];
+        if (timeout) clearTimeout(timeout);
+        this.faderEchoTimeouts[channel] = setTimeout(
+          () => this.setFader(channel, value),
+          this.faderEchoDelay
+        );
+      }
     }
   }
 
   /**
    * By default, on some consoles a motorized fader will move back to it's last
-   * explicitly set position after being moved. If echo is set to true, any time
-   * the console reports that its fader has moved, we will tell the console that
-   * that should be its new position, so that it won't movew back.
+   * explicitly set position after being moved.
    *
-   * @param echo true (default) iff the board should have fader positions echoed back
+   * If echo is set to a value of `0` or greater, we will wait that amount of
+   * milliseconds after a fader has stopped moving and then report the last
+   * received fader position to the console, so it will not move.
+   *
+   * It is recommended to have areasonably large delay, otherwise it's possible
+   * the console may "fight back" when youre adjusting the position.
+   *
+   * Set to a negative number (e.g. `-1`) to disable echo
+   *
+   * @param faderEchoThreshold `-1` to disable echo,
+   * otherwise number of milliseconds to wait before echoing
    */
-  public setEchoFader(echo: boolean) {
-    this.echoFader = echo;
+  public setFaderEchoDelay(faderEchoDelay: number) {
+    this.faderEchoDelay = faderEchoDelay;
   }
 
   /**
