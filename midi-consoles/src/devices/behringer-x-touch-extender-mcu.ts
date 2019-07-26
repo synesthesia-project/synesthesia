@@ -2,7 +2,7 @@ import MCUProtocol, { Channel, checkChannel} from '../protocols/mcu';
 
 const DEVICE_ID = 0x15;
 
-class XTouchExtender extends MCUProtocol {
+export class XTouchExtenderMCU extends MCUProtocol {
 
   public constructor(deviceName: string) {
     super(deviceName, DEVICE_ID);
@@ -16,4 +16,4 @@ class XTouchExtender extends MCUProtocol {
 
 }
 
-export default XTouchExtender;
+export default XTouchExtenderMCU;
