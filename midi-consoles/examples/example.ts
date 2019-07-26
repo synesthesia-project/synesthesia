@@ -1,8 +1,19 @@
 import * as consoles from '@synesthesia-project/midi-consoles';
 
-console.log(consoles.getMIDIDevices());
+const devices = consoles.getMIDIDevices();
 
-const b = new consoles.XTouchExtenderMCU('X-Touch-Ext:X-Touch-Ext MIDI 1 32:0');
+console.log(devices);
+
+const deviceId = devices.filter(name => name.indexOf('X-Touch-Ext') !== -1)[0];
+
+if (!deviceId) {
+  console.error('No matching device');
+  process.exit(1);
+}
+
+console.log('chosing Device: ' + deviceId);
+
+const b = new consoles.XTouchExtenderMCU(deviceId);
 
 b.setLCDText(0x7, 'Hello  World  ');
 
