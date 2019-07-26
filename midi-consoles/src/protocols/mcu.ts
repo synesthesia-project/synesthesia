@@ -8,6 +8,11 @@ type Master = 8;
  * Maximum possible value for a fader: 16383
  */
 const FADER_MAX = (0x7f << 7) + 0x7f;
+/**
+ * Mackie Manufacturer SysEx ID Number
+ */
+const MACKIE = [0x00, 0x00, 0x66];
+const LCD_CHAR_COUNT = 0x70;
 
 export type FaderEvent = {
   type: 'fader',
@@ -64,6 +69,8 @@ function checkFaderValue(value: number) {
  */
 class MCUProtocol extends Base {
 
+  private readonly deviceId: number;
+
   private readonly eventListeners = {
     fader: new Set<Listener<FaderEvent>>(),
     'channel-button': new Set<Listener<ChannelButtonEvent>>()
@@ -87,8 +94,9 @@ class MCUProtocol extends Base {
    */
   private faderEchoDelay = 200;
 
-  public constructor(deviceName: string) {
+  public constructor(deviceName: string, deviceId: number) {
     super(deviceName);
+    this.deviceId = deviceId;
 
     this.handleMidiMCU = this.handleMidiMCU.bind(this);
 
@@ -183,6 +191,27 @@ class MCUProtocol extends Base {
       button === 'select' ? 0x18 : 0x20
     ) + channel;
     this.sendMidi([0x90, i, on ? 0x7f : 0]);
+  }
+
+  public setLCDText(offset: number, text: string) {
+    const chars: number[] = [];
+    for (let i = 0; i < text.length && (i + offset) < LCD_CHAR_COUNT; i++) {
+      chars.push(text.charCodeAt(i));
+    }
+    this.setLCDChars(offset, chars);
+  }
+
+  public setLCDChars(offset: number, chars: number[]) {
+    if (offset < 0 || offset >= LCD_CHAR_COUNT) throw new Error('Invalid LCD Offset');
+    chars = chars.slice(0, LCD_CHAR_COUNT - offset);
+    this.sendMidi([
+      0xf0,
+      ...MACKIE, this.deviceId,
+      0x12,
+      offset,
+      ...chars,
+      0xf7
+    ]);
   }
 
   public addEventListener<E extends EventType>(event: E, listener: Listener<SpecificEvent<E>>) {

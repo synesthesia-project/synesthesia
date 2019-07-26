@@ -26,4 +26,6 @@ b.addEventListener('channel-button', e => {
   }
 });
 
+b.setLCDText(0x6f, 'Qend some text');
+
 // b.close();
