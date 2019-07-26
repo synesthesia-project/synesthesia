@@ -43,3 +43,8 @@ b.addEventListener('channel-button', e => {
     b.setChannelLCD(e.channel, 'top', '');
   }
 });
+
+b.addEventListener('v-pot', e => {
+  console.log('v-pot', e);
+  b.setChannelLCD(e.channel, 'bottom', (e.direction === 'cw' ? '>' : '<') + ' ' + e.ticks);
+});

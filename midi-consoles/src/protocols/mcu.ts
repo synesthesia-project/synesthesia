@@ -35,9 +35,22 @@ export type ChannelButtonEvent = {
   channel: Channel;
 };
 
+export type VPotEvent = {
+  type: 'v-pot';
+  /**
+   * @example
+   * 'cw' -> clockwise
+   * 'ccw' -> counter-clockwise
+   */
+  direction: 'cw' | 'ccw';
+  channel: Channel;
+  ticks: number;
+};
+
 export type Event =
     FaderEvent
-  | ChannelButtonEvent;
+  | ChannelButtonEvent
+  | VPotEvent;
 
 type PropType<TObj, TProp extends keyof TObj> = TObj[TProp];
 export type EventType = PropType<Event, 'type'>;
@@ -73,7 +86,8 @@ export default class MCUProtocol extends Base {
 
   private readonly eventListeners = {
     fader: new Set<Listener<FaderEvent>>(),
-    'channel-button': new Set<Listener<ChannelButtonEvent>>()
+    'channel-button': new Set<Listener<ChannelButtonEvent>>(),
+    'v-pot': new Set<Listener<VPotEvent>>()
   };
 
   private readonly faderEchoTimeouts = {
@@ -147,6 +161,17 @@ export default class MCUProtocol extends Base {
         console.error('Other buttons not yet supported');
       }
 
+    }
+
+    // V-Pots
+    if (k === 0xb0) {
+      const channel = message[1] - 0x10;
+      if (!isChannel(channel)) return;
+      const direction = (0x40 & message[2]) ? 'ccw' : 'cw';
+      const ticks = 0x3f & message[2];
+      this.handleEvent({
+        type: 'v-pot', channel, direction, ticks
+      });
     }
   }
 
