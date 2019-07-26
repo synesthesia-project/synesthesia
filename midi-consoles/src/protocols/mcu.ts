@@ -1,8 +1,8 @@
 import { Base } from '../base';
 
-type Channel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+export type Channel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
-type Master = 8;
+export type Master = 8;
 
 /**
  * Maximum possible value for a fader: 16383
@@ -44,30 +44,30 @@ export type EventType = PropType<Event, 'type'>;
 export type SpecificEvent<E extends EventType> = Extract<Event, {type: E}>;
 export type Listener<E extends Event> = (message: E) => void;
 
-function isChannel(channel: number): channel is Channel {
+export function isChannel(channel: number): channel is Channel {
   return channel >= 0 && channel < 8;
 }
 
-function checkChannel(channel: Channel) {
+export function checkChannel(channel: Channel) {
   if (!isChannel(channel)) throw new Error('Invalid channel value');
 }
 
-function isChannelOrMaster(channel: number): channel is Channel | Master {
+export function isChannelOrMaster(channel: number): channel is Channel | Master {
   return isChannel(channel) || channel === 8;
 }
 
-function checkChannelOrMaster(channel: Channel | Master) {
+export function checkChannelOrMaster(channel: Channel | Master) {
   if (!isChannelOrMaster(channel)) throw new Error('Invalid channel value');
 }
 
-function checkFaderValue(value: number) {
+export function checkFaderValue(value: number) {
   if (value < 0 || value > FADER_MAX) throw new Error('Invalid fader value');
 }
 
 /**
  * Mackie Control Universal Protocol Implementation
  */
-class MCUProtocol extends Base {
+export default class MCUProtocol extends Base {
 
   private readonly deviceId: number;
 
@@ -228,5 +228,3 @@ class MCUProtocol extends Base {
   }
 
 }
-
-export default MCUProtocol;
