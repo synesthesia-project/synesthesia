@@ -251,6 +251,7 @@ export default class MCUProtocol extends Base {
       mode === 'boost-cut' ? 0x10 :
       mode === 'wrap' ? 0x20 : 0x30
     );
+    if (mode === 'spread' && value > 6) value = 6;
     const data = (center === 'on' ? 0x40 : 0x00) | modeBits | value;
     this.sendMidi([0xb0, 0x30 | channel, data]);
   }
