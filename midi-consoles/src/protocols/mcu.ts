@@ -2,6 +2,8 @@ import { Base } from '../base';
 
 export type Channel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
+export const CHANNELS: Channel[] = [0, 1, 2, 3, 4, 5, 6, 7];
+
 export type Master = 8;
 
 /**
@@ -46,6 +48,8 @@ export type VPotEvent = {
   channel: Channel;
   ticks: number;
 };
+
+export type VPotLEDMode = 'single' | 'boost-cut' | 'wrap' | 'spread';
 
 export type Event =
     FaderEvent
@@ -237,6 +241,18 @@ export default class MCUProtocol extends Base {
       ...chars,
       0xf7
     ]);
+  }
+
+  public setVPotRing(channel: Channel, center: 'on' | 'off', mode: VPotLEDMode, value: number) {
+    checkChannel(channel);
+    if (value < 0 || value > 0x0b) throw new Error('Value must be between 0 and 11');
+    const modeBits = (
+      mode === 'single' ? 0x00 :
+      mode === 'boost-cut' ? 0x10 :
+      mode === 'wrap' ? 0x20 : 0x30
+    );
+    const data = (center === 'on' ? 0x40 : 0x00) | modeBits | value;
+    this.sendMidi([0xb0, 0x30 | channel, data]);
   }
 
   public addEventListener<E extends EventType>(event: E, listener: Listener<SpecificEvent<E>>) {
