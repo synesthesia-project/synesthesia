@@ -256,6 +256,23 @@ export default class MCUProtocol extends Base {
     this.sendMidi([0xb0, 0x30 | channel, data]);
   }
 
+  /**
+   * Set the VU-Meter peak level.
+   *
+   * The MCU protocol specifies that the levels decrease automatically over time.
+   *
+   * @param channel
+   * @param level between 0 and 15:
+   *   0-12 - meter level
+   *   14 - set overload
+   *   15 - clear overload
+   */
+  public setVUMeterLevel(channel: Channel, level: number) {
+    checkChannel(channel);
+    if (level < 0 || level > 0xf) throw new Error('Invalid level, must be between 0 and 15');
+    this.sendMidi([0xd0, (channel << 4) | level]);
+  }
+
   public addEventListener<E extends EventType>(event: E, listener: Listener<SpecificEvent<E>>) {
     (this.eventListeners[event] as Set<Listener<SpecificEvent<E>>>).add(listener);
   }

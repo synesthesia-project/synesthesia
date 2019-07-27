@@ -78,8 +78,10 @@ b.addEventListener('channel-button', e => {
       );
       sendVPotState(e.channel);
     }
+    b.setVUMeterLevel(e.channel, 0xe);
   } else {
     b.setChannelLCD(e.channel, 'top', '');
+    b.setVUMeterLevel(e.channel, 0);
   }
 });
 
@@ -96,6 +98,7 @@ b.addEventListener('v-pot', e => {
     if (state.value < 0x01) state.value = 0x01;
   }
   sendVPotState(e.channel);
+  b.setVUMeterLevel(e.channel, e.ticks);
 });
 
 function sendVPotState(channel: Channel) {
