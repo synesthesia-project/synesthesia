@@ -12,6 +12,7 @@
     "core/examples/controller",
     "composer",
     "server",
-    "synesthesia-razer"
+    "synesthesia-razer",
+    "balccon"
   ]
 }
