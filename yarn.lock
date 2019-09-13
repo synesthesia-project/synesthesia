@@ -3244,6 +3244,20 @@ onetime@^1.0.0:
   resolved "https://registry.yarnpkg.com/onetime/-/onetime-1.1.0.tgz#a1f7838f8314c516f05ecefcbc4ccfe04b4ed789"
   integrity sha1-ofeDj4MUxRbwXs78vEzP4EtO14k=
 
+openrazer@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/openrazer/-/openrazer-0.0.2.tgz#339e088c4dd98e67a94d02630da46b3ce2bbe41e"
+  integrity sha512-cG0b/w4n+UhEPYv1Vtj2VZfh+/RUrnZNhLe8QFAD7nKJjFZrYyxLUwAnoiqKhZxuglrvC4Bi7bC7suk0VvtMgQ==
+
+openrazer@^0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/openrazer/-/openrazer-0.0.5.tgz#5261b1aa33eace2a528c03f79268cd4be32506fe"
+  integrity sha512-1OxFrXcGpZ3iJxmcKyUZyKQOofA48DCm46kXqf4Mmtx1yw0ABEXj6VVweMtRpPNC/bARdEVyYAyNvmkX0IcMaQ==
+  dependencies:
+    "@types/mocha" "^5.2.7"
+    mocha "^6.1.4"
+    svgson "^3.1.0"
+
 optimist@~0.6.0:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/optimist/-/optimist-0.6.1.tgz#da3ea74686fa21a19a111c326e90eb15a0196686"
