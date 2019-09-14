@@ -1,9 +1,6 @@
 import { PixelMap, CompositorModule, PixelInfo } from './modules';
 import { RGBAColor } from './color';
 
-// Export imports
-export { PixelInfo, RGBAColor };
-
 export interface Config<PixelData, State> {
   root: CompositorModule<State>;
   pixels: PixelInfo<PixelData>[];
