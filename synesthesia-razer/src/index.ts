@@ -9,12 +9,12 @@ import { LocalCommunicationsConsumer } from '@synesthesia-project/core/lib/local
 import * as WebSocket from 'ws';
 import * as openrazer from 'openrazer';
 
-import { RGBAColor, Compositor, PixelInfo } from './compositor';
-import { SynesthesiaPlayState } from './compositor/modules';
-import FillModule from './compositor/modules/fill';
-import AddModule from './compositor/modules/add';
-import ScanModule from './compositor/modules/scan';
-import SynesthesiaModulateModule from './compositor/modules/modulate';
+import { RGBAColor, Compositor, PixelInfo } from '@synesthesia-project/compositor';
+import { SynesthesiaPlayState } from '@synesthesia-project/compositor/lib/modules';
+import FillModule from '@synesthesia-project/compositor/lib/modules/fill';
+import AddModule from '@synesthesia-project/compositor/lib/modules/add';
+import ScanModule from '@synesthesia-project/compositor/lib/modules/scan';
+import SynesthesiaModulateModule from '@synesthesia-project/compositor/lib/modules/modulate';
 
 export class Display {
 

@@ -1,7 +1,7 @@
 {
-  "name": "synesthesia-razer",
+  "name": "@synesthesia-project/core-example-controller",
   "version": "0.0.1",
-  "description": "A synesthesia consumer for Razer Peripherals",
+  "description": "Example controller for ",
   "license": "MIT",
   "author": {
     "name": "Sam Lanning",
@@ -10,25 +10,25 @@
   },
   "scripts": {
     "clean": "gulp clean",
-    "build": "gulp",
-    "run": "node build"
+    "link": "mkdir -p node_modules/@synesthesia-project; ln -s ../../../.. node_modules/@synesthesia-project/core",
+    "build": "gulp"
   },
   "devDependencies": {
+    "@types/node": "^12.0.8",
+    "@types/react": "^16.0.38",
+    "@types/react-dom": "^16.0.4",
     "gulp": "^3.9.1",
     "gulp-clean": "^0.3.2",
     "gulp-sourcemaps": "1.6.0",
     "gulp-tslint": "^8.1.3",
     "gulp-typescript": "^5.0.0",
+    "id3-parser": "^2.0.0",
+    "react": "15.4.2",
+    "react-dom": "15.4.2",
     "run-sequence": "^1.2.2",
     "tslint": "^5.9.1",
-    "typescript": "^3.5.2",
+    "typescript": "^2.7.2",
     "webpack": "1.14.0"
   },
-  "dependencies": {
-    "@synesthesia-project/core": "^0.0.2",
-    "@synesthesia-project/compositor": "^0.0.1",
-    "@types/ws": "^6.0.1",
-    "openrazer": "^0.0.5",
-    "ws": "^7.0.1"
-  }
+  "private": true
 }
