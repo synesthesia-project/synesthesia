@@ -4,20 +4,38 @@ import { RGBAColor } from '../color';
 import { PixelMap, PixelInfo, CompositorModule, SynesthesiaPlayState } from './';
 
 /**
- * Adjust the opacity / alpha of the given module based
- * on the current music playing on synesthesia
+ * Simple module that modulates the alpha of its child component
  */
-export default class SynesthesiaModulateModule<State extends { synesthesia: SynesthesiaPlayState }> implements CompositorModule<State> {
+export class ModulateModule<State> implements CompositorModule<State> {
 
   private readonly child: CompositorModule<State>;
-
-  private readonly idleAlpha = 1;
-  private readonly activeMinAlpha = 0.1;
-  private readonly activeMaxAlpha = 1;
+  private alpha = 1;
 
   public constructor(child: CompositorModule<State>) {
     this.child = child;
   }
+
+  public render(map: PixelMap, pixels: PixelInfo<unknown>[], state: State): RGBAColor[] {
+    const result = this.child.render(map, pixels, state);
+    if (this.alpha === 1) return result;
+    return result.map(value => new RGBAColor(value.r, value.g, value.b, value.alpha * this.alpha));
+  }
+
+  public setAlpha(alpha: number) {
+    this.alpha = alpha;
+  }
+
+}
+
+/**
+ * Adjust the opacity / alpha of the given module based
+ * on the current music playing on synesthesia
+ */
+export default class SynesthesiaModulateModule<State extends { synesthesia: SynesthesiaPlayState }> extends ModulateModule<State> {
+
+  private readonly idleAlpha = 1;
+  private readonly activeMinAlpha = 0.1;
+  private readonly activeMaxAlpha = 1;
 
   public render(map: PixelMap, pixels: PixelInfo<unknown>[], state: State): RGBAColor[] {
     const timestampMillis = new Date().getTime();
@@ -40,9 +58,8 @@ export default class SynesthesiaModulateModule<State extends { synesthesia: Syne
       }
       alpha = this.activeMinAlpha + (this.activeMaxAlpha - this.activeMinAlpha) * amplitude;
     }
-    const result = this.child.render(map, pixels, state);
-    if (alpha === 1) return result;
-    return result.map(value => new RGBAColor(value.r, value.g, value.b, value.alpha * alpha));
+    this.setAlpha(alpha);
+    return super.render(map, pixels, state);
   }
 
 }
