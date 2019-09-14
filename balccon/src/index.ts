@@ -6,12 +6,15 @@ import { DEFAULT_SYNESTHESIA_PORT } from '@synesthesia-project/core/lib/constant
 
 import { LocalCommunicationsConsumer } from '@synesthesia-project/core/lib/local';
 
+import { RGBAColor, Compositor, PixelInfo } from '@synesthesia-project/compositor';
+import { SynesthesiaPlayState } from '@synesthesia-project/compositor/lib/modules';
+import FillModule from '@synesthesia-project/compositor/lib/modules/fill';
+import AddModule from '@synesthesia-project/compositor/lib/modules/add';
+import ScanModule from '@synesthesia-project/compositor/lib/modules/scan';
+import SynesthesiaModulateModule from '@synesthesia-project/compositor/lib/modules/modulate';
+
 import * as fs from 'fs';
 import * as WebSocket from 'ws';
-import {promisify} from 'util';
-
-const open = promisify(fs.open);
-const write = promisify(fs.write);
 
 const LEDS = 90;
 
@@ -26,12 +29,41 @@ export class Display {
     };
 
   private buffer: Buffer;
+  private compositor: Compositor<number, { synesthesia: SynesthesiaPlayState }>;
   private stream: fs.WriteStream;
 
   public constructor() {
     this.frame = this.frame.bind(this);
 
     this.buffer = Buffer.alloc(LEDS * 3);
+    const pixels: PixelInfo<number>[] = [];
+
+    for (let i = 0; i < LEDS; i++) {
+      pixels[i] = {
+        x: i,
+        y: 0,
+        data: i
+      };
+    }
+
+
+    this.compositor = new Compositor<number, { synesthesia: SynesthesiaPlayState }>(
+      {
+        root: new SynesthesiaModulateModule(
+          new AddModule([
+            new FillModule(new RGBAColor(96, 0, 160, 1)),
+            new ScanModule(new RGBAColor(160, 0, 104, 1), { delay: 0, speed: -0.1 }),
+            new ScanModule(new RGBAColor(160, 0, 104, 1), { speed: 0.5 }),
+            new ScanModule(new RGBAColor(160, 0, 104, 1), { delay: 0, speed: 0.2 }),
+            new ScanModule(new RGBAColor(247, 69, 185, 1), { delay: 0, speed: -0.3 }),
+            new ScanModule(new RGBAColor(247, 69, 185, 1), { delay: 1, speed: 0.3 })
+          ])
+        ),
+        pixels
+      },
+      { synesthesia: this.state }
+    );
+
     this.stream = fs.createWriteStream('/tmp/leds');
 
     const local = new LocalCommunicationsConsumer();
@@ -67,6 +99,8 @@ export class Display {
                 }
               }));
               this.state = { playState, files: nextFiles };
+
+              this.compositor.updateState({ synesthesia: this.state });
             }
           }
         );
@@ -91,32 +125,12 @@ export class Display {
 
   private frame() {
 
-    const timestampMillis = new Date().getTime();
-
-    let brightness = 255;
-    if (this.state.playState.layers.length === 0) {
-      brightness = 255;
-    } else {
-      let amplitude = 0;
-      for (const layer of this.state.playState.layers) {
-        const f = this.state.files.get(layer.fileHash);
-        if (!f) continue;
-        const t = (timestampMillis - layer.effectiveStartTimeMillis) * layer.playSpeed;
-        for (const fLayer of f.layers) {
-          const activeEvents = usage.getActiveEvents(fLayer.events, t);
-          for (const e of activeEvents) {
-            const a = usage.getCurrentEventStateValue(e, t, state => state.amplitude);
-            amplitude = Math.max(amplitude, a);
-          }
-        }
-      }
-      brightness = 10 + amplitude * 205;
-    }
-
-    for (let i = 0; i < this.buffer.length; i += 3) {
-      this.buffer[i] = 0;
-      this.buffer[i + 1] = brightness;
-      this.buffer[i + 2] = brightness;
+    const frame = this.compositor.renderFrame();
+    for (const p of frame) {
+      const i = p.pixel.data * 3;
+      this.buffer[i] = p.output.r;
+      this.buffer[i + 1] = p.output.g;
+      this.buffer[i + 2] = p.output.b;
     }
 
     this.stream.write(this.buffer);
