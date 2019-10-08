@@ -25,7 +25,7 @@ export class Display {
 
   private keyboard: {
     keyboard: openrazer.Keyboard;
-    map: openrazer.KeyboardPixelMap;
+    map: openrazer.PixelMap;
     compositor: Compositor<{ row: number, col: number }, { synesthesia: SynesthesiaPlayState }>;
     buffer: { index: number, start: number, colors: openrazer.RGB[] }[];
   } | null = null;
