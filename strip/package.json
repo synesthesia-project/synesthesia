@@ -16,7 +16,7 @@
     "@types/jquery": "^2.0.41",
     "@types/node": "9.4.6",
     "@types/ws": "0.0.39",
-    "jquery": "^3.2.1",
+    "jquery": "^3.4.0",
     "ws": "3.3.1"
   }
 }
