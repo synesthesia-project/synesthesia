@@ -16,6 +16,21 @@ import AddModule from '@synesthesia-project/compositor/lib/modules/add';
 import ScanModule from '@synesthesia-project/compositor/lib/modules/scan';
 import SynesthesiaModulateModule from '@synesthesia-project/compositor/lib/modules/modulate';
 
+type PixelData = {
+  type: 'keyboard',
+  row: number,
+  col: number
+} | {
+  type: 'mousemat',
+  i: number
+};
+
+type MouseMat = {
+  dev: openrazer.MouseMat;
+  map: openrazer.PixelMap;
+  buffer: openrazer.RGB[];
+};
+
 export class Display {
 
   private state: SynesthesiaPlayState = {
@@ -23,11 +38,14 @@ export class Display {
     files: new Map()
   };
 
-  private keyboard: {
-    keyboard: openrazer.Keyboard;
-    map: openrazer.PixelMap;
-    compositor: Compositor<{ row: number, col: number }, { synesthesia: SynesthesiaPlayState }>;
-    buffer: { index: number, start: number, colors: openrazer.RGB[] }[];
+  private devices: {
+    keyboard: {
+      dev: openrazer.Keyboard;
+      map: openrazer.PixelMap;
+      buffer: { index: number, start: number, colors: openrazer.RGB[] }[];
+    };
+    mousemat: MouseMat | null;
+    compositor: Compositor<PixelData, { synesthesia: SynesthesiaPlayState }>;
   } | null = null;
   private x = 0;
 
@@ -67,7 +85,7 @@ export class Display {
               }));
               this.state = {playState, files: nextFiles};
               // Update the state of any compositors
-              if (this.keyboard) this.keyboard.compositor.updateState({ synesthesia: this.state });
+              if (this.devices) this.devices.compositor.updateState({ synesthesia: this.state });
             }
           }
         );
@@ -89,14 +107,21 @@ export class Display {
     setInterval(this.frame, 20);
 
     const keyboards = await openrazer.getKeyboards();
+    const mousemats = await openrazer.getMousemats();
     if (keyboards.length > 0) {
       const keyboard = keyboards[0];
       const map = await keyboard.getPixelMap();
       if (!map) {
         throw new Error('keyboard has no pixel map');
       }
-      // Build up list of pixels and prepare buffer
-      const pixels: PixelInfo<{row: number, col: number}>[] = [];
+
+      // Build up list of pixels and prepare buffers
+
+      let keyboardMaxX = -Infinity;
+
+      // keyboard
+
+      const pixels: PixelInfo<PixelData>[] = [];
       const buffer: { index: number, start: number, colors: openrazer.RGB[] }[] = [];
       for (let r = 0; r < map.rows.length; r++) {
         const row = map.rows[r];
@@ -108,10 +133,12 @@ export class Display {
         let maxKeyIndex = 0;
         for (const key of row.keys) {
           maxKeyIndex = Math.max(maxKeyIndex, key.i);
+          keyboardMaxX = Math.max(keyboardMaxX, key.centreX);
           pixels.push({
             x: key.centreX,
             y: key.centreY,
             data: {
+              type: 'keyboard',
               row: r,
               col: key.i
             }
@@ -119,7 +146,40 @@ export class Display {
         }
         for (let k = 0; k <= maxKeyIndex; k++) buffer[r].colors[k] = [0, 0, 0];
       }
-      const compositor = new Compositor<{ row: number, col: number }, { synesthesia: SynesthesiaPlayState }>(
+
+      // mousemat
+      let mousemat: MouseMat | null = null;
+      console.log(mousemat);
+      if (mousemats.length > 0) {
+        const dev = mousemats[0];
+        const map = await dev.getPixelMap();
+        if (!map) {
+          throw new Error('missing pixelmap');
+        }
+        const buffer: openrazer.RGB[] = [];
+        if (map.rows.length !== 1) {
+          throw new Error('Invalid pixelmap');
+        }
+        const row = map.rows[0];
+        let maxIndex = 0;
+        for (const key of row.keys) {
+          maxIndex = Math.max(maxIndex, key.i);
+          pixels.push({
+            // offset the mousemat
+            x: key.centreX + keyboardMaxX + 50,
+            y: key.centreY,
+            data: {
+              type: 'mousemat',
+              i: key.i
+            }
+          });
+        }
+        for (let i = 0; i <= maxIndex; i++)
+          buffer[i] = [0, 0, 0];
+        mousemat = { dev, map, buffer };
+      }
+
+      const compositor = new Compositor<PixelData, { synesthesia: SynesthesiaPlayState }>(
         {
           root: new SynesthesiaModulateModule(
             new AddModule([
@@ -135,7 +195,7 @@ export class Display {
         },
         { synesthesia: this.state }
       );
-      this.keyboard = { keyboard, map, compositor, buffer };
+      this.devices = { keyboard: { dev: keyboard, map, buffer }, mousemat, compositor };
     }
   }
 
@@ -143,31 +203,22 @@ export class Display {
 
     // const timestampMillis = new Date().getTime();
 
-    if (this.keyboard) {
-      const frame = this.keyboard.compositor.renderFrame();
+    if (this.devices) {
+      const frame = this.devices.compositor.renderFrame();
       for (const p of frame) {
-        this.keyboard.buffer[p.pixel.data.row].colors[p.pixel.data.col] = p.output.toRGB();
+        if (p.pixel.data.type === 'keyboard') {
+          this.devices.keyboard.buffer[p.pixel.data.row].colors[p.pixel.data.col] = p.output.toRGB();
+        }
       }
-      await this.keyboard.keyboard.writeCustomFrame(this.keyboard.buffer);
-      // await this.keyboard.keyboard.writeCustomFrame(rowData);
-      // let amplitude = 0;
-      // if (this.state.playState.layers.length === 0) {
-      //   this.keyboard.setMatrixBrightness(255);
-      // } else {
-      //   for (const layer of this.state.playState.layers) {
-      //     const f = this.state.files.get(layer.fileHash);
-      //     if (!f) continue;
-      //     const t = (timestampMillis - layer.effectiveStartTimeMillis) * layer.playSpeed;
-      //     for (const fLayer of f.layers) {
-      //       const activeEvents = usage.getActiveEvents(fLayer.events, t);
-      //       for (const e of activeEvents) {
-      //         const a = usage.getCurrentEventStateValue(e, t, state => state.amplitude);
-      //         amplitude = Math.max(amplitude, a);
-      //       }
-      //     }
-      //   }
-      //   this.keyboard.setMatrixBrightness(10 + amplitude * 205);
-      // }
+      await this.devices.keyboard.dev.writeCustomFrame(this.devices.keyboard.buffer);
+      if (this.devices.mousemat) {
+        for (const p of frame) {
+          if (p.pixel.data.type === 'mousemat') {
+            this.devices.mousemat.buffer[p.pixel.data.i] = p.output.toRGB();
+          }
+        }
+        await this.devices.mousemat.dev.writeCustomFrame(0, this.devices.mousemat.buffer);
+      }
     }
   }
 }
