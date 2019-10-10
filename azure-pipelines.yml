@@ -14,6 +14,11 @@ steps:
     sudo npm install -g @microsoft/rush
   displayName: 'Install Rush'
 
+# Install dependencies for building the midi NPM package
+- script: |
+    sudo apt-get -y install libasound2-dev
+  displayName: 'Install Rush'
+
 - script: |
     rush install --no-link
   displayName: 'rush install --no-link'
