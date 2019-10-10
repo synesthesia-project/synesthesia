@@ -26,7 +26,7 @@
    * Specify one of: "pnpmVersion", "npmVersion", or "yarnVersion".  See the Rush documentation
    * for details about these alternatives.
    */
-  "pnpmVersion": "2.15.1",
+  "pnpmVersion": "3.8.1",
 
   // "npmVersion": "4.5.0",
   // "yarnVersion": "1.9.4",
@@ -46,7 +46,7 @@
      * The default value is false to avoid legacy compatibility issues.
      * It is strongly recommended to set strictPeerDependencies=true.
      */
-    // "strictPeerDependencies": true,
+    "strictPeerDependencies": true,
 
 
     /**
@@ -61,7 +61,7 @@
      * After modifying this field, it's recommended to run "rush update --full" so that the package manager
      * will recalculate all version selections.
      */
-    // "resolutionStrategy": "fast"
+    "resolutionStrategy": "fewer-dependencies"
   },
 
   /**
@@ -72,7 +72,7 @@
    * Specify a SemVer range to ensure developers use a Node.js version that is appropriate
    * for your repo.
    */
-  "nodeSupportedVersionRange": ">=10.13.0 <11.0.0",
+  "nodeSupportedVersionRange": ">=10.13.0 <12.0.0",
 
   /**
   * Odd-numbered major versions of Node.js are experimental.  Even-numbered releases
@@ -123,8 +123,8 @@
    * To remove these restrictions, you could set projectFolderMinDepth=1
    * and set projectFolderMaxDepth to a large number.
    */
-  // "projectFolderMinDepth": 2,
-  // "projectFolderMaxDepth": 2,
+  "projectFolderMinDepth": 1,
+  "projectFolderMaxDepth": 3,
 
   /**
    * This feature helps you to review and approve new packages before they are introduced
@@ -350,17 +350,17 @@
     //    */
     //   // "versionPolicyName": ""
     // },
-    // 
-    // {
-    //   "packageName": "my-controls",
-    //   "projectFolder": "libraries/my-controls",
-    //   "reviewCategory": "production"
-    // },
-    // 
-    // {
-    //   "packageName": "my-toolchain",
-    //   "projectFolder": "tools/my-toolchain",
-    //   "reviewCategory": "tools"
-    // }
+    {
+      "packageName": "@synesthesia-project/core",
+      "projectFolder": "core"
+    },
+    {
+      "packageName": "@synesthesia-project/core-example-consumer",
+      "projectFolder": "core/examples/consumer"
+    },
+    {
+      "packageName": "@synesthesia-project/core-example-controller",
+      "projectFolder": "core/examples/controller"
+    }
   ]
 }
