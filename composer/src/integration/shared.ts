@@ -1,7 +1,8 @@
 import { Message } from '@synesthesia-project/core/lib/protocols/util/messages';
 import { CueFile } from '@synesthesia-project/core/lib/file';
-import { ToggleRequest, PauseRequest, GoToTimeRequest, PlaySpeedRequest, ControlResponse, LayerState as PlayState }
-  from '@synesthesia-project/core/lib/protocols/control/messages';
+import {
+  ToggleRequest, PauseRequest, GoToTimeRequest, PlaySpeedRequest, ControlResponse, LayerState as PlayState
+} from '@synesthesia-project/core/lib/protocols/control/messages';
 
 export interface IntegrationSettings {
   name: string;

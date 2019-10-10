@@ -51,7 +51,7 @@ export default class SynesthesiaModulateModule<State extends { synesthesia: Syne
         for (const fLayer of f.layers) {
           const activeEvents = usage.getActiveEvents(fLayer.events, t);
           for (const e of activeEvents) {
-            const a = usage.getCurrentEventStateValue(e, t, state => state.amplitude);
+            const a = usage.getCurrentEventStateValue(e, t, s => s.amplitude);
             amplitude = Math.max(amplitude, a);
           }
         }

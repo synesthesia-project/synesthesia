@@ -4,41 +4,41 @@ import { ObjectHashLookup, hashObject } from '../../main/state/object-hash-looku
 
 // tslint:disable:no-unused-expression
 
-describe('ObjectHashLookup', function () {
+describe('ObjectHashLookup', () => {
 
-  describe('Empty', function () {
+  describe('Empty', () => {
 
     const lookup = new ObjectHashLookup<any>();
 
-    it('getHash()', function () {
+    it('getHash()', () => {
       expect(lookup.getHash({})).to.equal(null);
     });
 
-    it('getObject()', function () {
+    it('getObject()', () => {
       expect(lookup.getObject('123')).to.equal(null);
     });
 
   });
 
-  describe('Single', function () {
+  describe('Single', () => {
 
     const lookup = new ObjectHashLookup<any>();
     const a = {};
     const b = {};
     lookup.updateActiveObjects([a]);
 
-    it('getHash()', function () {
+    it('getHash()', () => {
       expect(lookup.getHash(a)).to.equal('bf21a9e8fbc5a3846fb05b4fa0859e0917b2202f');
       expect(lookup.getHash(b)).to.equal(null);
     });
 
-    it('getObject()', function () {
+    it('getObject()', () => {
       expect(lookup.getObject('bf21a9e8fbc5a3846fb05b4fa0859e0917b2202f') === a).to.be.true;
     });
 
   });
 
-  describe('Multi', function () {
+  describe('Multi', () => {
 
     const lookup = new ObjectHashLookup<any>();
     const a = { v: 1};
@@ -46,20 +46,20 @@ describe('ObjectHashLookup', function () {
     const c = { v: 3 };
     lookup.updateActiveObjects([a, b]);
 
-    it('getHash()', function () {
+    it('getHash()', () => {
       expect(lookup.getHash(a)).to.equal('05386f28d1614fecb1c7e329bd82417fb48dd452');
       expect(lookup.getHash(b)).to.equal('217e0aa280ea76871d5cfa05a015563a9be837b2');
       expect(lookup.getHash(c)).to.equal(null);
     });
 
-    it('getObject()', function () {
+    it('getObject()', () => {
       expect(lookup.getObject('05386f28d1614fecb1c7e329bd82417fb48dd452') === a).to.be.true;
       expect(lookup.getObject('217e0aa280ea76871d5cfa05a015563a9be837b2') === b).to.be.true;
     });
 
   });
 
-  it('Single Replace', function () {
+  it('Single Replace', () => {
 
     const lookup = new ObjectHashLookup<any>();
     const a = {};
@@ -75,7 +75,7 @@ describe('ObjectHashLookup', function () {
 
   });
 
-  it('Delete Old', function () {
+  it('Delete Old', () => {
 
     const lookup = new ObjectHashLookup<any>();
     const a = { v: 1 };
@@ -101,7 +101,7 @@ describe('ObjectHashLookup', function () {
 
   });
 
-  it('Avoid Hash Recomputation', function () {
+  it('Avoid Hash Recomputation', () => {
 
     let hashCount = 0;
     const lookup = new ObjectHashLookup<any>(obj => {

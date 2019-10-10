@@ -1,0 +1,28 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '8.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    yarn
+    yarn run build
+  displayName: 'install packages and build'
+
+- script: |
+    yarn --cwd examples/controller
+    yarn --cwd examples/controller run link
+    yarn --cwd examples/controller run build
+  displayName: 'build example: controller'
+
+- script: |
+    yarn --cwd examples/consumer
+    yarn --cwd examples/consumer run link
+    yarn --cwd examples/consumer run build
+  displayName: 'build example: consumer'

@@ -1,3 +1,4 @@
+import * as jQuery from 'jquery';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import {styled, ThemeProvider, defaultTheme} from './styling';
@@ -83,7 +84,7 @@ export class Stage extends React.Component<StageProps, StageState> {
 
   private setupWindowListeners() {
 
-    $(window).on('keydown', (e) => {
+    jQuery(window).on('keydown', (e) => {
       // Add items to selected layers
       if (e.keyCode === KEYCODES.ENTER) {
         this.addItemsToSelectedLayers();
@@ -93,7 +94,7 @@ export class Stage extends React.Component<StageProps, StageState> {
       console.debug('keydown', e, e.keyCode);
     });
 
-    $(window).on('keyup', (e) => {
+    jQuery(window).on('keyup', (e) => {
       // Toggle Play / Pause
       if (e.keyCode === KEYCODES.SPACE) {
         if (this.state.playState) this.state.playState.controls.toggle();
@@ -131,9 +132,9 @@ export class Stage extends React.Component<StageProps, StageState> {
         // Work out where the mouse is currently positioned
         const paddingLeft = 100; // width of the side bar
         const mousePosition =
-          e.pageY > $(this.player).offset().top ? 'player' :
-          e.pageX > paddingLeft && e.pageY > $(this.timeline).offset().top ? 'timeline' :
-          e.pageX > paddingLeft && e.pageY > $(this.layers).offset().top ? 'layers' : 'none';
+          e.pageY > jQuery(this.player).offset().top ? 'player' :
+          e.pageX > paddingLeft && e.pageY > jQuery(this.timeline).offset().top ? 'timeline' :
+          e.pageX > paddingLeft && e.pageY > jQuery(this.layers).offset().top ? 'layers' : 'none';
 
         const deltaY = e.deltaY;
         const deltaX = e.deltaX;
@@ -142,7 +143,7 @@ export class Stage extends React.Component<StageProps, StageState> {
 
         if ((mousePosition === 'layers' || mousePosition === 'timeline') && e.ctrlKey && deltaY !== 0) {
           // Work out position of mouse on stage for zoom origin
-          const pos = (e.pageX - paddingLeft) / ($(window).width() - paddingLeft);
+          const pos = (e.pageX - paddingLeft) / (jQuery(window).width() - paddingLeft);
 
           if (deltaY < 0)
             this.setState(prevState => ({state: stageState.zoomIn(prevState.state, pos)}));

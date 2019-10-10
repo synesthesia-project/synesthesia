@@ -1,8 +1,7 @@
 var gulp = require('gulp');
 var all = require('gulp-all');
 var clean = require('gulp-clean');
-var gutil = require("gulp-util");
-var bower = require('gulp-bower');
+var PluginError = require("plugin-error");
 var sourcemaps = require('gulp-sourcemaps');
 var ts = require('gulp-typescript');
 var tslint = require('gulp-tslint');
@@ -15,17 +14,12 @@ var integrationTsProject = ts.createProject('src/integration/tsconfig.json');
 // Utility Functions
 
 function handleError(err) {
-  gutil.log("Build failed", err.message);
-  process.exit(1);
+  throw new PluginError("Build failed", err.message);
 }
 
 gulp.task('clean', function() {
   return gulp.src(['.tmp', 'dist'], {read: false})
         .pipe(clean());
-});
-
-gulp.task('bower', function() {
-  return bower();
 });
 
 gulp.task("copy-js", function(){
@@ -56,25 +50,46 @@ gulp.task('tslint', function() {
   return gulp.src(['src/**/*.ts', 'src/**/*.tsx'])
   .pipe(tslint({
     formatter: 'verbose',
-    configuration: '../core/tslint.json'
+    configuration: '../tslint.json'
   }))
   .on('error', handleError)
   .pipe(tslint.report());
 });
 
-gulp.task("webpack", ['bower', 'ts', 'copy-js'], function(callback) {
+gulp.task("webpack", ['ts', 'copy-js'], function(callback) {
     // run webpack
     webpack({
-        entry: {
-          bundle: "./.tmp/scripts/main.js",
-          auth_callback: "./.tmp/scripts/auth_callback.js",
-        },
-        output: {
-            filename: "[name].js",
-            path: __dirname + "/dist"
-        },
+      entry: {
+        bundle: "./.tmp/scripts/main.js",
+        auth_callback: "./.tmp/scripts/auth_callback.js",
+      },
+      output: {
+        filename: "[name].js",
+        path: __dirname + "/dist"
+      },
+      mode: 'development',
+      devtool: 'source-map-inline',
     }, function(err, stats) {
-        if(err) throw new gutil.PluginError("webpack", err);
+        if (err) {
+          console.error(err.stack || err);
+          if (err.details) {
+            console.error(err.details);
+          }
+          throw new PluginError("webpack", err);
+        }
+
+        const info = stats.toJson();
+
+        if (stats.hasErrors()) {
+          for (var err of info.errors)
+            console.error(err);
+          throw new PluginError("webpack", "has errors");
+        }
+
+        if (stats.hasWarnings()) {
+          for (var err of info.errors)
+            console.error(err);
+        }
         callback();
     });
 });

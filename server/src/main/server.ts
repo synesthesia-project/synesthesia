@@ -79,7 +79,7 @@ export class Server {
     }
 
     private sendStaticFile(file: string, response: http.ServerResponse, contentType: string) {
-        fs.readFile(file, function (error, content) {
+        fs.readFile(file, (error, content) => {
             if (error) {
                 if (error.code === 'ENOENT') {
                     response.writeHead(404, { 'Content-Type': 'text/plain' });
@@ -96,8 +96,8 @@ export class Server {
         });
     }
 
-    private handleConnection(ws: WebSocket) {
-        const url = ws.url || ws.upgradeReq.url;
+  private handleConnection(ws: WebSocket, req: http.IncomingMessage) {
+        const url = ws.url || req.url;
         console.log('new connection', url);
 
         if (url === COMPOSER_PATH) {

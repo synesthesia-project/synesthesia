@@ -1,3 +1,4 @@
+import * as jQuery from 'jquery';
 import * as React from 'react';
 import {styled} from './styling';
 
@@ -89,7 +90,7 @@ class PlayerBar extends React.Component<PlayerBarProps, PlayerBarState> {
 
   private calculateBarPosition(e: React.MouseEvent<HTMLDivElement>) {
     if (!this.barRef) return 0;
-    const $bar = $(this.barRef);
+    const $bar = jQuery(this.barRef);
     const position = (e.pageX - $bar.offset().left) / $bar.width();
     return util.restrict(position, 0, 1);
   }

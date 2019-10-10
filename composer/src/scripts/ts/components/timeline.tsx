@@ -1,3 +1,4 @@
+import * as jQuery from 'jquery';
 import {styled, rectIconButton, P} from './styling';
 import * as React from 'react';
 
@@ -79,7 +80,7 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
    * Get the position of the mouse within the file (0-1);
    */
   private getMousePosition(e: React.MouseEvent<{}>) {
-    const $timelineZoom = $(e.currentTarget);
+    const $timelineZoom = jQuery(e.currentTarget);
     const pos = (e.pageX - $timelineZoom.offset().left) / $timelineZoom.width();
     return util.restrict(pos, 0, 1);
   }

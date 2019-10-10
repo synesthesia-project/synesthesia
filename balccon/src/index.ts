@@ -33,7 +33,7 @@ export class Display {
     module: ModulateModule<unknown>;
     alpha: number;
     up: boolean;
-  }
+  };
   private compositor: Compositor<number, { synesthesia: SynesthesiaPlayState }>;
   private stream: fs.WriteStream;
 
@@ -136,7 +136,7 @@ export class Display {
 
     // Update modulation
     if (this.pulse) {
-      if(this.pulse.up) {
+      if (this.pulse.up) {
         this.pulse.alpha += 0.01;
         if (this.pulse.alpha > 1) {
           this.pulse.alpha = 1;

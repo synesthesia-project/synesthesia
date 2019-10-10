@@ -18,7 +18,7 @@ export class ControllerConnection extends ServerEndpoint {
       state => this.listeners.forEach(l => l.playStateUpdated(state))
     );
 
-    ws.on('message', msg => this.recvMessage(JSON.parse(msg)));
+    ws.on('message', msg => this.recvMessage(JSON.parse(msg.toString())));
     ws.on('close', () => this.closed());
   }
 

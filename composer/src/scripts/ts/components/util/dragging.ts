@@ -1,6 +1,7 @@
+import * as jQuery from 'jquery';
 import {ActiveModifierKeys} from '../../util/input';
 
-const body = $('body');
+const body = jQuery('body');
 
 type MouseCallback = (x: number, y: number, modifiers: ActiveModifierKeys) => void;
 
@@ -10,7 +11,7 @@ export function captureDragging(
     onCancel: MouseCallback,
     cursor?: 'default' | 'pointer' | 'move') {
   const div = document.createElement('div');
-  const $div = $(div);
+  const $div = jQuery(div);
   $div.css({
     position: 'fixed',
     top: 0,

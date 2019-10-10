@@ -1,5 +1,5 @@
 {
-  "name": "synesthesia-razer",
+  "name": "@synesthesia-project/synesthesia-razer",
   "version": "0.0.1",
   "description": "A synesthesia consumer for Razer Peripherals",
   "license": "MIT",
@@ -11,7 +11,8 @@
   "scripts": {
     "clean": "gulp clean",
     "build": "gulp",
-    "run": "node build"
+    "run": "node build",
+    "tslint": "gulp tslint"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
@@ -19,6 +20,7 @@
     "gulp-sourcemaps": "1.6.0",
     "gulp-tslint": "^8.1.3",
     "gulp-typescript": "^5.0.0",
+    "gulp-util": "~3.0.8",
     "run-sequence": "^1.2.2",
     "tslint": "^5.9.1",
     "typescript": "^3.5.2",
@@ -29,6 +31,6 @@
     "@synesthesia-project/compositor": "^0.0.1",
     "@types/ws": "^6.0.1",
     "openrazer": "^0.0.5",
-    "ws": "^7.0.1"
+    "ws": "^7.1.2"
   }
 }

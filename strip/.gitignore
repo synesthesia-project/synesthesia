@@ -1,6 +1,0 @@
-hardware/
-bower_components/
-node_modules/
-yarn-error.log
-build/
-build-and-sync

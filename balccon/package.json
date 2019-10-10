@@ -1,7 +1,6 @@
 {
-  "name": "balcon",
+  "name": "@synesthesia-project/balccon",
   "version": "0.0.1",
-  "description": "A synesthesia consumer for Razer Peripherals",
   "license": "MIT",
   "author": {
     "name": "Sam Lanning",
@@ -11,7 +10,14 @@
   "scripts": {
     "clean": "gulp clean",
     "build": "gulp",
-    "run": "node build"
+    "run": "node build",
+    "tslint": "gulp tslint"
+  },
+  "dependencies": {
+    "@synesthesia-project/compositor": "^0.0.1",
+    "@synesthesia-project/core": "^0.0.2",
+    "@types/ws": "^6.0.1",
+    "ws": "^7.1.2"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
@@ -19,16 +25,10 @@
     "gulp-sourcemaps": "1.6.0",
     "gulp-tslint": "^8.1.3",
     "gulp-typescript": "^5.0.0",
+    "gulp-util": "~3.0.8",
     "run-sequence": "^1.2.2",
     "tslint": "^5.9.1",
-    "typescript": "^2.7.2",
+    "typescript": "^3.5.2",
     "webpack": "1.14.0"
-  },
-  "dependencies": {
-    "@synesthesia-project/core": "^0.0.2",
-    "@synesthesia-project/compositor": "^0.0.1",
-    "@types/ws": "^6.0.1",
-    "openrazer": "^0.0.2",
-    "ws": "^7.0.1"
   }
 }

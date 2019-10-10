@@ -27,7 +27,7 @@ export class DownstreamConnection extends UpstreamEndpoint {
     );
     console.log('initialised', this);
 
-    ws.on('message', msg => this.recvMessage(JSON.parse(msg)));
+    ws.on('message', msg => this.recvMessage(JSON.parse(msg.toString())));
     ws.on('close', () => this.closed());
   }
 

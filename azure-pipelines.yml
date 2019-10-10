@@ -7,23 +7,30 @@ pool:
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: '10.x'
+    versionSpec: '11.x'
   displayName: 'Install Node.js'
 
 - script: |
-    git submodule update --init --recursive
-  displayName: 'setup git submodules'
+    sudo npm install -g @microsoft/rush
+  displayName: 'Install Rush'
+
+# Install dependencies for building the midi NPM package
+- script: |
+    sudo apt-get -y install libasound2-dev
+  displayName: 'Install Rush'
+
+- script: |
+    rush install --no-link
+  displayName: 'rush install --no-link'
+
+- script: |
+    rush link
+  displayName: 'rush link'
   
 - script: |
-    yarn -v
-    yarn
-    yarn run build
-  displayName: 'install packages and build all workspaces'
+    rush rebuild --verbose
+  displayName: 'rush rebuild --verbose'
   
 - script: |
-    yarn run test
-  displayName: 'Run unit tests'
-  
-- script: |
-    yarn run clean
-  displayName: 'Check clean script'
+    rush test --verbose
+  displayName: 'rush test --verbose'
