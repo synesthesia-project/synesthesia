@@ -31,6 +31,7 @@ dependencies:
   gulp-sourcemaps: 1.6.0
   gulp-tslint: 8.1.4_tslint@5.20.0
   gulp-typescript: 5.0.1_typescript@3.6.4
+  gulp-util: 3.0.8
   gulp-webpack: 1.5.0
   id3-parser: 2.0.0
   json-socket: 0.3.0
@@ -4847,6 +4848,7 @@ packages:
       gulp-sourcemaps: 1.6.0
       gulp-tslint: 8.1.4_tslint@5.20.0
       gulp-typescript: 5.0.1_typescript@3.6.4
+      gulp-util: 3.0.8
       run-sequence: 1.2.2
       tslint: 5.20.0_typescript@3.6.4
       typescript: 3.6.4
@@ -4855,7 +4857,7 @@ packages:
     dev: false
     name: '@rush-temp/balccon'
     resolution:
-      integrity: sha512-AvYejHWrFKS6ylR4ly7gBHLQs81R5/cq4C9mI1E5agfgg2afZWq4ek0NR24MyEhWCnXB+YnZGsMgOxs7A7AAUA==
+      integrity: sha512-cxnC6jyCDaH4QUr3y04Xy9e2ByYRI5ivnjV11FjBg/10G87g4FSQt3zmTBcwW7EWcfvYNtuaESZo7/M966e09Q==
       tarball: 'file:projects/balccon.tgz'
     version: 0.0.0
   'file:projects/composer.tgz':
@@ -5088,6 +5090,7 @@ specifiers:
   gulp-sourcemaps: 1.6.0
   gulp-tslint: ^8.1.3
   gulp-typescript: ^5.0.0
+  gulp-util: ~3.0.8
   gulp-webpack: 1.5.0
   id3-parser: ^2.0.0
   json-socket: ^0.3.0
