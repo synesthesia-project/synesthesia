@@ -28,8 +28,8 @@ steps:
   displayName: 'rush link'
   
 - script: |
-    rush rebuild --ship --verbose
-  displayName: 'rush rebuild --ship --verbose'
+    rush rebuild --verbose
+  displayName: 'rush rebuild --verbose'
   
 - script: |
     rush test --verbose
