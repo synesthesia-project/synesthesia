@@ -375,6 +375,10 @@
       "projectFolder": "openrazer"
     },
     {
+      "packageName": "openrazer-examples",
+      "projectFolder": "openrazer/examples"
+    },
+    {
       "packageName": "@synesthesia-project/composer",
       "projectFolder": "composer"
     },

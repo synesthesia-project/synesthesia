@@ -7,6 +7,7 @@ dependencies:
   '@rush-temp/core-example-controller': 'file:projects/core-example-controller.tgz'
   '@rush-temp/midi-consoles': 'file:projects/midi-consoles.tgz'
   '@rush-temp/openrazer': 'file:projects/openrazer.tgz'
+  '@rush-temp/openrazer-examples': 'file:projects/openrazer-examples.tgz'
   '@rush-temp/server': 'file:projects/server.tgz'
   '@rush-temp/synesthesia-razer': 'file:projects/synesthesia-razer.tgz'
   '@types/chai': 4.2.3
@@ -5003,6 +5004,22 @@ packages:
       integrity: sha512-YZZI80MSfKus+OONubVw2Erjo+lB21C/Bk9m0myjd+ek571LJLEYFWvTdnQAuY3A9N+zWBeJr3dxhto9MXeUUw==
       tarball: 'file:projects/midi-consoles.tgz'
     version: 0.0.0
+  'file:projects/openrazer-examples.tgz':
+    dependencies:
+      gulp: 3.9.1
+      gulp-clean: 0.3.2
+      gulp-sourcemaps: 1.6.0
+      gulp-tslint: 8.1.4_tslint@5.20.0
+      gulp-typescript: 5.0.1_typescript@3.6.4
+      run-sequence: 1.2.2
+      tslint: 5.20.0_typescript@3.6.4
+      typescript: 3.6.4
+    dev: false
+    name: '@rush-temp/openrazer-examples'
+    resolution:
+      integrity: sha512-eviWE0zRiQyA0Xfw6fjvvr2CHHTfOZ0mpvB0ZPe11RevU2XMGgici940YVCF4tOLYrL6ryz3mulJ/+4zIL5yQA==
+      tarball: 'file:projects/openrazer-examples.tgz'
+    version: 0.0.0
   'file:projects/openrazer.tgz':
     dependencies:
       '@types/mocha': 5.2.7
@@ -5081,6 +5098,7 @@ specifiers:
   '@rush-temp/core-example-controller': 'file:./projects/core-example-controller.tgz'
   '@rush-temp/midi-consoles': 'file:./projects/midi-consoles.tgz'
   '@rush-temp/openrazer': 'file:./projects/openrazer.tgz'
+  '@rush-temp/openrazer-examples': 'file:./projects/openrazer-examples.tgz'
   '@rush-temp/server': 'file:./projects/server.tgz'
   '@rush-temp/synesthesia-razer': 'file:./projects/synesthesia-razer.tgz'
   '@types/chai': ^4.1.7

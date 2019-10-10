@@ -28,8 +28,8 @@
     "typescript": "^3.5.2"
   },
   "scripts": {
-    "clean": "gulp clean; yarn --cwd examples run clean",
-    "build": "gulp; yarn --cwd examples run build",
+    "clean": "gulp clean;",
+    "build": "gulp;",
     "test": "mocha test/**/*.js"
   },
   "files": [

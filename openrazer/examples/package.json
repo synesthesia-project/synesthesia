@@ -1,4 +1,5 @@
 {
+  "name": "openrazer-examples",
   "description": "Example scripts using openrazer",
   "license": "MIT",
   "devDependencies": {
@@ -13,11 +14,9 @@
   },
   "scripts": {
     "clean": "gulp clean",
-    "build": "gulp",
-    "auto-install": "yarn install; git checkout node_modules",
-    "test": "node build"
+    "build": "gulp"
   },
   "dependencies": {
-    "openrazer": "^0.0.1"
+    "openrazer": "^0.0.5"
   }
 }
