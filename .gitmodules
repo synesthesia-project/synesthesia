@@ -5,5 +5,5 @@
 	path = rush/core
 	url = https://github.com/synesthesia-project/core
 [submodule "openrazer"]
-	path = openrazer
+	path = rush/openrazer
 	url = https://github.com/synesthesia-project/openrazer.git

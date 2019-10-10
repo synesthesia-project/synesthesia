@@ -363,8 +363,12 @@
       "projectFolder": "core/examples/controller"
     },
     {
-      "packageName": "@synesthesia-project/compositor",
-      "projectFolder": "compositor"
+      "packageName": "@synesthesia-project/midi-consoles",
+      "projectFolder": "midi-consoles"
+    },
+    {
+      "packageName": "openrazer",
+      "projectFolder": "openrazer"
     }
   ]
 }
