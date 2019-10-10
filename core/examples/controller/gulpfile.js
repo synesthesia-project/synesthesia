@@ -39,7 +39,7 @@ gulp.task('tslint', function () {
   return gulp.src(['src/**/*.ts', 'src/**/*.tsx'])
     .pipe(gulpTslint({
       formatter: 'verbose',
-      configuration: '../../tslint.json',
+      configuration: '../../../tslint.json',
       program
     }))
     .on('error', handleError)

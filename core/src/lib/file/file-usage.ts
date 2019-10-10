@@ -6,24 +6,24 @@ export type PreparedFile = file.CueFile;
 /**
  * Take a CueFile, and prepare it for easy consumption by a consumer.
  */
-export function prepareFile(file: file.CueFile): PreparedFile {
+export function prepareFile(f: file.CueFile): PreparedFile {
   return deepFreeze({
-    lengthMillis: file.lengthMillis,
-    layers: file.layers.map(prepareLayer)
+    lengthMillis: f.lengthMillis,
+    layers: f.layers.map(prepareLayer),
   });
 }
 
 function prepareLayer(layer: file.AnyLayer) {
   return file.switchLayer<file.AnyLayer>(layer, {
     percussion: preparePercussionLayerEvent,
-    tones: layer => layer
+    tones: l => l,
   });
 }
 
 function preparePercussionLayerEvent(layer: file.PercussionLayer): file.PercussionLayer {
-  const defaultPercussionStates: file.CueFileEventState<file.BasicEventStateValues>[] = [
+  const defaultPercussionStates: Array<file.CueFileEventState<file.BasicEventStateValues>> = [
     {millisDelta: 0, values: {amplitude: 1}},
-    {millisDelta: layer.settings.defaultLengthMillis, values: {amplitude: 0}}
+    {millisDelta: layer.settings.defaultLengthMillis, values: {amplitude: 0}},
   ];
   return {
     kind: layer.kind,
@@ -32,18 +32,17 @@ function preparePercussionLayerEvent(layer: file.PercussionLayer): file.Percussi
       .map(event => {
         return {
           timestampMillis: event.timestampMillis,
-          states: event.states.length > 0 ? event.states : defaultPercussionStates
+          states: event.states.length > 0 ? event.states : defaultPercussionStates,
         };
       })
-      .sort((a, b) => a.timestampMillis - b.timestampMillis)
+      .sort((a, b) => a.timestampMillis - b.timestampMillis),
   };
 }
 
 export function getActiveEvents<T>(
-    events: file.CueFileEvent<T>[], positionMillis: number): file.CueFileEvent<T>[] {
-  const active: file.CueFileEvent<T>[] = [];
-  for (let i = 0; i < events.length; i++) {
-    const event = events[i];
+  events: Array<file.CueFileEvent<T>>, positionMillis: number): Array<file.CueFileEvent<T>> {
+  const active: Array<file.CueFileEvent<T>> = [];
+  for (const event of events) {
     if (event.timestampMillis > positionMillis)
       break;
     const lastTimestamp = event.timestampMillis + event.states[event.states.length - 1].millisDelta;

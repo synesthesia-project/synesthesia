@@ -8,12 +8,12 @@ export interface CueFile {
 export interface CueFileLayer<LayerKind, LayerSettings, EventStateValues> {
   kind: LayerKind;
   settings: LayerSettings;
-  events: CueFileEvent<EventStateValues>[];
+  events: Array<CueFileEvent<EventStateValues>>;
 }
 
 export interface CueFileEvent<EventStateValues> {
   timestampMillis: number;
-  states: CueFileEventState<EventStateValues>[];
+  states: Array<CueFileEventState<EventStateValues>>;
 }
 
 export interface CueFileEventState<EventStateValues> {
@@ -37,7 +37,7 @@ export interface PercussionLayer extends CueFileLayer<
   'percussion',
   {
     /** Default length for a percussion event */
-    defaultLengthMillis: number
+    defaultLengthMillis: number,
   },
   BasicEventStateValues> {}
 
@@ -55,7 +55,7 @@ export function switchLayer<O>(
     layer: AnyLayer,
     cases: {
       percussion: (layer: PercussionLayer) => O,
-      tones: (layer: TonesLayer) => O
+      tones: (layer: TonesLayer) => O,
     }): O {
   if (isPercussionLayer(layer))
     return cases.percussion(layer);
@@ -70,6 +70,6 @@ export function switchLayer<O>(
 export function emptyFile(lengthMillis: number): CueFile {
   return util.deepFreeze({
     lengthMillis,
-    layers: []
+    layers: [],
   });
 }

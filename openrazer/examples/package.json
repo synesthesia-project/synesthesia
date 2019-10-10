@@ -14,7 +14,8 @@
   },
   "scripts": {
     "clean": "gulp clean",
-    "build": "gulp"
+    "build": "gulp",
+    "tslint": "gulp tslint"
   },
   "dependencies": {
     "openrazer": "^0.0.5"

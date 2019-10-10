@@ -28,14 +28,14 @@ export abstract class Endpoint<Req, Res, Notif> {
           .then(response => this.sendMessage({
             type: 'response',
             requestId: msg.requestId,
-            response
+            response,
           }))
           .catch(err => {
             console.error('Unable to process request', msg.request, 'sending error: ', err);
             this.sendMessage({
               type: 'error_response',
               requestId: msg.requestId,
-              message: err.toString()
+              message: err.toString(),
             });
           });
         break;
@@ -89,7 +89,7 @@ export abstract class Endpoint<Req, Res, Notif> {
       this.sendMessage({
         type: 'request',
         requestId,
-        request
+        request,
       });
     });
   }
@@ -97,7 +97,7 @@ export abstract class Endpoint<Req, Res, Notif> {
   public sendNotification(notification: Notif) {
     this.sendMessage({
       type: 'notification',
-      notification
+      notification,
     });
   }
 

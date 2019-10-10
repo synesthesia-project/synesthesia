@@ -95,7 +95,7 @@ class LayersAndTimeline extends React.Component<LayersAndTimelineProps, LayersAn
   }
 
   public render() {
-    let layers = this.props.file.caseOf({
+    const layers = this.props.file.caseOf({
       just: cueFile => cueFile.layers.map((layer, i) =>
         <Layer
           key={i}

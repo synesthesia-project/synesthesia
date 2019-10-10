@@ -1,6 +1,7 @@
-import {Endpoint} from '../util/endpoint';
-import { BroadcastMessage, Request, Response, Notification, PlayStateData, LayerState } from './messages';
+
 import { CueFile } from '../../file';
+import { Endpoint } from '../util/endpoint';
+import { BroadcastMessage, LayerState, Notification, PlayStateData, Request, Response } from './messages';
 
 /**
  * The DownstreamEndpoint is the side of the protocol that receives synesthesia
@@ -16,7 +17,7 @@ export class DownstreamEndpoint extends Endpoint<Request, Response, Notification
 
   public constructor(
     sendMessage: (msg: BroadcastMessage) => void,
-    playStateUpdated: (state: PlayStateData | null) => void
+    playStateUpdated: (state: PlayStateData | null) => void,
   ) {
     super(sendMessage);
     this.playStateUpdated = playStateUpdated;
@@ -55,8 +56,8 @@ export class DownstreamEndpoint extends Endpoint<Request, Response, Notification
           fileHash: layer.fileHash,
           amplitude: layer.amplitude,
           playSpeed: layer.playSpeed,
-          effectiveStartTimeMillis: layer.effectiveStartTimeMillis + pingDiff
-        }))
+          effectiveStartTimeMillis: layer.effectiveStartTimeMillis + pingDiff,
+        })),
       });
     }
   }
@@ -80,7 +81,7 @@ export class DownstreamEndpoint extends Endpoint<Request, Response, Notification
         const thisTimestamp = Math.round(requestTime + ping / 2);
         const diff = thisTimestamp - resp.timestampMillis;
         this.latestGoodPing = {
-          ping, requestTime, diff
+          ping, requestTime, diff,
         };
         this.sendNotification({type: 'ping', ping, diff});
         console.log('updating time difference:', diff);

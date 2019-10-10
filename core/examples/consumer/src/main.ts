@@ -20,8 +20,8 @@ export class Stage {
     this.frame = this.frame.bind(this);
 
     const endpoint = this.connect();
-    endpoint.then(endpoint => {
-      console.log('endpoint ready', endpoint);
+    endpoint.then(e => {
+      console.log('endpoint ready', e);
     });
   }
 
@@ -68,11 +68,10 @@ export class Stage {
 
     const timestampMillis = new Date().getTime();
 
-
     if (logo) {
       // Scale logo based on beats
       let scale = 1;
-      let scaleIncrease = 0.3;
+      const scaleIncrease = 0.3;
       for (const layer of this.state.playState.layers) {
         const f = this.state.files.get(layer.fileHash);
         if (!f) continue;

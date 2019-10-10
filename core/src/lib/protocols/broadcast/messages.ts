@@ -1,5 +1,5 @@
-import {Message} from '../util/messages';
-import {CueFile} from '../../file';
+import { CueFile } from '../../file';
+import { Message } from '../util/messages';
 
 export type PingRequest = {
   type: 'ping';

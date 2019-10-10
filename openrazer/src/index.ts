@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import {promisify} from 'util';
 
-import { PixelMap, getPixelMap } from './lib/pixelmaps';
+import { getPixelMap, PixelMap } from './lib/pixelmaps';
 
 const KEYBOARDS_PATH = '/sys/bus/hid/drivers/razerkbd/';
 const MOUSE_MATS_PATH = '/sys/bus/hid/drivers/razermousemat/';
@@ -29,7 +29,7 @@ const readdir = promisify(fs.readdir);
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
 
-function filterNonNull<T>(values: (T | null)[]): T[] {
+function filterNonNull<T>(values: Array<T | null>): T[] {
   return values.filter(v => v !== null) as T[];
 }
 
@@ -54,14 +54,15 @@ export function getMousemats() {
   return getDevices(MOUSE_MATS_PATH, MouseMat);
 }
 
-export function getDevices<T extends Device>(devicesFolder: string, cls: { new(devicePath: string, deviceType: string): T }): Promise<T[]> {
+export function getDevices<T extends Device>(
+    devicesFolder: string, cls: new(devicePath: string, deviceType: string) => T): Promise<T[]> {
   const keyboards = readdir(devicesFolder).then(devices => Promise.all(
     devices.map(async deviceId => {
       // Get Device Type
       const devicePath = path.join(devicesFolder, deviceId);
       const deviceType = await readFile(path.join(devicePath, device_type), ENCODING).catch(() => null);
       return deviceType ? new cls(devicePath, deviceType.trim()) : null;
-    })
+    }),
   ));
   return keyboards.then(filterNonNull);
 }
@@ -182,7 +183,7 @@ export class Keyboard extends Device {
    * @param start between 0-21, the first column you want to write a color to
    * @param colors the colors you wish to write, providing no more than (22-start) values
    */
-  public async writeCustomFrame(rows: { index: number, start: number, colors: RGB[] }[]) {
+  public async writeCustomFrame(rows: Array<{ index: number, start: number, colors: RGB[] }>) {
     const bytes: number[] = [];
     rows.map(({ index, start, colors }) => {
       if (index < 0 || index > 5) throw new Error(`invalid row index: ${index}`);

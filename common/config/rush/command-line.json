@@ -129,6 +129,12 @@
       "name": "test",
       "ignoreMissingScript": true,
       "enableParallelism": true
+    },
+    {
+      "commandKind": "bulk",
+      "summary": "Run tslint",
+      "name": "tslint",
+      "enableParallelism": true
     }
   ],
 

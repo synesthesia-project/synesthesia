@@ -5,9 +5,9 @@ type KeyboardPixelMapRow = {
    * The svg y positions for (most) keys in this row
    */
   svgY: number;
-  keys: {
+  keys: Array<{
     i: number;
-  }[];
+  }>;
 };
 
 export type KeyboardPixelMap = {
@@ -38,7 +38,7 @@ export const KEYBOARD_PIXEL_MAPS: { [id: string]: KeyboardPixelMap } = {
           { i: 15 }, // prt Sc
           { i: 16 }, // scr lockk
           { i: 17 }, // pause
-        ]
+        ],
       },
       {
         svgY: 70.910522,
@@ -64,7 +64,7 @@ export const KEYBOARD_PIXEL_MAPS: { [id: string]: KeyboardPixelMap } = {
           { i: 19 }, // /
           { i: 20 }, // *
           { i: 21 }, // -
-        ]
+        ],
       },
       {
         svgY: 117.00507,
@@ -90,7 +90,7 @@ export const KEYBOARD_PIXEL_MAPS: { [id: string]: KeyboardPixelMap } = {
           { i: 19 }, // 8 / up
           { i: 20 }, // 9 / page up
           { i: 21 }, // +
-        ]
+        ],
       },
       {
         svgY: 163.09955,
@@ -111,7 +111,7 @@ export const KEYBOARD_PIXEL_MAPS: { [id: string]: KeyboardPixelMap } = {
           { i: 18 }, // 4 / left
           { i: 19 }, // 5
           { i: 20 }, // 6 / right
-        ]
+        ],
       },
       {
         svgY: 209.19406,
@@ -133,7 +133,7 @@ export const KEYBOARD_PIXEL_MAPS: { [id: string]: KeyboardPixelMap } = {
           { i: 19 }, // 2 / down
           { i: 20 }, // 3 / page down
           { i: 21 }, // enter
-        ]
+        ],
       },
       {
         svgY: 255.28857,
@@ -151,10 +151,10 @@ export const KEYBOARD_PIXEL_MAPS: { [id: string]: KeyboardPixelMap } = {
           { i: 17 }, // right
           { i: 19 }, // 0 / insert
           { i: 20 }, // del
-        ]
-      }
-    ]
-  }
+        ],
+      },
+    ],
+  },
 };
 
 export const HARDCODED_MAPS: { [id: string]: PixelMap } = {
@@ -177,7 +177,7 @@ export const HARDCODED_MAPS: { [id: string]: PixelMap } = {
         { i: 12, centreX:   0, centreY: 225 },
         { i: 13, centreX:   0, centreY: 400 },
         { i: 14, centreX:   0, centreY: 420 },
-      ]
-    }]
-  }
+      ],
+    }],
+  },
 };

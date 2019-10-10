@@ -10,8 +10,8 @@
   },
   "scripts": {
     "clean": "gulp clean",
-    "link": "mkdir -p node_modules/@synesthesia-project; ln -s ../../../.. node_modules/@synesthesia-project/core",
-    "build": "gulp"
+    "build": "gulp",
+    "tslint": "gulp tslint"
   },
   "dependencies": {
     "@synesthesia-project/core": "^0.0.2"

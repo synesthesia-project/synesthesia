@@ -33,7 +33,7 @@ gulp.task('tslint', function() {
   return gulp.src(['src/**/*.ts'])
   .pipe(gulpTslint({
     formatter: 'verbose',
-    configuration: '../tslint.json',
+    configuration: '../../tslint.json',
     program
   }))
   .on('error', handleError)

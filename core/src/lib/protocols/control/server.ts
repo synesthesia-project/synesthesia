@@ -1,5 +1,5 @@
 import {Endpoint} from '../util/endpoint';
-import {ControlMessage, Request, Response, PlayStateData, Notification} from './messages';
+import { ControlMessage, Notification, PlayStateData, Request, Response } from './messages';
 
 /**
  * The ServerEndpoint is the side of the control protocol that should

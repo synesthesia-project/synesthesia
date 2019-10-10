@@ -15,7 +15,8 @@
   "scripts": {
     "clean": "gulp clean",
     "build": "gulp",
-    "test": "rm -rf build/data; mocha build/test/**/*.js"
+    "test": "rm -rf build/data; mocha build/test/**/*.js",
+    "tslint": "gulp tslint"
   },
   "devDependencies": {
     "@types/ws": "^6.0.1",

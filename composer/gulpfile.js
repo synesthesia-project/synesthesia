@@ -50,7 +50,7 @@ gulp.task('tslint', function() {
   return gulp.src(['src/**/*.ts', 'src/**/*.tsx'])
   .pipe(tslint({
     formatter: 'verbose',
-    configuration: '../core/tslint.json'
+    configuration: '../tslint.json'
   }))
   .on('error', handleError)
   .pipe(tslint.report());

@@ -3,11 +3,11 @@
  * residing on the same machine.
  */
 import * as fs from 'fs';
+import JsonSocket = require('json-socket');
+import * as net from 'net';
 import * as os from 'os';
 import * as path from 'path';
-import * as net from 'net';
 import { promisify } from 'util';
-import JsonSocket = require('json-socket');
 
 import * as messages from './messages';
 
@@ -83,7 +83,7 @@ export class LocalCommunicationsServer extends LocalCommunications {
   public notifyConsumers(port: number) {
     const consumers = path.join(RUN_DIR, CONSUMER);
     const message: messages.IncomingConsumerMessage = {
-      type: 'new-server', port
+      type: 'new-server', port,
     };
     readdir(consumers).then(dirs => {
       for (const pid of dirs) {

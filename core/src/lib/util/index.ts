@@ -8,7 +8,7 @@ export function restrict(value: number, min: number, max: number) {
 export function deepFreeze<T>(o: T): T {
   Object.freeze(o);
 
-  Object.getOwnPropertyNames(o).forEach(function (prop) {
+  Object.getOwnPropertyNames(o).forEach((prop) => {
     if (
         o[prop] !== null
         && (typeof o[prop] === 'object' || typeof o[prop] === 'function')

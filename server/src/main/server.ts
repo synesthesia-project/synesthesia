@@ -79,7 +79,7 @@ export class Server {
     }
 
     private sendStaticFile(file: string, response: http.ServerResponse, contentType: string) {
-        fs.readFile(file, function (error, content) {
+        fs.readFile(file, (error, content) => {
             if (error) {
                 if (error.code === 'ENOENT') {
                     response.writeHead(404, { 'Content-Type': 'text/plain' });

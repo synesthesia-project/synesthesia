@@ -27,7 +27,8 @@
   },
   "scripts": {
     "clean": "gulp clean",
-    "build": "gulp"
+    "build": "gulp",
+    "tslint": "gulp tslint"
   },
   "files": [
     "lib/**/*",

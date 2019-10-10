@@ -1,5 +1,5 @@
 import {RequestHandlerEndpoint} from '../util/endpoint';
-import {ControlMessage, Request, Response, PlayStateData, Notification} from './messages';
+import { ControlMessage, Notification, PlayStateData, Request, Response } from './messages';
 
 /**
  * The ControllerEndpoint is the side of the control protocol that should
@@ -24,8 +24,8 @@ export class ControllerEndpoint extends RequestHandlerEndpoint<Request, Response
       type: 'notification',
       notification: {
         type: 'state',
-        data: state
-      }
+        data: state,
+      },
     });
   }
 

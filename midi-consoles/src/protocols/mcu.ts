@@ -1,3 +1,5 @@
+/* tslint:disable:no-bitwise */
+
 import { Base } from '../base';
 
 export type Channel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
@@ -89,9 +91,9 @@ export default class MCUProtocol extends Base {
   private readonly deviceId: number;
 
   private readonly eventListeners = {
-    fader: new Set<Listener<FaderEvent>>(),
     'channel-button': new Set<Listener<ChannelButtonEvent>>(),
-    'v-pot': new Set<Listener<VPotEvent>>()
+    'fader': new Set<Listener<FaderEvent>>(),
+    'v-pot': new Set<Listener<VPotEvent>>(),
   };
 
   private readonly faderEchoTimeouts = {
@@ -132,14 +134,14 @@ export default class MCUProtocol extends Base {
       const channel = (k & 0xf);
       if (!isChannelOrMaster(channel)) return;
       this.handleEvent({
-        type: 'fader', channel, value
+        type: 'fader', channel, value,
       });
       if (this.faderEchoDelay >= 0) {
         const timeout = this.faderEchoTimeouts[channel];
         if (timeout) clearTimeout(timeout);
         this.faderEchoTimeouts[channel] = setTimeout(
           () => this.setFader(channel, value),
-          this.faderEchoDelay
+          this.faderEchoDelay,
         );
       }
     }
@@ -158,7 +160,7 @@ export default class MCUProtocol extends Base {
         );
         if (!isChannel(channel)) throw new Error('internal error: invalid channel produced!');
         this.handleEvent({
-          type: 'channel-button', state, button, channel
+          type: 'channel-button', state, button, channel,
         });
       } else {
         // TODO: implement
@@ -174,7 +176,7 @@ export default class MCUProtocol extends Base {
       const direction = (0x40 & message[2]) ? 'ccw' : 'cw';
       const ticks = 0x3f & message[2];
       this.handleEvent({
-        type: 'v-pot', channel, direction, ticks
+        type: 'v-pot', channel, direction, ticks,
       });
     }
   }
@@ -239,7 +241,7 @@ export default class MCUProtocol extends Base {
       0x12,
       offset,
       ...chars,
-      0xf7
+      0xf7,
     ]);
   }
 

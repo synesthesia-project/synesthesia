@@ -30,7 +30,8 @@
   "scripts": {
     "clean": "gulp clean;",
     "build": "gulp;",
-    "test": "mocha test/**/*.js"
+    "test": "mocha test/**/*.js",
+    "tslint": "gulp tslint"
   },
   "files": [
     "index.js",

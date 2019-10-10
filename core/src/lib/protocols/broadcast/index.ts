@@ -11,8 +11,8 @@
  * nodes that act as proxies.
  */
 
+import { DownstreamEndpoint } from './downstream';
 import * as messages from './messages';
-import {DownstreamEndpoint} from './downstream';
-import {UpstreamEndpoint} from './upstream';
+import { UpstreamEndpoint } from './upstream';
 
 export { messages, DownstreamEndpoint, UpstreamEndpoint };

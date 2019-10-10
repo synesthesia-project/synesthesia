@@ -3,7 +3,7 @@ import * as path from 'path';
 import svgson from 'svgson';
 import {promisify} from 'util';
 
-import { KEYBOARD_PIXEL_MAPS, HARDCODED_MAPS } from './data';
+import { HARDCODED_MAPS, KEYBOARD_PIXEL_MAPS } from './data';
 
 const readFile = promisify(fs.readFile);
 
@@ -56,7 +56,7 @@ export async function getPixelMap(deviceType: string) {
         x: Number.parseFloat(rect.attributes.x),
         y: Number.parseFloat(rect.attributes.y),
         width: Number.parseFloat(rect.attributes.width),
-        height: Number.parseFloat(rect.attributes.height)
+        height: Number.parseFloat(rect.attributes.height),
       };
       let row = unmappedKeys.get(key.y);
       if (!row) {
@@ -72,7 +72,7 @@ export async function getPixelMap(deviceType: string) {
   // Map each key in KEYBOARD_PIXEL_MAPS to it's svg counterpart
   const rows = data.rows.map(row => {
     const r: PixelMapRow = {
-      keys: []
+      keys: [],
     };
 
     const unmappedRow = unmappedKeys.get(row.svgY);
@@ -86,7 +86,7 @@ export async function getPixelMap(deviceType: string) {
         i: key.i,
         centreX: svg.x + svg.width / 2,
         centreY: svg.y + svg.height / 2,
-        svg
+        svg,
       });
     }
 

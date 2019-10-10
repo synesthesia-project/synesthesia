@@ -1,6 +1,7 @@
-import {Endpoint} from '../util/endpoint';
-import {BroadcastMessage, Request, Response, PlayStateData, Notification} from './messages';
-import {CueFile} from '../../file';
+
+import { CueFile } from '../../file';
+import { Endpoint } from '../util/endpoint';
+import { BroadcastMessage, Notification, PlayStateData, Request, Response } from './messages';
 
 /**
  * The UpstreamEndpoint is the side of the protocol that shares synesthesia
@@ -26,7 +27,7 @@ export class UpstreamEndpoint extends Endpoint<Request, Response, Notification> 
         case 'ping': {
           const response: Response = {
             type: 'pong',
-            timestampMillis: new Date().getTime()
+            timestampMillis: new Date().getTime(),
           };
           resolve(response);
           return;
@@ -34,7 +35,7 @@ export class UpstreamEndpoint extends Endpoint<Request, Response, Notification> 
         case 'file': {
           resolve(
             this.getFile(request.fileHash)
-            .then(file => ({ type: 'file', file } as Response))
+            .then(file => ({ type: 'file', file } as Response)),
           );
           return;
         }
@@ -63,8 +64,8 @@ export class UpstreamEndpoint extends Endpoint<Request, Response, Notification> 
       type: 'notification',
       notification: {
         type: 'playing_state',
-        data: state
-      }
+        data: state,
+      },
     });
   }
 
