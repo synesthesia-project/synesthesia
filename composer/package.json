@@ -22,6 +22,7 @@
     "@types/chrome": "0.0.40",
     "@types/jquery": "2.0.39",
     "@types/lodash": "^4.14.120",
+    "@types/node": "^12.6.8",
     "@types/react": "^16.0.38",
     "@types/react-dom": "^16.0.4",
     "@types/spotify-web-playback-sdk": "^0.1.1",
