@@ -1,4 +1,5 @@
 dependencies:
+  '@rush-temp/compositor': 'file:projects/compositor.tgz'
   '@rush-temp/core': 'file:projects/core.tgz'
   '@rush-temp/core-example-consumer': 'file:projects/core-example-consumer.tgz'
   '@rush-temp/core-example-controller': 'file:projects/core-example-controller.tgz'
@@ -3766,6 +3767,24 @@ packages:
     dev: false
     resolution:
       integrity: sha1-9+572FfdfB0tOMDnTvvWgdFDH9E=
+  'file:projects/compositor.tgz':
+    dependencies:
+      '@types/json-socket': 0.1.17
+      gulp: 3.9.1
+      gulp-clean: 0.3.2
+      gulp-sourcemaps: 1.6.0
+      gulp-tslint: 8.1.4_tslint@5.20.0
+      gulp-typescript: 5.0.1_typescript@3.6.4
+      json-socket: 0.3.0
+      run-sequence: 1.2.2
+      tslint: 5.20.0_typescript@3.6.4
+      typescript: 3.6.4
+    dev: false
+    name: '@rush-temp/compositor'
+    resolution:
+      integrity: sha512-1Lcup2kVbIxLz/XxD81FY767LYJCitxjIXXUAGRcgRuDTR2pJWEJvGdLDRl/FdPPdCpWcStNEhBAmFmXsxGqtA==
+      tarball: 'file:projects/compositor.tgz'
+    version: 0.0.0
   'file:projects/core-example-consumer.tgz':
     dependencies:
       gulp: 3.9.1
@@ -3780,7 +3799,7 @@ packages:
     dev: false
     name: '@rush-temp/core-example-consumer'
     resolution:
-      integrity: sha512-uktCgyKveYvsrlBgBFUUOQtFhEstZ57yh/xwUQ7ss7YCNFw7B9s5bWAg5QExCkhidKNlJsJozqcMOemJiJmHwA==
+      integrity: sha512-5hM71ASi517FK0lNbFdJTWU9aAROl3pfWZs+ODycANBy5MCGjlZgICooP4MMzcJwgrwLpyoO0Lq7hbmh60hnpw==
       tarball: 'file:projects/core-example-consumer.tgz'
     version: 0.0.0
   'file:projects/core-example-controller.tgz':
@@ -3803,7 +3822,7 @@ packages:
     dev: false
     name: '@rush-temp/core-example-controller'
     resolution:
-      integrity: sha512-GE0y8bDFgWfBsztBhUSQ5xkWSgM7lCxQDTBOj4JqTgFW7LXfXsdgBBMwNxnMqgZnBLduIH1NOt0x0UR4lCX7Fw==
+      integrity: sha512-XZBsAgnIbZ3YXobFU7pk0BN02JKl5kgW3JwdNBshKdfipBF93/L3tgaLYqCt3k6Y5N6ouFEKfx9OZzEn9B39IA==
       tarball: 'file:projects/core-example-controller.tgz'
     version: 0.0.0
   'file:projects/core.tgz':
@@ -3824,7 +3843,9 @@ packages:
       integrity: sha512-4aAqc80Ne+nacD7VoZSihWr0IBa41Nq4UN1pC/yHBpdhK1o9+Vwefne1k4+G0YmXD78BzrCR2USypgn6NPc2Sg==
       tarball: 'file:projects/core.tgz'
     version: 0.0.0
+registry: ''
 specifiers:
+  '@rush-temp/compositor': 'file:./projects/compositor.tgz'
   '@rush-temp/core': 'file:./projects/core.tgz'
   '@rush-temp/core-example-consumer': 'file:./projects/core-example-consumer.tgz'
   '@rush-temp/core-example-controller': 'file:./projects/core-example-controller.tgz'

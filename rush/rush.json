@@ -361,6 +361,10 @@
     {
       "packageName": "@synesthesia-project/core-example-controller",
       "projectFolder": "core/examples/controller"
+    },
+    {
+      "packageName": "@synesthesia-project/compositor",
+      "projectFolder": "compositor"
     }
   ]
 }
