@@ -64,14 +64,3 @@ A chrome extension controller for synesthesia
 
 Synesthesia consumer that controls dmx lighting using Open Lighting Architecture
 
-# Old Code
-
-This repo still contains some code that eventually needs to be moved out:
-
-## [home-control](home-control)
-
-A personal lighting project for controlling lights at home that I (Sam) still haven't moved out.
-
-## [strip](strip)
-
-Synesthesia client that controls an individually-addressable RGB light strip.
