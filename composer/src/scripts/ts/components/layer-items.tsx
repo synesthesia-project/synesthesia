@@ -1,3 +1,4 @@
+import * as jQuery from 'jquery';
 import {styled} from './styling';
 import * as React from 'react';
 import * as file from '@synesthesia-project/core/lib/file';
@@ -254,7 +255,7 @@ class LayerItems extends React.Component<LayerItemsProps, LayerItemsState> {
     return (
       <div className={this.props.className}>
         <div className={'timeline-selector ' + (this.state.selector.state === 'dragging' ? ' dragging' : '')}
-          ref={div => this.timelineSelector = div ? $(div) : null}
+          ref={div => this.timelineSelector = div ? jQuery(div) : null}
           onMouseEnter={this.onTimelineSelectorMouseOver}
           onMouseLeave={this.onTimelineSelectorMouseOut}
           onMouseMove={this.onTimelineSelectorMouseMove}

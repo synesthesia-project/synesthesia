@@ -32,6 +32,7 @@ dependencies:
   gulp-util: 3.0.8
   gulp-webpack: 1.5.0
   id3-parser: 2.0.0
+  jquery: 3.4.1
   json-socket: 0.3.0
   lodash: 4.17.15
   merge2: 1.3.0
@@ -2316,6 +2317,10 @@ packages:
     dev: false
     resolution:
       integrity: sha1-YRrhrPFPXoH3KVB0coGf6XM1WKk=
+  /jquery/3.4.1:
+    dev: false
+    resolution:
+      integrity: sha512-36+AdBzCL+y6qjw5Tx7HgzeGCzC81MDDgaUP8ld2zhx58HdqXGoBd+tHdrBMiyjGQs0Hxs/MLZTu/eHNJJuWPw==
   /js-tokens/4.0.0:
     dev: false
     resolution:
@@ -4880,6 +4885,7 @@ packages:
       gulp-util: 3.0.8
       gulp-webpack: 1.5.0
       id3-parser: 2.0.0
+      jquery: 3.4.1
       lodash: 4.17.15
       plugin-error: 1.0.1
       react: 15.4.2
@@ -4895,7 +4901,7 @@ packages:
     dev: false
     name: '@rush-temp/composer'
     resolution:
-      integrity: sha512-pAuygorkfiS5EMHx3YPtBol/vIJfiQYVKKmO+AvAblt6cZd8VmfFkz/iSE8haWBevSXFtH+xfJjFaaFyjhJApg==
+      integrity: sha512-pzWyouE6znRuOFCgZ1BgfbiQPw9FnVqr2mbhv0GRERvXqWWMmufcDA+mLB5vjcmIgXdPBrJPzJ17ofKzs9KSRw==
       tarball: 'file:projects/composer.tgz'
     version: 0.0.0
   'file:projects/compositor.tgz':
@@ -5100,6 +5106,7 @@ specifiers:
   gulp-util: ~3.0.8
   gulp-webpack: 1.5.0
   id3-parser: ^2.0.0
+  jquery: ~3.4.1
   json-socket: ^0.3.0
   lodash: ^4.17.13
   merge2: ^1.2.3
