@@ -1,9 +1,0 @@
-[submodule "external/light-desk"]
-	path = external/light-desk
-	url = https://github.com/synesthesia-project/light-desk.git
-[submodule "core"]
-	path = rush/core
-	url = https://github.com/synesthesia-project/core
-[submodule "openrazer"]
-	path = rush/openrazer
-	url = https://github.com/synesthesia-project/openrazer.git
