@@ -122,6 +122,14 @@
     //    */
     //   "shellCommand": "node common/scripts/my-global-command.js"
     // }
+
+    {
+      "commandKind": "bulk",
+      "summary": "Run tests in all projects",
+      "name": "test",
+      "ignoreMissingScript": true,
+      "enableParallelism": true
+    }
   ],
 
   /**
