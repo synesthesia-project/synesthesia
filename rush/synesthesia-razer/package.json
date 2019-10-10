@@ -1,5 +1,5 @@
 {
-  "name": "synesthesia-razer",
+  "name": "@synesthesia-project/synesthesia-razer",
   "version": "0.0.1",
   "description": "A synesthesia consumer for Razer Peripherals",
   "license": "MIT",

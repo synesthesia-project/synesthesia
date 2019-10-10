@@ -1,31 +1,50 @@
 dependencies:
+  '@rush-temp/composer': 'file:projects/composer.tgz'
+  '@rush-temp/compositor': 'file:projects/compositor.tgz'
   '@rush-temp/core': 'file:projects/core.tgz'
   '@rush-temp/core-example-consumer': 'file:projects/core-example-consumer.tgz'
   '@rush-temp/core-example-controller': 'file:projects/core-example-controller.tgz'
   '@rush-temp/midi-consoles': 'file:projects/midi-consoles.tgz'
   '@rush-temp/openrazer': 'file:projects/openrazer.tgz'
+  '@rush-temp/synesthesia-razer': 'file:projects/synesthesia-razer.tgz'
+  '@types/chrome': 0.0.40
+  '@types/jquery': 2.0.39
   '@types/json-socket': 0.1.17
+  '@types/lodash': 4.14.144
   '@types/mocha': 5.2.7
   '@types/node': 12.7.12
   '@types/react': 16.9.5
   '@types/react-dom': 16.9.1
+  '@types/spotify-web-playback-sdk': 0.1.6
+  '@types/webmidi': 2.0.1
+  '@types/ws': 6.0.3
+  bower: 1.8.8
   gulp: 3.9.1
+  gulp-all: 1.1.0
+  gulp-bower: 0.0.13
   gulp-clean: 0.3.2
   gulp-sourcemaps: 1.6.0
   gulp-tslint: 8.1.4_tslint@5.20.0
   gulp-typescript: 5.0.1_typescript@3.6.4
+  gulp-webpack: 1.5.0
   id3-parser: 2.0.0
   json-socket: 0.3.0
+  lodash: 4.17.15
   merge2: 1.3.0
   midi: 1.0.0
   mocha: 6.2.1
   react: 15.4.2
   react-dom: 15.4.2_react@15.4.2
+  react-icons: 3.7.0
   run-sequence: 1.2.2
+  source-map-loader: 0.1.5
+  spotify-web-api-js: 0.23.0
+  styled-components: 3.4.10_react@15.4.2
   svgson: 3.1.0
   tslint: 5.20.0_typescript@3.6.4
   typescript: 3.6.4
   webpack: 1.14.0
+  ws: 7.1.2
 lockfileVersion: 5.1
 packages:
   /@babel/code-frame/7.5.5:
@@ -42,16 +61,40 @@ packages:
     dev: false
     resolution:
       integrity: sha512-7dV4eu9gBxoM0dAnj/BCFDW9LFU0zvTrkq0ugM7pnHEgguOEeOz1so2ZghEdzviYzQEED0r4EAgpsBChKy1TRQ==
+  /@types/chrome/0.0.40:
+    dependencies:
+      '@types/filesystem': 0.0.29
+    dev: false
+    resolution:
+      integrity: sha1-pCTT6Hxhl3BtDUQ1cqF125EhgwQ=
   /@types/fancy-log/1.3.0:
     dev: false
     resolution:
       integrity: sha512-mQjDxyOM1Cpocd+vm1kZBP7smwKZ4TNokFeds9LV7OZibmPJFEzY3+xZMrKfUdNT71lv8GoCPD6upKwHxubClw==
+  /@types/filesystem/0.0.29:
+    dependencies:
+      '@types/filewriter': 0.0.28
+    dev: false
+    resolution:
+      integrity: sha512-85/1KfRedmfPGsbK8YzeaQUyV1FQAvMPMTuWFQ5EkLd2w7szhNO96bk3Rh/SKmOfd9co2rCLf0Voy4o7ECBOvw==
+  /@types/filewriter/0.0.28:
+    dev: false
+    resolution:
+      integrity: sha1-wFTor02d11205jq8dviFFocU1LM=
+  /@types/jquery/2.0.39:
+    dev: false
+    resolution:
+      integrity: sha1-kX/mUwDbxsy9+n4u5RFZ+9Kddok=
   /@types/json-socket/0.1.17:
     dependencies:
       '@types/node': 12.7.12
     dev: false
     resolution:
       integrity: sha512-zBCcTx21ts99HNBOdPb0LmdUipXPu4rvVAcntEAnAS+fvQ7lXI1xdVYPkjSC9dYrnXUQNYDFAWYCWz2hR+Bi5Q==
+  /@types/lodash/4.14.144:
+    dev: false
+    resolution:
+      integrity: sha512-ogI4g9W5qIQQUhXAclq6zhqgqNUr7UlFaqDHbch7WLSLeeM/7d3CRaw7GLajxvyFvhJqw4Rpcz5bhoaYtIx6Tg==
   /@types/mocha/5.2.7:
     dev: false
     resolution:
@@ -77,6 +120,20 @@ packages:
     dev: false
     resolution:
       integrity: sha512-jQ12VMiFOWYlp+j66dghOWcmDDwhca0bnlcTxS4Qz/fh5gi6wpaZDthPEu/Gc/YlAuO87vbiUXL8qKstFvuOaA==
+  /@types/spotify-web-playback-sdk/0.1.6:
+    dev: false
+    resolution:
+      integrity: sha512-n5zJZlS/KSkX1Q/WAEpgvCdmGMOns3NPT85Y23Dd2SHRad2YidHuUQ9JC0eRUySFnSQbXsaUhZB6XIbkk2mb/A==
+  /@types/webmidi/2.0.1:
+    dev: false
+    resolution:
+      integrity: sha1-goPlxZA4kSPRgHwGIIAGHi1Cktc=
+  /@types/ws/6.0.3:
+    dependencies:
+      '@types/node': 12.7.12
+    dev: false
+    resolution:
+      integrity: sha512-yBTM0P05Tx9iXGq00BbJPo37ox68R5vaGTXivs6RGh/BQ6QP5zqZDGWdAO6JbRE/iR1l80xeGAwCQS2nMV9S/w==
   /acorn/3.3.0:
     dev: false
     engines:
@@ -120,6 +177,12 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-hHUXGagefjN2iRrID63xckIvotOXOojhQKWIPUZ4mNUZ9nLZW+7FMNoE1lOkEhNWYsx/7ysGIuJYCiMAA9FnrA==
+  /ansi-escapes/1.4.0:
+    dev: false
+    engines:
+      node: '>=0.10.0'
+    resolution:
+      integrity: sha1-06ioOzGapneTZisT52HHkRQiMG4=
   /ansi-gray/0.1.1:
     dependencies:
       ansi-wrap: 0.1.0
@@ -292,6 +355,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-z/WhQ5FPySLdvREByI2vZiTWwCnF0moMJ1hK9YQwDTHKh6I7/uSckMetoRGb5UBZPC1z0jlw+n/XCgjeH7y1AQ==
+  /async-limiter/1.0.1:
+    dev: false
+    resolution:
+      integrity: sha512-csOlWGAcRFJaI6m+F2WKdnMKr4HhdhFVBk0H/QbJFMCr+uO2kwohwXQPxw/9OCxp05r5ghVBFSyioixx3gfkNQ==
   /async/0.2.10:
     dev: false
     resolution:
@@ -355,6 +422,14 @@ packages:
     dev: false
     resolution:
       integrity: sha512-p2q/t/mhvuOj/UeLlV6566GD/guowlr0hHxClI0W9m7MWYkL1F0hLo+0Aexs9HSPCtR1SXQ0TD3MMKrXZajbiQ==
+  /bower/1.8.8:
+    deprecated: 'We don''t recommend using Bower for new projects. Please consider Yarn and Webpack or Parcel. You can read how to migrate legacy project here: https://bower.io/blog/2017/how-to-migrate-away-from-bower/'
+    dev: false
+    engines:
+      node: '>=0.10.0'
+    hasBin: true
+    resolution:
+      integrity: sha512-1SrJnXnkP9soITHptSO+ahx3QKp3cVzn8poI6ujqc5SeOkg5iqM1pK9H+DSc2OQ8SnO0jC/NG4Ur/UIwy7574A==
   /brace-expansion/1.1.11:
     dependencies:
       balanced-match: 1.0.0
@@ -419,6 +494,13 @@ packages:
     dev: false
     resolution:
       integrity: sha1-bRu2AbB6TvztlwlBMgkwJ8lbwpg=
+  /buffer/5.4.3:
+    dependencies:
+      base64-js: 1.3.1
+      ieee754: 1.1.13
+    dev: false
+    resolution:
+      integrity: sha512-zvj65TkFeIt3i6aj5bIvJDzjjQQGs4o/sNoezg1F1kYap9Nu2jcUdpwzRSJTHMMzG0H7bZkn4rNQpImhuxWX2A==
   /builtin-modules/1.1.1:
     dev: false
     engines:
@@ -472,6 +554,10 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==
+  /camelize/1.0.0:
+    dev: false
+    resolution:
+      integrity: sha1-FkpUg+Yw+kMh5a8HAg5TGDGyYJs=
   /center-align/0.1.3:
     dependencies:
       align-text: 0.1.4
@@ -551,6 +637,18 @@ packages:
       node: '>=4'
     resolution:
       integrity: sha512-sLUtFxYtHc3jM9pmwyYXOLln0nnQ1OhFrefQ7nqUlva1crHDbi4gVO+nnMSm5jztFXIRDMt+kMNh0mOscbARow==
+  /cli-cursor/1.0.2:
+    dependencies:
+      restore-cursor: 1.0.1
+    dev: false
+    engines:
+      node: '>=0.10.0'
+    resolution:
+      integrity: sha1-ZNo/fValRBLll5S9Ytw1KV6PKYc=
+  /cli-width/1.1.1:
+    dev: false
+    resolution:
+      integrity: sha1-pNKT72frt7iNSk1CwMzwDE0eNm0=
   /cliui/2.1.0:
     dependencies:
       center-align: 0.1.3
@@ -605,6 +703,12 @@ packages:
     dev: false
     resolution:
       integrity: sha512-2EF8zTQOxYq70Y4XKtorQupqF0m49MBz2/yf5Bj+MHjvpG3Hy7sImifnqD6UA+TKYxeSV+u6qqQPawN5UvnpKQ==
+  /code-point-at/1.1.0:
+    dev: false
+    engines:
+      node: '>=0.10.0'
+    resolution:
+      integrity: sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
   /collection-visit/1.0.0:
     dependencies:
       map-visit: 1.0.0
@@ -681,6 +785,20 @@ packages:
     dev: false
     resolution:
       integrity: sha1-ufx1u0oO1h3PHNXa6W6zDJw+UGw=
+  /css-color-keywords/1.0.0:
+    dev: false
+    engines:
+      node: '>=4'
+    resolution:
+      integrity: sha1-/qJhbcZ2spYmhrOvjb2+GAskTgU=
+  /css-to-react-native/2.3.2:
+    dependencies:
+      camelize: 1.0.0
+      css-color-keywords: 1.0.0
+      postcss-value-parser: 3.3.1
+    dev: false
+    resolution:
+      integrity: sha512-VOFaeZA053BqvvvqIA8c9n0+9vFppVBAHCp6JgFTtTMU3Mzi+XnelJ9XC9ul3BqFzZyQ5N+H0SnwsWT2Ebchxw==
   /csstype/2.6.7:
     dev: false
     resolution:
@@ -934,6 +1052,12 @@ packages:
       node: '>=0.4.x'
     resolution:
       integrity: sha1-nr23Y1rQmccNzEwqH1AEKI6L2SQ=
+  /exit-hook/1.1.1:
+    dev: false
+    engines:
+      node: '>=0.10.0'
+    resolution:
+      integrity: sha1-8FyiM7SMBdVP/wd2XfhQfpXAL/g=
   /expand-brackets/0.1.5:
     dependencies:
       is-posix-bracket: 0.1.1
@@ -1039,6 +1163,15 @@ packages:
     dev: false
     resolution:
       integrity: sha1-xNWY6taUkRJlPWWIsBpc3Nn5D90=
+  /figures/1.7.0:
+    dependencies:
+      escape-string-regexp: 1.0.5
+      object-assign: 4.1.1
+    dev: false
+    engines:
+      node: '>=0.10.0'
+    resolution:
+      integrity: sha1-y+Hjr/zxzUS4DK3+0o3Hk6lwHS4=
   /file-uri-to-path/1.0.0:
     dev: false
     resolution:
@@ -1164,6 +1297,10 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-xjMy9BXO3EsE2/5wz4NklMU8tEs=
+  /foreachasync/3.0.0:
+    dev: false
+    resolution:
+      integrity: sha1-VQKYfchxS+M5IJfzLgBxyd7gfPY=
   /fragment-cache/0.2.1:
     dependencies:
       map-cache: 0.2.2
@@ -1399,6 +1536,24 @@ packages:
       node: '>=4.x'
     resolution:
       integrity: sha512-qBr4OuELkhPenW6goKVXiv47US3clb3/IbuWF9KNKEijAy9oeHxU9IgzjvJhHkUzhaj7rOUD7+YGWqUjLp5oSA==
+  /gulp-all/1.1.0:
+    dependencies:
+      stream-exhaust: 1.0.2
+    dev: false
+    resolution:
+      integrity: sha1-b25Ks4I7hhHQK2tuA453wx9kiag=
+  /gulp-bower/0.0.13:
+    dependencies:
+      bower: 1.8.8
+      gulp-util: 3.0.8
+      inquirer: 0.11.4
+      through2: 0.6.2
+      walk: 2.3.3
+    dev: false
+    engines:
+      node: '>=0.8'
+    resolution:
+      integrity: sha1-fKTjxaWZ0I+torHAVMzozeTnQjU=
   /gulp-clean/0.3.2:
     dependencies:
       gulp-util: 2.2.20
@@ -1493,6 +1648,19 @@ packages:
       node: '>=0.10'
     resolution:
       integrity: sha1-AFTh50RQLifATBh8PsxQXdVLu08=
+  /gulp-webpack/1.5.0:
+    dependencies:
+      gulp-util: 3.0.8
+      memory-fs: 0.2.0
+      through: 2.3.8
+      vinyl: 0.5.3
+      webpack: 1.14.0
+    deprecated: 'Has been renamed to https://www.npmjs.com/package/webpack-stream'
+    dev: false
+    engines:
+      node: '>= 0.10.0'
+    resolution:
+      integrity: sha1-eqaD/ojALSRhSOJ8cinLa2KJLbo=
   /gulp/3.9.1:
     dependencies:
       archy: 1.0.0
@@ -1613,6 +1781,10 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
+  /hoist-non-react-statics/2.5.5:
+    dev: false
+    resolution:
+      integrity: sha512-rqcy4pJo55FTTLWt+bU8ukscqHeE/e9KWvsOW2b/a3afxQZhwkQdT1rPPCJ0rYXdj4vNcasY8zHTH+jF/qStxw==
   /homedir-polyfill/1.0.3:
     dependencies:
       parse-passwd: 1.0.0
@@ -1688,6 +1860,24 @@ packages:
     dev: false
     resolution:
       integrity: sha512-RZY5huIKCMRWDUqZlEi72f/lmXKMvuszcMBduliQ3nnWbx9X/ZBQO7DijMEYS9EhHBb2qacRUMtC7svLwe0lcw==
+  /inquirer/0.11.4:
+    dependencies:
+      ansi-escapes: 1.4.0
+      ansi-regex: 2.1.1
+      chalk: 1.1.3
+      cli-cursor: 1.0.2
+      cli-width: 1.1.1
+      figures: 1.7.0
+      lodash: 3.10.1
+      readline2: 1.0.1
+      run-async: 0.1.0
+      rx-lite: 3.1.2
+      string-width: 1.0.2
+      strip-ansi: 3.0.1
+      through: 2.3.8
+    dev: false
+    resolution:
+      integrity: sha1-geM3ToNhvq/y2XAWIG01nQsy+k0=
   /interpret/0.6.6:
     dev: false
     resolution:
@@ -1841,6 +2031,14 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-zGZ3aVYCvlUO8R6LSqYwU0K20Ko=
+  /is-fullwidth-code-point/1.0.0:
+    dependencies:
+      number-is-nan: 1.0.1
+    dev: false
+    engines:
+      node: '>=0.10.0'
+    resolution:
+      integrity: sha1-754xOG8DGn8NZDr4L95QxFfvAMs=
   /is-fullwidth-code-point/2.0.0:
     dev: false
     engines:
@@ -2313,6 +2511,10 @@ packages:
       '1': rhino
     resolution:
       integrity: sha1-j1dWDIO1n8JwvT1WG2kAQ0MOJVE=
+  /lodash/3.10.1:
+    dev: false
+    resolution:
+      integrity: sha1-W/Rejkm6QYnhfUgnid/RW9FAt7Y=
   /lodash/4.17.15:
     dev: false
     resolution:
@@ -2569,6 +2771,10 @@ packages:
     dev: false
     resolution:
       integrity: sha1-Ko8t33Du1WTf8tV/HhoTfZ8FB4s=
+  /mute-stream/0.0.5:
+    dev: false
+    resolution:
+      integrity: sha1-j7+rsKmKJT0xhDMfno3rc3L6xsA=
   /nan/2.14.0:
     dev: false
     resolution:
@@ -2791,6 +2997,12 @@ packages:
     dev: false
     resolution:
       integrity: sha1-WDsap3WWHUsROsF9nFC6753Xa9E=
+  /onetime/1.1.0:
+    dev: false
+    engines:
+      node: '>=0.10.0'
+    resolution:
+      integrity: sha1-ofeDj4MUxRbwXs78vEzP4EtO14k=
   /optimist/0.6.1:
     dependencies:
       minimist: 0.0.10
@@ -2996,6 +3208,10 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-AerA/jta9xoqbAL+q7jB/vfgDqs=
+  /postcss-value-parser/3.3.1:
+    dev: false
+    resolution:
+      integrity: sha512-pISE66AbVkp4fDQ7VHBwRNXzAAKJjw4Vw7nWI/+Q3vuly7SNfgYXvm6i5IgFylHGK5sP/xHAbB7N49OS4gWNyQ==
   /preserve/0.2.0:
     dev: false
     engines:
@@ -3030,6 +3246,14 @@ packages:
     dev: false
     resolution:
       integrity: sha512-nolQXZ/4L+bP/UGlkfaIujX9BKxGwmQ9OT4mOt5yvy8iK1h3wqTEJCijzGANTCCl9nWjY41juyAn2K3Q1hLLTg==
+  /prop-types/15.7.2:
+    dependencies:
+      loose-envify: 1.4.0
+      object-assign: 4.1.1
+      react-is: 16.10.2
+    dev: false
+    resolution:
+      integrity: sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
   /prr/1.0.1:
     dev: false
     resolution:
@@ -3090,6 +3314,16 @@ packages:
       react: ^15.4.2
     resolution:
       integrity: sha1-AVNj8FsKH9Uq6e/dOgBg2QaVII8=
+  /react-icons/3.7.0:
+    dependencies:
+      camelcase: 5.3.1
+    dev: false
+    resolution:
+      integrity: sha512-7MyPwjIhuyW0D2N3s4DEd0hGPGFf0sK+IIRKhc1FvSpZNVmnUoGvHbmAwzGJU+3my+fvihVWgwU5SDtlAri56Q==
+  /react-is/16.10.2:
+    dev: false
+    resolution:
+      integrity: sha512-INBT1QEgtcCCgvccr5/86CfD71fw9EPmDxgiJX4I2Ddr6ZsV6iFXsuby+qWJPtmNuMY0zByTsG4468P7nHuNWA==
   /react/15.4.2:
     dependencies:
       fbjs: 0.8.17
@@ -3169,6 +3403,14 @@ packages:
       node: '>=0.10'
     resolution:
       integrity: sha512-1JU/8q+VgFZyxwrJ+SVIOsh+KywWGpds3NTqikiKpDMZWScmAYyKIgqkO+ARvNWJfXeXR1zxz7aHF4u4CyH6vQ==
+  /readline2/1.0.1:
+    dependencies:
+      code-point-at: 1.1.0
+      is-fullwidth-code-point: 1.0.0
+      mute-stream: 0.0.5
+    dev: false
+    resolution:
+      integrity: sha1-QQWWCP/BVHV7cV2ZidGZ/783LjU=
   /rechoir/0.6.2:
     dependencies:
       resolve: 1.12.0
@@ -3301,6 +3543,15 @@ packages:
     dev: false
     resolution:
       integrity: sha512-B/dOmuoAik5bKcD6s6nXDCjzUKnaDvdkRyAk6rsmsKLipWj4797iothd7jmmUhWTfinVMU+wc56rYKsit2Qy4w==
+  /restore-cursor/1.0.1:
+    dependencies:
+      exit-hook: 1.1.1
+      onetime: 1.1.0
+    dev: false
+    engines:
+      node: '>=0.10.0'
+    resolution:
+      integrity: sha1-NGYfRohjJ/7SmRR5FSJS35LapUE=
   /ret/0.1.15:
     dev: false
     engines:
@@ -3326,6 +3577,12 @@ packages:
     dev: false
     resolution:
       integrity: sha1-K/GYveFnys+lHAqSjoS2i74XH84=
+  /run-async/0.1.0:
+    dependencies:
+      once: 1.4.0
+    dev: false
+    resolution:
+      integrity: sha1-yK1KXhEGYeQCp9IbUw4AnyX444k=
   /run-sequence/1.2.2:
     dependencies:
       chalk: 2.4.2
@@ -3335,6 +3592,10 @@ packages:
       node: '>= 0.8.0'
     resolution:
       integrity: sha1-UJWgvr6YczsBQL0I3YDsAw3azes=
+  /rx-lite/3.1.2:
+    dev: false
+    resolution:
+      integrity: sha1-Gc5QLKVyZl87ZHsQk5+X/RYV8QI=
   /safe-buffer/5.1.2:
     dev: false
     resolution:
@@ -3438,6 +3699,14 @@ packages:
     dev: false
     resolution:
       integrity: sha1-xVCyq1Qn9rPyH1r+rYjE9Vh7IQY=
+  /source-map-loader/0.1.5:
+    dependencies:
+      async: 0.9.2
+      loader-utils: 0.2.17
+      source-map: 0.1.43
+    dev: false
+    resolution:
+      integrity: sha1-DsbKWKoOYUY6KGc91MSei6Z9xxg=
   /source-map-resolve/0.5.2:
     dependencies:
       atob: 2.1.2
@@ -3452,6 +3721,14 @@ packages:
     dev: false
     resolution:
       integrity: sha1-PpNdfd1zYxuXZZlW1VEo6HtQhKM=
+  /source-map/0.1.43:
+    dependencies:
+      amdefine: 1.0.1
+    dev: false
+    engines:
+      node: '>=0.8.0'
+    resolution:
+      integrity: sha1-wkvBRspRfBRx9drL4lcbK3+eM0Y=
   /source-map/0.4.4:
     dependencies:
       amdefine: 1.0.1
@@ -3508,6 +3785,10 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha512-NzNVhJDYpwceVVii8/Hu6DKfD2G+NrQHlS/V/qgv763EYudVwEcMQNxd2lh+0VrUByXN/oJkl5grOhYWvQUYiw==
+  /spotify-web-api-js/0.23.0:
+    dev: false
+    resolution:
+      integrity: sha512-5Evfz7yz+Ti7QrFZDBJf60LRI5ZjljklA48erFolpvK9QIE2C9CwjgBrUImnG4onhP6Uc+thaxMZtbX1ZyyP0A==
   /sprintf-js/1.0.3:
     dev: false
     resolution:
@@ -3532,6 +3813,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-tNa3hzgkjEP7XbCkbRXe1jpg+ievoa0O4SCFlMOYEscGSS4JJsckGL8swUyAa/ApGU3Ae4t6Honor4HhL+tRyg==
+  /stream-exhaust/1.0.2:
+    dev: false
+    resolution:
+      integrity: sha512-b/qaq/GlBK5xaq1yrK9/zFcyRSTNxmcZwFLGSTG0mXgZl/4Z6GgiyYOXOvY7N3eEvFRAG1bkDRz5EPGSvPYQlw==
   /stream-http/2.8.3:
     dependencies:
       builtin-status-codes: 3.0.0
@@ -3546,6 +3831,16 @@ packages:
     dev: false
     resolution:
       integrity: sha1-1cdSgl5TZ+eG944Y5EXqIjoVWVI=
+  /string-width/1.0.2:
+    dependencies:
+      code-point-at: 1.1.0
+      is-fullwidth-code-point: 1.0.0
+      strip-ansi: 3.0.1
+    dev: false
+    engines:
+      node: '>=0.10.0'
+    resolution:
+      integrity: sha1-EYvfW4zcUaKn5w0hHgfisLmxB9M=
   /string-width/2.1.1:
     dependencies:
       is-fullwidth-code-point: 2.0.0
@@ -3665,6 +3960,36 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-PFMZQukIwml8DsNEhYwobHygpgo=
+  /styled-components/3.4.10_react@15.4.2:
+    dependencies:
+      buffer: 5.4.3
+      css-to-react-native: 2.3.2
+      fbjs: 0.8.17
+      hoist-non-react-statics: 2.5.5
+      prop-types: 15.7.2
+      react: 15.4.2
+      react-is: 16.10.2
+      stylis: 3.5.4
+      stylis-rule-sheet: 0.0.10_stylis@3.5.4
+      supports-color: 3.2.3
+    dev: false
+    peerDependencies:
+      react: '>= 0.14.0 < 17.0.0-0'
+    requiresBuild: true
+    resolution:
+      integrity: sha512-TA8ip8LoILgmSAFd3r326pKtXytUUGu5YWuqZcOQVwVVwB6XqUMn4MHW2IuYJ/HAD81jLrdQed8YWfLSG1LX4Q==
+  /stylis-rule-sheet/0.0.10_stylis@3.5.4:
+    dependencies:
+      stylis: 3.5.4
+    dev: false
+    peerDependencies:
+      stylis: ^3.5.0
+    resolution:
+      integrity: sha512-nTbZoaqoBnmK+ptANthb10ZRZOGC+EmTLLUxeYIuHNkEKcmKgXX1XWKkUBT2Ac4es3NybooPe0SmvKdhKJZAuw==
+  /stylis/3.5.4:
+    dev: false
+    resolution:
+      integrity: sha512-8/3pSmthWM7lsPBKv7NXkzn2Uc9W7NotcwGNpJaa3k7WMM1XDCA4MgT5k/8BIexd5ydZdboXtU90XH9Ec4Bv/Q==
   /supports-color/0.2.0:
     dev: false
     engines:
@@ -3742,6 +4067,13 @@ packages:
     dev: false
     resolution:
       integrity: sha1-390BLrnHAOIyP9M084rGIqs3Lac=
+  /through2/0.6.2:
+    dependencies:
+      readable-stream: 1.0.34
+      xtend: 4.0.2
+    dev: false
+    resolution:
+      integrity: sha1-UyZYJMVV5/zcQRHc3FLH3mRjbHU=
   /through2/0.6.5:
     dependencies:
       readable-stream: 1.0.34
@@ -4123,6 +4455,12 @@ packages:
     dev: false
     resolution:
       integrity: sha1-XX6kW7755Kb/ZflUOOCofDV9WnM=
+  /walk/2.3.3:
+    dependencies:
+      foreachasync: 3.0.0
+    dev: false
+    resolution:
+      integrity: sha1-tMDoxCRkwW274dcWZnZerAeBnl8=
   /watchpack/0.2.9:
     dependencies:
       async: 0.9.2
@@ -4216,6 +4554,12 @@ packages:
     dev: false
     resolution:
       integrity: sha1-tSQ9jz7BqjXxNkYFvA0QNuMKtp8=
+  /ws/7.1.2:
+    dependencies:
+      async-limiter: 1.0.1
+    dev: false
+    resolution:
+      integrity: sha512-gftXq3XI81cJCgkUiAVixA0raD9IVmXqsylCrjRygw4+UOOGzPoxnQ6r/CnVL9i+mDncJo94tSkyrtuuQVBmrg==
   /xml-lexer/0.2.2:
     dependencies:
       eventemitter3: 2.0.3
@@ -4294,6 +4638,60 @@ packages:
     dev: false
     resolution:
       integrity: sha1-9+572FfdfB0tOMDnTvvWgdFDH9E=
+  'file:projects/composer.tgz':
+    dependencies:
+      '@types/chrome': 0.0.40
+      '@types/jquery': 2.0.39
+      '@types/lodash': 4.14.144
+      '@types/react': 16.9.5
+      '@types/react-dom': 16.9.1
+      '@types/spotify-web-playback-sdk': 0.1.6
+      '@types/webmidi': 2.0.1
+      bower: 1.8.8
+      gulp: 3.9.1
+      gulp-all: 1.1.0
+      gulp-bower: 0.0.13
+      gulp-clean: 0.3.2
+      gulp-sourcemaps: 1.6.0
+      gulp-tslint: 8.1.4_tslint@5.20.0
+      gulp-typescript: 5.0.1_typescript@3.6.4
+      gulp-webpack: 1.5.0
+      id3-parser: 2.0.0
+      lodash: 4.17.15
+      react: 15.4.2
+      react-dom: 15.4.2_react@15.4.2
+      react-icons: 3.7.0
+      run-sequence: 1.2.2
+      source-map-loader: 0.1.5
+      spotify-web-api-js: 0.23.0
+      styled-components: 3.4.10_react@15.4.2
+      tslint: 5.20.0_typescript@3.6.4
+      typescript: 3.6.4
+      webpack: 1.14.0
+    dev: false
+    name: '@rush-temp/composer'
+    resolution:
+      integrity: sha512-Q3tR3odUB3dcdaZGWFtk8Rc3HjHpx030Vb1mXLORh5tqRnVA/yzRqQGpUtqr/dWaiFa+RbAJ/qliYzxOkSsoBA==
+      tarball: 'file:projects/composer.tgz'
+    version: 0.0.0
+  'file:projects/compositor.tgz':
+    dependencies:
+      '@types/json-socket': 0.1.17
+      gulp: 3.9.1
+      gulp-clean: 0.3.2
+      gulp-sourcemaps: 1.6.0
+      gulp-tslint: 8.1.4_tslint@5.20.0
+      gulp-typescript: 5.0.1_typescript@3.6.4
+      json-socket: 0.3.0
+      run-sequence: 1.2.2
+      tslint: 5.20.0_typescript@3.6.4
+      typescript: 3.6.4
+    dev: false
+    name: '@rush-temp/compositor'
+    resolution:
+      integrity: sha512-1Lcup2kVbIxLz/XxD81FY767LYJCitxjIXXUAGRcgRuDTR2pJWEJvGdLDRl/FdPPdCpWcStNEhBAmFmXsxGqtA==
+      tarball: 'file:projects/compositor.tgz'
+    version: 0.0.0
   'file:projects/core-example-consumer.tgz':
     dependencies:
       gulp: 3.9.1
@@ -4391,32 +4789,70 @@ packages:
       integrity: sha512-m4a8b/O7Eq8U3zFSWouZSu5Km8k97PbfXWIi4h7Z8uvU1OkuHoe0QTdcSATFH8TJOoVIsMWYHsW0Beaw3MS7Sg==
       tarball: 'file:projects/openrazer.tgz'
     version: 0.0.0
+  'file:projects/synesthesia-razer.tgz':
+    dependencies:
+      '@types/ws': 6.0.3
+      gulp: 3.9.1
+      gulp-clean: 0.3.2
+      gulp-sourcemaps: 1.6.0
+      gulp-tslint: 8.1.4_tslint@5.20.0
+      gulp-typescript: 5.0.1_typescript@3.6.4
+      run-sequence: 1.2.2
+      tslint: 5.20.0_typescript@3.6.4
+      typescript: 3.6.4
+      webpack: 1.14.0
+      ws: 7.1.2
+    dev: false
+    name: '@rush-temp/synesthesia-razer'
+    resolution:
+      integrity: sha512-wAdLIHC7JqDNhp54FpqhtYK+xDN1euMSPDNr/u730YDZoESTaAd6nJznHVGrhp9yJZ0i200VkhMuTEWvB1YKOA==
+      tarball: 'file:projects/synesthesia-razer.tgz'
+    version: 0.0.0
 registry: ''
 specifiers:
+  '@rush-temp/composer': 'file:./projects/composer.tgz'
+  '@rush-temp/compositor': 'file:./projects/compositor.tgz'
   '@rush-temp/core': 'file:./projects/core.tgz'
   '@rush-temp/core-example-consumer': 'file:./projects/core-example-consumer.tgz'
   '@rush-temp/core-example-controller': 'file:./projects/core-example-controller.tgz'
   '@rush-temp/midi-consoles': 'file:./projects/midi-consoles.tgz'
   '@rush-temp/openrazer': 'file:./projects/openrazer.tgz'
+  '@rush-temp/synesthesia-razer': 'file:./projects/synesthesia-razer.tgz'
+  '@types/chrome': 0.0.40
+  '@types/jquery': 2.0.39
   '@types/json-socket': ^0.1.17
+  '@types/lodash': ^4.14.120
   '@types/mocha': ^5.2.7
   '@types/node': ^12.6.8
   '@types/react': ^16.0.38
   '@types/react-dom': ^16.0.4
+  '@types/spotify-web-playback-sdk': ^0.1.1
+  '@types/webmidi': 2.0.1
+  '@types/ws': ^6.0.1
+  bower: 1.8.8
   gulp: ^3.9.1
+  gulp-all: 1.1.0
+  gulp-bower: 0.0.13
   gulp-clean: ^0.3.2
   gulp-sourcemaps: 1.6.0
   gulp-tslint: ^8.1.3
   gulp-typescript: ^5.0.0
+  gulp-webpack: 1.5.0
   id3-parser: ^2.0.0
   json-socket: ^0.3.0
+  lodash: ^4.17.13
   merge2: ^1.2.3
   midi: ^1.0.0
   mocha: ^6.1.4
   react: 15.4.2
   react-dom: 15.4.2
+  react-icons: ^3.3.0
   run-sequence: ^1.2.2
+  source-map-loader: 0.1.5
+  spotify-web-api-js: ^0.23.0
+  styled-components: ^3.1.6
   svgson: ^3.1.0
   tslint: ^5.9.1
   typescript: ^3.5.2
   webpack: 1.14.0
+  ws: ^7.0.1

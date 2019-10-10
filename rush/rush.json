@@ -367,8 +367,20 @@
       "projectFolder": "midi-consoles"
     },
     {
+      "packageName": "@synesthesia-project/compositor",
+      "projectFolder": "compositor"
+    },
+    {
       "packageName": "openrazer",
       "projectFolder": "openrazer"
+    },
+    {
+      "packageName": "@synesthesia-project/composer",
+      "projectFolder": "composer"
+    },
+    {
+      "packageName": "@synesthesia-project/synesthesia-razer",
+      "projectFolder": "synesthesia-razer"
     }
   ]
 }
