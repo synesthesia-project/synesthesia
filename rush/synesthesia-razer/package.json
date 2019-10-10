@@ -29,6 +29,6 @@
     "@synesthesia-project/compositor": "^0.0.1",
     "@types/ws": "^6.0.1",
     "openrazer": "^0.0.5",
-    "ws": "^7.0.1"
+    "ws": "^7.1.2"
   }
 }

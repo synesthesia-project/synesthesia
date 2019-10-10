@@ -96,8 +96,8 @@ export class Server {
         });
     }
 
-    private handleConnection(ws: WebSocket) {
-        const url = ws.url || ws.upgradeReq.url;
+  private handleConnection(ws: WebSocket, req: http.IncomingMessage) {
+        const url = ws.url || req.url;
         console.log('new connection', url);
 
         if (url === COMPOSER_PATH) {

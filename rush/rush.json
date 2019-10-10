@@ -381,6 +381,14 @@
     {
       "packageName": "@synesthesia-project/synesthesia-razer",
       "projectFolder": "synesthesia-razer"
+    },
+    {
+      "packageName": "@synesthesia-project/server",
+      "projectFolder": "server"
+    },
+    {
+      "packageName": "@synesthesia-project/balccon",
+      "projectFolder": "balccon"
     }
   ]
 }

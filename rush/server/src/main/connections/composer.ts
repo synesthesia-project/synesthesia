@@ -15,7 +15,7 @@ export class ComposerConnection extends RequestHandlerEndpoint<Request, Response
   public constructor(ws: WebSocket) {
       super(msg => ws.send(JSON.stringify(msg)));
 
-      ws.on('message', msg => this.recvMessage(JSON.parse(msg)));
+      ws.on('message', msg => this.recvMessage(JSON.parse(msg.toString())));
       ws.on('close', () => this.closed());
   }
 
