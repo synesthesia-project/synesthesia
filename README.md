@@ -1,6 +1,6 @@
 # [Synesthesia Project](https://github.com/synesthesia-project)
 
-[![Build Status](https://dev.azure.com/synesthesia--project/synesthesia/_apis/build/status/synesthesia?branchName=master)](https://dev.azure.com/synesthesia--project/synesthesia/_build/latest?definitionId=9&branchName=master) [![Total alerts](https://img.shields.io/lgtm/alerts/g/synesthesia-project/synesthesia.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/synesthesia-project/synesthesia/alerts/) [![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/synesthesia-project/synesthesia.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/synesthesia-project/synesthesia/context:javascript)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/synesthesia-project/synesthesia.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/synesthesia-project/synesthesia/alerts/) [![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/synesthesia-project/synesthesia.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/synesthesia-project/synesthesia/context:javascript)
 
 Synesthesia is a lighting & Sound project. A 5 minute lightning talk
 of the project can be found here: <https://www.youtube.com/watch?v=egsswPi8yio>
