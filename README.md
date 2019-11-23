@@ -1,5 +1,6 @@
 # [Synesthesia Project](https://github.com/synesthesia-project)
 
+[![](https://github.com/synesthesia-project/synesthesia/workflows/CI/badge.svg)](https://github.com/synesthesia-project/synesthesia/actions?query=workflow%3ACI)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/synesthesia-project/synesthesia.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/synesthesia-project/synesthesia/alerts/) [![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/synesthesia-project/synesthesia.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/synesthesia-project/synesthesia/context:javascript)
 
 Synesthesia is a lighting & Sound project. A 5 minute lightning talk
