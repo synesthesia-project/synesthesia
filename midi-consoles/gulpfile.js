@@ -1,10 +1,9 @@
+var log = require('fancy-log');
 var gulp = require('gulp');
 var clean = require('gulp-clean');
-var gutil = require("gulp-util");
 var ts = require('gulp-typescript');
 var tslint = require('tslint');
 var gulpTslint = require('gulp-tslint');
-var runSequence = require('run-sequence');
 var merge = require('merge2'); 
 
 var tsProject = ts.createProject('src/tsconfig.json');
@@ -12,7 +11,7 @@ var tsProject = ts.createProject('src/tsconfig.json');
 // Utility Functions
 
 function handleError(err) {
-  gutil.log("Build failed", err.message);
+  log("Build failed", err.message);
   process.exit(1);
 }
 
@@ -45,10 +44,4 @@ gulp.task('tslint', function () {
     .pipe(gulpTslint.report());
 });
 
-gulp.task('default', function(callback) {
-  runSequence(
-    'clean',
-    'ts',
-    'tslint',
-    callback);
-});
+gulp.task('default', gulp.series('clean', 'ts'));
