@@ -1,11 +1,9 @@
 var gulp = require('gulp');
-var all = require('gulp-all');
 var clean = require('gulp-clean');
 var PluginError = require("plugin-error");
 var sourcemaps = require('gulp-sourcemaps');
 var ts = require('gulp-typescript');
 var tslint = require('gulp-tslint');
-var runSequence = require('run-sequence');
 var webpack = require('webpack');
 
 var tsProject = ts.createProject('src/scripts/ts/tsconfig.json');
@@ -18,7 +16,7 @@ function handleError(err) {
 }
 
 gulp.task('clean', function() {
-  return gulp.src(['.tmp', 'dist'], {read: false})
+  return gulp.src(['.tmp', 'dist'], { read: false, allowEmpty: true})
         .pipe(clean());
 });
 
@@ -56,69 +54,61 @@ gulp.task('tslint', function() {
   .pipe(tslint.report());
 });
 
-gulp.task("webpack", ['ts', 'copy-js'], function(callback) {
-    // run webpack
-    webpack({
-      entry: {
-        bundle: "./.tmp/scripts/main.js",
-        auth_callback: "./.tmp/scripts/auth_callback.js",
-      },
-      output: {
-        filename: "[name].js",
-        path: __dirname + "/dist"
-      },
-      mode: 'development',
-      devtool: 'source-map-inline',
-    }, function(err, stats) {
-        if (err) {
-          console.error(err.stack || err);
-          if (err.details) {
-            console.error(err.details);
-          }
-          throw new PluginError("webpack", err);
+gulp.task("webpack", function(callback) {
+  // run webpack
+  webpack({
+    entry: {
+      bundle: "./.tmp/scripts/main.js",
+      auth_callback: "./.tmp/scripts/auth_callback.js",
+    },
+    output: {
+      filename: "[name].js",
+      path: __dirname + "/dist"
+    },
+    mode: 'development',
+    devtool: 'source-map-inline',
+  }, function(err, stats) {
+      if (err) {
+        console.error(err.stack || err);
+        if (err.details) {
+          console.error(err.details);
         }
+        throw new PluginError("webpack", err);
+      }
 
-        const info = stats.toJson();
+      const info = stats.toJson();
 
-        if (stats.hasErrors()) {
-          for (var err of info.errors)
-            console.error(err);
-          throw new PluginError("webpack", "has errors");
-        }
+      if (stats.hasErrors()) {
+        for (var err of info.errors)
+          console.error(err);
+        throw new PluginError("webpack", "has errors");
+      }
 
-        if (stats.hasWarnings()) {
-          for (var err of info.errors)
-            console.error(err);
-        }
-        callback();
-    });
+      if (stats.hasWarnings()) {
+        for (var err of info.errors)
+          console.error(err);
+      }
+      callback();
+  });
 });
 
 gulp.task('css', function () {
   return gulp.src('./src/styles/**/*.css').pipe(gulp.dest('dist/styles'));
 });
 
-gulp.task("dist", ['webpack', 'css', 'integration-ts'], function(){
-  var copyCoreFiles = gulp.src([
-      './src/manifest.json',
-      './src/index.html',
-      './src/auth.html'
-    ])
-    .pipe(gulp.dest('dist'));
-
-  var copyLibs = gulp.src([
-      './bower_components/jquery/dist/jquery.min.js'
-    ])
-    .pipe(gulp.dest('dist/lib'));
-
-  return all(copyCoreFiles, copyLibs);
-});
+gulp.task("dist", gulp.series(
+  gulp.parallel(
+    gulp.series(gulp.parallel('ts', 'copy-js'), 'webpack'),
+    'css',
+    'integration-ts'),
+  function(){
+    return gulp.src([
+        './src/index.html',
+        './src/auth.html'
+      ])
+      .pipe(gulp.dest('dist'));
+  }
+));
 
 
-gulp.task('default', function(callback) {
-  runSequence(
-    'clean',
-    'dist',
-    'tslint',
-    callback);
-});
+gulp.task('default', gulp.series('clean', 'dist'));
