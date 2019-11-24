@@ -3,19 +3,6 @@ import {createHash} from 'crypto';
 
 import { File } from '@synesthesia-project/core/lib/protocols/control/messages';
 
-export declare type FileByPath = {
-  type: 'path';
-  path: string;
-};
-export declare type FileByMeta = {
-  type: 'meta';
-  title: string;
-  artist?: string;
-  album?: string;
-  lengthMillis: number;
-};
-export declare type File = FileByPath | FileByMeta;
-
 /**
  * This class assigns unique (predictable) IDs based on song metadata
  */
