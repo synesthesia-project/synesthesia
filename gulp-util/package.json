@@ -9,6 +9,10 @@
     "email": "sam@samlanning.com",
     "url": "https://samlanning.com/"
   },
+  "scripts": {
+    "build": "echo no build required",
+    "tslint": "echo no typescript"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/synesthesia-project/synesthesia"
