@@ -14,7 +14,7 @@ const PACKAGE_NAME = package.name;
 exports.setupBasicTypescriptProject = function (opts) {
 
   // Validate Options
-  if (typeof opts.tsconfig !== 'string')
+  if (opts.tsconfig && typeof opts.tsconfig !== 'string')
     throw new Error('Invalid option: tsconfig');
   if (!(opts.clean instanceof Array))
     throw new Error('Invalid option: clean');
@@ -22,8 +22,9 @@ exports.setupBasicTypescriptProject = function (opts) {
     throw new Error('Invalid option: outputDir');
 
   var tslintSrc = ['src/**/*.ts', 'src/**/*.tsx'];
+  var tsconfig = opts.tsconfig || 'src/tsconfig.json';
 
-  var tsProject = ts.createProject(opts.tsconfig);
+  var tsProject = ts.createProject(tsconfig);
 
   // Utility Functions
 
@@ -45,7 +46,7 @@ exports.setupBasicTypescriptProject = function (opts) {
   });
 
   gulp.task('tslint', function () {
-    var program = tslint.Linter.createProgram(opts.tsconfig);
+    var program = tslint.Linter.createProgram(tsconfig);
 
     return gulp.src(tslintSrc)
       .pipe(gulpTslint({

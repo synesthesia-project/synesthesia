@@ -2,7 +2,6 @@ var util = require('@synesthesia-project/gulp-util');
 var gulp = require('gulp');
 
 util.setupBasicTypescriptProject({
-  tsconfig: 'src/tsconfig.json',
   clean: ['.tmp', 'build'],
   outputDir: '.tmp'
 });
