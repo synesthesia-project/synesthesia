@@ -16,7 +16,7 @@ function handleError(err) {
 }
 
 gulp.task('clean', function() {
-  return gulp.src(['lib'], {read: false})
+  return gulp.src(['lib'], { read: false, allowEmpty: true })
         .pipe(clean());
 });
 

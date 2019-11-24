@@ -16,7 +16,7 @@ function handleError(err) {
 }
 
 gulp.task('clean', function() {
-  return gulp.src(['.tmp', 'build'], {read: false})
+  return gulp.src(['.tmp', 'build'], { read: false, allowEmpty: true })
         .pipe(clean());
 });
 
