@@ -351,6 +351,10 @@
     //   // "versionPolicyName": ""
     // },
     {
+      "packageName": "@synesthesia-project/gulp-util",
+      "projectFolder": "gulp-util"
+    },
+    {
       "packageName": "@synesthesia-project/core",
       "projectFolder": "core"
     },
