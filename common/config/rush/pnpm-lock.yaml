@@ -5,6 +5,7 @@ dependencies:
   '@rush-temp/core': 'file:projects/core.tgz'
   '@rush-temp/core-example-consumer': 'file:projects/core-example-consumer.tgz'
   '@rush-temp/core-example-controller': 'file:projects/core-example-controller.tgz'
+  '@rush-temp/gulp-util': 'file:projects/gulp-util.tgz'
   '@rush-temp/midi-consoles': 'file:projects/midi-consoles.tgz'
   '@rush-temp/openrazer': 'file:projects/openrazer.tgz'
   '@rush-temp/openrazer-examples': 'file:projects/openrazer-examples.tgz'
@@ -25,7 +26,6 @@ dependencies:
   chai: 4.2.0
   fancy-log: 1.3.3
   gulp: 4.0.2
-  gulp-all: 1.1.0
   gulp-clean: 0.3.2
   gulp-mocha: 6.0.0
   gulp-sourcemaps: 1.6.0
@@ -901,6 +901,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-cCuLsMhJeWQ/ZpsFTbE765kvVfoeSddc4nU3up4fV+fDBcfUXnbITJ+JzhkdjzOqhURjZgujxaioam4RM9yGUg==
+  /commander/2.20.3:
+    dev: false
+    resolution:
+      integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==
   /component-emitter/1.3.0:
     dev: false
     resolution:
@@ -1888,6 +1892,22 @@ packages:
       tslint: '>=5.0.0-dev'
     resolution:
       integrity: sha512-wBoZIEMJRz9urHwolsvQpngA9l931p6g/Liwz1b/KrsVP6jEBFZv/o0NS1TFCQZi/l8mXxz8+v3twhf4HOXxPQ==
+  /gulp-tslint/8.1.4_tslint@5.20.1:
+    dependencies:
+      '@types/fancy-log': 1.3.0
+      ansi-colors: 1.1.0
+      fancy-log: 1.3.3
+      map-stream: 0.0.7
+      plugin-error: 1.0.1
+      through: 2.3.8
+      tslint: 5.20.1_typescript@3.7.2
+    dev: false
+    engines:
+      node: '>= 4'
+    peerDependencies:
+      tslint: '>=5.0.0-dev'
+    resolution:
+      integrity: sha512-wBoZIEMJRz9urHwolsvQpngA9l931p6g/Liwz1b/KrsVP6jEBFZv/o0NS1TFCQZi/l8mXxz8+v3twhf4HOXxPQ==
   /gulp-typescript/5.0.1_typescript@3.6.4:
     dependencies:
       ansi-colors: 3.2.4
@@ -1895,6 +1915,22 @@ packages:
       source-map: 0.7.3
       through2: 3.0.1
       typescript: 3.6.4
+      vinyl: 2.2.0
+      vinyl-fs: 3.0.3
+    dev: false
+    engines:
+      node: '>= 8'
+    peerDependencies:
+      typescript: ~2.7.1 || >=2.8.0-dev || >=2.9.0-dev || ~3.0.0 || >=3.0.0-dev || >=3.1.0-dev || >= 3.2.0-dev || >= 3.3.0-dev
+    resolution:
+      integrity: sha512-YuMMlylyJtUSHG1/wuSVTrZp60k1dMEFKYOvDf7OvbAJWrDtxxD4oZon4ancdWwzjj30ztiidhe4VXJniF0pIQ==
+  /gulp-typescript/5.0.1_typescript@3.7.2:
+    dependencies:
+      ansi-colors: 3.2.4
+      plugin-error: 1.0.1
+      source-map: 0.7.3
+      through2: 3.0.1
+      typescript: 3.7.2
       vinyl: 2.2.0
       vinyl-fs: 3.0.3
     dev: false
@@ -4593,10 +4629,43 @@ packages:
       typescript: '>=2.3.0-dev || >=2.4.0-dev || >=2.5.0-dev || >=2.6.0-dev || >=2.7.0-dev || >=2.8.0-dev || >=2.9.0-dev || >=3.0.0-dev || >= 3.1.0-dev || >= 3.2.0-dev'
     resolution:
       integrity: sha512-2vqIvkMHbnx8acMogAERQ/IuINOq6DFqgF8/VDvhEkBqQh/x6SP0Y+OHnKth9/ZcHQSroOZwUQSN18v8KKF0/g==
+  /tslint/5.20.1_typescript@3.7.2:
+    dependencies:
+      '@babel/code-frame': 7.5.5
+      builtin-modules: 1.1.1
+      chalk: 2.4.2
+      commander: 2.20.3
+      diff: 4.0.1
+      glob: 7.1.6
+      js-yaml: 3.13.1
+      minimatch: 3.0.4
+      mkdirp: 0.5.1
+      resolve: 1.12.2
+      semver: 5.7.1
+      tslib: 1.10.0
+      tsutils: 2.29.0_typescript@3.7.2
+      typescript: 3.7.2
+    dev: false
+    engines:
+      node: '>=4.8.0'
+    hasBin: true
+    peerDependencies:
+      typescript: '>=2.3.0-dev || >=2.4.0-dev || >=2.5.0-dev || >=2.6.0-dev || >=2.7.0-dev || >=2.8.0-dev || >=2.9.0-dev || >=3.0.0-dev || >= 3.1.0-dev || >= 3.2.0-dev'
+    resolution:
+      integrity: sha512-EcMxhzCFt8k+/UP5r8waCf/lzmeSyVlqxqMEDQE7rWYiQky8KpIBz1JAoYXfROHrPZ1XXd43q8yQnULOLiBRQg==
   /tsutils/2.29.0_typescript@3.6.4:
     dependencies:
       tslib: 1.10.0
       typescript: 3.6.4
+    dev: false
+    peerDependencies:
+      typescript: '>=2.1.0 || >=2.1.0-dev || >=2.2.0-dev || >=2.3.0-dev || >=2.4.0-dev || >=2.5.0-dev || >=2.6.0-dev || >=2.7.0-dev || >=2.8.0-dev || >=2.9.0-dev || >= 3.0.0-dev || >= 3.1.0-dev'
+    resolution:
+      integrity: sha512-g5JVHCIJwzfISaXpXE1qvNalca5Jwob6FjI4AoPlqMusJ6ftFE7IkkFoMhVLRgK+4Kx3gkzb8UZK5t5yTTvEmA==
+  /tsutils/2.29.0_typescript@3.7.2:
+    dependencies:
+      tslib: 1.10.0
+      typescript: 3.7.2
     dev: false
     peerDependencies:
       typescript: '>=2.1.0 || >=2.1.0-dev || >=2.2.0-dev || >=2.3.0-dev || >=2.4.0-dev || >=2.5.0-dev || >=2.6.0-dev || >=2.7.0-dev || >=2.8.0-dev || >=2.9.0-dev || >= 3.0.0-dev || >= 3.1.0-dev'
@@ -4631,6 +4700,13 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-unoCll1+l+YK4i4F8f22TaNVPRHcD9PA3yCuZ8g5e0qGqlVlJ/8FSateOLLSagn+Yg5+ZwuPkL8LFUc0Jcvksg==
+  /typescript/3.7.2:
+    dev: false
+    engines:
+      node: '>=4.2.0'
+    hasBin: true
+    resolution:
+      integrity: sha512-ml7V7JfiN2Xwvcer+XAf2csGO1bPBdRbFCkYBczNZggrBZ9c7G3riSUeJmqEU5uOtXNPMhE3n+R4FA/3YOAWOQ==
   /ua-parser-js/0.7.20:
     dev: false
     resolution:
@@ -5087,6 +5163,7 @@ packages:
   'file:projects/balccon.tgz':
     dependencies:
       '@types/ws': 6.0.3
+      fancy-log: 1.3.3
       gulp: 4.0.2
       gulp-clean: 0.3.2
       gulp-sourcemaps: 1.6.0
@@ -5101,7 +5178,7 @@ packages:
     dev: false
     name: '@rush-temp/balccon'
     resolution:
-      integrity: sha512-eZsyptKfYxlNGkekIY8uxXK4tNQK18vukXcg2R0C/mqg8ue/c82Mi2h0ZYx5z4Q+W7wJ9xCI6Y+WRH0nYokoQA==
+      integrity: sha512-1I1q4STzA0FJLQeSdMM5hDL6pXmfju4PuqoIKvhznEmuo/ZKQEeGNMs92WwIUsySTOQtPJcG0UdCOkHOjcfHYA==
       tarball: 'file:projects/balccon.tgz'
     version: 0.0.0
   'file:projects/composer.tgz':
@@ -5141,12 +5218,13 @@ packages:
     dev: false
     name: '@rush-temp/composer'
     resolution:
-      integrity: sha512-W+jLvRz7T4r9gIhUVrwQsU7eyn3pZg5AXEr3HOjJ3Yr+HRiZn6mmAKjj7VRWTC24cWCQR2sTqGpcGDwobrdTug==
+      integrity: sha512-wd5Guxph70MN+6pwd5xI4TxeaNacRu85mwmPaE2NHS+hA2R5lVhNVgXjSKeFLoJUU+bRtUGSzBxl49T9uqfJmQ==
       tarball: 'file:projects/composer.tgz'
     version: 0.0.0
   'file:projects/compositor.tgz':
     dependencies:
       '@types/json-socket': 0.1.17
+      fancy-log: 1.3.3
       gulp: 4.0.2
       gulp-clean: 0.3.2
       gulp-sourcemaps: 1.6.0
@@ -5160,7 +5238,7 @@ packages:
     dev: false
     name: '@rush-temp/compositor'
     resolution:
-      integrity: sha512-IITzfRD+1+Uvl6i2+HPiS/QQSk5+gkWUgVa2PL4KKSNj0GJ+viPNiGssMIIB43tzuIkh76SEcdoYB6BdIjM1iA==
+      integrity: sha512-AJACwXdUKnBqC2KjYp2cyk9vGKtZgzddfYo/grN87KzgkuY2tXGqtbM3oQ9ktI6Ie6ZY/6097PrvgsRvHdymTA==
       tarball: 'file:projects/compositor.tgz'
     version: 0.0.0
   'file:projects/core-example-consumer.tgz':
@@ -5178,7 +5256,7 @@ packages:
     dev: false
     name: '@rush-temp/core-example-consumer'
     resolution:
-      integrity: sha512-Svn9v5pgj9kWAhntxM9FBVzj4a28ZzM9NeINNXrCn073GhZ55RhtLkN/ILdTF6mtlhTfTxZ/01koi51kyxX5RQ==
+      integrity: sha512-9iv9hrKuzGh4Yfi9knEaVqmiU1xsPeCBju25pbSFKm88I5HOSJGDJFjAH8x+n2fcPbIi/rg9WZxV9+FMpUOl7A==
       tarball: 'file:projects/core-example-consumer.tgz'
     version: 0.0.0
   'file:projects/core-example-controller.tgz':
@@ -5202,7 +5280,7 @@ packages:
     dev: false
     name: '@rush-temp/core-example-controller'
     resolution:
-      integrity: sha512-4MkhBIRE+6Z+8lwx+YOhmpqY3IeTowFyQn7J88EUka8DKUPyX5LKBujVfcosVw+SJxd1Mp1LLA4bMa4Zq71t2w==
+      integrity: sha512-l0L6h8ieOfS1RJwAO3i2pRlc79hMqrdFuDDvBIpq+76Ki9yXR/NRRq7Jg0qo4gG7x+xXqXbIeCJOPvQA3hFZcg==
       tarball: 'file:projects/core-example-controller.tgz'
     version: 0.0.0
   'file:projects/core.tgz':
@@ -5221,12 +5299,29 @@ packages:
     dev: false
     name: '@rush-temp/core'
     resolution:
-      integrity: sha512-i05q+0ExvDbLMRnkQ4FQiJ525EXeZ6yyCOBlF+v/uzjulF5Iqc3D3k0391TSXQcd53uvxB327ROSAMf3ldTWZA==
+      integrity: sha512-AOnpvvayk8DGJ7nLjCSTRJEEdFjrxK+yTsJtwBO2/I+D72Fbt14l0Ys6kMtqIVQ3tLaHOirKBYH3lUBFL1Mkpg==
       tarball: 'file:projects/core.tgz'
+    version: 0.0.0
+  'file:projects/gulp-util.tgz':
+    dependencies:
+      fancy-log: 1.3.3
+      gulp: 4.0.2
+      gulp-clean: 0.3.2
+      gulp-sourcemaps: 1.6.0
+      gulp-tslint: 8.1.4_tslint@5.20.1
+      gulp-typescript: 5.0.1_typescript@3.7.2
+      tslint: 5.20.1_typescript@3.7.2
+      typescript: 3.7.2
+    dev: false
+    name: '@rush-temp/gulp-util'
+    resolution:
+      integrity: sha512-/2FGnFyJh8rXQMsodgzbjH6trgy5p8HUCKyL5i3IOdFcg+GQRo0QUHEodedruU6DlbhwErkwVmPwnp+ThNirQg==
+      tarball: 'file:projects/gulp-util.tgz'
     version: 0.0.0
   'file:projects/midi-consoles.tgz':
     dependencies:
       '@types/node': 12.7.12
+      fancy-log: 1.3.3
       gulp: 4.0.2
       gulp-clean: 0.3.2
       gulp-sourcemaps: 1.6.0
@@ -5241,7 +5336,7 @@ packages:
     dev: false
     name: '@rush-temp/midi-consoles'
     resolution:
-      integrity: sha512-e5r6lB/Z/qZoXs3ClFZoX0rRRzEt5bKHVurEDArMSaKsd74asKGJDPrGqWy1R7BGoW0zQi1nOAvpKHJxlU/FcA==
+      integrity: sha512-RJ3+5uKPIwHmBGV8ftCdvCYpwuQr7pAt0BoyJl3nzh7BqKC/BG/0HnRqLg7wz8QkPNF8mlLc4nIwTQ1+0Crz9Q==
       tarball: 'file:projects/midi-consoles.tgz'
     version: 0.0.0
   'file:projects/openrazer-examples.tgz':
@@ -5257,13 +5352,14 @@ packages:
     dev: false
     name: '@rush-temp/openrazer-examples'
     resolution:
-      integrity: sha512-ZCWYTE3iZNvCP47CU4y0Ddri4j6VBxjgMhiG65tkQsV3cvintfYtis/4YOQcJkiDqyjFkjpyil+64mFbTGKnGg==
+      integrity: sha512-L+UOIo0dsUTO6g9IkfnCN6N6fyp7Y3fqC8DS6K72Ac9w8uHlsmPscZkHq1CwJw1Pb1N5f4Lc5mMd7bU3TNFdnw==
       tarball: 'file:projects/openrazer-examples.tgz'
     version: 0.0.0
   'file:projects/openrazer.tgz':
     dependencies:
       '@types/mocha': 5.2.7
       '@types/node': 12.7.12
+      fancy-log: 1.3.3
       gulp: 4.0.2
       gulp-clean: 0.3.2
       gulp-sourcemaps: 1.6.0
@@ -5278,7 +5374,7 @@ packages:
     dev: false
     name: '@rush-temp/openrazer'
     resolution:
-      integrity: sha512-eLWymHaPBDVOscO0VJlIsOaD0NVckJoYyI8hIJzOwMrrWkdqvN2FjlHvKf0Za4aFsz6L9xQIMcjQtjBzLJy4AA==
+      integrity: sha512-p7ZlRu29zGVFNBPloUqDlbuRDfr/rdC9qi4mHdY8x4YXytzwQkxymdNLQMnB4paLfc1QpEPQqbyW3j0KkHq4Lw==
       tarball: 'file:projects/openrazer.tgz'
     version: 0.0.0
   'file:projects/server.tgz':
@@ -5288,6 +5384,7 @@ packages:
       '@types/mocha': 5.2.7
       '@types/ws': 6.0.3
       chai: 4.2.0
+      fancy-log: 1.3.3
       gulp: 4.0.2
       gulp-clean: 0.3.2
       gulp-mocha: 6.0.0
@@ -5305,12 +5402,13 @@ packages:
     dev: false
     name: '@rush-temp/server'
     resolution:
-      integrity: sha512-RUweE1wVkfmMAKq1+OV+af0b3viB4Ot4/h/k8OBhwpGeGo56nbsamBMBEsBcO+G48Rc/qR25SQD70frt3QR/5g==
+      integrity: sha512-22YqDQ23qkvNSq+PHk0AtU9fHehNgz+rc5pGnUTDOyu4oaDG2Hzr0BYZ+0I2kDPHpa+53K6qWxYvKNXQLM19zg==
       tarball: 'file:projects/server.tgz'
     version: 0.0.0
   'file:projects/synesthesia-razer.tgz':
     dependencies:
       '@types/ws': 6.0.3
+      fancy-log: 1.3.3
       gulp: 4.0.2
       gulp-clean: 0.3.2
       gulp-sourcemaps: 1.6.0
@@ -5325,7 +5423,7 @@ packages:
     dev: false
     name: '@rush-temp/synesthesia-razer'
     resolution:
-      integrity: sha512-1f3Gs9opSUkOmNU1x0NQBJxN/m66uhkN9G9griOKoP2nwO97SUf7fh+LUDOaPhvaQaWJlK+N/4a8Zimk6pYAjw==
+      integrity: sha512-4yepu8aZAFG9G11nFra7bUJ0ZCACFCHdxcPr9OsLo8dHwj2aSz3VMWrFsLD5McYlkP/5v7vuL5I6klCbOWvlig==
       tarball: 'file:projects/synesthesia-razer.tgz'
     version: 0.0.0
 registry: ''
@@ -5336,6 +5434,7 @@ specifiers:
   '@rush-temp/core': 'file:./projects/core.tgz'
   '@rush-temp/core-example-consumer': 'file:./projects/core-example-consumer.tgz'
   '@rush-temp/core-example-controller': 'file:./projects/core-example-controller.tgz'
+  '@rush-temp/gulp-util': 'file:./projects/gulp-util.tgz'
   '@rush-temp/midi-consoles': 'file:./projects/midi-consoles.tgz'
   '@rush-temp/openrazer': 'file:./projects/openrazer.tgz'
   '@rush-temp/openrazer-examples': 'file:./projects/openrazer-examples.tgz'
@@ -5356,7 +5455,6 @@ specifiers:
   chai: ^4.2.0
   fancy-log: ~1.3.3
   gulp: ~4.0.2
-  gulp-all: 1.1.0
   gulp-clean: ^0.3.2
   gulp-mocha: ^6.0.0
   gulp-sourcemaps: 1.6.0
