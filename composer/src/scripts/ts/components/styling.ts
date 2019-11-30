@@ -3,7 +3,6 @@ import * as styledComponents from 'styled-components';
 const {
   default: styled,
   css,
-  injectGlobal,
   keyframes,
   ThemeProvider
 } = styledComponents as styledComponents.ThemedStyledComponentsModule<ThemeVariables>;
@@ -60,7 +59,7 @@ export const defaultTheme: ThemeVariables = {
   visualizationWidthPx: 100
 };
 
-export { styled, css, injectGlobal, keyframes, ThemeProvider };
+export { styled, css, keyframes, ThemeProvider };
 
 // Mixins and helper functions
 

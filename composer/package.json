@@ -17,14 +17,17 @@
     "dist/**/*",
     "README.md"
   ],
+  "dependencies": {
+    "@types/styled-components": "~4.4.0"
+  },
   "devDependencies": {
     "@synesthesia-project/core": "^0.0.2",
     "@types/chrome": "0.0.40",
     "@types/jquery": "2.0.39",
     "@types/lodash": "^4.14.120",
     "@types/node": "^12.6.8",
-    "@types/react": "^16.0.38",
-    "@types/react-dom": "^16.0.4",
+    "@types/react": "^16.9.13",
+    "@types/react-dom": "~16.9.4",
     "@types/spotify-web-playback-sdk": "^0.1.1",
     "@types/webmidi": "2.0.1",
     "gulp": "~4.0.2",
@@ -37,12 +40,12 @@
     "jquery": "~3.4.1",
     "lodash": "^4.17.13",
     "plugin-error": "~1.0.1",
-    "react": "15.4.2",
-    "react-dom": "15.4.2",
+    "react": "~16.12.0",
+    "react-dom": "~16.12.0",
     "react-icons": "^3.3.0",
     "source-map-loader": "0.1.5",
     "spotify-web-api-js": "^0.23.0",
-    "styled-components": "^3.1.6",
+    "styled-components": "~4.4.1",
     "tslint": "^5.9.1",
     "typescript": "~3.7.2",
     "webpack": "1.14.0"
