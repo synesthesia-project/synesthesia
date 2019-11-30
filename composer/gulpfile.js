@@ -16,6 +16,7 @@ util.typescriptTasks({
   prefix: 'main-',
   tsconfig: 'src/scripts/ts/tsconfig.json',
   sourcemap: true,
+  sourcemapSourceRoot: 'src/scripts/ts',
   outputDir: '.tmp/scripts',
   tslintSrc: ['src/scripts/ts/**/*.ts', 'src/scripts/ts/**/*.tsx']
 });
@@ -23,7 +24,6 @@ util.typescriptTasks({
 util.typescriptTasks({
   prefix: 'integration-',
   tsconfig: 'src/integration/tsconfig.json',
-  sourcemap: true,
   outputDir: 'dist/integration',
   tslintSrc: ['src/integration/**/*.ts']
 });
@@ -39,8 +39,17 @@ util.webpackTask('webpack', {
     filename: "[name].js",
     path: __dirname + "/dist"
   },
-  mode: 'development',
-  devtool: 'source-map-inline',
+  mode: 'production',
+  devtool: 'source-map',
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        use: ["source-map-loader"],
+        enforce: "pre"
+      }
+    ]
+  }
 });
 
 gulp.task('css', function () {

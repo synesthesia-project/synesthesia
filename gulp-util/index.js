@@ -33,10 +33,20 @@ exports.typescriptTasks = function (opts) {
   }
 
   gulp.task(prefix + 'ts', function () {
-    return tsProject.src()
+    var task = tsProject.src();
+    if (sourcemap) {
+      task = task.pipe(sourcemaps.init());
+    }
+    task = task
       .pipe(tsProject())
-      .on('error', handleError)
-      .pipe(gulp.dest(opts.outputDir));
+      .on('error', handleError);
+    if (sourcemap) {
+      task = task.pipe(sourcemaps.write({
+        sourceRoot
+      }));
+    }
+    task = task.pipe(gulp.dest(opts.outputDir));
+    return task;
   });
 
   gulp.task(prefix + 'tslint', function () {
