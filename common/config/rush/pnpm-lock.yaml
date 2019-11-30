@@ -30,27 +30,24 @@ dependencies:
   gulp-mocha: 6.0.0
   gulp-sourcemaps: 1.6.0
   gulp-tslint: 8.1.4_tslint@5.20.0
-  gulp-typescript: 5.0.1_typescript@3.6.4
-  gulp-util: 3.0.8
+  gulp-typescript: 5.0.1_typescript@3.7.2
   gulp-webpack: 1.5.0
   id3-parser: 2.0.0
   jquery: 3.4.1
   json-socket: 0.3.0
   lodash: 4.17.15
-  merge2: 1.3.0
   midi: 1.0.0
   mocha: 6.2.1
   plugin-error: 1.0.1
   react: 15.4.2
   react-dom: 15.4.2_react@15.4.2
   react-icons: 3.7.0
-  run-sequence: 1.2.2
   source-map-loader: 0.1.5
   spotify-web-api-js: 0.23.0
   styled-components: 3.4.10_react@15.4.2
   svgson: 3.1.0
-  tslint: 5.20.0_typescript@3.6.4
-  typescript: 3.6.4
+  tslint: 5.20.0_typescript@3.7.2
+  typescript: 3.7.2
   webpack: 1.14.0
   ws: 7.1.2
 lockfileVersion: 5.1
@@ -1884,7 +1881,7 @@ packages:
       map-stream: 0.0.7
       plugin-error: 1.0.1
       through: 2.3.8
-      tslint: 5.20.0_typescript@3.6.4
+      tslint: 5.20.0_typescript@3.7.2
     dev: false
     engines:
       node: '>= 4'
@@ -1914,7 +1911,6 @@ packages:
       plugin-error: 1.0.1
       source-map: 0.7.3
       through2: 3.0.1
-      typescript: 3.6.4
       vinyl: 2.2.0
       vinyl-fs: 3.0.3
     dev: false
@@ -4620,7 +4616,30 @@ packages:
       semver: 5.7.1
       tslib: 1.10.0
       tsutils: 2.29.0_typescript@3.6.4
-      typescript: 3.6.4
+    dev: false
+    engines:
+      node: '>=4.8.0'
+    hasBin: true
+    peerDependencies:
+      typescript: '>=2.3.0-dev || >=2.4.0-dev || >=2.5.0-dev || >=2.6.0-dev || >=2.7.0-dev || >=2.8.0-dev || >=2.9.0-dev || >=3.0.0-dev || >= 3.1.0-dev || >= 3.2.0-dev'
+    resolution:
+      integrity: sha512-2vqIvkMHbnx8acMogAERQ/IuINOq6DFqgF8/VDvhEkBqQh/x6SP0Y+OHnKth9/ZcHQSroOZwUQSN18v8KKF0/g==
+  /tslint/5.20.0_typescript@3.7.2:
+    dependencies:
+      '@babel/code-frame': 7.5.5
+      builtin-modules: 1.1.1
+      chalk: 2.4.2
+      commander: 2.20.1
+      diff: 4.0.1
+      glob: 7.1.4
+      js-yaml: 3.13.1
+      minimatch: 3.0.4
+      mkdirp: 0.5.1
+      resolve: 1.12.0
+      semver: 5.7.1
+      tslib: 1.10.0
+      tsutils: 2.29.0_typescript@3.7.2
+      typescript: 3.7.2
     dev: false
     engines:
       node: '>=4.8.0'
@@ -4656,7 +4675,6 @@ packages:
   /tsutils/2.29.0_typescript@3.6.4:
     dependencies:
       tslib: 1.10.0
-      typescript: 3.6.4
     dev: false
     peerDependencies:
       typescript: '>=2.1.0 || >=2.1.0-dev || >=2.2.0-dev || >=2.3.0-dev || >=2.4.0-dev || >=2.5.0-dev || >=2.6.0-dev || >=2.7.0-dev || >=2.8.0-dev || >=2.9.0-dev || >= 3.0.0-dev || >= 3.1.0-dev'
@@ -5178,7 +5196,7 @@ packages:
     dev: false
     name: '@rush-temp/balccon'
     resolution:
-      integrity: sha512-1I1q4STzA0FJLQeSdMM5hDL6pXmfju4PuqoIKvhznEmuo/ZKQEeGNMs92WwIUsySTOQtPJcG0UdCOkHOjcfHYA==
+      integrity: sha512-W6a5d21Qd7g2QLdZqEoiTdI7Kj4G8n2GQRWeImMVq/Dt8l4kR4eh7xC1IuWK3qA0F0md+E6ZW/sI5QCv8N2JQA==
       tarball: 'file:projects/balccon.tgz'
     version: 0.0.0
   'file:projects/composer.tgz':
@@ -5198,7 +5216,7 @@ packages:
       gulp-clean: 0.3.2
       gulp-sourcemaps: 1.6.0
       gulp-tslint: 8.1.4_tslint@5.20.0
-      gulp-typescript: 5.0.1_typescript@3.6.4
+      gulp-typescript: 5.0.1_typescript@3.7.2
       gulp-util: 3.0.8
       gulp-webpack: 1.5.0
       id3-parser: 2.0.0
@@ -5212,13 +5230,13 @@ packages:
       source-map-loader: 0.1.5
       spotify-web-api-js: 0.23.0
       styled-components: 3.4.10_react@15.4.2
-      tslint: 5.20.0_typescript@3.6.4
-      typescript: 3.6.4
+      tslint: 5.20.0_typescript@3.7.2
+      typescript: 3.7.2
       webpack: 1.14.0
     dev: false
     name: '@rush-temp/composer'
     resolution:
-      integrity: sha512-wd5Guxph70MN+6pwd5xI4TxeaNacRu85mwmPaE2NHS+hA2R5lVhNVgXjSKeFLoJUU+bRtUGSzBxl49T9uqfJmQ==
+      integrity: sha512-Y7Sm3FEoz4zumK64StZ17BJoD5hlhW+nL6PsTmBVSqjnLe4/b98ZyR1D063Px9Rk7DtBnstfPoDkAFuIyUSkmg==
       tarball: 'file:projects/composer.tgz'
     version: 0.0.0
   'file:projects/compositor.tgz':
@@ -5238,7 +5256,7 @@ packages:
     dev: false
     name: '@rush-temp/compositor'
     resolution:
-      integrity: sha512-AJACwXdUKnBqC2KjYp2cyk9vGKtZgzddfYo/grN87KzgkuY2tXGqtbM3oQ9ktI6Ie6ZY/6097PrvgsRvHdymTA==
+      integrity: sha512-hKOzP3C9mHRiUXdjziBZCS+/cAGN/dihJaQRuJWUyn0nU7vyxYzE6qqFQnask4n3E239Xtl9Itn3f2niNP8AAg==
       tarball: 'file:projects/compositor.tgz'
     version: 0.0.0
   'file:projects/core-example-consumer.tgz':
@@ -5256,7 +5274,7 @@ packages:
     dev: false
     name: '@rush-temp/core-example-consumer'
     resolution:
-      integrity: sha512-9iv9hrKuzGh4Yfi9knEaVqmiU1xsPeCBju25pbSFKm88I5HOSJGDJFjAH8x+n2fcPbIi/rg9WZxV9+FMpUOl7A==
+      integrity: sha512-67iwMIU13EyZFw2Ijrlr1lTaoJLdAKPbOpJKRdh5BWGh5w45Q+JIVLQ/5yWajpOZizMV/PtU+AzXerTb04GO1g==
       tarball: 'file:projects/core-example-consumer.tgz'
     version: 0.0.0
   'file:projects/core-example-controller.tgz':
@@ -5280,7 +5298,7 @@ packages:
     dev: false
     name: '@rush-temp/core-example-controller'
     resolution:
-      integrity: sha512-l0L6h8ieOfS1RJwAO3i2pRlc79hMqrdFuDDvBIpq+76Ki9yXR/NRRq7Jg0qo4gG7x+xXqXbIeCJOPvQA3hFZcg==
+      integrity: sha512-oU1BQGc9OAhkkwxsyWL21TTJeQ4cfQ+8N5FEdQa3fFEdasEgnHrQC8qHSU4mUlnHPTkKn4U8XtTi4eO0pIv9Qw==
       tarball: 'file:projects/core-example-controller.tgz'
     version: 0.0.0
   'file:projects/core.tgz':
@@ -5299,7 +5317,7 @@ packages:
     dev: false
     name: '@rush-temp/core'
     resolution:
-      integrity: sha512-AOnpvvayk8DGJ7nLjCSTRJEEdFjrxK+yTsJtwBO2/I+D72Fbt14l0Ys6kMtqIVQ3tLaHOirKBYH3lUBFL1Mkpg==
+      integrity: sha512-GA74rIA3uRJ+LUxJIQX29yWe2fT4/IaD29SoqQDMYuDqo77hw8s/RyN9v3IMbv8ci/cZqmL5LSQ+lu7A/WCkig==
       tarball: 'file:projects/core.tgz'
     version: 0.0.0
   'file:projects/gulp-util.tgz':
@@ -5310,12 +5328,14 @@ packages:
       gulp-sourcemaps: 1.6.0
       gulp-tslint: 8.1.4_tslint@5.20.1
       gulp-typescript: 5.0.1_typescript@3.7.2
+      plugin-error: 1.0.1
       tslint: 5.20.1_typescript@3.7.2
       typescript: 3.7.2
+      webpack: 1.14.0
     dev: false
     name: '@rush-temp/gulp-util'
     resolution:
-      integrity: sha512-/2FGnFyJh8rXQMsodgzbjH6trgy5p8HUCKyL5i3IOdFcg+GQRo0QUHEodedruU6DlbhwErkwVmPwnp+ThNirQg==
+      integrity: sha512-p6kZ9NjA9ZnKeO3tz4C525QPijhNLfJ4ihPT2D9VSpuGzG+gC4jYe6fjAfxo7Vt0tNnk7OjuvSlCYTsXV23Aug==
       tarball: 'file:projects/gulp-util.tgz'
     version: 0.0.0
   'file:projects/midi-consoles.tgz':
@@ -5336,7 +5356,7 @@ packages:
     dev: false
     name: '@rush-temp/midi-consoles'
     resolution:
-      integrity: sha512-RJ3+5uKPIwHmBGV8ftCdvCYpwuQr7pAt0BoyJl3nzh7BqKC/BG/0HnRqLg7wz8QkPNF8mlLc4nIwTQ1+0Crz9Q==
+      integrity: sha512-dSJZpyCVrtD+RMkSrMuqEhKtBMhE6MNsseTwJDsDiPMjsUTK+NlyZS2SGiUTPd3HFaSEJDyig7dkpezFP+phEA==
       tarball: 'file:projects/midi-consoles.tgz'
     version: 0.0.0
   'file:projects/openrazer-examples.tgz':
@@ -5345,14 +5365,14 @@ packages:
       gulp-clean: 0.3.2
       gulp-sourcemaps: 1.6.0
       gulp-tslint: 8.1.4_tslint@5.20.0
-      gulp-typescript: 5.0.1_typescript@3.6.4
+      gulp-typescript: 5.0.1_typescript@3.7.2
       run-sequence: 1.2.2
-      tslint: 5.20.0_typescript@3.6.4
-      typescript: 3.6.4
+      tslint: 5.20.0_typescript@3.7.2
+      typescript: 3.7.2
     dev: false
     name: '@rush-temp/openrazer-examples'
     resolution:
-      integrity: sha512-L+UOIo0dsUTO6g9IkfnCN6N6fyp7Y3fqC8DS6K72Ac9w8uHlsmPscZkHq1CwJw1Pb1N5f4Lc5mMd7bU3TNFdnw==
+      integrity: sha512-tyg6wrO/yoso5FVuCwx10g7OasYKJ8BGpPC5khvDHQPIpi89NLJ+hhAbetE0hhvN8svoZQsBJczF8/SEKoJY9A==
       tarball: 'file:projects/openrazer-examples.tgz'
     version: 0.0.0
   'file:projects/openrazer.tgz':
@@ -5374,7 +5394,7 @@ packages:
     dev: false
     name: '@rush-temp/openrazer'
     resolution:
-      integrity: sha512-p7ZlRu29zGVFNBPloUqDlbuRDfr/rdC9qi4mHdY8x4YXytzwQkxymdNLQMnB4paLfc1QpEPQqbyW3j0KkHq4Lw==
+      integrity: sha512-SBojJgtdQi5GqroNt8fXUQNJCioSH/lk+pC6/xXEcMlxuMnyPYmwqr2OPplM7ikm/34L5zhhNTjXX9yOxU77Kw==
       tarball: 'file:projects/openrazer.tgz'
     version: 0.0.0
   'file:projects/server.tgz':
@@ -5402,7 +5422,7 @@ packages:
     dev: false
     name: '@rush-temp/server'
     resolution:
-      integrity: sha512-22YqDQ23qkvNSq+PHk0AtU9fHehNgz+rc5pGnUTDOyu4oaDG2Hzr0BYZ+0I2kDPHpa+53K6qWxYvKNXQLM19zg==
+      integrity: sha512-Ba2c/stUiIaXEuQn3kcm9J+UdKsix/vNgbfS3SAbiZ/Vb3GK1ktj+Yk9xfr11kK04v60X4K/pp0HPgP2CjsDlg==
       tarball: 'file:projects/server.tgz'
     version: 0.0.0
   'file:projects/synesthesia-razer.tgz':
@@ -5423,7 +5443,7 @@ packages:
     dev: false
     name: '@rush-temp/synesthesia-razer'
     resolution:
-      integrity: sha512-4yepu8aZAFG9G11nFra7bUJ0ZCACFCHdxcPr9OsLo8dHwj2aSz3VMWrFsLD5McYlkP/5v7vuL5I6klCbOWvlig==
+      integrity: sha512-Qgf1CLTbUKTWnbtkJTJiKgvLqrAH+rDpkQKnefqrI+hKG57XTwtdlL2W85u8UwtL8YTs0UwhqUs7eQ64pjHaiw==
       tarball: 'file:projects/synesthesia-razer.tgz'
     version: 0.0.0
 registry: ''
@@ -5460,25 +5480,22 @@ specifiers:
   gulp-sourcemaps: 1.6.0
   gulp-tslint: ^8.1.3
   gulp-typescript: ^5.0.0
-  gulp-util: ~3.0.8
   gulp-webpack: 1.5.0
   id3-parser: ^2.0.0
   jquery: ~3.4.1
   json-socket: ^0.3.0
   lodash: ^4.17.13
-  merge2: ^1.2.3
   midi: ^1.0.0
   mocha: ^6.1.4
   plugin-error: ~1.0.1
   react: 15.4.2
   react-dom: 15.4.2
   react-icons: ^3.3.0
-  run-sequence: ^1.2.2
   source-map-loader: 0.1.5
   spotify-web-api-js: ^0.23.0
   styled-components: ^3.1.6
   svgson: ^3.1.0
   tslint: ^5.9.1
-  typescript: ^3.5.2
+  typescript: ~3.7.2
   webpack: 1.14.0
   ws: ^7.1.2
