@@ -63,6 +63,13 @@ exports.typescriptTasks = function (opts) {
   });
 }
 
+exports.cleanTask = function (paths) {
+  gulp.task('clean', function () {
+    return gulp.src(paths, { read: false, allowEmpty: true })
+      .pipe(clean());
+  });
+}
+
 exports.setupBasicTypescriptProject = function (opts) {
 
   // Validate Options
@@ -77,10 +84,7 @@ exports.setupBasicTypescriptProject = function (opts) {
   var tslintSrc = ['src/**/*.ts', 'src/**/*.tsx'];
   var sourcemaps = opts.sourcemaps || false;
 
-  gulp.task('clean', function () {
-    return gulp.src(opts.clean, { read: false, allowEmpty: true })
-      .pipe(clean());
-  });
+  exports.cleanTask(opts.clean);
 
   exports.typescriptTasks({
     tsconfig,

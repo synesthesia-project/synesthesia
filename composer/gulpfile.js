@@ -1,11 +1,7 @@
 var util = require('@synesthesia-project/gulp-util');
 var gulp = require('gulp');
-var clean = require('gulp-clean');
 
-gulp.task('clean', function() {
-  return gulp.src(['.tmp', 'dist'], { read: false, allowEmpty: true })
-        .pipe(clean());
-});
+util.cleanTask(['.tmp', 'dist']);
 
 gulp.task("copy-js", function(){
   return gulp.src("./src/scripts/js/*.js")
