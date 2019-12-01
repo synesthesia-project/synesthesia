@@ -48,6 +48,7 @@ dependencies:
   react-icons: 3.8.0_react@16.12.0
   soundbank-pitch-shift: 1.0.3
   source-map-loader: 0.2.4
+  source-map-support: 0.5.19
   spotify-web-api-js: 0.23.0
   styled-components: 4.4.1_b5ffe839b1a452f2d2c7d94d3059774c
   svgson: 3.1.0
@@ -4971,6 +4972,13 @@ packages:
     dev: false
     resolution:
       integrity: sha512-efyLRJDr68D9hBBNIPWFjhpFzURh+KJykQwvMyW5UiZzYwoF6l4YMMDIJJEyFWxWCqfyxLzz6tSfUFR+kXXsVQ==
+  /source-map-support/0.5.19:
+    dependencies:
+      buffer-from: 1.1.1
+      source-map: 0.6.1
+    dev: false
+    resolution:
+      integrity: sha512-Wonm7zOCIJzBGQdB+thsPar0kYuCIzYvxZwlBa87yi/Mdjv7Tip2cyVbLj5o0cFPN4EVkuTwb3GDDyUx2DGnGw==
   /source-map-url/0.4.0:
     dev: false
     resolution:
@@ -6458,11 +6466,12 @@ packages:
       gulp-mocha: 6.0.0
       lodash: 4.17.15
       mocha: 6.2.2
+      source-map-support: 0.5.19
       ws: 7.2.0
     dev: false
     name: '@rush-temp/server'
     resolution:
-      integrity: sha512-21FeQJYkIYgrAt4WMeaR+CLjBfjWpWGEpFUyGkkGQOgOxqc4rLxidU9uZ0pfxsq8gCTDgQUKb5nj0TYDGjvkyQ==
+      integrity: sha512-KOKyv61YVzb6DzCPGs/4q3GhAFY4b5ZRupBK2Sz0Y9wM49ekOVbvQ4F0Si/37PAs56ewflqmjQuEd7lmLToHag==
       tarball: 'file:projects/server.tgz'
     version: 0.0.0
   'file:projects/synesthesia-razer.tgz':
@@ -6528,6 +6537,7 @@ specifiers:
   react-icons: ^3.3.0
   soundbank-pitch-shift: ~1.0.3
   source-map-loader: ~0.2.4
+  source-map-support: ~0.5.16
   spotify-web-api-js: ^0.23.0
   styled-components: ~4.4.1
   svgson: ^3.1.0

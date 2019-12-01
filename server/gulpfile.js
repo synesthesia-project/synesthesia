@@ -5,7 +5,8 @@ var mocha = require('gulp-mocha');
 util.setupBasicTypescriptProject({
   clean: ['build'],
   outputDir: 'build/',
-  sourcemap: true
+  sourcemap: true,
+  sourcemapSourceRoot: '../../../src'
 });
 
 gulp.task('default', gulp.series('clean', 'ts'));
