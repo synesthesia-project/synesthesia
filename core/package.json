@@ -26,10 +26,10 @@
     "README.md"
   ],
   "dependencies": {
-    "@types/json-socket": "^0.1.17",
     "json-socket": "^0.3.0"
   },
   "devDependencies": {
+    "@types/json-socket": "^0.1.17",
     "@synesthesia-project/gulp-util": "~0.0.1",
     "gulp": "~4.0.2"
   }

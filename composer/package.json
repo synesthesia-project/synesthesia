@@ -17,9 +17,6 @@
     "dist/**/*",
     "README.md"
   ],
-  "dependencies": {
-    "@types/styled-components": "~4.4.0"
-  },
   "devDependencies": {
     "@synesthesia-project/core": "^0.0.2",
     "@synesthesia-project/gulp-util": "~0.0.1",
@@ -30,6 +27,7 @@
     "@types/react": "^16.9.13",
     "@types/react-dom": "~16.9.4",
     "@types/spotify-web-playback-sdk": "^0.1.1",
+    "@types/styled-components": "~4.4.0",
     "@types/webmidi": "2.0.1",
     "gulp": "~4.0.2",
     "id3-parser": "^2.0.0",
