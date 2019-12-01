@@ -29,6 +29,12 @@ jobs:
     - name: rush rebuild
       run: |
         rush rebuild
-    - name: tslint
+    - name: rush test
+      run: |
+        rush test
+    - name: rush tslint
       run: |
         rush tslint
+    - name: rush clean
+      run: |
+        rush clean
