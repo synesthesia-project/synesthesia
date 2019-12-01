@@ -10,7 +10,7 @@
   },
   "scripts": {
     "clean": "gulp clean",
-    "build": "gulp",
+    "build": "node --no-deprecation node_modules/gulp/bin/gulp.js",
     "tslint": "gulp tslint"
   },
   "files": [
