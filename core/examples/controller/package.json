@@ -10,7 +10,7 @@
   },
   "scripts": {
     "clean": "gulp clean",
-    "build": "gulp",
+    "build": "node --no-deprecation node_modules/gulp/bin/gulp.js",
     "tslint": "gulp tslint"
   },
   "private": true,
@@ -20,11 +20,11 @@
   "devDependencies": {
     "@synesthesia-project/gulp-util": "~0.0.1",
     "@types/node": "^12.6.8",
-    "@types/react": "^16.0.38",
-    "@types/react-dom": "^16.0.4",
+    "@types/react": "^16.9.13",
+    "@types/react-dom": "~16.9.4",
     "gulp": "~4.0.2",
     "id3-parser": "^2.0.0",
-    "react": "15.4.2",
-    "react-dom": "15.4.2"
+    "react": "~16.12.0",
+    "react-dom": "~16.12.0"
   }
 }

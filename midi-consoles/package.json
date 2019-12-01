@@ -32,11 +32,11 @@
     "lib/**/*"
   ],
   "dependencies": {
-    "@types/node": "^12.6.8",
     "midi": "^1.0.0"
   },
   "devDependencies": {
     "@synesthesia-project/gulp-util": "~0.0.1",
+    "@types/node": "^12.6.8",
     "gulp": "~4.0.2"
   }
 }

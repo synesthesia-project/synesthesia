@@ -16,11 +16,11 @@
   "dependencies": {
     "@synesthesia-project/compositor": "^0.0.1",
     "@synesthesia-project/core": "^0.0.2",
-    "@types/ws": "^6.0.1",
     "ws": "^7.1.2"
   },
   "devDependencies": {
     "@synesthesia-project/gulp-util": "~0.0.1",
+    "@types/ws": "^6.0.1",
     "gulp": "~4.0.2"
   }
 }
