@@ -63,7 +63,7 @@ export function getDevices<T extends Device>(
       const deviceType = await readFile(path.join(devicePath, device_type), ENCODING).catch(() => null);
       return deviceType ? new cls(devicePath, deviceType.trim()) : null;
     }),
-  ));
+  )).catch(() => []);
   return keyboards.then(filterNonNull);
 }
 
