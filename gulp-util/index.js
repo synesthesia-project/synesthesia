@@ -82,14 +82,14 @@ exports.setupBasicTypescriptProject = function (opts) {
 
   var tsconfig = opts.tsconfig || 'src/tsconfig.json';
   var tslintSrc = ['src/**/*.ts', 'src/**/*.tsx'];
-  var sourcemaps = opts.sourcemaps || false;
+  var sourcemap = opts.sourcemap || false;
 
   exports.cleanTask(opts.clean);
 
   exports.typescriptTasks({
     tsconfig,
     outputDir: opts.outputDir,
-    sourcemaps,
+    sourcemap,
     tslintSrc
   });
 }
