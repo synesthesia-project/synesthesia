@@ -1,5 +1,4 @@
 import { DownstreamEndpoint } from '@synesthesia-project/core/lib/protocols/broadcast';
-import { PlayStateData } from '@synesthesia-project/core/lib/protocols/broadcast/messages';
 import { CueFile } from '@synesthesia-project/core/lib/file';
 import * as usage from '@synesthesia-project/core/lib/file/file-usage';
 import { DEFAULT_SYNESTHESIA_PORT } from '@synesthesia-project/core/lib/constants';
@@ -51,6 +50,7 @@ export class Display {
 
   public constructor() {
     this.frame = this.frame.bind(this);
+    this.initializeInterval = this.initializeInterval.bind(this);
 
     const local = new LocalCommunicationsConsumer();
 
@@ -105,7 +105,16 @@ export class Display {
 
   public async start() {
     setInterval(this.frame, 20);
+    setInterval(this.initializeInterval, 100);
+    await this.init();
+  }
 
+  private async initializeInterval() {
+    if (!this.devices)
+      await this.init();
+  }
+
+  private async init() {
     const keyboards = await openrazer.getKeyboards();
     const mousemats = await openrazer.getMousemats();
     if (keyboards.length > 0) {
@@ -203,22 +212,28 @@ export class Display {
 
     // const timestampMillis = new Date().getTime();
 
-    if (this.devices) {
-      const frame = this.devices.compositor.renderFrame();
-      for (const p of frame) {
-        if (p.pixel.data.type === 'keyboard') {
-          this.devices.keyboard.buffer[p.pixel.data.row].colors[p.pixel.data.col] = p.output.toRGB();
-        }
-      }
-      await this.devices.keyboard.dev.writeCustomFrame(this.devices.keyboard.buffer);
-      if (this.devices.mousemat) {
+    try {
+      if (this.devices) {
+        const frame = this.devices.compositor.renderFrame();
         for (const p of frame) {
-          if (p.pixel.data.type === 'mousemat') {
-            this.devices.mousemat.buffer[p.pixel.data.i] = p.output.toRGB();
+          if (p.pixel.data.type === 'keyboard') {
+            this.devices.keyboard.buffer[p.pixel.data.row].colors[p.pixel.data.col] = p.output.toRGB();
           }
         }
-        await this.devices.mousemat.dev.writeCustomFrame(0, this.devices.mousemat.buffer);
+        await this.devices.keyboard.dev.writeCustomFrame(this.devices.keyboard.buffer);
+        if (this.devices.mousemat) {
+          for (const p of frame) {
+            if (p.pixel.data.type === 'mousemat') {
+              this.devices.mousemat.buffer[p.pixel.data.i] = p.output.toRGB();
+            }
+          }
+          await this.devices.mousemat.dev.writeCustomFrame(0, this.devices.mousemat.buffer);
+        }
       }
+    } catch(e) {
+      console.log(e);
+      console.log('Failed to write frame, resetting devices');
+      this.devices = null;
     }
   }
 }
