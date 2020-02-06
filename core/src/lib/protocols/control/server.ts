@@ -36,7 +36,7 @@ export class ServerEndpoint extends PingingEndpoint<Request, Response, Notificat
           playSpeed: l.state.playSpeed
         }
       }))
-    }
+    };
     this.playStateUpdated(state);
   }
 
@@ -74,6 +74,6 @@ export class ServerEndpoint extends PingingEndpoint<Request, Response, Notificat
       this.processPlayStateData(this.unprocessedPlayState, ping.diff);
       this.unprocessedPlayState = null;
     }
-  };
+  }
 
 }

@@ -173,5 +173,5 @@ export abstract class PingingEndpoint<Req, Res, Notif> extends Endpoint<Req, Res
   /**
    * Overwritable function called when the ping is calculated
    */
-  protected newPing(): void {};
+  protected newPing(): void { /* no-op */ }
 }

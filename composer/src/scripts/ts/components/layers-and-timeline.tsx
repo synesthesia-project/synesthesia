@@ -116,7 +116,7 @@ class LayersAndTimeline extends React.Component<LayersAndTimelineProps, LayersAn
           updateSelectionDraggingDiff={this.updateSelectionDraggingDiff}
           openLayerOptions={this.props.openLayerOptions}
           />
-      )
+      );
     }
 
     const playerPosition = this.props.file ?

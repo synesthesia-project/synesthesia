@@ -52,7 +52,7 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
           <span
             className={`button ${this.props.zoom.type === 'locked' ? 'pressed' : ''}`}
             onClick={this.props.toggleZoomPanLock}
-            title='Lock scrolling to cursor'>
+            title="Lock scrolling to cursor">
             {this.props.zoom.type === 'locked' ? <MdLock /> : <MdLockOpen/>}
           </span>
         </div>

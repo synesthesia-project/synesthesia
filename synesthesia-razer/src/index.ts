@@ -230,7 +230,7 @@ export class Display {
           await this.devices.mousemat.dev.writeCustomFrame(0, this.devices.mousemat.buffer);
         }
       }
-    } catch(e) {
+    } catch (e) {
       console.log(e);
       console.log('Failed to write frame, resetting devices');
       this.devices = null;

@@ -27,7 +27,7 @@ export type ZoomPanState = {
   zoomLevel: number;
 } | {
   /**
-   * User is free to move the 
+   * User is free to move the viewport around
    */
   type: 'unlocked';
   /**
@@ -39,7 +39,7 @@ export type ZoomPanState = {
    * Between 0 and 1
    */
   position: number;
-}
+};
 
 /**
  * The initial state of the stage
@@ -66,7 +66,7 @@ function modifyZoom(current: ZoomPanState, viewportOrigin: number, ratio: number
       zoomLevel
     });
   }
-  // TODO: Calculate new position based on zoomOrigin
+  // Calculate new position based on zoomOrigin
   const viewportSize = 1 / current.zoomLevel;
   const hidden = 1 - viewportSize;
   const startPoint = hidden * current.position;
@@ -87,25 +87,7 @@ function modifyZoom(current: ZoomPanState, viewportOrigin: number, ratio: number
     type: 'unlocked',
     zoomLevel,
     position
-  })
-  return current;
-  // TODO
-  /*
-  const minSize = 1 / MAX_ZOOM;
-  const maxSize = 1;
-  const currentSize = current.endPoint - current.startPoint;
-  const newSize = util.restrict(currentSize / ratio, minSize, maxSize);
-  // Amount we are indenting / unindenting the zoom by
-  const indent = currentSize - newSize;
-  // The new bounds of the viewport
-  const newStart = current.startPoint + indent * zoomOrigin;
-  const newEnd = current.endPoint - indent * (1 - zoomOrigin);
-  if (newStart < MIN_DELTA)
-    return {startPoint: 0, endPoint: newSize};
-  if (newEnd > 1 - MIN_DELTA)
-    return {startPoint: 1 - newSize, endPoint: 1};
-  return {startPoint: newStart, endPoint: newEnd};
-  */
+  });
 }
 
 function moveZoom(current: ZoomPanState, amnt: number): ZoomPanState {
@@ -128,7 +110,7 @@ function moveZoom(current: ZoomPanState, amnt: number): ZoomPanState {
  * Zoom and have the focal point of the zoom at zoomOrigin, where zoomOrigin is
  * some value between 0 and 1, where 0 is the start of the current viewport, and
  * 1 is at the end.
- * 
+ *
  * @param viewportOrigin Where in the viewport the mouse cursor is.
  *                       Between `0` and `1`,
  *                       where `0` is the start of the current viewport,
@@ -194,9 +176,9 @@ interface Viewport {
 function getPositionForLockedViewport(zoomPan: ZoomPanState, playerPosition: number) {
   const viewportSize = 1 / zoomPan.zoomLevel;
   const hidden = 1 - viewportSize;
-  let startPoint = playerPosition - viewportSize / 2;
+  const startPoint = playerPosition - viewportSize / 2;
   if (startPoint < 0) return 0;
-  let endPoint = startPoint + viewportSize;
+  const endPoint = startPoint + viewportSize;
   if (endPoint > 1) return 1;
   return startPoint / hidden;
 }

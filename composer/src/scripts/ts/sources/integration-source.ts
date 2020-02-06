@@ -51,7 +51,7 @@ export class ComposerEndpoint extends PingingEndpoint<Request, Response, Notific
                   effectiveStartTimeMillis: notification.data.state.effectiveStartTimeMillis + diff,
                   playSpeed: notification.data.state.playSpeed
                 }
-            }
+            };
             this.playStateUpdated(state);
             return;
           }
