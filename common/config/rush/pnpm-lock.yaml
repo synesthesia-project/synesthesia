@@ -5,12 +5,13 @@ dependencies:
   '@rush-temp/core': 'file:projects/core.tgz'
   '@rush-temp/core-example-consumer': 'file:projects/core-example-consumer.tgz'
   '@rush-temp/core-example-controller': 'file:projects/core-example-controller.tgz'
-  '@rush-temp/gulp-util': 'file:projects/gulp-util.tgz_react-dom@16.12.0+react@16.12.0'
+  '@rush-temp/gulp-util': 'file:projects/gulp-util.tgz'
   '@rush-temp/midi-consoles': 'file:projects/midi-consoles.tgz'
   '@rush-temp/openrazer': 'file:projects/openrazer.tgz'
   '@rush-temp/openrazer-examples': 'file:projects/openrazer-examples.tgz'
   '@rush-temp/server': 'file:projects/server.tgz'
   '@rush-temp/synesthesia-razer': 'file:projects/synesthesia-razer.tgz'
+  '@synesthesia-project/core': 0.0.2
   '@types/chai': 4.2.5
   '@types/chrome': 0.0.40
   '@types/jquery': 2.0.39
@@ -158,6 +159,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-kBa+cDHOR9jpRJ+kcGMsysrls0leukrm68DmFQoMIWQcXdr2cZvyvypWuGYT7U+9kAExUE7+T7r6G3C3A6L8MQ==
+  /@synesthesia-project/core/0.0.2:
+    dev: false
+    resolution:
+      integrity: sha512-8Ko79Az66yGKVwYCjdapjKOoMGYcB4vlj5AK1jau0ujpuqbF0lTGghN38aqOwqvXybawiRxOyoHfFCUJeLCjfQ==
   /@types/chai/4.2.5:
     dev: false
     resolution:
@@ -409,6 +414,14 @@ packages:
       ajv: ^6.9.1
     resolution:
       integrity: sha512-RO1ibKvd27e6FEShVFfPALuHI3WjSVNeK5FIsmme/LYRNxjKuNj+Dt7bucLa6NdSv3JcVTyMlm9kGR84z1XpaQ==
+  /ajv-keywords/3.4.1_ajv@6.11.0:
+    dependencies:
+      ajv: 6.11.0
+    dev: false
+    peerDependencies:
+      ajv: ^6.9.1
+    resolution:
+      integrity: sha512-RO1ibKvd27e6FEShVFfPALuHI3WjSVNeK5FIsmme/LYRNxjKuNj+Dt7bucLa6NdSv3JcVTyMlm9kGR84z1XpaQ==
   /ajv/6.10.2:
     dependencies:
       fast-deep-equal: 2.0.1
@@ -418,6 +431,15 @@ packages:
     dev: false
     resolution:
       integrity: sha512-TXtUUEYHuaTEbLZWIKUr5pmBuhDLy+8KYtPYdcV8qC+pOZL+NKqYwvWSRrVXHn+ZmRRAu8vJTAznH7Oag6RVRw==
+  /ajv/6.11.0:
+    dependencies:
+      fast-deep-equal: 3.1.1
+      fast-json-stable-stringify: 2.1.0
+      json-schema-traverse: 0.4.1
+      uri-js: 4.2.2
+    dev: false
+    resolution:
+      integrity: sha512-nCprB/0syFYy9fVYU1ox1l2KN8S9I+tziH8D4zdZuLT3N6RMlGSGt5FSTpAiHB/Whv8Qs1cWHma1aMKZyaHRKA==
   /ansi-colors/1.1.0:
     dependencies:
       ansi-wrap: 0.1.0
@@ -1722,10 +1744,18 @@ packages:
     dev: false
     resolution:
       integrity: sha1-ewUhjd+WZ79/Nwv3/bLLFf3Qqkk=
+  /fast-deep-equal/3.1.1:
+    dev: false
+    resolution:
+      integrity: sha512-8UEa58QDLauDNfpbrX55Q9jrGHThw2ZMdOky5Gl1CDtVeJDPVrG4Jxx1N8jw2gkWaff5UUuX1KJd+9zGe2B+ZA==
   /fast-json-stable-stringify/2.0.0:
     dev: false
     resolution:
       integrity: sha1-1RQsDK7msRifh9OnYREGT4bIu/I=
+  /fast-json-stable-stringify/2.1.0:
+    dev: false
+    resolution:
+      integrity: sha512-lhd/wF+Lk98HZoTCtlVraHtfh5XYijIjalXck7saUtuanSDyLMxnHhSXEDJqHxD7msR8D0uCmqlkwjCV8xvwHw==
   /figgy-pudding/3.5.1:
     dev: false
     resolution:
@@ -4103,6 +4133,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-0Vb/54WJ6k5v8sSWN09S0ora+Hnr+cX40r9F170nT+mSkaxltoE/7R3OrIdBSUv1OoiobH1QoWQbCnAO+e8J1A==
+  /serialize-javascript/2.1.2:
+    dev: false
+    resolution:
+      integrity: sha512-rs9OggEUF0V4jUSecXazOYsLfu7OGK2qIn3c7IPBiffz32XniEp/TX9Xmc9LQfK2nQ2QKHvZ2oygKUGU0lG4jQ==
   /set-blocking/2.0.0:
     dev: false
     resolution:
@@ -4562,6 +4596,25 @@ packages:
       webpack: ^4.0.0
     resolution:
       integrity: sha512-ZXmmfiwtCLfz8WKZyYUuuHf3dMYEjg8NrjHMb0JqHVHVOSkzp3cW2/XG1fP3tRhqEqSzMwzzRQGtAPbs4Cncxg==
+  /terser-webpack-plugin/1.4.3_webpack@4.41.5:
+    dependencies:
+      cacache: 12.0.3
+      find-cache-dir: 2.1.0
+      is-wsl: 1.1.0
+      schema-utils: 1.0.0
+      serialize-javascript: 2.1.2
+      source-map: 0.6.1
+      terser: 4.6.3
+      webpack: 4.41.5_webpack@4.41.5
+      webpack-sources: 1.4.3
+      worker-farm: 1.7.0
+    dev: false
+    engines:
+      node: '>= 6.9.0'
+    peerDependencies:
+      webpack: ^4.0.0
+    resolution:
+      integrity: sha512-QMxecFz/gHQwteWwSo5nTc6UaICqN1bMedC5sMtUc7y3Ha3Q8y6ZO0iCR8pq4RJC8Hjf0FEPEHZqcMB/+DFCrA==
   /terser/4.4.0:
     dependencies:
       commander: 2.20.3
@@ -4573,6 +4626,17 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-oDG16n2WKm27JO8h4y/w3iqBGAOSCtq7k8dRmrn4Wf9NouL0b2WpMHGChFGZq4nFAQy1FsNJrVQHfurXOSTmOA==
+  /terser/4.6.3:
+    dependencies:
+      commander: 2.20.3
+      source-map: 0.6.1
+      source-map-support: 0.5.16
+    dev: false
+    engines:
+      node: '>=6.0.0'
+    hasBin: true
+    resolution:
+      integrity: sha512-Lw+ieAXmY69d09IIc/yqeBqXpEQIpDGZqT34ui1QWXIUpR2RjbqEkT8X7Lgex19hslSqcWM5iMN2kM11eMsESQ==
   /through/2.3.8:
     dev: false
     resolution:
@@ -5015,6 +5079,39 @@ packages:
       webpack: '*'
     resolution:
       integrity: sha512-Zhw69edTGfbz9/8JJoyRQ/pq8FYUoY0diOXqW0T6yhgdhCv6wr0hra5DwwWexNRns2Z2+gsnrNcbe9hbGBgk/A==
+  /webpack/4.41.5_webpack@4.41.5:
+    dependencies:
+      '@webassemblyjs/ast': 1.8.5
+      '@webassemblyjs/helper-module-context': 1.8.5
+      '@webassemblyjs/wasm-edit': 1.8.5
+      '@webassemblyjs/wasm-parser': 1.8.5
+      acorn: 6.4.0
+      ajv: 6.11.0
+      ajv-keywords: 3.4.1_ajv@6.11.0
+      chrome-trace-event: 1.0.2
+      enhanced-resolve: 4.1.1
+      eslint-scope: 4.0.3
+      json-parse-better-errors: 1.0.2
+      loader-runner: 2.4.0
+      loader-utils: 1.2.3
+      memory-fs: 0.4.1
+      micromatch: 3.1.10
+      mkdirp: 0.5.1
+      neo-async: 2.6.1
+      node-libs-browser: 2.2.1
+      schema-utils: 1.0.0
+      tapable: 1.1.3
+      terser-webpack-plugin: 1.4.3_webpack@4.41.5
+      watchpack: 1.6.0
+      webpack-sources: 1.4.3
+    dev: false
+    engines:
+      node: '>=6.11.5'
+    hasBin: true
+    peerDependencies:
+      webpack: '*'
+    resolution:
+      integrity: sha512-wp0Co4vpyumnp3KlkmpM5LWuzvZYayDwM2n17EHFr4qxBBbRokC7DJawPJC7TfSFZ9HZ6GsdH40EBj4UV0nmpw==
   /which-module/1.0.0:
     dev: false
     resolution:
@@ -5174,17 +5271,19 @@ packages:
       integrity: sha1-a6MY6xaWFyf10oT46gA+jWFU0Mg=
   'file:projects/balccon.tgz':
     dependencies:
+      '@synesthesia-project/core': 0.0.2
       '@types/ws': 6.0.4
       gulp: 4.0.2
       ws: 7.2.0
     dev: false
     name: '@rush-temp/balccon'
     resolution:
-      integrity: sha512-W6a5d21Qd7g2QLdZqEoiTdI7Kj4G8n2GQRWeImMVq/Dt8l4kR4eh7xC1IuWK3qA0F0md+E6ZW/sI5QCv8N2JQA==
+      integrity: sha512-4tVplk/GuKyHHpd5F0owNe1fFzSlHIWR69uMHCQiwcIj54IeSuMlA3tFu0/J504tfhiKh1c8Nbx2E3MVvsMeqA==
       tarball: 'file:projects/balccon.tgz'
     version: 0.0.0
   'file:projects/composer.tgz':
     dependencies:
+      '@synesthesia-project/core': 0.0.2
       '@types/chrome': 0.0.40
       '@types/jquery': 2.0.39
       '@types/lodash': 4.14.149
@@ -5208,31 +5307,35 @@ packages:
     dev: false
     name: '@rush-temp/composer'
     resolution:
-      integrity: sha512-hVDItCKkoSQIi5zUJQpj7tOX65fEwHpQnp5ng6+D3+ueqjrYSh+p5S/6gKRX+lvOVS2fGOi7J+m9fjFyIQnIww==
+      integrity: sha512-qKRgeYhPI123KuN7bL3RmE5oIyhVemWW/Wb/nAWQqiBdZN1SXya7EF56LNE71ZMX0YDeMs8fmE86geBge/Pnsg==
       tarball: 'file:projects/composer.tgz'
     version: 0.0.0
   'file:projects/compositor.tgz':
     dependencies:
+      '@synesthesia-project/core': 0.0.2
       '@types/json-socket': 0.1.17
       gulp: 4.0.2
       json-socket: 0.3.0
     dev: false
     name: '@rush-temp/compositor'
     resolution:
-      integrity: sha512-hKOzP3C9mHRiUXdjziBZCS+/cAGN/dihJaQRuJWUyn0nU7vyxYzE6qqFQnask4n3E239Xtl9Itn3f2niNP8AAg==
+      integrity: sha512-SzWSWKHWVhQ/7UkgLheWAkTK/N8TLubegybL9sdyFV08iFTKfQh7dXtYxcHQ9LKEgw9plgfLwHwu8paYb57mhA==
       tarball: 'file:projects/compositor.tgz'
     version: 0.0.0
   'file:projects/core-example-consumer.tgz':
     dependencies:
+      '@synesthesia-project/core': 0.0.2
       gulp: 4.0.2
+      webpack: 4.41.5_webpack@4.41.5
     dev: false
     name: '@rush-temp/core-example-consumer'
     resolution:
-      integrity: sha512-67iwMIU13EyZFw2Ijrlr1lTaoJLdAKPbOpJKRdh5BWGh5w45Q+JIVLQ/5yWajpOZizMV/PtU+AzXerTb04GO1g==
+      integrity: sha512-EyKzTGadnKBsn9OX5k2nRImFg965EotBBY9NKAnDZtadBvRHdrx/gCyq7rqceaOESOVoRmgo5HwYQWHHgzGHsg==
       tarball: 'file:projects/core-example-consumer.tgz'
     version: 0.0.0
   'file:projects/core-example-controller.tgz':
     dependencies:
+      '@synesthesia-project/core': 0.0.2
       '@types/node': 12.12.14
       '@types/react': 16.9.13
       '@types/react-dom': 16.9.4
@@ -5243,7 +5346,7 @@ packages:
     dev: false
     name: '@rush-temp/core-example-controller'
     resolution:
-      integrity: sha512-xkk5e6lh7IOhLUZp/IhHw2hUhnE3sroXOD968q8BMUFpDdZ6YHsyQK+g4AnaUpOYMpkcVxxBeD4QIMfN3ltxPA==
+      integrity: sha512-cbb/AY32dGvb1zCX0QGSNJgH3+XjW7tXXzLRvnJTLMWk3qm69idkZ1/p3J+qxU86nUYtkAkm/CmsqaVp2wAXUg==
       tarball: 'file:projects/core-example-controller.tgz'
     version: 0.0.0
   'file:projects/core.tgz':
@@ -5257,7 +5360,7 @@ packages:
       integrity: sha512-GA74rIA3uRJ+LUxJIQX29yWe2fT4/IaD29SoqQDMYuDqo77hw8s/RyN9v3IMbv8ci/cZqmL5LSQ+lu7A/WCkig==
       tarball: 'file:projects/core.tgz'
     version: 0.0.0
-  'file:projects/gulp-util.tgz_react-dom@16.12.0+react@16.12.0':
+  'file:projects/gulp-util.tgz':
     dependencies:
       fancy-log: 1.3.3
       gulp: 4.0.2
@@ -5266,18 +5369,13 @@ packages:
       gulp-tslint: 8.1.4_tslint@5.20.1
       gulp-typescript: 5.0.1_typescript@3.7.2
       plugin-error: 1.0.1
-      styled-components: 4.4.1_b5ffe839b1a452f2d2c7d94d3059774c
       tslint: 5.20.1_typescript@3.7.2
       typescript: 3.7.2
       webpack: 4.41.2_webpack@4.41.2
     dev: false
-    id: 'file:projects/gulp-util.tgz'
     name: '@rush-temp/gulp-util'
-    peerDependencies:
-      react: '*'
-      react-dom: '*'
     resolution:
-      integrity: sha512-ldPxFq2NMNMN02U7NGa7c3PXv5xH1UUtAAsn3nVA40TkB7QmNPhEg403aVigYJqZkT9PJtCxyEFlXqmtxMtuNw==
+      integrity: sha512-4CDL9hh70a+RGbK4hmRltqkR/cX9BYdu23Hp0QeyaLee3OWW3FstwfPC+3Jdtkb80pssu4Tv848aiwgabfeUDA==
       tarball: 'file:projects/gulp-util.tgz'
     version: 0.0.0
   'file:projects/midi-consoles.tgz':
@@ -5321,6 +5419,7 @@ packages:
     version: 0.0.0
   'file:projects/server.tgz':
     dependencies:
+      '@synesthesia-project/core': 0.0.2
       '@types/chai': 4.2.5
       '@types/lodash': 4.14.149
       '@types/mocha': 5.2.7
@@ -5334,20 +5433,22 @@ packages:
     dev: false
     name: '@rush-temp/server'
     resolution:
-      integrity: sha512-Ba2c/stUiIaXEuQn3kcm9J+UdKsix/vNgbfS3SAbiZ/Vb3GK1ktj+Yk9xfr11kK04v60X4K/pp0HPgP2CjsDlg==
+      integrity: sha512-vafKgGPVvNKF+8+8uscK+glChU0Ye7wHqyeYQ9OQ19r5ryxP0iUr8QmJQ9AcZagGACUUkEjY6MdjY/aJVDD63w==
       tarball: 'file:projects/server.tgz'
     version: 0.0.0
   'file:projects/synesthesia-razer.tgz':
     dependencies:
+      '@synesthesia-project/core': 0.0.2
       '@types/ws': 6.0.4
       gulp: 4.0.2
       ws: 7.2.0
     dev: false
     name: '@rush-temp/synesthesia-razer'
     resolution:
-      integrity: sha512-Qgf1CLTbUKTWnbtkJTJiKgvLqrAH+rDpkQKnefqrI+hKG57XTwtdlL2W85u8UwtL8YTs0UwhqUs7eQ64pjHaiw==
+      integrity: sha512-iMHcznN1w/MvpfEPN7H7rhEPnC1i4FKdUyDeMpqr6et3Quc+oPgIvQm2eDwnZjegvclMq7zpytI+4wjORcT4rQ==
       tarball: 'file:projects/synesthesia-razer.tgz'
     version: 0.0.0
+registry: ''
 specifiers:
   '@rush-temp/balccon': 'file:./projects/balccon.tgz'
   '@rush-temp/composer': 'file:./projects/composer.tgz'
@@ -5361,6 +5462,7 @@ specifiers:
   '@rush-temp/openrazer-examples': 'file:./projects/openrazer-examples.tgz'
   '@rush-temp/server': 'file:./projects/server.tgz'
   '@rush-temp/synesthesia-razer': 'file:./projects/synesthesia-razer.tgz'
+  '@synesthesia-project/core': ^0.0.2
   '@types/chai': ^4.1.7
   '@types/chrome': 0.0.40
   '@types/jquery': 2.0.39

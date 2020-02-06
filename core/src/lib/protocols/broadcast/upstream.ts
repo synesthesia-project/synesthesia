@@ -2,6 +2,7 @@
 import { CueFile } from '../../file';
 import { Endpoint } from '../util/endpoint';
 import { BroadcastMessage, Notification, PlayStateData, Request, Response } from './messages';
+import performance from '../util/performance';
 
 /**
  * The UpstreamEndpoint is the side of the protocol that shares synesthesia

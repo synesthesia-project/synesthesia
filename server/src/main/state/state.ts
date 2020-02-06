@@ -118,15 +118,23 @@ export class ServerState {
     const mainSongAndController = this.calculateMainSongAndController();
     if (!mainSongAndController) {
       console.log ('no active controllers');
-      return Promise.resolve({success: false});
+      return Promise.resolve({type: 'result', success: false});
     }
     switch (request.request) {
       case 'toggle':
       case 'pause':
       case 'go-to-time':
-        return mainSongAndController.controller.controller.sendRequest(request);
+        return mainSongAndController.controller.controller.sendRequest(request)
+        .then(result => {
+          if (result.type === 'result') return result;
+          throw new Error('Unexpected message');
+        });
       case 'play-speed':
-        return mainSongAndController.controller.controller.sendRequest(request);
+        return mainSongAndController.controller.controller.sendRequest(request)
+          .then(result => {
+            if (result.type === 'result') return result;
+            throw new Error('Unexpected message');
+          });
       case 'file-action':
         return this.handleFileAction(request);
     }
@@ -152,7 +160,7 @@ export class ServerState {
       this.sendStateToComposers();
       this.sendStateDownstream();
     }
-    return Promise.resolve({success});
+    return Promise.resolve({type: 'result', success});
   }
 
   private handleComposerNotification(_composer: ComposerConnection) {

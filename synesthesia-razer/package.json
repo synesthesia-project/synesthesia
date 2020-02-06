@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@synesthesia-project/compositor": "^0.0.1",
-    "@synesthesia-project/core": "^0.0.2",
+    "@synesthesia-project/core": "^0.0.5",
     "openrazer": "^0.0.5",
     "ws": "^7.1.2"
   },

@@ -1,4 +1,5 @@
 import { Message } from './messages';
+import performance from './performance';
 
 /**
  * A generic abstract class that uses Promises to simplyfy implementation
@@ -119,4 +120,60 @@ export abstract class RequestHandlerEndpoint<Req, Res, Notif> extends Endpoint<R
   public setRequestHandler(handler: (req: Req) => Promise<Res>) {
     this.requestHandler = handler;
   }
+}
+
+interface PingResp {
+  timestampMillis: number;
+}
+
+/**
+ * An endpoint that periodically pings the thing it's connected to to
+ * calculate the difference between its clocks
+ */
+export abstract class PingingEndpoint<Req, Res, Notif> extends Endpoint<Req, Res, Notif> {
+
+  private pingInterval: number | NodeJS.Timeout;
+  private latestGoodPing: { ping: number, requestTime: number, diff: number } | null = null;
+
+  protected constructor(sendMessage: (msg: Message<Req, Res, Notif>) => void) {
+    super(sendMessage);
+    this.pingInterval = setInterval(() => this.updateTimeDifference(), 10000);
+    this.updateTimeDifference();
+  }
+
+  /**
+   * Get the current timestamp from the connection, and if the timing
+   * information is precise enough, use it to update the time offset.
+   */
+  private updateTimeDifference() {
+    const requestTime = performance.now();
+    this.sendRequest(this.pingReq()).then(r => {
+      const resp = this.getPingResp(r);
+      const responseTime = performance.now();
+      const ping = responseTime - requestTime;
+      if (!this.latestGoodPing || this.latestGoodPing.ping > ping) {
+        // Update difference
+        const thisTimestamp = Math.round(requestTime + ping / 2);
+        const diff = thisTimestamp - resp.timestampMillis;
+        this.latestGoodPing = {
+          ping, requestTime, diff,
+        };
+        console.log('ping diff:', diff);
+      }
+      console.log('ping:', ping);
+    });
+  }
+
+  protected handleClosed() {
+    console.log('connection closed');
+    clearInterval(this.pingInterval as any);
+  }
+
+  protected getLatestGoodPing() {
+    return this.latestGoodPing;
+  }
+
+  protected abstract pingReq(): Req;
+
+  protected abstract getPingResp(resp: Res): PingResp;
 }

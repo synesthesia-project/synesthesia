@@ -1,5 +1,6 @@
 var util = require('@synesthesia-project/gulp-util');
 var gulp = require('gulp');
+var webpack = require('webpack');
 
 util.setupBasicTypescriptProject({
   clean: ['.tmp', 'build'],
@@ -19,6 +20,9 @@ util.webpackTask(
       filename: "main.js",
       path: __dirname + "/build"
     },
+    plugins: [
+      new webpack.IgnorePlugin({ resourceRegExp: /perf_hooks/ })
+    ]
   }
 );
 

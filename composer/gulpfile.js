@@ -1,5 +1,6 @@
 var util = require('@synesthesia-project/gulp-util');
 var gulp = require('gulp');
+var webpack = require('webpack');
 
 util.cleanTask(['.tmp', 'dist']);
 
@@ -45,7 +46,10 @@ util.webpackTask('webpack', {
         enforce: "pre"
       }
     ]
-  }
+  },
+  plugins: [
+    new webpack.IgnorePlugin({ resourceRegExp: /perf_hooks/ })
+  ]
 });
 
 gulp.task('css', function () {

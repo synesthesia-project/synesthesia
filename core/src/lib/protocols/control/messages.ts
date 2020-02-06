@@ -23,10 +23,20 @@ export interface PlaySpeedRequest {
     playSpeed: number;
 }
 
+export type PingRequest = {
+  request: 'ping';
+};
+
 /** Response for [[ToggleRequest]], [[PauseRequest]] or [[GoToTimeRequest]] */
 export interface ControlResponse {
-    success: boolean;
+  type: 'result';
+  success: boolean;
 }
+
+export type PingResponse = {
+  type: 'pong';
+  timestampMillis: number;
+};
 
 export type FileByPath = {
     type: 'path';
@@ -71,11 +81,16 @@ export type PlayState = {
     data: PlayStateData;
 };
 
+/**
+ * Request from the server to control playback in some manner
+ */
+export type ControlRequest = ToggleRequest | PauseRequest | GoToTimeRequest | PlaySpeedRequest;
+
 /** Request sent from the server to the controller */
-export type ServerRequest = ToggleRequest | PauseRequest | GoToTimeRequest | PlaySpeedRequest;
+export type ServerRequest = ControlRequest | PingRequest;
 
 /** Response sent from the controller to the server */
-export type ControllerResponse = ControlResponse;
+export type ControllerResponse = ControlResponse | PingResponse;
 
 /** All Request types */
 export type Request = ServerRequest;

@@ -18,7 +18,7 @@
     "README.md"
   ],
   "devDependencies": {
-    "@synesthesia-project/core": "^0.0.2",
+    "@synesthesia-project/core": "^0.0.5",
     "@synesthesia-project/gulp-util": "~0.0.1",
     "@types/chrome": "0.0.40",
     "@types/jquery": "2.0.39",
@@ -39,6 +39,7 @@
     "react-icons": "^3.3.0",
     "source-map-loader": "~0.2.4",
     "spotify-web-api-js": "^0.23.0",
-    "styled-components": "~4.4.1"
+    "styled-components": "~4.4.1",
+    "webpack": "~4.41.2"
   }
 }
