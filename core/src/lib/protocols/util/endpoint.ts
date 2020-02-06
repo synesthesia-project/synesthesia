@@ -104,24 +104,6 @@ export abstract class Endpoint<Req, Res, Notif> {
 
 }
 
-/** Base Endpoint that implements an interface for attaching a request handler */
-export abstract class RequestHandlerEndpoint<Req, Res, Notif> extends Endpoint<Req, Res, Notif> {
-
-  private requestHandler: ((req: Req) => Promise<Res>) | null = null;
-
-  protected handleRequest(request: Req): Promise<Res> {
-    console.log('got a request', request);
-    if (this.requestHandler) {
-      return this.requestHandler(request);
-    }
-    return Promise.reject(new Error('no rewquest handler'));
-  }
-
-  public setRequestHandler(handler: (req: Req) => Promise<Res>) {
-    this.requestHandler = handler;
-  }
-}
-
 interface PingResp {
   timestampMillis: number;
 }
