@@ -8,6 +8,10 @@ import { ControlMessage, Notification, PlayStateData, Request, Response } from '
 export class ServerEndpoint extends PingingEndpoint<Request, Response, Notification> {
 
   private readonly playStateUpdated: (state: PlayStateData) => void;
+  /**
+   * Set when we're unable to process a play state due to missing ping data.
+   */
+  private unprocessedPlayState: PlayStateData | null = null;
 
   public constructor(
     sendMessage: (msg: ControlMessage) => void,
@@ -22,27 +26,31 @@ export class ServerEndpoint extends PingingEndpoint<Request, Response, Notificat
     });
   }
 
+  private processPlayStateData(data: PlayStateData, diff: number) {
+    const state: PlayStateData = {
+      layers: data.layers.map(l => ({
+        file: l.file,
+        state: l.state.type === 'paused' ? l.state : {
+          type: 'playing',
+          effectiveStartTimeMillis: l.state.effectiveStartTimeMillis + diff,
+          playSpeed: l.state.playSpeed
+        }
+      }))
+    }
+    this.playStateUpdated(state);
+  }
+
   protected handleNotification(notification: Notification) {
     switch (notification.type) {
       case 'state': {
         // Adjust play state based on offset
         const ping = this.getLatestGoodPing();
         if (!ping) {
-          console.error('No offset yet, unable to handle updated play state');
+          console.log('No offset yet, unable to handle updated play state');
+          this.unprocessedPlayState = notification.data;
           return;
         }
-        const diff = ping.diff;
-        const state: PlayStateData = {
-          layers: notification.data.layers.map(l => ({
-            file: l.file,
-            state: l.state.type === 'paused' ? l.state : {
-              type: 'playing',
-              effectiveStartTimeMillis: l.state.effectiveStartTimeMillis + diff,
-              playSpeed: l.state.playSpeed
-            }
-          }))
-        }
-        this.playStateUpdated(state);
+        this.processPlayStateData(notification.data, ping.diff);
         return;
       }
       default:
@@ -59,5 +67,13 @@ export class ServerEndpoint extends PingingEndpoint<Request, Response, Notificat
     if (resp.type === 'pong') return resp;
     throw new Error('unexpected response');
   }
+
+  protected newPing(): void {
+    const ping = this.getLatestGoodPing();
+    if (this.unprocessedPlayState && ping) {
+      this.processPlayStateData(this.unprocessedPlayState, ping.diff);
+      this.unprocessedPlayState = null;
+    }
+  };
 
 }

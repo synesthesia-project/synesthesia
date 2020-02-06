@@ -142,6 +142,7 @@ export abstract class PingingEndpoint<Req, Res, Notif> extends Endpoint<Req, Res
         this.latestGoodPing = {
           ping, requestTime, diff,
         };
+        this.newPing();
         console.log('ping diff:', diff);
       }
       console.log('ping:', ping);
@@ -168,4 +169,9 @@ export abstract class PingingEndpoint<Req, Res, Notif> extends Endpoint<Req, Res
   protected abstract pingReq(): Req;
 
   protected abstract getPingResp(resp: Res): PingResp;
+
+  /**
+   * Overwritable function called when the ping is calculated
+   */
+  protected newPing(): void {};
 }
