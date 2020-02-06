@@ -1,7 +1,7 @@
 import { Message } from '@synesthesia-project/core/lib/protocols/util/messages';
 import { CueFile } from '@synesthesia-project/core/lib/file';
 import {
-  ToggleRequest, PauseRequest, GoToTimeRequest, PlaySpeedRequest, ControlResponse, LayerState as PlayState
+  ToggleRequest, PauseRequest, GoToTimeRequest, PlaySpeedRequest, ControlResponse, PingRequest, LayerState as PlayState, PingResponse
 } from '@synesthesia-project/core/lib/protocols/control/messages';
 
 export interface IntegrationSettings {
@@ -57,10 +57,10 @@ export interface ServerCueFileModifiedNotification {
 }
 
 /** Request sent from the composer to the server */
-export type ComposerRequest = ToggleRequest | PauseRequest | GoToTimeRequest | PlaySpeedRequest | FileActionRequest;
+export type ComposerRequest = ToggleRequest | PauseRequest | GoToTimeRequest | PlaySpeedRequest | FileActionRequest | PingRequest;
 
 /** Response sent from the server to the composer */
-export type ServerResponse = ControlResponse;
+export type ServerResponse = ControlResponse | PingResponse;
 
 /** Notification sent from the server to the composer */
 export type ServerNotification = PlayStateNotification | ServerCueFileModifiedNotification;

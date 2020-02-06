@@ -1,4 +1,5 @@
 import {isEqual} from 'lodash';
+import {performance} from 'perf_hooks';
 
 import { File as ControllerFile, PlayStateData as ControllerPlayStateData } from '@synesthesia-project/core/lib/protocols/control/messages';
 import { LayerState as BcastLayerState, PlayStateData as BcastPlayStateData }
@@ -114,29 +115,31 @@ export class ServerState {
     connection.sendState(this.lastState);
   }
 
-  private handleComposerRequest(request: composerProtocol.Request): Promise<composerProtocol.Response> {
+  private async handleComposerRequest(request: composerProtocol.Request): Promise<composerProtocol.Response> {
     const mainSongAndController = this.calculateMainSongAndController();
     if (!mainSongAndController) {
       console.log ('no active controllers');
-      return Promise.resolve({type: 'result', success: false});
+      return {type: 'result', success: false};
     }
     switch (request.request) {
       case 'toggle':
       case 'pause':
       case 'go-to-time':
-        return mainSongAndController.controller.controller.sendRequest(request)
-        .then(result => {
-          if (result.type === 'result') return result;
-          throw new Error('Unexpected message');
-        });
-      case 'play-speed':
-        return mainSongAndController.controller.controller.sendRequest(request)
-          .then(result => {
-            if (result.type === 'result') return result;
-            throw new Error('Unexpected message');
-          });
+      case 'play-speed': {
+        const result = await mainSongAndController.controller.controller.sendRequest(request);
+        if (result.type === 'result') return result;
+        throw new Error('Unexpected message');
+      }
       case 'file-action':
         return this.handleFileAction(request);
+      case 'ping':
+        return {
+          type: 'pong',
+          timestampMillis: performance.now()
+        };
+      default:
+        const n: never = request;
+        throw new Error('Unrecognized request: ' + n);
     }
   }
 

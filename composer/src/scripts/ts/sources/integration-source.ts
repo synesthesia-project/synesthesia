@@ -1,5 +1,5 @@
 import { CueFile } from '@synesthesia-project/core/lib/file';
-import { Endpoint } from '@synesthesia-project/core/lib/protocols/util/endpoint';
+import { PingingEndpoint } from '@synesthesia-project/core/lib/protocols/util/endpoint';
 
 import { IntegrationSettings, PlayStateData, FileState, Request, Response, Notification, IntegrationMessage }
     from '../../../integration/shared';
@@ -7,7 +7,7 @@ import { PlayStateControls } from '../data/play-state';
 
 import { Source } from './source';
 
-export class ComposerEndpoint extends Endpoint<Request, Response, Notification> {
+export class ComposerEndpoint extends PingingEndpoint<Request, Response, Notification> {
 
     private readonly playStateUpdated: (state: PlayStateData | null) => void;
     private readonly cueFileUpdated: (id: string, state: CueFile, fileState: FileState) => void;
@@ -30,17 +30,39 @@ export class ComposerEndpoint extends Endpoint<Request, Response, Notification> 
     protected handleNotification(notification: Notification) {
         console.log('handleNotification', notification);
         switch (notification.type) {
-            case 'state':
-                this.playStateUpdated(notification.data);
-                return;
-            case 'cue-file-modified':
-                if (notification.fileState) {
-                    this.cueFileUpdated(notification.id, notification.file, notification.fileState);
-                    return;
-                } else {
-                    console.error('notification missing fileState:', notification);
-                    return;
+          case 'state': {
+            if (notification.data === null) {
+              this.playStateUpdated(null);
+              return;
+            }
+            // Adjust play state based on offset
+            const ping = this.getLatestGoodPing();
+            if (!ping) {
+              console.error('No offset yet, unable to handle updated play state');
+              return;
+            }
+            const diff = ping.diff;
+            const state: PlayStateData = {
+              ...notification.data,
+              state: notification.data.state.type === 'paused' ?
+                notification.data.state :
+                {
+                  type: 'playing',
+                  effectiveStartTimeMillis: notification.data.state.effectiveStartTimeMillis + diff,
+                  playSpeed: notification.data.state.playSpeed
                 }
+            }
+            this.playStateUpdated(state);
+            return;
+          }
+          case 'cue-file-modified':
+            if (notification.fileState) {
+                this.cueFileUpdated(notification.id, notification.file, notification.fileState);
+                return;
+            } else {
+                console.error('notification missing fileState:', notification);
+                return;
+            }
         }
         console.error('unknown notification:', notification);
     }
@@ -52,7 +74,16 @@ export class ComposerEndpoint extends Endpoint<Request, Response, Notification> 
 
     public request(request: Request) {
         return this.sendRequest(request);
-    }
+  }
+
+  protected pingReq(): Request {
+    return { request: 'ping' };
+  }
+
+  protected getPingResp(resp: Response) {
+    if (resp.type === 'pong') return resp;
+    throw new Error('unexpected response');
+  }
 
 }
 
