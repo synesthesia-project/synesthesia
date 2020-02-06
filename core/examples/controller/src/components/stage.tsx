@@ -22,10 +22,11 @@ export class Stage extends React.Component<{}, {}> {
     this.updatePlayState = this.updatePlayState.bind(this);
     this.playPause = this.playPause.bind(this);
 
-
     this.audio.addEventListener('playing', this.updatePlayState);
     this.audio.addEventListener('pause', this.updatePlayState);
     this.audio.addEventListener('seeked', this.updatePlayState);
+
+    setInterval(this.updatePlayState, 1000);
   }
 
   private getEndpoint(): Promise<ControllerEndpoint> {
