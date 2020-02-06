@@ -62,7 +62,7 @@ export class SpotifySource extends Source {
             {
               type: 'playing' as 'playing',
               playSpeed: 1,
-              effectiveStartTimeMillis: new Date().getTime() - state.progress_ms
+              effectiveStartTimeMillis: performance.now() - state.progress_ms
             },
           meta: {
             id: state.item.id,

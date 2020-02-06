@@ -66,7 +66,7 @@ export class Stage {
 
   private frame() {
 
-    const timestampMillis = new Date().getTime();
+    const timestampMillis = performance.now();
 
     if (logo) {
       // Scale logo based on beats

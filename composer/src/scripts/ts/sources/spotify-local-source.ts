@@ -25,7 +25,7 @@ export class SpotifyLocalSource extends Source {
 
     // Playback status updates
     this.player.addListener('player_state_changed', state => {
-      const time = new Date().getTime();
+      const time = performance.now();
       if (state)
         console.log('orig', time - state.position, time, state.position);
       this.playStateUpdated(
@@ -39,7 +39,7 @@ export class SpotifyLocalSource extends Source {
             {
               type: 'playing' as 'playing',
               playSpeed: 1,
-              effectiveStartTimeMillis: new Date().getTime() - state.position
+              effectiveStartTimeMillis: performance.now() - state.position
             },
           meta: this.metaFromState(state.track_window.current_track)
         } : null
@@ -73,7 +73,7 @@ export class SpotifyLocalSource extends Source {
     let max = -Infinity;
     const update = () => {
       this.player.getCurrentState().then(state => {
-        const time = new Date().getTime();
+        const time = performance.now();
         if (state) {
           const effectiveStartTimeMillis = time - state.position;
           min = Math.min(min, effectiveStartTimeMillis);

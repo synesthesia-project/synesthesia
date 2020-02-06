@@ -80,7 +80,7 @@ class LayersAndTimeline extends React.Component<LayersAndTimelineProps, LayersAn
   private updatePosition(playState: playState.PlayStateData) {
     const time = playState.state.type === 'paused' ?
       playState.state.positionMillis :
-      (new Date().getTime() - playState.state.effectiveStartTimeMillis) * playState.state.playSpeed;
+      (performance.now() - playState.state.effectiveStartTimeMillis) * playState.state.playSpeed;
         // Update positionMillis with time if different enough
     if (time < this.state.positionMillis - 10 || time > this.state.positionMillis + 10)
       this.setState({ positionMillis: time });

@@ -27,7 +27,7 @@ export class UpstreamEndpoint extends Endpoint<Request, Response, Notification> 
         case 'ping': {
           const response: Response = {
             type: 'pong',
-            timestampMillis: new Date().getTime(),
+            timestampMillis: performance.now(),
           };
           resolve(response);
           return;

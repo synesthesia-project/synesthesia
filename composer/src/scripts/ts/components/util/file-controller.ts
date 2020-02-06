@@ -154,7 +154,7 @@ export class FileController {
           this.audio.currentTime * 1000
         } : {
           type: 'playing',
-          effectiveStartTimeMillis: new Date().getTime() - this.audio.currentTime * 1000 / this.audio.playbackRate,
+          effectiveStartTimeMillis: performance.now() - this.audio.currentTime * 1000 / this.audio.playbackRate,
           playSpeed: this.audio.playbackRate
         }
       }]});

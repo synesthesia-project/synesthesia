@@ -59,7 +59,7 @@ export class FileSource extends Source {
         {
           type: 'playing',
           playSpeed: this.audio.playbackRate,
-          effectiveStartTimeMillis: new Date().getTime() - this.audio.currentTime * 1000
+          effectiveStartTimeMillis: performance.now() - this.audio.currentTime * 1000
         }
       ),
       meta: this.meta

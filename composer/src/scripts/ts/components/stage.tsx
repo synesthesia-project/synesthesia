@@ -218,7 +218,7 @@ export class Stage extends React.Component<StageProps, StageState> {
   private currentTimestamp(state: PlayStateData) {
     return state.state.type === 'paused' ?
       state.state.positionMillis :
-      (new Date().getTime() - state.state.effectiveStartTimeMillis) * state.state.playSpeed;
+      (performance.now() - state.state.effectiveStartTimeMillis) * state.state.playSpeed;
   }
 
   private playStateUpdated(playState: PlayState) {

@@ -68,13 +68,13 @@ export class DownstreamEndpoint extends Endpoint<Request, Response, Notification
    * controller.
    */
   private updateTimeDifference() {
-    const requestTime = new Date().getTime();
+    const requestTime = performance.now();
     this.sendRequest({type: 'ping'}).then(resp => {
       if (resp.type !== 'pong') {
         console.error('Received unexpected response to ping:', resp);
         return;
       }
-      const responseTime = new Date().getTime();
+      const responseTime = performance.now();
       const ping = responseTime - requestTime;
       if (!this.latestGoodPing || this.latestGoodPing.ping > ping) {
         // Update difference

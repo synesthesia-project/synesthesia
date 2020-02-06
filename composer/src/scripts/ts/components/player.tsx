@@ -141,7 +141,7 @@ class Player extends React.Component<PlayerProps, PlayerState> {
       // Check if scrubbing
       const elapsed = this.state.scrubbingPosition.caseOf({
         just: scrubbingPosition => playState.durationMillis * scrubbingPosition,
-        none: () => (new Date().getTime() - effectiveStartTimeMillis) * playSpeed
+        none: () => (performance.now() - effectiveStartTimeMillis) * playSpeed
       });
       this.updateElapsedText(playState, elapsed);
     };
