@@ -36,7 +36,7 @@ util.webpackTask('webpack', {
     filename: "[name].js",
     path: __dirname + "/dist"
   },
-  mode: 'production',
+  mode: 'development',
   devtool: 'source-map',
   module: {
     rules: [
