@@ -4,22 +4,25 @@ import universalParse from 'id3-parser/lib/universal';
 import { ControllerEndpoint } from '@synesthesia-project/core/lib/protocols/control';
 import { DEFAULT_SYNESTHESIA_PORT } from '@synesthesia-project/core/lib/constants';
 
-function loadAudioFile(audio: HTMLAudioElement, url: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    audio.src = url;
-    audio.playbackRate = 1;
-    const canPlay = () => {
-      resolve();
-      audio.removeEventListener('canplay', canPlay);
-    };
-    audio.addEventListener('canplay', canPlay);
-  });
-}
+import { PreciseAudio } from './precise-audio';
+
+// function loadAudioFile(audio: HTMLAudioElement, url: string): Promise<void> {
+//   return new Promise((resolve, reject) => {
+//     audio.src = url;
+//     audio.playbackRate = 1;
+//     const canPlay = () => {
+//       resolve();
+//       audio.removeEventListener('canplay', canPlay);
+//     };
+//     audio.addEventListener('canplay', canPlay);
+//   });
+// }
 
 export class Stage extends React.Component<{}, {}> {
 
   private endpoint: Promise<ControllerEndpoint> | null = null;
-  private audio: HTMLAudioElement | null = null;
+  // private audioOld: HTMLAudioElement | null = null;
+  private readonly audio = new PreciseAudio();
   private meta: {
     title: string, artist?: string, album?: string;
   } | null = null;
@@ -29,8 +32,9 @@ export class Stage extends React.Component<{}, {}> {
     this.state = {};
 
     this.loadAudioFile = this.loadAudioFile.bind(this);
-    this.updateAudioRef = this.updateAudioRef.bind(this);
+    // this.updateAudioRef = this.updateAudioRef.bind(this);
     this.updatePlayState = this.updatePlayState.bind(this);
+    this.playPause = this.playPause.bind(this);
   }
 
   private getEndpoint(): Promise<ControllerEndpoint> {
@@ -40,7 +44,6 @@ export class Stage extends React.Component<{}, {}> {
         const endpoint = new ControllerEndpoint(msg => ws.send(JSON.stringify(msg)));
         ws.addEventListener('open', () => {
           endpoint.setRequestHandler(async req => {
-            if (!this.audio) return { success: false };
             switch (req.request) {
               case 'pause':
                 this.audio.pause();
@@ -84,13 +87,12 @@ export class Stage extends React.Component<{}, {}> {
   }
 
   private loadAudioFile(ev: React.ChangeEvent<HTMLInputElement>) {
-    if (!this.audio) return;
     const files = ev.target.files;
     if (files) {
       const file = files[0];
+      this.audio.loadAudioFile(file);
       const url = URL.createObjectURL(file);
-      loadAudioFile(this.audio, url).then(() => {
-        if (!this.audio) return;
+      this.audio.loadAudioFile(file).then(() => {
         universalParse(url).then(tag => {
           if (tag.title) {
             this.meta = {
@@ -110,37 +112,41 @@ export class Stage extends React.Component<{}, {}> {
 
   private updatePlayState() {
     console.log(this.meta);
-    this.getEndpoint().then(endpoint => {
-      if (!this.meta || !this.audio) return;
-      endpoint.sendState({layers: [{
-        // TODO: optionally send file path instead of meta
-        file: {
-          type: 'meta' as 'meta',
-          title: this.meta.title,
-          artist: this.meta.artist,
-          album: this.meta.album,
-          lengthMillis: this.audio.duration * 1000
-        },
-        state: this.audio.paused ? {
-          type: 'paused',
-          positionMillis:
-          this.audio.currentTime * 1000
-        } : {
-          type: 'playing',
-          effectiveStartTimeMillis: performance.now() - this.audio.currentTime * 1000 / this.audio.playbackRate,
-          playSpeed: this.audio.playbackRate
-        }
-      }]});
-    });
+    // this.getEndpoint().then(endpoint => {
+    //   if (!this.meta || !this.audioOld) return;
+    //   endpoint.sendState({layers: [{
+    //     // TODO: optionally send file path instead of meta
+    //     file: {
+    //       type: 'meta' as 'meta',
+    //       title: this.meta.title,
+    //       artist: this.meta.artist,
+    //       album: this.meta.album,
+    //       lengthMillis: this.audioOld.duration * 1000
+    //     },
+    //     state: this.audioOld.paused ? {
+    //       type: 'paused',
+    //       positionMillis:
+    //       this.audioOld.currentTime * 1000
+    //     } : {
+    //       type: 'playing',
+    //       effectiveStartTimeMillis: performance.now() - this.audioOld.currentTime * 1000 / this.audioOld.playbackRate,
+    //       playSpeed: this.audioOld.playbackRate
+    //     }
+    //   }]});
+    // });
   }
 
-  private updateAudioRef(audio: HTMLAudioElement | null) {
-    this.audio = audio;
-    if (audio) {
-      audio.addEventListener('playing', this.updatePlayState);
-      audio.addEventListener('pause', this.updatePlayState);
-      audio.addEventListener('seeked', this.updatePlayState);
-    }
+  // private updateAudioRef(audio: HTMLAudioElement | null) {
+  //   this.audioOld = audio;
+  //   if (audio) {
+  //     audio.addEventListener('playing', this.updatePlayState);
+  //     audio.addEventListener('pause', this.updatePlayState);
+  //     audio.addEventListener('seeked', this.updatePlayState);
+  //   }
+  // }
+
+  private playPause() {
+    this.audio.paused ? this.audio.play() : this.audio.pause();
   }
 
   public render() {
@@ -148,7 +154,7 @@ export class Stage extends React.Component<{}, {}> {
       <div>
         <input id="file_picker" type="file" onChange={this.loadAudioFile} />
         <div>
-          <audio ref={this.updateAudioRef} controls />
+          <button onClick={this.playPause}>Play / Pause</button>
         </div>
       </div>
     );
