@@ -55,17 +55,15 @@ export class PreciseAudio {
     if (this.context.state === 'suspended')
       this.context.resume();
     if (this.song && this.song.state.state === 'paused') {
-      const now = this.context.currentTime;
+      const nowMillis = this.context.currentTime * 1000;
       const source = this.context.createBufferSource();
       source.connect(this.context.destination);
       source.buffer = this.song.buffer;
-      // TODO (copy to buffer when non-zero)
-      
-      source.start();
+      source.start(0, this.song.state.positionMillis / 1000);
       this.song.state = {
         state: 'playing',
         source,
-        effectiveStartTimeMillis: now - this.song.state.positionMillis
+        effectiveStartTimeMillis: nowMillis - this.song.state.positionMillis
       }
     }
   }
@@ -74,11 +72,11 @@ export class PreciseAudio {
     if (this.context.state === 'suspended')
       this.context.resume();
     if (this.song && this.song.state.state === 'playing') {
-      const now = this.context.currentTime;
+      const nowMillis = this.context.currentTime * 1000;
       this.song.state.source.stop();
       this.song.state = {
         state: 'paused',
-        positionMillis: now - this.song.state.effectiveStartTimeMillis
+        positionMillis: nowMillis - this.song.state.effectiveStartTimeMillis
       }
     }
   }
