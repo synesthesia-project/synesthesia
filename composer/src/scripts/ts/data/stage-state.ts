@@ -67,13 +67,16 @@ function modifyZoom(current: ZoomPanState, viewportOrigin: number, ratio: number
     });
   }
   // TODO: Calculate new position based on zoomOrigin
-  const viewport = getZoomPanViewport(current);
+  const viewportSize = 1 / current.zoomLevel;
+  const hidden = 1 - viewportSize;
+  const startPoint = hidden * current.position;
+  const endPoint = startPoint + viewportSize;
   const newSize = 1 / zoomLevel;
-  const indent = viewport.viewportSize - newSize;
-  let newStart = viewport.startPoint + indent * viewportOrigin;
+  const indent = viewportSize - newSize;
+  let newStart = startPoint + indent * viewportOrigin;
   if (newStart < 0)
     newStart = 0;
-  let newEnd = viewport.endPoint - indent * (1 - viewportOrigin);
+  let newEnd = endPoint - indent * (1 - viewportOrigin);
   if (newEnd > 1)
     newEnd = 1;
   // Calculate position based on new start and end points
@@ -188,14 +191,26 @@ interface Viewport {
   endPoint: number;
 }
 
-export function getZoomPanViewport(zoomPan: ZoomPanState): Viewport {
+function getPositionForLockedViewport(zoomPan: ZoomPanState, playerPosition: number) {
+  const viewportSize = 1 / zoomPan.zoomLevel;
+  const hidden = 1 - viewportSize;
+  let startPoint = playerPosition - viewportSize / 2;
+  if (startPoint < 0) return 0;
+  let endPoint = startPoint + viewportSize;
+  if (endPoint > 1) return 1;
+  return startPoint / hidden;
+}
+
+export function getZoomPanViewport(zoomPan: ZoomPanState, playerPosition: number): Viewport {
   const viewportSize = 1 / zoomPan.zoomLevel;
   const hidden = 1 - viewportSize;
   /**
    * Value between 0 - 1, indicating how far the view is slid
    * TODO: calculate for locked
    */
-  const position = zoomPan.type === 'locked' ? 0 : zoomPan.position;
+  const position = (zoomPan.type === 'unlocked') ?
+    zoomPan.position :
+    getPositionForLockedViewport(zoomPan, playerPosition);
   const startPoint = hidden * position;
   const endPoint = startPoint + viewportSize;
   // const currentSize = zoom.endPoint - zoom.startPoint;
@@ -218,11 +233,26 @@ export function getZoomPanViewport(zoomPan: ZoomPanState): Viewport {
  *
  * calculate the sizes of lm and rm relative to the size of the viewport
  */
-export function relativeZoomMargins(zoomPan: ZoomPanState) {
-  const { viewportSize, startPoint, endPoint } = getZoomPanViewport(zoomPan);
+export function relativeZoomMargins(zoomPan: ZoomPanState, playerPosition: number) {
+  const { viewportSize, startPoint, endPoint } = getZoomPanViewport(zoomPan, playerPosition);
   // const currentSize = zoom.endPoint - zoom.startPoint;
   return {
     left: startPoint / viewportSize,
     right: (1 - endPoint) / viewportSize
   };
+}
+
+export function lockZoomAndPan(current: ZoomPanState) {
+  return util.deepFreeze<ZoomPanState>({
+    type: 'locked',
+    zoomLevel: current.zoomLevel
+  });
+}
+
+export function unlockZoomAndPan(current: ZoomPanState, playerPosition: number) {
+  return util.deepFreeze<ZoomPanState>({
+    type: 'unlocked',
+    zoomLevel: current.zoomLevel,
+    position: getPositionForLockedViewport(current, playerPosition)
+  });
 }

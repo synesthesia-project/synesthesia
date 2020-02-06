@@ -1,5 +1,9 @@
 // Maybe
 
+/**
+ * TODO: deprecate (no longer needed with newer TypeScript)
+ * @deprecated
+ */
 export abstract class Maybe<T> {
   public abstract caseOf<Output>(cases: {none: () => Output, just: (value: T) => Output}): Output;
   public abstract fmap<Output>(map: (value: T) => Output): Maybe<Output>;
@@ -22,6 +26,13 @@ export abstract class Maybe<T> {
         none: () => false
       }),
       none: () => b.isNone()
+    });
+  }
+
+  public get(): T | null {
+    return this.caseOf({
+      just: value => value,
+      none: () => null
     });
   }
 }

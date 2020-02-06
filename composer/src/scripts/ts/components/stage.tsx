@@ -69,6 +69,7 @@ export class Stage extends React.Component<StageProps, StageState> {
     this.requestBindingForLayer = this.requestBindingForLayer.bind(this);
     this.openLayerOptions = this.openLayerOptions.bind(this);
     this.closeLayerOptions = this.closeLayerOptions.bind(this);
+    this.toggleZoomPanLock = this.toggleZoomPanLock.bind(this);
   }
 
   public componentDidMount() {
@@ -267,6 +268,24 @@ export class Stage extends React.Component<StageProps, StageState> {
     this.setState({layerOptionsOpen: null});
   }
 
+  private toggleZoomPanLock() {
+    this.setState(state => ({
+      state: {
+        zoomPan: state.state.zoomPan.type === 'locked' ?
+          stageState.unlockZoomAndPan(state.state.zoomPan, (() => {
+            if (state.cueFile?.file && state.playState?.state) {
+              const positionMillis = state.playState.state.type === 'paused' ?
+                state.playState.state.positionMillis :
+                performance.now() - state.playState.state.effectiveStartTimeMillis;
+              return positionMillis / state.cueFile.file.lengthMillis;
+            }
+            return 0
+          })()) :
+          stageState.lockZoomAndPan(state.state.zoomPan)
+      }
+    }));
+  }
+
   public render() {
     const popup = (this.state.layerOptionsOpen !== null) ?
                   {element: <LayerOptionsPopup />, dismiss: this.closeLayerOptions} :
@@ -296,6 +315,7 @@ export class Stage extends React.Component<StageProps, StageState> {
           updateCueFile={this.updateCueFile}
           requestBindingForLayer={this.requestBindingForLayer}
           openLayerOptions={this.openLayerOptions}
+          toggleZoomPanLock={this.toggleZoomPanLock}
           />
         {cueFile.caseOf({
           just: file => <EventProperties

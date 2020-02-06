@@ -55,7 +55,8 @@ class Layer extends React.Component<LayerProps, LayerState> {
   }
 
   public render() {
-    const zoomMargin = stageState.relativeZoomMargins(this.props.zoom);
+    const playerPosition = this.props.positionMillis / this.props.file.lengthMillis;
+    const zoomMargin = stageState.relativeZoomMargins(this.props.zoom, playerPosition);
     let binding = '';
     this.props.midiLayerBindings.map(b => {
       if (b.layer === this.props.layerKey)

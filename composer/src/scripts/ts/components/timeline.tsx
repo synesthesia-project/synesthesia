@@ -1,5 +1,5 @@
 import * as jQuery from 'jquery';
-import {styled, rectIconButton, P} from './styling';
+import {styled, rectIconButton, P, buttonPressed} from './styling';
 import * as React from 'react';
 
 import * as func from '../data/functional';
@@ -9,7 +9,7 @@ import * as file from '@synesthesia-project/core/lib/file';
 import * as fileManipulation from '../data/file-manipulation';
 import * as util from '@synesthesia-project/core/lib/util';
 
-import {MdAdd} from 'react-icons/md';
+import {MdAdd, MdLock, MdLockOpen} from 'react-icons/md';
 
 export interface TimelineState {
 }
@@ -26,6 +26,7 @@ export interface TimelineProps {
   updateCueFile: util.Mutator<file.CueFile>;
   updateMouseHover: (pos: func.Maybe<number>) => void;
   mousePosition: func.Maybe<number>;
+  toggleZoomPanLock: () => void;
 }
 
 class Timeline extends React.Component<TimelineProps, TimelineState> {
@@ -41,14 +42,20 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
   }
 
   public render() {
-    const zoomMargin = stageState.relativeZoomMargins(this.props.zoom);
-
     const playerPosition = this.props.positionMillis / this.props.file.lengthMillis;
+
+    const zoomMargin = stageState.relativeZoomMargins(this.props.zoom, playerPosition);
 
     return (
       <div className={this.props.className}>
         <div className="side left">
           <span className="button" onClick={this.addLayerClicked}><MdAdd /></span>
+          <span
+            className={`button ${this.props.zoom.type === 'locked' ? 'pressed' : ''}`}
+            onClick={this.props.toggleZoomPanLock}
+            title='Lock scrolling to cursor'>
+            {this.props.zoom.type === 'locked' ? <MdLock /> : <MdLockOpen/>}
+          </span>
         </div>
         <div className="side right" />
         <div className="timeline" ref={t => this.props.timelineRef(t)}>
@@ -135,7 +142,11 @@ const StyledTimeline = styled(Timeline)`
         height: ${buttonHeightPx}px;
         width: ${buttonHeightPx}px;
         ${rectIconButton}
+        margin-right: ${p => p.theme.spacingPx}px;
 
+        &.pressed {
+          ${buttonPressed}
+        }
       }
     }
 

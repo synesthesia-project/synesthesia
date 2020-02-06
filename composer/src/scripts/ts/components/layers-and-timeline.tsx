@@ -25,6 +25,7 @@ export interface LayersAndTimelineProps {
   updateSelection: util.Mutator<selection.Selection>;
   requestBindingForLayer: (layerKey: number | null) => void;
   openLayerOptions: (layerKey: number) => void;
+  toggleZoomPanLock: () => void;
 }
 
 export interface LayersAndTimelineState {
@@ -118,9 +119,9 @@ class LayersAndTimeline extends React.Component<LayersAndTimelineProps, LayersAn
       none: () => []
     });
 
-    const zoomMargin = stageState.relativeZoomMargins(this.props.state.zoomPan);
-
     const playerPosition = this.props.file.fmap(file => this.state.positionMillis / file.lengthMillis);
+
+    const zoomMargin = stageState.relativeZoomMargins(this.props.state.zoomPan, playerPosition.get() || 0);
 
     return (
       <div className={this.props.className}>
@@ -154,6 +155,7 @@ class LayersAndTimeline extends React.Component<LayersAndTimelineProps, LayersAn
             playState={this.props.playState}
             updateMouseHover={this.updateMouseHover}
             mousePosition={this.state.mousePosition}
+            toggleZoomPanLock={this.props.toggleZoomPanLock}
             />,
           none: () => null
         })}

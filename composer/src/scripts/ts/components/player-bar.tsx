@@ -67,7 +67,7 @@ class PlayerBar extends React.Component<PlayerBarProps, PlayerBarState> {
       none: () => this.state.trackPosition
     });
     const buttonLeft = (util.restrict(buttonPosition, 0, 1) * 100) + '%';
-    const viewport = stageState.getZoomPanViewport(this.props.zoom);
+    const viewport = stageState.getZoomPanViewport(this.props.zoom, this.state.trackPosition);
     return (
       <div className={className}>
         <div className="zoom" style={{
