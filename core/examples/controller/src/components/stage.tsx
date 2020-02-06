@@ -6,22 +6,9 @@ import { DEFAULT_SYNESTHESIA_PORT } from '@synesthesia-project/core/lib/constant
 
 import { PreciseAudio } from './precise-audio';
 
-// function loadAudioFile(audio: HTMLAudioElement, url: string): Promise<void> {
-//   return new Promise((resolve, reject) => {
-//     audio.src = url;
-//     audio.playbackRate = 1;
-//     const canPlay = () => {
-//       resolve();
-//       audio.removeEventListener('canplay', canPlay);
-//     };
-//     audio.addEventListener('canplay', canPlay);
-//   });
-// }
-
 export class Stage extends React.Component<{}, {}> {
 
   private endpoint: Promise<ControllerEndpoint> | null = null;
-  // private audioOld: HTMLAudioElement | null = null;
   private readonly audio = new PreciseAudio();
   private meta: {
     title: string, artist?: string, album?: string;
@@ -32,9 +19,13 @@ export class Stage extends React.Component<{}, {}> {
     this.state = {};
 
     this.loadAudioFile = this.loadAudioFile.bind(this);
-    // this.updateAudioRef = this.updateAudioRef.bind(this);
     this.updatePlayState = this.updatePlayState.bind(this);
     this.playPause = this.playPause.bind(this);
+
+
+    this.audio.addEventListener('playing', this.updatePlayState);
+    this.audio.addEventListener('pause', this.updatePlayState);
+    this.audio.addEventListener('seeked', this.updatePlayState);
   }
 
   private getEndpoint(): Promise<ControllerEndpoint> {
@@ -112,38 +103,30 @@ export class Stage extends React.Component<{}, {}> {
 
   private updatePlayState() {
     console.log(this.meta);
-    // this.getEndpoint().then(endpoint => {
-    //   if (!this.meta || !this.audioOld) return;
-    //   endpoint.sendState({layers: [{
-    //     // TODO: optionally send file path instead of meta
-    //     file: {
-    //       type: 'meta' as 'meta',
-    //       title: this.meta.title,
-    //       artist: this.meta.artist,
-    //       album: this.meta.album,
-    //       lengthMillis: this.audioOld.duration * 1000
-    //     },
-    //     state: this.audioOld.paused ? {
-    //       type: 'paused',
-    //       positionMillis:
-    //       this.audioOld.currentTime * 1000
-    //     } : {
-    //       type: 'playing',
-    //       effectiveStartTimeMillis: performance.now() - this.audioOld.currentTime * 1000 / this.audioOld.playbackRate,
-    //       playSpeed: this.audioOld.playbackRate
-    //     }
-    //   }]});
-    // });
+    this.getEndpoint().then(endpoint => {
+      if (!this.meta) return;
+      endpoint.sendState({layers: [{
+        // TODO: optionally send file path instead of meta
+        file: {
+          type: 'meta' as 'meta',
+          title: this.meta.title,
+          artist: this.meta.artist,
+          album: this.meta.album,
+          lengthMillis: this.audio.duration * 1000
+        },
+        state: this.audio.paused ? {
+          type: 'paused',
+          positionMillis: this.audio.currentTimeMillis
+        } : {
+          type: 'playing',
+            effectiveStartTimeMillis: performance.now() - 
+            // TODO: incorporate playbackRate
+            this.audio.currentTimeMillis,
+          playSpeed: this.audio.playbackRate
+        }
+      }]});
+    });
   }
-
-  // private updateAudioRef(audio: HTMLAudioElement | null) {
-  //   this.audioOld = audio;
-  //   if (audio) {
-  //     audio.addEventListener('playing', this.updatePlayState);
-  //     audio.addEventListener('pause', this.updatePlayState);
-  //     audio.addEventListener('seeked', this.updatePlayState);
-  //   }
-  // }
 
   private playPause() {
     this.audio.paused ? this.audio.play() : this.audio.pause();

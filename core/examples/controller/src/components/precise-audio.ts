@@ -8,7 +8,10 @@ type PlayState =
     state: 'playing',
     source: AudioBufferSourceNode,
     effectiveStartTimeMillis: number
-  }
+  };
+
+type Listener = () => void;
+type EventTypes = 'playing' | 'pause' | 'seeked';
 
 /**
  * An audio player that can seek and provide timestamps with millisecond
@@ -25,6 +28,11 @@ export class PreciseAudio {
     buffer: AudioBuffer;
     state: PlayState;
   } | null = null;
+  private listeners = {
+    playing: new Set<Listener>(),
+    pause: new Set<Listener>(),
+    seeked: new Set<Listener>(),
+  };
 
   private loadFile(file: File): Promise<ArrayBuffer> {
     return new Promise((resolve, reject) => {
@@ -41,6 +49,9 @@ export class PreciseAudio {
   }
 
   public async loadAudioFile(file: File) {
+    if (this.song?.state.state === 'playing') {
+      this.song.state.source.stop();
+    }
     const fileBuffer = await this.loadFile(file);
     const buffer = await this.context.decodeAudioData(fileBuffer);
     this.song = {
@@ -51,20 +62,27 @@ export class PreciseAudio {
     };
   }
 
-  public play() {
-    if (this.context.state === 'suspended')
-      this.context.resume();
-    if (this.song && this.song.state.state === 'paused') {
+  private playFrom(positionMillis: number) {
+    if (this.song) {
       const nowMillis = this.context.currentTime * 1000;
       const source = this.context.createBufferSource();
       source.connect(this.context.destination);
       source.buffer = this.song.buffer;
-      source.start(0, this.song.state.positionMillis / 1000);
+      source.start(0, positionMillis / 1000);
       this.song.state = {
         state: 'playing',
         source,
-        effectiveStartTimeMillis: nowMillis - this.song.state.positionMillis
+        effectiveStartTimeMillis: nowMillis - positionMillis
       }
+    }
+  }
+
+  public play() {
+    if (this.context.state === 'suspended')
+      this.context.resume();
+    if (this.song && this.song.state.state === 'paused') {
+      this.playFrom(this.song.state.positionMillis);
+      this.listeners.playing.forEach(l => l());
     }
   }
 
@@ -78,6 +96,7 @@ export class PreciseAudio {
         state: 'paused',
         positionMillis: nowMillis - this.song.state.effectiveStartTimeMillis
       }
+      this.listeners.pause.forEach(l => l());
     }
   }
 
@@ -85,17 +104,62 @@ export class PreciseAudio {
     return this.song?.state.state === 'paused';
   }
 
-  public get currentTime() {
-    // TODO
+  public get currentTimeMillis() {
+    if (this.song) {
+      if (this.song.state.state === 'paused') {
+        return this.song.state.positionMillis;
+      } else {
+        const nowMillis = this.context.currentTime * 1000;
+        return nowMillis - this.song.state.effectiveStartTimeMillis;
+      }
+    }
     return 0;
   }
 
-  public set currentTime(positionMillis: number) {
-    // TODO
+  public get currentTime() {
+    return this.currentTimeMillis / 1000;
+  }
+
+  public set currentTime(positionSeconds: number) {
+    if (this.song) {
+      const positionMillis = positionSeconds * 1000;
+      if (this.song.state.state === 'paused') {
+        this.song.state.positionMillis = positionMillis;
+      } else {
+        this.song.state.source.stop();
+        this.playFrom(positionMillis);
+      }
+      this.listeners.seeked.forEach(l => l());
+    }
   }
 
   public set playbackRate(playbackRate: number) {
     // TODO
   }
+
+  public get playbackRate() {
+    // TODO
+    return 1;
+  }
+
+  public get duration() {
+    if (this.song) {
+      return this.song.buffer.duration;
+    }
+    return 0;
+  }
+
+  public get durationMillis() {
+    return this.duration * 1000;
+  }
+
+  public addEventListener(event: EventTypes, listener: Listener) {
+    this.listeners[event].add(listener);
+  }
+
+  public removeEventListener(event: EventTypes, listener: Listener) {
+    this.listeners[event].delete(listener);
+  }
+
 
 }
