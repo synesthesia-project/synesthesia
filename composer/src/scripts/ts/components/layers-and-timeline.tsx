@@ -102,7 +102,7 @@ class LayersAndTimeline extends React.Component<LayersAndTimelineProps, LayersAn
           file={cueFile}
           layerKey={i}
           layer={layer}
-          zoom={this.props.state.zoom}
+          zoom={this.props.state.zoomPan}
           selection={this.props.selection}
           positionMillis={this.state.positionMillis}
           bindingLayer={this.props.bindingLayer}
@@ -118,7 +118,7 @@ class LayersAndTimeline extends React.Component<LayersAndTimelineProps, LayersAn
       none: () => []
     });
 
-    const zoomMargin = stageState.relativeZoomMargins(this.props.state.zoom);
+    const zoomMargin = stageState.relativeZoomMargins(this.props.state.zoomPan);
 
     const playerPosition = this.props.file.fmap(file => this.state.positionMillis / file.lengthMillis);
 
@@ -149,7 +149,7 @@ class LayersAndTimeline extends React.Component<LayersAndTimelineProps, LayersAn
             timelineRef={this.props.timelineRef}
             updateCueFile={this.props.updateCueFile}
             file={cueFile}
-            zoom={this.props.state.zoom}
+            zoom={this.props.state.zoomPan}
             positionMillis={this.state.positionMillis}
             playState={this.props.playState}
             updateMouseHover={this.updateMouseHover}

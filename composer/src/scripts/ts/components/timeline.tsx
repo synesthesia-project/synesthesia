@@ -19,7 +19,7 @@ export interface TimelineProps {
   className?: string;
   file: file.CueFile;
   playState: playState.PlayState;
-  zoom: stageState.ZoomState;
+  zoom: stageState.ZoomPanState;
   positionMillis: number;
   // Callbacks
   timelineRef: (ref: HTMLDivElement | null) => void;
@@ -48,7 +48,7 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
     return (
       <div className={this.props.className}>
         <div className="side left">
-          <span className="add-button" onClick={this.addLayerClicked}><MdAdd /></span>
+          <span className="button" onClick={this.addLayerClicked}><MdAdd /></span>
         </div>
         <div className="side right" />
         <div className="timeline" ref={t => this.props.timelineRef(t)}>
@@ -130,7 +130,7 @@ const StyledTimeline = styled(Timeline)`
       width: ${p => p.theme.layerSideColumnWidthPx}px;
       border-right: 1px solid ${p => p.theme.borderLight};
 
-      > .add-button {
+      > .button {
         display: block;
         height: ${buttonHeightPx}px;
         width: ${buttonHeightPx}px;

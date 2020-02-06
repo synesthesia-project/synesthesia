@@ -29,7 +29,7 @@ interface PlayerProps {
   // Properties
   className?: string;
   playState: PlayState;
-  zoom: stageState.ZoomState;
+  zoom: stageState.ZoomPanState;
   // Callbacks
   playerRef: (player: HTMLDivElement | null) => void;
 }

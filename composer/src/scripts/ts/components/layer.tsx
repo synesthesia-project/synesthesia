@@ -19,7 +19,7 @@ export interface LayerProps {
   file: file.CueFile;
   layer: file.AnyLayer;
   layerKey: number;
-  zoom: stageState.ZoomState;
+  zoom: stageState.ZoomPanState;
   positionMillis: number;
   bindingLayer: func.Maybe<number>;
   midiLayerBindings: {input: string, note: number, layer: number}[];

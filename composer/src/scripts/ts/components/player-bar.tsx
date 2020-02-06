@@ -21,7 +21,7 @@ export interface PlayerBarProps {
   className?: string;
   playState: PlayState;
   scrubbingPosition: func.Maybe<number>;
-  zoom: stageState.ZoomState;
+  zoom: stageState.ZoomPanState;
   // Callbacks
   updateScrubbingPosition: (position: func.Maybe<number>) => void;
 }
@@ -67,11 +67,12 @@ class PlayerBar extends React.Component<PlayerBarProps, PlayerBarState> {
       none: () => this.state.trackPosition
     });
     const buttonLeft = (util.restrict(buttonPosition, 0, 1) * 100) + '%';
+    const viewport = stageState.getZoomPanViewport(this.props.zoom);
     return (
       <div className={className}>
         <div className="zoom" style={{
-          left: this.props.zoom.startPoint * 100 + '%',
-          right: (1 - this.props.zoom.endPoint) * 100 + '%'
+          left: viewport.startPoint * 100 + '%',
+          right: (1 - viewport.endPoint) * 100 + '%'
           }}>
         </div>
         <div className="bar" ref={bar => this.barRef = bar}>

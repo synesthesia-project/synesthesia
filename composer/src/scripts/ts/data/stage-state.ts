@@ -10,21 +10,35 @@ const ZOOM_STEP = 1.25;
  */
 const ZOOM_MOVE_AMNT = 0.1;
 const MAX_ZOOM = 100; // 10000 %
-const MIN_DELTA = 0.0005;
 
 export interface StageState {
-  zoom: ZoomState;
+  zoomPan: ZoomPanState;
 }
 
-export interface ZoomState {
+export type ZoomPanState = {
   /**
-   * Start point of the zoomed-in section, between 0 and 1.
+   * Locked to follow cursor
    */
-  startPoint: number;
+  type: 'locked';
   /**
-   * End point of the zoomed-in section, between 0 and 1.
+   * * `1`: default (full timeline)
+   * * `> 1`: zoomed-in
    */
-  endPoint: number;
+  zoomLevel: number;
+} | {
+  /**
+   * User is free to move the 
+   */
+  type: 'unlocked';
+  /**
+   * * `1`: default (full timeline)
+   * * `> 1`: zoomed-in
+   */
+  zoomLevel: number;
+  /**
+   * Between 0 and 1
+   */
+  position: number;
 }
 
 /**
@@ -32,14 +46,48 @@ export interface ZoomState {
  */
 export function initialState(): StageState {
   return util.deepFreeze({
-    zoom: {
-      startPoint: 0,
-      endPoint: 1
+    zoomPan: {
+      type: 'unlocked',
+      zoomLevel: 1,
+      position: 0
     }
   });
 }
 
-function modifyZoom(current: ZoomState, zoomOrigin: number, ratio: number): ZoomState {
+function modifyZoom(current: ZoomPanState, viewportOrigin: number, ratio: number): ZoomPanState {
+  let zoomLevel = current.zoomLevel * ratio;
+  if (zoomLevel > MAX_ZOOM)
+    zoomLevel = MAX_ZOOM;
+  if (zoomLevel < 1)
+    zoomLevel = 1;
+  if (current.type === 'locked') {
+    return util.deepFreeze({
+      type: 'locked',
+      zoomLevel
+    });
+  }
+  // TODO: Calculate new position based on zoomOrigin
+  const viewport = getZoomPanViewport(current);
+  const newSize = 1 / zoomLevel;
+  const indent = viewport.viewportSize - newSize;
+  let newStart = viewport.startPoint + indent * viewportOrigin;
+  if (newStart < 0)
+    newStart = 0;
+  let newEnd = viewport.endPoint - indent * (1 - viewportOrigin);
+  if (newEnd > 1)
+    newEnd = 1;
+  // Calculate position based on new start and end points
+  let position = newStart / (newStart + 1 - newEnd);
+  if (isNaN(position))
+    position = 0;
+  return util.deepFreeze({
+    type: 'unlocked',
+    zoomLevel,
+    position
+  })
+  return current;
+  // TODO
+  /*
   const minSize = 1 / MAX_ZOOM;
   const maxSize = 1;
   const currentSize = current.endPoint - current.startPoint;
@@ -54,43 +102,53 @@ function modifyZoom(current: ZoomState, zoomOrigin: number, ratio: number): Zoom
   if (newEnd > 1 - MIN_DELTA)
     return {startPoint: 1 - newSize, endPoint: 1};
   return {startPoint: newStart, endPoint: newEnd};
+  */
 }
 
-function moveZoom(current: ZoomState, amnt: number): ZoomState {
-  const currentSize = current.endPoint - current.startPoint;
-  const moveAmnt = currentSize * amnt;
-  const newStart = current.startPoint + moveAmnt;
-  const newEnd = current.endPoint + moveAmnt;
-  if (newStart < MIN_DELTA)
-    return {startPoint: 0, endPoint: currentSize};
-  if (newEnd > 1 - MIN_DELTA)
-    return {startPoint: 1 - currentSize, endPoint: 1};
-  return {startPoint: newStart, endPoint: newEnd};
+function moveZoom(current: ZoomPanState, amnt: number): ZoomPanState {
+  if (current.type === 'locked')
+    return current;
+  const currentSize = 1 / current.zoomLevel;
+  let position = current.position + currentSize * amnt;
+  if (position < 0)
+    position = 0;
+  if (position > 1)
+    position = 1;
+  return util.deepFreeze({
+    type: 'unlocked',
+    zoomLevel: current.zoomLevel,
+    position
+  });
 }
 
 /**
  * Zoom and have the focal point of the zoom at zoomOrigin, where zoomOrigin is
  * some value between 0 and 1, where 0 is the start of the current viewport, and
  * 1 is at the end.
+ * 
+ * @param viewportOrigin Where in the viewport the mouse cursor is.
+ *                       Between `0` and `1`,
+ *                       where `0` is the start of the current viewport,
+ *                       and `1` is at the end.
  */
-export function zoom(current: StageState, zoomOrigin: number, ratio: number): StageState {
+export function zoom(current: StageState, viewportOrigin: number, ratio: number): StageState {
   return util.deepFreeze({
-    zoom: modifyZoom(current.zoom, zoomOrigin, ratio)
+    zoomPan: modifyZoom(current.zoomPan, viewportOrigin, ratio)
   });
 }
 
 /**
  * Zoom in one step
  */
-export function zoomIn(current: StageState, zoomOrigin: number): StageState {
-  return zoom(current, zoomOrigin, ZOOM_STEP);
+export function zoomIn(current: StageState, viewportOrigin: number): StageState {
+  return zoom(current, viewportOrigin, ZOOM_STEP);
 }
 
 /**
  * Zoom out one step
  */
-export function zoomOut(current: StageState, zoomOrigin: number): StageState {
-  return zoom(current, zoomOrigin, 1 / ZOOM_STEP);
+export function zoomOut(current: StageState, viewportOrigin: number): StageState {
+  return zoom(current, viewportOrigin, 1 / ZOOM_STEP);
 }
 
 /**
@@ -98,7 +156,7 @@ export function zoomOut(current: StageState, zoomOrigin: number): StageState {
  */
 export function zoomMoveLeft(current: StageState): StageState {
   return util.deepFreeze({
-    zoom: moveZoom(current.zoom, -ZOOM_MOVE_AMNT)
+    zoomPan: moveZoom(current.zoomPan, -ZOOM_MOVE_AMNT)
   });
 }
 
@@ -107,8 +165,46 @@ export function zoomMoveLeft(current: StageState): StageState {
  */
 export function zoomMoveRight(current: StageState): StageState {
   return util.deepFreeze({
-    zoom: moveZoom(current.zoom, ZOOM_MOVE_AMNT)
+    zoomPan: moveZoom(current.zoomPan, ZOOM_MOVE_AMNT)
   });
+}
+
+interface Viewport {
+  /**
+   * How big is the viewport compared to the timeline?
+   */
+  viewportSize: number;
+  /**
+   * How much of the timeline is hidden? (outside of the viewport)
+   */
+  hidden: number;
+  /**
+   * Where on the timeline does the viewpoint start? (`0` - `1`)
+   */
+  startPoint: number;
+  /**
+   * Where on the timeline does the viewpoint end? (`0` - `1`)
+   */
+  endPoint: number;
+}
+
+export function getZoomPanViewport(zoomPan: ZoomPanState): Viewport {
+  const viewportSize = 1 / zoomPan.zoomLevel;
+  const hidden = 1 - viewportSize;
+  /**
+   * Value between 0 - 1, indicating how far the view is slid
+   * TODO: calculate for locked
+   */
+  const position = zoomPan.type === 'locked' ? 0 : zoomPan.position;
+  const startPoint = hidden * position;
+  const endPoint = startPoint + viewportSize;
+  // const currentSize = zoom.endPoint - zoom.startPoint;
+  return {
+    viewportSize,
+    hidden,
+    startPoint,
+    endPoint
+  };
 }
 
 /**
@@ -122,10 +218,11 @@ export function zoomMoveRight(current: StageState): StageState {
  *
  * calculate the sizes of lm and rm relative to the size of the viewport
  */
-export function relativeZoomMargins(zoom: ZoomState) {
-  const currentSize = zoom.endPoint - zoom.startPoint;
+export function relativeZoomMargins(zoomPan: ZoomPanState) {
+  const { viewportSize, startPoint, endPoint } = getZoomPanViewport(zoomPan);
+  // const currentSize = zoom.endPoint - zoom.startPoint;
   return {
-    left: zoom.startPoint / currentSize,
-    right: (1 - zoom.endPoint) / currentSize
+    left: startPoint / viewportSize,
+    right: (1 - endPoint) / viewportSize
   };
 }

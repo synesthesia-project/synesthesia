@@ -306,7 +306,7 @@ export class Stage extends React.Component<StageProps, StageState> {
         })}
         <Player
           playerRef={player => this.player = player}
-          zoom={this.state.state.zoom}
+          zoom={this.state.state.zoomPan}
           playState={this.state.playState}
           />
       </div>
