@@ -1,7 +1,6 @@
 import {styled, rectButton, buttonPressed} from './styling';
 import {LayerItems} from './layer-items';
 import {LayerVisualization} from './layer-visualization';
-import * as func from '../data/functional';
 import * as React from 'react';
 import * as file from '@synesthesia-project/core/lib/file';
 import * as selection from '../data/selection';
@@ -21,7 +20,7 @@ export interface LayerProps {
   layerKey: number;
   zoom: stageState.ZoomPanState;
   positionMillis: number;
-  bindingLayer: func.Maybe<number>;
+  bindingLayer: number | null;
   midiLayerBindings: {input: string, note: number, layer: number}[];
   selectionDraggingDiff: number | null;
   // Callbacks
@@ -48,10 +47,7 @@ class Layer extends React.Component<LayerProps, LayerState> {
   }
 
   private isBinding() {
-    return this.props.bindingLayer.caseOf({
-      just: layerKey => layerKey === this.props.layerKey,
-      none: () => false
-    });
+    return this.props.bindingLayer === this.props.layerKey;
   }
 
   public render() {
@@ -105,12 +101,11 @@ class Layer extends React.Component<LayerProps, LayerState> {
   }
 
   private toggleRequestBind() {
-    return this.props.bindingLayer.caseOf({
-      just: layerKey => this.props.requestBindingForLayer(
-        layerKey === this.props.layerKey ? null : this.props.layerKey
-      ),
-      none: () => this.props.requestBindingForLayer(this.props.layerKey)
-    });
+    if (this.props.bindingLayer === this.props.layerKey) {
+      this.props.requestBindingForLayer(null);
+    } else {
+      this.props.requestBindingForLayer(this.props.layerKey);
+    }
   }
 
   private openLayerOptions() {

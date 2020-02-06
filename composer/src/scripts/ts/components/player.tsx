@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {styled, buttonDisabled, rectIconButton, rectButtonSmall, textInput} from './styling';
 
-import * as func from '../data/functional';
 import * as stageState from '../data/stage-state';
 import {PlayState, PlayStateData} from '../data/play-state';
 import {displayMillis} from '../display/timing';
@@ -21,7 +20,7 @@ interface PlayerState {
    * If the user is currently scrubbing the track, this number will be set to
    * a value in the interval [0, 1] that represents where they are strubbing to.
    */
-  scrubbingPosition: func.Maybe<number>;
+  scrubbingPosition: number | null;
   elapsedTimeText: string | null;
 }
 
@@ -41,7 +40,7 @@ class Player extends React.Component<PlayerProps, PlayerState> {
   constructor(props: PlayerProps) {
     super(props);
     this.state = {
-      scrubbingPosition: func.none(),
+      scrubbingPosition: null,
       elapsedTimeText: null
     };
 
@@ -139,10 +138,9 @@ class Player extends React.Component<PlayerProps, PlayerState> {
       const effectiveStartTimeMillis = playState.state.effectiveStartTimeMillis;
       const playSpeed = playState.state.playSpeed;
       // Check if scrubbing
-      const elapsed = this.state.scrubbingPosition.caseOf({
-        just: scrubbingPosition => playState.durationMillis * scrubbingPosition,
-        none: () => (performance.now() - effectiveStartTimeMillis) * playSpeed
-      });
+      const elapsed = this.state.scrubbingPosition !== null ?
+        playState.durationMillis * this.state.scrubbingPosition :
+        (performance.now() - effectiveStartTimeMillis) * playSpeed;
       this.updateElapsedText(playState, elapsed);
     };
     // Pick a nice interval that will show the milliseconds updating
@@ -154,14 +152,12 @@ class Player extends React.Component<PlayerProps, PlayerState> {
    * Update elapsed text, but if scrubbing display that time instead
    */
   private updateElapsedText(playState: PlayStateData, elapsed: number) {
-    elapsed = this.state.scrubbingPosition.caseOf({
-      just: scrubbingPosition => playState.durationMillis * scrubbingPosition,
-      none: () => elapsed
-    });
+    elapsed = this.state.scrubbingPosition !== null ?
+      playState.durationMillis * this.state.scrubbingPosition : elapsed;
     this.setState({elapsedTimeText: displayMillis(elapsed)});
   }
 
-  private updateScrubbingPosition(position: func.Maybe<number>) {
+  private updateScrubbingPosition(position: number | null) {
     this.setState({
       scrubbingPosition: position
     });

@@ -2,7 +2,6 @@ import {styled} from './styling';
 import {Layer} from './layer';
 import {Timeline} from './timeline';
 import * as React from 'react';
-import * as func from '../data/functional';
 import * as file from '@synesthesia-project/core/lib/file';
 import * as selection from '../data/selection';
 import * as util from '@synesthesia-project/core/lib/util';
@@ -13,10 +12,10 @@ export interface LayersAndTimelineProps {
   // Properties
   className?: string;
   selection: selection.Selection;
-  file: func.Maybe<file.CueFile>;
+  file: file.CueFile | null;
   state: stageState.StageState;
   playState: playState.PlayState;
-  bindingLayer: func.Maybe<number>;
+  bindingLayer: number | null;
   midiLayerBindings: {input: string, note: number, layer: number}[];
   // Callbacks
   timelineRef: (ref: HTMLDivElement | null) => void;
@@ -31,7 +30,7 @@ export interface LayersAndTimelineProps {
 export interface LayersAndTimelineState {
   /** Current position in milliseconds, updated every so often based on frame-rate */
   positionMillis: number;
-  mousePosition: func.Maybe<number>;
+  mousePosition: number | null;
   /**
    * If the user is currently dragging the selected elements, then
    * this is the difference in milliseconds
@@ -47,7 +46,7 @@ class LayersAndTimeline extends React.Component<LayersAndTimelineProps, LayersAn
     super(props);
     this.state = {
       positionMillis: 0,
-      mousePosition: func.none(),
+      mousePosition: null,
       selectionDraggingDiff: null
     };
     this.updateMouseHover = this.updateMouseHover.bind(this);
@@ -87,7 +86,7 @@ class LayersAndTimeline extends React.Component<LayersAndTimelineProps, LayersAn
       this.setState({ positionMillis: time });
   }
 
-  private updateMouseHover(mousePosition: func.Maybe<number>) {
+  private updateMouseHover(mousePosition: number | null) {
     this.setState({mousePosition});
   }
 
@@ -96,11 +95,13 @@ class LayersAndTimeline extends React.Component<LayersAndTimelineProps, LayersAn
   }
 
   public render() {
-    const layers = this.props.file.caseOf({
-      just: cueFile => cueFile.layers.map((layer, i) =>
+    let layers: JSX.Element[] | null = null;
+    if (this.props.file) {
+      const file = this.props.file;
+      layers = this.props.file.layers.map((layer, i) =>
         <Layer
           key={i}
-          file={cueFile}
+          file={file}
           layerKey={i}
           layer={layer}
           zoom={this.props.state.zoomPan}
@@ -115,13 +116,13 @@ class LayersAndTimeline extends React.Component<LayersAndTimelineProps, LayersAn
           updateSelectionDraggingDiff={this.updateSelectionDraggingDiff}
           openLayerOptions={this.props.openLayerOptions}
           />
-      ),
-      none: () => []
-    });
+      )
+    }
 
-    const playerPosition = this.props.file.fmap(file => this.state.positionMillis / file.lengthMillis);
+    const playerPosition = this.props.file ?
+      this.state.positionMillis / this.props.file.lengthMillis : null;
 
-    const zoomMargin = stageState.relativeZoomMargins(this.props.state.zoomPan, playerPosition.get() || 0);
+    const zoomMargin = stageState.relativeZoomMargins(this.props.state.zoomPan, playerPosition || 0);
 
     return (
       <div className={this.props.className}>
@@ -134,31 +135,28 @@ class LayersAndTimeline extends React.Component<LayersAndTimelineProps, LayersAn
                 left: (- zoomMargin.left * 100) + '%',
                 right: (- zoomMargin.right * 100) + '%'
               }}>
-              {playerPosition.caseOf({
-                just: position => <div className="marker player-position" style={{left: position * 100 + '%'}}/>,
-                none: () => null
-              })}
-              {this.state.mousePosition.caseOf({
-                just: position => <div className="marker mouse" style={{left: position * 100 + '%'}}/>,
-                none: () => null
-              })}
+              {playerPosition !== null &&
+                <div className="marker player-position" style={{ left: playerPosition * 100 + '%'}}/>
+              }
+              {this.state.mousePosition !== null &&
+                <div className="marker mouse" style={{ left: this.state.mousePosition * 100 + '%'}}/>
+              }
             </div>
           </div>
         </div>
-        {this.props.file.caseOf({
-          just: cueFile => <Timeline
+        {this.props.file &&
+          <Timeline
             timelineRef={this.props.timelineRef}
             updateCueFile={this.props.updateCueFile}
-            file={cueFile}
+            file={this.props.file}
             zoom={this.props.state.zoomPan}
             positionMillis={this.state.positionMillis}
             playState={this.props.playState}
             updateMouseHover={this.updateMouseHover}
             mousePosition={this.state.mousePosition}
             toggleZoomPanLock={this.props.toggleZoomPanLock}
-            />,
-          none: () => null
-        })}
+            />
+        }
       </div>
     );
   }

@@ -4,7 +4,6 @@ import {styled} from './styling';
 
 import * as util from '@synesthesia-project/core/lib/util';
 
-import * as func from '../data/functional';
 import * as stageState from '../data/stage-state';
 import {PlayState, PlayStateData} from '../data/play-state';
 
@@ -20,10 +19,10 @@ export interface PlayerBarProps {
   // Properties
   className?: string;
   playState: PlayState;
-  scrubbingPosition: func.Maybe<number>;
+  scrubbingPosition: number | null;
   zoom: stageState.ZoomPanState;
   // Callbacks
-  updateScrubbingPosition: (position: func.Maybe<number>) => void;
+  updateScrubbingPosition: (position: number | null) => void;
 }
 
 class PlayerBar extends React.Component<PlayerBarProps, PlayerBarState> {
@@ -62,10 +61,8 @@ class PlayerBar extends React.Component<PlayerBarProps, PlayerBarState> {
       (this.state.dragging ? ' dragging' : '') +
       (this.props.playState ? '' : ' disabled');
     const fillWidth = (util.restrict(this.state.trackPosition, 0, 1) * 100) + '%';
-    const buttonPosition = this.props.scrubbingPosition.caseOf({
-      just: scrubbingPosition => scrubbingPosition,
-      none: () => this.state.trackPosition
-    });
+    const buttonPosition = this.props.scrubbingPosition !== null ?
+      this.props.scrubbingPosition : this.state.trackPosition;
     const buttonLeft = (util.restrict(buttonPosition, 0, 1) * 100) + '%';
     const viewport = stageState.getZoomPanViewport(this.props.zoom, this.state.trackPosition);
     return (
@@ -104,14 +101,14 @@ class PlayerBar extends React.Component<PlayerBarProps, PlayerBarState> {
     this.setState({
       dragging: true
     });
-    this.props.updateScrubbingPosition(func.just(this.calculateBarPosition(e)));
+    this.props.updateScrubbingPosition(this.calculateBarPosition(e));
   }
 
   private onMouseMove(e: React.MouseEvent<HTMLDivElement>) {
     if (!this.state.dragging)
       return;
     e.preventDefault();
-    this.props.updateScrubbingPosition(func.just(this.calculateBarPosition(e)));
+    this.props.updateScrubbingPosition(this.calculateBarPosition(e));
   }
 
   private onMouseUp(e: React.MouseEvent<HTMLDivElement>) {
@@ -125,7 +122,7 @@ class PlayerBar extends React.Component<PlayerBarProps, PlayerBarState> {
     this.setState({
       dragging: false
     });
-    this.props.updateScrubbingPosition(func.none());
+    this.props.updateScrubbingPosition(null);
   }
 
   private updateFromPlayState(playState: PlayState) {

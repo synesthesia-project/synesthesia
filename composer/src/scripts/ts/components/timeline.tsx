@@ -2,7 +2,6 @@ import * as jQuery from 'jquery';
 import {styled, rectIconButton, P, buttonPressed} from './styling';
 import * as React from 'react';
 
-import * as func from '../data/functional';
 import * as playState from '../data/play-state';
 import * as stageState from '../data/stage-state';
 import * as file from '@synesthesia-project/core/lib/file';
@@ -21,11 +20,11 @@ export interface TimelineProps {
   playState: playState.PlayState;
   zoom: stageState.ZoomPanState;
   positionMillis: number;
+  mousePosition: number | null;
   // Callbacks
   timelineRef: (ref: HTMLDivElement | null) => void;
   updateCueFile: util.Mutator<file.CueFile>;
-  updateMouseHover: (pos: func.Maybe<number>) => void;
-  mousePosition: func.Maybe<number>;
+  updateMouseHover: (pos: number | null) => void;
   toggleZoomPanLock: () => void;
 }
 
@@ -69,10 +68,9 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
             onMouseLeave={this.mouseLeave}
             >
             <div className="marker player-position" style={{left: playerPosition * 100 + '%'}}/>
-            {this.props.mousePosition.caseOf({
-              just: position => <div className="marker mouse" style={{left: position * 100 + '%'}}/>,
-              none: () => null
-            })}
+            {this.props.mousePosition !== null &&
+              <div className="marker mouse" style={{ left: this.props.mousePosition * 100 + '%'}}/>
+            }
           </div>
         </div>
       </div>
@@ -102,11 +100,11 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
   }
 
   private mouseEnterOrMove(e: React.MouseEvent<{}>) {
-    this.props.updateMouseHover(func.just(this.getMousePosition(e)));
+    this.props.updateMouseHover(this.getMousePosition(e));
   }
 
   private mouseLeave(_e: React.MouseEvent<{}>) {
-    this.props.updateMouseHover(func.none());
+    this.props.updateMouseHover(null);
   }
 
 }

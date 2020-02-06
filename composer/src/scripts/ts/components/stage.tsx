@@ -3,8 +3,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import {styled, ThemeProvider, defaultTheme} from './styling';
 
-import * as func from '../data/functional';
-import {PlayState, PlayStateData} from '../data/play-state';
+import {PlayState, PlayStateData, currentPosition} from '../data/play-state';
 
 import {Overlays} from './overlays';
 import {Toolbar} from './toolbar';
@@ -34,7 +33,7 @@ export interface StageState {
   } | null;
   selection: selection.Selection;
   state: stageState.StageState;
-  bindingLayer: func.Maybe<number>;
+  bindingLayer: number | null;
   midiLayerBindings: {input: string, note: number, layer: number}[];
   layerOptionsOpen: number | null;
 }
@@ -55,7 +54,7 @@ export class Stage extends React.Component<StageProps, StageState> {
       cueFile: null,
       selection: selection.initialSelection(),
       state: stageState.initialState(),
-      bindingLayer: func.none(),
+      bindingLayer: null,
       midiLayerBindings: [],
       layerOptionsOpen: null
     };
@@ -178,28 +177,26 @@ export class Stage extends React.Component<StageProps, StageState> {
     this.midi.addListener({
       inputRemoved: input => console.debug('inputRemoved', input),
       noteOn: (input, note, _velocity) => {
-        this.state.bindingLayer.caseOf({
-          just: layerKey => {
-            // Bind this note to that layer
-            this.setState(prevState => ({
-              bindingLayer: func.none(),
-              midiLayerBindings: prevState.midiLayerBindings
-                // Remove existing bindings for this layer or note
-                .filter(b => b.layer !== layerKey && (b.input !== input || b.note !== note))
-                .concat({input, note, layer: layerKey})
-            }));
-          },
-          none: () => {
-            this.state.midiLayerBindings.map(b => {
-              if (b.input === input && b.note === note && this.state.playState) {
-                const timestampMillis = this.currentTimestamp(this.state.playState);
-                this.updateCueFile(file =>
-                  fileManipulation.addLayerItem(file, b.layer, timestampMillis)
-                );
-              }
-            });
-          }
-        });
+        const layerKey = this.state.bindingLayer;
+        if (layerKey) {
+          // Bind this note to that layer
+          this.setState(prevState => ({
+            bindingLayer: null,
+            midiLayerBindings: prevState.midiLayerBindings
+              // Remove existing bindings for this layer or note
+              .filter(b => b.layer !== layerKey && (b.input !== input || b.note !== note))
+              .concat({input, note, layer: layerKey})
+          }));
+        } else {
+          this.state.midiLayerBindings.map(b => {
+            if (b.input === input && b.note === note && this.state.playState) {
+              const timestampMillis = this.currentTimestamp(this.state.playState);
+              this.updateCueFile(file =>
+                fileManipulation.addLayerItem(file, b.layer, timestampMillis)
+              );
+            }
+          });
+        }
       },
       noteOff: (input, note) => console.debug('stage noteOff', input, note)
     });
@@ -257,7 +254,7 @@ export class Stage extends React.Component<StageProps, StageState> {
   }
 
   private requestBindingForLayer(layerKey: number | null) {
-    this.setState({bindingLayer: func.maybeFrom(layerKey)});
+    this.setState({bindingLayer: layerKey});
   }
 
   private openLayerOptions(layerKey: number) {
@@ -272,15 +269,10 @@ export class Stage extends React.Component<StageProps, StageState> {
     this.setState(state => ({
       state: {
         zoomPan: state.state.zoomPan.type === 'locked' ?
-          stageState.unlockZoomAndPan(state.state.zoomPan, (() => {
-            if (state.cueFile?.file && state.playState?.state) {
-              const positionMillis = state.playState.state.type === 'paused' ?
-                state.playState.state.positionMillis :
-                performance.now() - state.playState.state.effectiveStartTimeMillis;
-              return positionMillis / state.cueFile.file.lengthMillis;
-            }
-            return 0
-          })()) :
+          stageState.unlockZoomAndPan(
+            state.state.zoomPan,
+            state.playState ? currentPosition(state.playState) : 0
+          ) :
           stageState.lockZoomAndPan(state.state.zoomPan)
       }
     }));
@@ -291,7 +283,7 @@ export class Stage extends React.Component<StageProps, StageState> {
                   {element: <LayerOptionsPopup />, dismiss: this.closeLayerOptions} :
                   null;
     const cueFile = (this.state.cueFile && this.state.playState && this.state.cueFile.id === this.state.playState.meta.id) ?
-      func.just(this.state.cueFile.file) : func.none<file.CueFile>();
+      this.state.cueFile.file : null;
 
     return (
       <div className={this.props.className}>
@@ -317,13 +309,10 @@ export class Stage extends React.Component<StageProps, StageState> {
           openLayerOptions={this.openLayerOptions}
           toggleZoomPanLock={this.toggleZoomPanLock}
           />
-        {cueFile.caseOf({
-          just: file => <EventProperties
-            file={file}
-            selection={this.state.selection}
-            updateCueFileAndSelection={this.updateCueFileAndSelection} />,
-          none: () => null
-        })}
+        {cueFile && <EventProperties
+          file={cueFile}
+          selection={this.state.selection}
+          updateCueFileAndSelection={this.updateCueFileAndSelection} />}
         <Player
           playerRef={player => this.player = player}
           zoom={this.state.state.zoomPan}
