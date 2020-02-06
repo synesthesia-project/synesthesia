@@ -1,6 +1,6 @@
 {
   "name": "@synesthesia-project/core",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Core synesthesia libraries, type definitions & protocols",
   "license": "MIT",
   "main": "index.js",
