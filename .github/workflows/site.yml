@@ -31,5 +31,12 @@ jobs:
         rush typedoc
     - name: docfx build
       run: |
-        cd site && docfx build
+        docfx build site
+    - name: Deploy
+      uses: s0/git-publish-subdir-action@v2.0.0
+      env:
+        REPO: self
+        BRANCH: gh-pages
+        FOLDER: site/_site
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
