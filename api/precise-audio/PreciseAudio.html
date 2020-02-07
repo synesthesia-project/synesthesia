@@ -1,0 +1,603 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class PreciseAudio
+   | Synesthesia Project </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class PreciseAudio
+   | Synesthesia Project ">
+    <meta name="generator" content="docfx 2.48.1.0">
+    
+    <link rel="shortcut icon" href="../../images/favicon.png">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="@synesthesia-project/precise-audio.PreciseAudio">
+  
+  
+  <h1 id="_synesthesia_project_precise_audio_PreciseAudio" data-uid="@synesthesia-project/precise-audio.PreciseAudio">Class PreciseAudio
+  </h1>
+  <div class="markdown level0 summary"><p>An audio player that can seek and provide timestamps with millisecond
+accuracy.
+In contrast to the <code>&lt;audio&gt;</code> tag, this class will load an entire track
+into memory as a raw waveform, as otherwise, with most codecs,
+it's impossible to seek to accurate locations in songs.</p>
+<p><strong>ExampleUsage:</strong></p>
+<pre><code class="lang-ts">import PreciseAudio from '@synesthesia-project/precise-audio';
+
+const audio = new PreciseAudio();
+audio.loadAudioFile(...);
+</code></pre>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <h6><strong>Package</strong>: <a class="xref" href="index.html">@synesthesia-project/precise-audio</a></h6>
+  <h3 id="properties">Properties
+  </h3>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_currentTime" data-uid="@synesthesia-project/precise-audio.PreciseAudio.currentTime">currentTime</h4>
+  <div class="markdown level1 summary"><p>The current playback time in seconds
+If the media is not yet playing,
+the value of <code>currentTime</code> indicates the time position within the track
+at which playback will begin once the
+<a class="xref" href="PreciseAudio.html#_synesthesia_project_precise_audio_PreciseAudio_play">play()</a>
+method is called.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">number currentTime</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">number</span></td>
+        <td><p>The current playback time in seconds</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_currentTimeMillis" data-uid="@synesthesia-project/precise-audio.PreciseAudio.currentTimeMillis">currentTimeMillis</h4>
+  <div class="markdown level1 summary"><p>Similar to
+<a class="xref" href="PreciseAudio.html#_synesthesia_project_precise_audio_PreciseAudio_currentTime">currentTime</a>,
+but returns the time in milliseconds rather than seconds.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">number currentTimeMillis</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">number</span></td>
+        <td><p>The current playback time in milliseconds</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_duration" data-uid="@synesthesia-project/precise-audio.PreciseAudio.duration">duration</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">number duration</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">number</span></td>
+        <td><p>The length of the currently loaded audio track in seconds</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_durationMillis" data-uid="@synesthesia-project/precise-audio.PreciseAudio.durationMillis">durationMillis</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">number durationMillis</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">number</span></td>
+        <td><p>The length of the currently loaded audio track in milliseconds</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_EventTarget" data-uid="@synesthesia-project/precise-audio.PreciseAudio.EventTarget">EventTarget</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">static EventTarget: Object</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Object</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_paused" data-uid="@synesthesia-project/precise-audio.PreciseAudio.paused">paused</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">boolean paused</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">boolean</span></td>
+        <td><p>a boolean that indicates whether the audio element is paused.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_playbackRate" data-uid="@synesthesia-project/precise-audio.PreciseAudio.playbackRate">playbackRate</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">number playbackRate</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">number</span></td>
+        <td><p>a number indicating the rate at which the media is being played back.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener_1" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener_1">addEventListener(&quot;pause&quot;, Listener)</h4>
+  <div class="markdown level1 summary"><p>Fired when the audio is paused
+(Notably not fired when the audio is stopped
+when a new file is being loaded)</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">function addEventListener(event: &quot;pause&quot;, listener: Listener)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">&quot;pause&quot;</span></td>
+        <td><em>event</em></td>
+        <td>
+          
+          
+        </td>
+      </tr>
+      <tr>
+        <td><span class="xref">Listener</span></td>
+        <td><em>listener</em></td>
+        <td>
+          <p>an <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventListener">EventListener</a>
+that expects a <a class="xref" href="PreciseAudioEvent.html#_synesthesia_project_precise_audio_PreciseAudioEvent">PreciseAudioEvent</a>
+as a parameter</p>
+
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener">addEventListener(&quot;playing&quot;, Listener)</h4>
+  <div class="markdown level1 summary"><p>Fired when the audio starts playing</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">function addEventListener(event: &quot;playing&quot;, listener: Listener)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">&quot;playing&quot;</span></td>
+        <td><em>event</em></td>
+        <td>
+          
+          
+        </td>
+      </tr>
+      <tr>
+        <td><span class="xref">Listener</span></td>
+        <td><em>listener</em></td>
+        <td>
+          <p>an <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventListener">EventListener</a>
+that expects a <a class="xref" href="PreciseAudioEvent.html#_synesthesia_project_precise_audio_PreciseAudioEvent">PreciseAudioEvent</a>
+as a parameter</p>
+
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener_2" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener_2">addEventListener(&quot;seeked&quot;, Listener)</h4>
+  <div class="markdown level1 summary"><p>Fired when a seek operation completes</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">function addEventListener(event: &quot;seeked&quot;, listener: Listener)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">&quot;seeked&quot;</span></td>
+        <td><em>event</em></td>
+        <td>
+          
+          
+        </td>
+      </tr>
+      <tr>
+        <td><span class="xref">Listener</span></td>
+        <td><em>listener</em></td>
+        <td>
+          <p>an <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventListener">EventListener</a>
+that expects a <a class="xref" href="PreciseAudioEvent.html#_synesthesia_project_precise_audio_PreciseAudioEvent">PreciseAudioEvent</a>
+as a parameter</p>
+
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_dispatchEvent" data-uid="@synesthesia-project/precise-audio.PreciseAudio.dispatchEvent">dispatchEvent(Event)</h4>
+  <div class="markdown level1 summary"><p>Dispatches a synthetic event event to target and returns true if either event's cancelable attribute value is false or its preventDefault() method was not invoked, and false otherwise.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">function dispatchEvent(event: Event)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PreciseAudioEvent.html#_synesthesia_project_precise_audio_PreciseAudioEvent_Event">Event</a></td>
+        <td><em>event</em></td>
+        <td>
+          
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_loadAudioFile" data-uid="@synesthesia-project/precise-audio.PreciseAudio.loadAudioFile">loadAudioFile(File)</h4>
+  <div class="markdown level1 summary"><p>Read and load a new audio file.
+The loaded audio file will be paused once it's loaded,
+and will not play automatically.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">function loadAudioFile(file: File)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">File</span></td>
+        <td><em>file</em></td>
+        <td>
+          <p>A <a href="https://developer.mozilla.org/en-US/docs/Web/API/File">File</a>
+object representing the audio file to be played,
+generally retrieved from a
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/FileList">FileList</a>
+object.</p>
+
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Promise&lt;void&gt;</span></td>
+        <td><p>A <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>
+that resolves once the audio file has been successfully loaded.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_pause" data-uid="@synesthesia-project/precise-audio.PreciseAudio.pause">pause()</h4>
+  <div class="markdown level1 summary"><p>Pauses the audio playback.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">function pause()</code></pre>
+  </div>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_play" data-uid="@synesthesia-project/precise-audio.PreciseAudio.play">play()</h4>
+  <div class="markdown level1 summary"><p>Begins playback of the audio.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">function play()</code></pre>
+  </div>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_removeEventListener" data-uid="@synesthesia-project/precise-audio.PreciseAudio.removeEventListener">removeEventListener(EventTypes, Listener)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">function removeEventListener(event: EventTypes, listener: Listener)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">EventTypes</span></td>
+        <td><em>event</em></td>
+        <td>
+          
+          
+        </td>
+      </tr>
+      <tr>
+        <td><span class="xref">Listener</span></td>
+        <td><em>listener</em></td>
+        <td>
+          
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>
