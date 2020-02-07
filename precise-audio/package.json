@@ -13,7 +13,8 @@
   "scripts": {
     "clean": "gulp clean",
     "build": "gulp",
-    "tslint": "gulp tslint"
+    "tslint": "gulp tslint",
+    "typedoc": "typedoc --json api.json src/index.ts --module commonjs --includeDeclarations --ignoreCompilerErrors --excludeExternals && type2docfx api.json ../site/api/precise-audio"
   },
   "files": [
     "lib/*",
@@ -24,6 +25,8 @@
     "@synesthesia-project/gulp-util": "~0.0.1",
     "gulp": "~4.0.2",
     "gulp-clean": "^0.3.2",
-    "source-map-loader": "~0.2.4"
+    "source-map-loader": "~0.2.4",
+    "type2docfx": "^0.10.2",
+    "typedoc": "^0.16.9"
   }
 }
