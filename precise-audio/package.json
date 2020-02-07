@@ -16,13 +16,14 @@
     "tslint": "gulp tslint"
   },
   "files": [
-    "index.js",
-    "index.js.map",
-    "index.d.ts",
+    "index.*",
+    "dist.min.*",
     "README.md"
   ],
   "devDependencies": {
     "@synesthesia-project/gulp-util": "~0.0.1",
-    "gulp": "~4.0.2"
+    "gulp": "~4.0.2",
+    "gulp-clean": "^0.3.2",
+    "source-map-loader": "~0.2.4"
   }
 }

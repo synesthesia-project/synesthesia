@@ -1,10 +1,41 @@
 var util = require('@synesthesia-project/gulp-util');
 var gulp = require('gulp');
+var clean = require('gulp-clean');
+var webpack = require('webpack');
 
 util.setupBasicTypescriptProject({
-  clean: ['index.js', 'index.js.map', 'index.d.ts', 'index.d.ts.map'],
+  clean: ['index.*', 'entrypoint.*', 'dist.min.*'],
   outputDir: './',
   sourcemap: 'external'
 });
 
-gulp.task('default', gulp.series('clean', 'ts'));
+util.webpackTask('webpack', {
+  entry: {
+    dist: "./entrypoint.js",
+  },
+  output: {
+    filename: "[name].min.js",
+    path: __dirname
+  },
+  mode: 'production',
+  devtool: 'source-map',
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        use: ["source-map-loader"],
+        enforce: "pre"
+      }
+    ]
+  },
+  plugins: [
+    new webpack.BannerPlugin('@synesthesia-project/precise-audio | https://github.com/synesthesia-project/synesthesia/tree/master/precise-audio\nContent hash: [hash]')
+  ],
+});
+
+gulp.task('clean-entrypoint', function () {
+  return gulp.src(['entrypoint.*'], { read: false, allowEmpty: true })
+    .pipe(clean());
+});
+
+gulp.task('default', gulp.series('clean', 'ts', 'webpack', 'clean-entrypoint'));

@@ -1,6 +1,5 @@
 *.log
 /node_modules/
-/index.js
-/index.js.map
-/index.d.ts
-/index.d.ts.map
+/index.*
+/entrypoint.*
+/dist.min.*
