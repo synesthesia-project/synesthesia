@@ -6,8 +6,8 @@
     "webaudio"
   ],
   "license": "MIT",
-  "main": "index.js",
-  "types": "index.d.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.js",
   "author": "Sam Lanning <sam@samlanning.com>",
   "repository": "https://github.com/synesthesia-project/synesthesia/tree/master/precise-audio",
   "scripts": {
@@ -16,7 +16,7 @@
     "tslint": "gulp tslint"
   },
   "files": [
-    "index.*",
+    "lib/*",
     "dist.min.*",
     "README.md"
   ],

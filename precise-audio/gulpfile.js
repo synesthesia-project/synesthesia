@@ -4,14 +4,14 @@ var clean = require('gulp-clean');
 var webpack = require('webpack');
 
 util.setupBasicTypescriptProject({
-  clean: ['index.*', 'entrypoint.*', 'dist.min.*'],
-  outputDir: './',
+  clean: ['lib/**/*', 'dist.min.*'],
+  outputDir: './lib',
   sourcemap: 'external'
 });
 
 util.webpackTask('webpack', {
   entry: {
-    dist: "./entrypoint.js",
+    dist: "./lib/entrypoint.js",
   },
   output: {
     filename: "[name].min.js",
@@ -34,7 +34,7 @@ util.webpackTask('webpack', {
 });
 
 gulp.task('clean-entrypoint', function () {
-  return gulp.src(['entrypoint.*'], { read: false, allowEmpty: true })
+  return gulp.src(['lib/entrypoint.*'], { read: false, allowEmpty: true })
     .pipe(clean());
 });
 
