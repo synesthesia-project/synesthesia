@@ -5,7 +5,7 @@
         "jsx": "react",
         "isolatedModules": false,
         "experimentalDecorators": false,
-        "declaration": true,
+        "declaration": false,
         "noImplicitUseStrict": false,
         "strict": true,
         "noUnusedLocals": true,
