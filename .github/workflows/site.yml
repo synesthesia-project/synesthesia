@@ -16,7 +16,20 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 12.x
+    - name: install rush
+      run: |
+        npm install -g @microsoft/rush
     - name: Install DocFX
       uses: crazy-max/ghaction-chocolatey@v1.0.2
       with:
         args:  install docfx -y
+    - name: rush install
+      run: |
+        rush install
+    - name: rush typedoc
+      run: |
+        rush typedoc
+    - name: docfx build
+      run: |
+        cd site && docfx build
+    
