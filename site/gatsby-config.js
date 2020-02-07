@@ -26,7 +26,10 @@ module.exports = {
       },
     },
     {
-      resolve: `gatsby-transformer-typedoc`
+      resolve: `gatsby-transformer-typedoc`,
+      options: {
+        source: 'api'
+      }
     }
   ],
 }

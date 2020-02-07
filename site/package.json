@@ -40,8 +40,5 @@
     "shallow-compare": "~1.2.2",
     "typedoc": "^0.16.9",
     "utf-8-validate": "^5.0.2"
-  },
-  "devDependencies": {
-    "gatsby": "^2.19.7"
   }
 }

@@ -7,7 +7,7 @@ dependencies:
   '@rush-temp/core': 'file:projects/core.tgz'
   '@rush-temp/core-example-consumer': 'file:projects/core-example-consumer.tgz'
   '@rush-temp/core-example-controller': 'file:projects/core-example-controller.tgz'
-  '@rush-temp/gatsby-transformer-typedoc': 'file:projects/gatsby-transformer-typedoc.tgz'
+  '@rush-temp/gatsby-transformer-typedoc': 'file:projects/gatsby-transformer-typedoc.tgz_55395614a5321af2bfce14a42ab26eb2'
   '@rush-temp/gulp-util': 'file:projects/gulp-util.tgz'
   '@rush-temp/midi-consoles': 'file:projects/midi-consoles.tgz'
   '@rush-temp/openrazer': 'file:projects/openrazer.tgz'
@@ -38,6 +38,7 @@ dependencies:
   gatsby-plugin-react-helmet: 3.1.22_9bff9772a911c09b021a18af07cf1059
   gatsby-react-router-scroll: 2.1.21_42df4e4da90dec35191c837e75eb5fbf
   gatsby-source-filesystem: 2.1.48_gatsby@2.19.12
+  gatsby-transformer-json: 2.2.26_gatsby@2.19.12
   gatsby-transformer-remark: 2.6.50_gatsby@2.19.12
   graphql: 14.6.0
   gulp: 4.0.2
@@ -6754,6 +6755,18 @@ packages:
     requiresBuild: true
     resolution:
       integrity: sha512-NLT843FVp3pt1gjJ/vsclgw6h7pIKDF9l8sWBFiIrJUjiwGqCVC+emylbuK8MFE8Js989SP40piqvgo+orEl3g==
+  /gatsby-transformer-json/2.2.26_gatsby@2.19.12:
+    dependencies:
+      '@babel/runtime': 7.8.4
+      bluebird: 3.7.2
+      gatsby: 2.19.12_edd00e3128fbbbf0347a244968081da0
+    dev: false
+    engines:
+      node: '>=8.0.0'
+    peerDependencies:
+      gatsby: ^2.0.15
+    resolution:
+      integrity: sha512-JpjeL44AbUxA7gnTxVWd+F6IgGIKE8stFywg1ZLn7bbSHKpKUatN6UXw7PSZDac+9aSaDTEAqWFhOX/z3BqE3Q==
   /gatsby-transformer-remark/2.6.50_gatsby@2.19.12:
     dependencies:
       '@babel/runtime': 7.8.4
@@ -16188,13 +16201,22 @@ packages:
       integrity: sha512-GA74rIA3uRJ+LUxJIQX29yWe2fT4/IaD29SoqQDMYuDqo77hw8s/RyN9v3IMbv8ci/cZqmL5LSQ+lu7A/WCkig==
       tarball: 'file:projects/core.tgz'
     version: 0.0.0
-  'file:projects/gatsby-transformer-typedoc.tgz':
+  'file:projects/gatsby-transformer-typedoc.tgz_55395614a5321af2bfce14a42ab26eb2':
     dependencies:
+      gatsby: 2.19.12_edd00e3128fbbbf0347a244968081da0
       gulp: 4.0.2
     dev: false
+    id: 'file:projects/gatsby-transformer-typedoc.tgz'
     name: '@rush-temp/gatsby-transformer-typedoc'
+    peerDependencies:
+      '@types/react': '*'
+      bufferutil: '*'
+      react: '*'
+      react-dom: '*'
+      typescript: '*'
+      utf-8-validate: '*'
     resolution:
-      integrity: sha512-8zsset3vUkhXs/cAy5lfb2/VIHol3EbKy74t7E76scRsC66YWekmn03r2mnoGQJfrZf/NpD9uJSpcZ1yw6nPVg==
+      integrity: sha512-5A5vzLPae17z6GfbsOfD1D3wN9aVjb00f0ac0O275vydZsZErBoOlfzptz9gYcTiNojMj49UOHJVi+OplG8WAQ==
       tarball: 'file:projects/gatsby-transformer-typedoc.tgz'
     version: 0.0.0
   'file:projects/gulp-util.tgz':
@@ -16261,10 +16283,11 @@ packages:
       source-map-loader: 0.2.4
       type2docfx: 0.10.2
       typedoc: 0.16.9
+      webpack: 4.41.5_webpack@4.41.5
     dev: false
     name: '@rush-temp/precise-audio'
     resolution:
-      integrity: sha512-0Xn/HMk3vBVal55kIlfxGfXZLwU4BRmLwNjy2yjHUhTMc9uw2TCeelgWH2jjBlKx4anvVBTgXJjkY7ThLfModg==
+      integrity: sha512-Z+fDeXKCV3PTVEvmaCn45kh2TP0sGK2gBr84D5nO+7oAr9tAKMDBFP7fJccAdR7ZeMtLVQBUb9QFaOLHbWS5bw==
       tarball: 'file:projects/precise-audio.tgz'
     version: 0.0.0
   'file:projects/server.tgz':
@@ -16304,6 +16327,7 @@ packages:
       gatsby-plugin-typescript: 2.1.27_gatsby@2.19.12+graphql@14.6.0
       gatsby-react-router-scroll: 2.1.21_42df4e4da90dec35191c837e75eb5fbf
       gatsby-source-filesystem: 2.1.48_gatsby@2.19.12
+      gatsby-transformer-json: 2.2.26_gatsby@2.19.12
       gatsby-transformer-remark: 2.6.50_gatsby@2.19.12
       gatsby-transformer-sharp: 2.3.14_f22baf67783ef7daa58f09e040bfded6
       graphql: 14.6.0
@@ -16322,7 +16346,7 @@ packages:
     peerDependencies:
       typescript: '*'
     resolution:
-      integrity: sha512-bOHqwAD+r6ItMzIu85a4YPtYOmcmwTasZWUGrrGzGkJFkaidMLD5/N0EO6C1W0yuls01WMEp0NMoiZj2+lcSaA==
+      integrity: sha512-pRu5LAKX6MHimdRLlc5P6sahQSLQZASMaZTyKfHdencFzZfFe82/7XA8k2zy2kocQlBN008TRF0K2SrvD/Gm4Q==
       tarball: 'file:projects/site.tgz'
     version: 0.0.0
   'file:projects/synesthesia-razer.tgz':
@@ -16378,6 +16402,7 @@ specifiers:
   gatsby-plugin-react-helmet: ^3.1.21
   gatsby-react-router-scroll: ~2.1.21
   gatsby-source-filesystem: ^2.1.46
+  gatsby-transformer-json: ~2.2.26
   gatsby-transformer-remark: ~2.6.50
   graphql: ^14.1.1
   gulp: ~4.0.2

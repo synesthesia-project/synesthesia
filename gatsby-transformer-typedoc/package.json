@@ -17,6 +17,8 @@
   "devDependencies": {
     "@synesthesia-project/gulp-util": "~0.0.1",
     "gatsby": "^2.19.7",
-    "gulp": "~4.0.2"
+    "gatsby-source-filesystem": "^2.1.46",
+    "gulp": "~4.0.2",
+    "typedoc": "^0.16.9"
   }
 }
