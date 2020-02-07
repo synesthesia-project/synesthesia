@@ -4,7 +4,7 @@ import universalParse from 'id3-parser/lib/universal';
 import { ControllerEndpoint } from '@synesthesia-project/core/lib/protocols/control';
 import { DEFAULT_SYNESTHESIA_PORT } from '@synesthesia-project/core/lib/constants';
 
-import { PreciseAudio } from './precise-audio';
+import PreciseAudio from '@synesthesia-project/precise-audio';
 
 export class Stage extends React.Component<{}, {}> {
 

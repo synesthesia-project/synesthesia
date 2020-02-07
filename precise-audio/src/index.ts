@@ -1,5 +1,5 @@
 
-type PlayState = 
+type PlayState =
   {
     state: 'paused',
     positionMillis: number
@@ -21,7 +21,7 @@ type EventTypes = 'playing' | 'pause' | 'seeked';
  * into memory as a raw waveform, as otherwise, with most codecs,
  * it's impossible to seek to accurate locations in songs.
  */
-export class PreciseAudio {
+export default class PreciseAudio {
 
   private readonly context = new AudioContext();
   private song: {
@@ -40,7 +40,7 @@ export class PreciseAudio {
       reader.onload = ev => {
         resolve(ev.target?.result as ArrayBuffer);
       };
-      reader.onerror = ev => {
+      reader.onerror = () => {
         reader.abort();
         reject(reader.error);
       }
@@ -133,7 +133,7 @@ export class PreciseAudio {
     }
   }
 
-  public set playbackRate(playbackRate: number) {
+  public set playbackRate(_playbackRate: number) {
     // TODO
   }
 

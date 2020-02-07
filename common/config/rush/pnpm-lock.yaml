@@ -9,9 +9,9 @@ dependencies:
   '@rush-temp/midi-consoles': 'file:projects/midi-consoles.tgz'
   '@rush-temp/openrazer': 'file:projects/openrazer.tgz'
   '@rush-temp/openrazer-examples': 'file:projects/openrazer-examples.tgz'
+  '@rush-temp/precise-audio': 'file:projects/precise-audio.tgz'
   '@rush-temp/server': 'file:projects/server.tgz'
   '@rush-temp/synesthesia-razer': 'file:projects/synesthesia-razer.tgz'
-  '@synesthesia-project/core': 0.0.2
   '@types/chai': 4.2.5
   '@types/chrome': 0.0.40
   '@types/jquery': 2.0.39
@@ -5278,7 +5278,7 @@ packages:
     dev: false
     name: '@rush-temp/balccon'
     resolution:
-      integrity: sha512-4tVplk/GuKyHHpd5F0owNe1fFzSlHIWR69uMHCQiwcIj54IeSuMlA3tFu0/J504tfhiKh1c8Nbx2E3MVvsMeqA==
+      integrity: sha512-6FCdjL+1p4Y8EvxBTlZdJ5NUVOkTDKVZH4rf2Y9wwC6MEoDdssdzAmyHYcgr9rWg7qbnEE7DotA0KsLxa2dsWQ==
       tarball: 'file:projects/balccon.tgz'
     version: 0.0.0
   'file:projects/composer.tgz':
@@ -5304,10 +5304,11 @@ packages:
       source-map-loader: 0.2.4
       spotify-web-api-js: 0.23.0
       styled-components: 4.4.1_b5ffe839b1a452f2d2c7d94d3059774c
+      webpack: 4.41.5_webpack@4.41.5
     dev: false
     name: '@rush-temp/composer'
     resolution:
-      integrity: sha512-qKRgeYhPI123KuN7bL3RmE5oIyhVemWW/Wb/nAWQqiBdZN1SXya7EF56LNE71ZMX0YDeMs8fmE86geBge/Pnsg==
+      integrity: sha512-vSAF7uVRKrFAqdZx2mRPS7oPUN+KQyhr3F94W7wGUwvPLE1rQQBYCFkYw/xxHeAYt7uLnZfyT/RuAwrOrFvymg==
       tarball: 'file:projects/composer.tgz'
     version: 0.0.0
   'file:projects/compositor.tgz':
@@ -5319,7 +5320,7 @@ packages:
     dev: false
     name: '@rush-temp/compositor'
     resolution:
-      integrity: sha512-SzWSWKHWVhQ/7UkgLheWAkTK/N8TLubegybL9sdyFV08iFTKfQh7dXtYxcHQ9LKEgw9plgfLwHwu8paYb57mhA==
+      integrity: sha512-KdsjHLt5qdPaVmdTdBrrQQSLwX22iZeNpNYmc/EbSs7olIaLJElYmQMqxsb35k8JyY9QmHVqLjW1W1dqTJW0wg==
       tarball: 'file:projects/compositor.tgz'
     version: 0.0.0
   'file:projects/core-example-consumer.tgz':
@@ -5330,7 +5331,7 @@ packages:
     dev: false
     name: '@rush-temp/core-example-consumer'
     resolution:
-      integrity: sha512-EyKzTGadnKBsn9OX5k2nRImFg965EotBBY9NKAnDZtadBvRHdrx/gCyq7rqceaOESOVoRmgo5HwYQWHHgzGHsg==
+      integrity: sha512-P5IjIC0tRWucBvqeRs3scq71NbUgITmR+R9tZBUt1HJ2G3Dae1gVgMIT4deVRp9m6f+rClPjEBgBlIlKLxs6sw==
       tarball: 'file:projects/core-example-consumer.tgz'
     version: 0.0.0
   'file:projects/core-example-controller.tgz':
@@ -5343,10 +5344,12 @@ packages:
       id3-parser: 2.0.0
       react: 16.12.0
       react-dom: 16.12.0_react@16.12.0
+      source-map-loader: 0.2.4
+      webpack: 4.41.5_webpack@4.41.5
     dev: false
     name: '@rush-temp/core-example-controller'
     resolution:
-      integrity: sha512-cbb/AY32dGvb1zCX0QGSNJgH3+XjW7tXXzLRvnJTLMWk3qm69idkZ1/p3J+qxU86nUYtkAkm/CmsqaVp2wAXUg==
+      integrity: sha512-wYkv+mCBmxb0PfnSvSGDDCGHnlO5PZr8F4aB01vzjXwn0ec7ULswdaCDpU4pV+wZcILgG/bRLQSR26kIPgSQKw==
       tarball: 'file:projects/core-example-controller.tgz'
     version: 0.0.0
   'file:projects/core.tgz':
@@ -5417,6 +5420,15 @@ packages:
       integrity: sha512-SBojJgtdQi5GqroNt8fXUQNJCioSH/lk+pC6/xXEcMlxuMnyPYmwqr2OPplM7ikm/34L5zhhNTjXX9yOxU77Kw==
       tarball: 'file:projects/openrazer.tgz'
     version: 0.0.0
+  'file:projects/precise-audio.tgz':
+    dependencies:
+      gulp: 4.0.2
+    dev: false
+    name: '@rush-temp/precise-audio'
+    resolution:
+      integrity: sha512-JdXjNKIJlmwU7ewEusPt8srbo48svH1wpXYFEaBJruJqfpLyZS4xBmfkEJCS27l0F9AG+K+g7DJC9NiWcItCjQ==
+      tarball: 'file:projects/precise-audio.tgz'
+    version: 0.0.0
   'file:projects/server.tgz':
     dependencies:
       '@synesthesia-project/core': 0.0.2
@@ -5433,7 +5445,7 @@ packages:
     dev: false
     name: '@rush-temp/server'
     resolution:
-      integrity: sha512-vafKgGPVvNKF+8+8uscK+glChU0Ye7wHqyeYQ9OQ19r5ryxP0iUr8QmJQ9AcZagGACUUkEjY6MdjY/aJVDD63w==
+      integrity: sha512-21FeQJYkIYgrAt4WMeaR+CLjBfjWpWGEpFUyGkkGQOgOxqc4rLxidU9uZ0pfxsq8gCTDgQUKb5nj0TYDGjvkyQ==
       tarball: 'file:projects/server.tgz'
     version: 0.0.0
   'file:projects/synesthesia-razer.tgz':
@@ -5445,7 +5457,7 @@ packages:
     dev: false
     name: '@rush-temp/synesthesia-razer'
     resolution:
-      integrity: sha512-iMHcznN1w/MvpfEPN7H7rhEPnC1i4FKdUyDeMpqr6et3Quc+oPgIvQm2eDwnZjegvclMq7zpytI+4wjORcT4rQ==
+      integrity: sha512-Ez3AWZspi343VDOAdcX6ou+5huVj71wSDe7V2MIyq0pV1rcqhGYqaU1FFFC/cMRE76MO7OIuxMj9ZZEexrUUwg==
       tarball: 'file:projects/synesthesia-razer.tgz'
     version: 0.0.0
 registry: ''
@@ -5460,9 +5472,9 @@ specifiers:
   '@rush-temp/midi-consoles': 'file:./projects/midi-consoles.tgz'
   '@rush-temp/openrazer': 'file:./projects/openrazer.tgz'
   '@rush-temp/openrazer-examples': 'file:./projects/openrazer-examples.tgz'
+  '@rush-temp/precise-audio': 'file:./projects/precise-audio.tgz'
   '@rush-temp/server': 'file:./projects/server.tgz'
   '@rush-temp/synesthesia-razer': 'file:./projects/synesthesia-razer.tgz'
-  '@synesthesia-project/core': ^0.0.2
   '@types/chai': ^4.1.7
   '@types/chrome': 0.0.40
   '@types/jquery': 2.0.39
