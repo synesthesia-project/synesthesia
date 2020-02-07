@@ -59,6 +59,9 @@ export class PreciseAudioEvent extends Event {
  * const audio = new PreciseAudio();
  * audio.loadAudioFile(...);
  * ```
+ *
+ * Motivation, more usage instructions, and other details can be found
+ * [in the project GitHub repository](https://github.com/synesthesia-project/synesthesia/tree/master/precise-audio)
  */
 export default class PreciseAudio extends EventTarget {
 

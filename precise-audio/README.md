@@ -1,5 +1,8 @@
 # `PreciseAudio`
 
+
+[![](https://img.shields.io/npm/v/@synesthesia-project/precise-audio.svg)](https://www.npmjs.com/package/@synesthesia-project/precise-audio)
+
 A browser-based API for more precise playback, scrubbing/seeking and timestamp
 functionality.
 
