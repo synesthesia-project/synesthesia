@@ -12,7 +12,7 @@
   "repository": "https://github.com/synesthesia-project/synesthesia/tree/master/precise-audio",
   "scripts": {
     "clean": "gulp clean",
-    "build": "gulp",
+    "build": "gulp --no-deprecation",
     "tslint": "gulp tslint",
     "typedoc": "typedoc --json api.json src/index.ts --module commonjs --includeDeclarations --ignoreCompilerErrors --excludeExternals && type2docfx api.json ../site/api/precise-audio"
   },
