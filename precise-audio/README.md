@@ -47,7 +47,7 @@ to decode and load the entire track into memory, as an
 at which point scrubbing can accurately pinpoint the correct frame.
 
 Note though that doing this goes directly against the
-[advise on MDN](https://developer.mozilla.org/en-US/docs/Web/API/AudioBuffer):
+[advice on MDN](https://developer.mozilla.org/en-US/docs/Web/API/AudioBuffer):
 
 > Objects of these types are designed to hold small audio snippets, typically less than 45 s. For longer sounds, objects implementing the MediaElementAudioSourceNode are more suitable.
 
@@ -97,4 +97,5 @@ audio.loadAudioFile(...);
 
 ## API
 
-TODO
+Full documentation on the `PreciseAudio` api can be found
+[on the synesthesia project website](https://synesthesia-project.org/api/precise-audio/PreciseAudio.html).
