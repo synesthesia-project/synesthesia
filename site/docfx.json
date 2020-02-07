@@ -3,7 +3,7 @@
     "content": [
       {
         "files": [
-          "api/imdex.md",
+          "api/**/*.md",
           "api/**/*.yml"
         ]
       },
@@ -36,6 +36,12 @@
     ],
     "dest": "_site",
     "globalMetadataFiles": [],
+    "globalMetadata": {
+      "_appTitle": "Synesthesia Project",
+      "_appLogoPath": "images/logo.svg",
+      "_appFaviconPath": "images/favicon.png",
+      "_enableSearch": true
+    },
     "fileMetadataFiles": [],
     "template": [
       "default",
