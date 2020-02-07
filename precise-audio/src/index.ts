@@ -1,3 +1,5 @@
+/* tslint:disable:unified-signatures */
+
 type PlayState =
   {
     state: 'paused',
@@ -44,11 +46,11 @@ export class PreciseAudioEvent extends Event {
 /**
  * An audio player that can seek and provide timestamps with millisecond
  * accuracy.
- * 
+ *
  * In contrast to the `<audio>` tag, this class will load an entire track
  * into memory as a raw waveform, as otherwise, with most codecs,
  * it's impossible to seek to accurate locations in songs.
- * 
+ *
  * **ExampleUsage:**
  *
  * ```ts
@@ -75,7 +77,7 @@ export default class PreciseAudio extends EventTarget {
       reader.onerror = () => {
         reader.abort();
         reject(reader.error);
-      }
+      };
       reader.readAsArrayBuffer(file);
     });
   }
@@ -90,7 +92,7 @@ export default class PreciseAudio extends EventTarget {
    *
    * The loaded audio file will be paused once it's loaded,
    * and will not play automatically.
-   * 
+   *
    * @param file A [File](https://developer.mozilla.org/en-US/docs/Web/API/File)
    *             object representing the audio file to be played,
    *             generally retrieved from a
@@ -124,7 +126,7 @@ export default class PreciseAudio extends EventTarget {
         state: 'playing',
         source,
         effectiveStartTimeMillis: nowMillis - positionMillis
-      }
+      };
     }
   }
 
@@ -152,7 +154,7 @@ export default class PreciseAudio extends EventTarget {
       this.song.state = {
         state: 'paused',
         positionMillis: nowMillis - this.song.state.effectiveStartTimeMillis
-      }
+      };
       this.sendEvent('pause');
     }
   }
@@ -168,7 +170,7 @@ export default class PreciseAudio extends EventTarget {
    * Similar to
    * {@link @synesthesia-project/precise-audio.PreciseAudio.currentTime},
    * but returns the time in milliseconds rather than seconds.
-   * 
+   *
    * @returns The current playback time in milliseconds
    */
   public get currentTimeMillis() {
@@ -185,13 +187,13 @@ export default class PreciseAudio extends EventTarget {
 
   /**
    * The current playback time in seconds
-   * 
+   *
    * If the media is not yet playing,
    * the value of `currentTime` indicates the time position within the track
    * at which playback will begin once the
    * {@link @synesthesia-project/precise-audio.PreciseAudio.play}
    * method is called.
-   * 
+   *
    * @returns The current playback time in seconds
    */
   public get currentTime() {
@@ -242,7 +244,7 @@ export default class PreciseAudio extends EventTarget {
 
   /**
    * Fired when the audio starts playing
-   * 
+   *
    * @param listener an [EventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventListener)
    *                 that expects a {@link @synesthesia-project/precise-audio.PreciseAudioEvent}
    *                 as a parameter
@@ -251,7 +253,7 @@ export default class PreciseAudio extends EventTarget {
 
   /**
    * Fired when the audio is paused
-   * 
+   *
    * (Notably not fired when the audio is stopped
    * when a new file is being loaded)
    *

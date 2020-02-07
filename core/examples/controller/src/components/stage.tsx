@@ -120,7 +120,7 @@ export class Stage extends React.Component<{}, {}> {
           positionMillis: this.audio.currentTimeMillis
         } : {
           type: 'playing',
-            effectiveStartTimeMillis: performance.now() - 
+            effectiveStartTimeMillis: performance.now() -
             // TODO: incorporate playbackRate
             this.audio.currentTimeMillis,
           playSpeed: this.audio.playbackRate
