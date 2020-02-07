@@ -1,5 +1,0 @@
-*.log
-/node_modules/
-/lib/
-/dist.min.*
-api.json
