@@ -25,5 +25,8 @@ module.exports = {
         ],
       },
     },
+    {
+      resolve: `gatsby-transformer-typedoc`
+    }
   ],
 }

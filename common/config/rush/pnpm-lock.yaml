@@ -7,6 +7,7 @@ dependencies:
   '@rush-temp/core': 'file:projects/core.tgz'
   '@rush-temp/core-example-consumer': 'file:projects/core-example-consumer.tgz'
   '@rush-temp/core-example-controller': 'file:projects/core-example-controller.tgz'
+  '@rush-temp/gatsby-transformer-typedoc': 'file:projects/gatsby-transformer-typedoc.tgz'
   '@rush-temp/gulp-util': 'file:projects/gulp-util.tgz'
   '@rush-temp/midi-consoles': 'file:projects/midi-consoles.tgz'
   '@rush-temp/openrazer': 'file:projects/openrazer.tgz'
@@ -16187,6 +16188,15 @@ packages:
       integrity: sha512-GA74rIA3uRJ+LUxJIQX29yWe2fT4/IaD29SoqQDMYuDqo77hw8s/RyN9v3IMbv8ci/cZqmL5LSQ+lu7A/WCkig==
       tarball: 'file:projects/core.tgz'
     version: 0.0.0
+  'file:projects/gatsby-transformer-typedoc.tgz':
+    dependencies:
+      gulp: 4.0.2
+    dev: false
+    name: '@rush-temp/gatsby-transformer-typedoc'
+    resolution:
+      integrity: sha512-8zsset3vUkhXs/cAy5lfb2/VIHol3EbKy74t7E76scRsC66YWekmn03r2mnoGQJfrZf/NpD9uJSpcZ1yw6nPVg==
+      tarball: 'file:projects/gatsby-transformer-typedoc.tgz'
+    version: 0.0.0
   'file:projects/gulp-util.tgz':
     dependencies:
       fancy-log: 1.3.3
@@ -16304,6 +16314,7 @@ packages:
       react-error-overlay: 6.0.5
       react-helmet: 5.2.1_react@16.12.0
       shallow-compare: 1.2.2
+      typedoc: 0.16.9
       utf-8-validate: 5.0.2
     dev: false
     id: 'file:projects/site.tgz'
@@ -16311,7 +16322,7 @@ packages:
     peerDependencies:
       typescript: '*'
     resolution:
-      integrity: sha512-rZyJw9I7yDc5oVLgkek07wxKNpX6rSL5BSHRRihFw7Ot8z+oPzlfiTgwH/KCn+0nE5032u/NJjUmn28+jEbW/A==
+      integrity: sha512-bOHqwAD+r6ItMzIu85a4YPtYOmcmwTasZWUGrrGzGkJFkaidMLD5/N0EO6C1W0yuls01WMEp0NMoiZj2+lcSaA==
       tarball: 'file:projects/site.tgz'
     version: 0.0.0
   'file:projects/synesthesia-razer.tgz':
@@ -16336,6 +16347,7 @@ specifiers:
   '@rush-temp/core': 'file:./projects/core.tgz'
   '@rush-temp/core-example-consumer': 'file:./projects/core-example-consumer.tgz'
   '@rush-temp/core-example-controller': 'file:./projects/core-example-controller.tgz'
+  '@rush-temp/gatsby-transformer-typedoc': 'file:./projects/gatsby-transformer-typedoc.tgz'
   '@rush-temp/gulp-util': 'file:./projects/gulp-util.tgz'
   '@rush-temp/midi-consoles': 'file:./projects/midi-consoles.tgz'
   '@rush-temp/openrazer': 'file:./projects/openrazer.tgz'

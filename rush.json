@@ -405,6 +405,10 @@
     {
       "packageName": "@synesthesia-project/site",
       "projectFolder": "site"
+    },
+    {
+      "packageName": "gatsby-transformer-typedoc",
+      "projectFolder": "gatsby-transformer-typedoc"
     }
   ]
 }
