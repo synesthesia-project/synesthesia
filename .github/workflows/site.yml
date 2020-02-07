@@ -38,9 +38,8 @@ jobs:
     - name: Deploy
       uses: s0/git-publish-subdir-action@v2.0.0
       env:
-        REPO: git@github.com:synesthesia-project/synesthesia-project.github.io.git
-        BRANCH: master
+        REPO: self
+        BRANCH: gh-pages
         FOLDER: site/_site
-        # Public Key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFDSTyyoo6UrJ8AedLa4+NJiEV8E+9kvyiL9U/yF0dT/
-        SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
