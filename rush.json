@@ -401,6 +401,10 @@
     {
       "packageName": "@synesthesia-project/balccon",
       "projectFolder": "balccon"
+    },
+    {
+      "packageName": "@synesthesia-project/site",
+      "projectFolder": "site"
     }
   ]
 }
