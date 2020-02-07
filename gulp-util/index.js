@@ -41,9 +41,11 @@ exports.typescriptTasks = function (opts) {
       .pipe(tsProject())
       .on('error', handleError);
     if (sourcemap) {
-      task = task.pipe(sourcemaps.write({
-        sourceRoot
-      }));
+      task = task.pipe(
+        sourcemap === 'external' ?
+        sourcemaps.write('./', { sourceRoot }) :
+        sourcemaps.write({ sourceRoot })
+      );
     }
     task = task.pipe(gulp.dest(opts.outputDir));
     return task;

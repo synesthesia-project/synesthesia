@@ -379,6 +379,10 @@
       "projectFolder": "openrazer"
     },
     {
+      "packageName": "@synesthesia-project/precise-audio",
+      "projectFolder": "precise-audio"
+    },
+    {
       "packageName": "openrazer-examples",
       "projectFolder": "openrazer/examples"
     },

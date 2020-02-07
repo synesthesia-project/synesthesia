@@ -1,0 +1,55 @@
+{
+  "build": {
+    "content": [
+      {
+        "files": [
+          "api/**/*.md",
+          "api/**/*.yml"
+        ]
+      },
+      {
+        "files": [
+          "toc.yml",
+          "*.md"
+        ]
+      }
+    ],
+    "resource": [
+      {
+        "files": [
+          "images/**"
+        ]
+      }
+    ],
+    "overwrite": [
+      {
+        "files": [
+          "apidoc/**.md"
+        ],
+        "exclude": [
+          "obj/**",
+          "_site/**"
+        ]
+      }
+    ],
+    "dest": "_site",
+    "globalMetadataFiles": [],
+    "globalMetadata": {
+      "_appTitle": "Synesthesia Project",
+      "_appLogoPath": "images/logo.svg",
+      "_appFaviconPath": "images/favicon.png",
+      "_enableSearch": true
+    },
+    "fileMetadataFiles": [],
+    "template": [
+      "default",
+      "templates/material/material"
+    ],
+    "postProcessors": [],
+    "markdownEngineName": "markdig",
+    "noLangKeyword": false,
+    "keepFileLink": false,
+    "cleanupCacheHistory": false,
+    "disableGitFeatures": false
+  }
+}

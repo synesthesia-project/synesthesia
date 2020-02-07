@@ -140,6 +140,13 @@
       "summary": "Run tslint",
       "name": "tslint",
       "enableParallelism": true
+    },
+    {
+      "commandKind": "bulk",
+      "summary": "Run typedoc in all projects",
+      "name": "typedoc",
+      "ignoreMissingScript": true,
+      "enableParallelism": true
     }
   ],
 
