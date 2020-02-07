@@ -1,5 +1,8 @@
-// import { GatsbyNode } from 'gatsby';
+import { GatsbyNode } from 'gatsby';
 
-// const onCreateNode: GatsbyNode['onCreateNode'] = (args, options, callback) => {
-//   console.log('node!');
-// }
+const onCreateNode: GatsbyNode['onCreateNode'] =
+  async ({ node }, _options) => {
+    console.log('node!', node);
+  }
+
+export { onCreateNode }
