@@ -18,6 +18,7 @@
   ],
   "devDependencies": {
     "@synesthesia-project/gulp-util": "~0.0.1",
+    "@types/node": "^12.6.8",
     "gatsby": "^2.19.7",
     "gatsby-source-filesystem": "^2.1.46",
     "gulp": "~4.0.2",

@@ -1,8 +1,12 @@
+import * as crypto from 'crypto';
 import { Node, GatsbyNode } from 'gatsby';
 import { FileSystemNode } from 'gatsby-source-filesystem';
 
 import { PluginOptions, validateOptions } from './options';
 import { isTypedocApi, processTypedoc } from './process-typedoc';
+import { generatePageHTML } from './generate-html';
+
+export const GRAPHQL_TYPE = 'TypeDoc';
 
 function isFilesystemNode(node: Node): node is FileSystemNode {
   return !!node.sourceInstanceName;
@@ -13,7 +17,7 @@ const onPreInit: GatsbyNode['onPreInit'] = (_args, options) => {
 }
 
 const onCreateNode: GatsbyNode['onCreateNode'] =
-  async ({ node, loadNodeContent }, options) => {
+  async ({ actions, node, loadNodeContent }, options) => {
     if (!validateOptions(options))
       // Should already be validated in onPreInit
       throw new Error('Unexpected error, invalid options');
@@ -33,8 +37,17 @@ const onCreateNode: GatsbyNode['onCreateNode'] =
       const err = `File ${node.absolutePath} is not a valid TypeDoc API`;
       return Promise.reject(err);
     }
-    const docs = processTypedoc(parsedApi);
-    console.log(docs);
+    for (const doc of processTypedoc(parsedApi)){
+      const html = generatePageHTML(doc);
+      const node = {
+        id: `TypeDoc ${doc.url}`,
+        internal: {
+          type: GRAPHQL_TYPE,
+          contentDigest: crypto.createHash('sha1').update(html).digest('hex')
+        }
+      }
+      actions.createNode(node);
+    }
   }
 
 export { onCreateNode, onPreInit }
