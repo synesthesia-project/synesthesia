@@ -16,7 +16,7 @@ const onPreInit: GatsbyNode['onPreInit'] = (_args, options) => {
 }
 
 const onCreateNode: GatsbyNode['onCreateNode'] =
-  async ({ actions, node, loadNodeContent }, options) => {
+  async ({ actions, node, loadNodeContent, getNode }, options) => {
     if (!validateOptions(options))
       // Should already be validated in onPreInit
       throw new Error('Unexpected error, invalid options');
@@ -49,6 +49,7 @@ const onCreateNode: GatsbyNode['onCreateNode'] =
         }
       }
       actions.createNode(docNode);
+      actions.createParentChildLink({ parent: node, child: getNode(docNode.id) })
     }
   }
 
