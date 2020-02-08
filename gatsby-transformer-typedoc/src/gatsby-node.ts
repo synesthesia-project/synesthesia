@@ -2,11 +2,10 @@ import * as crypto from 'crypto';
 import { Node, GatsbyNode } from 'gatsby';
 import { FileSystemNode } from 'gatsby-source-filesystem';
 
+import { GRAPHQL_TYPE } from './consts';
 import { PluginOptions, validateOptions } from './options';
 import { isTypedocApi, processTypedoc } from './process-typedoc';
 import { generatePageHTML } from './generate-html';
-
-export const GRAPHQL_TYPE = 'TypeDoc';
 
 function isFilesystemNode(node: Node): node is FileSystemNode {
   return !!node.sourceInstanceName;
@@ -39,14 +38,17 @@ const onCreateNode: GatsbyNode['onCreateNode'] =
     }
     for (const doc of processTypedoc(parsedApi)){
       const html = generatePageHTML(doc);
-      const node = {
+      const docNode = {
         id: `TypeDoc ${doc.url}`,
+        html,
+        children: [],
+        parent: node.id,
         internal: {
           type: GRAPHQL_TYPE,
           contentDigest: crypto.createHash('sha1').update(html).digest('hex')
         }
       }
-      actions.createNode(node);
+      actions.createNode(docNode);
     }
   }
 
