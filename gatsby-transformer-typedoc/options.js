@@ -12,6 +12,8 @@ function validateOptions(unknownOptions) {
         throw optionsError('"source" needs to be a defined');
     if (typeof options.source !== 'string')
         throw optionsError('"source" needs to be a string');
+    if (typeof options.basePath !== 'undefined' && typeof options.basePath !== 'string')
+        throw optionsError('"apiBase" needs to be a string if defined');
     return true;
 }
 exports.validateOptions = validateOptions;

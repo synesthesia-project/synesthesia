@@ -28,7 +28,8 @@ module.exports = {
     {
       resolve: `gatsby-transformer-typedoc`,
       options: {
-        source: 'api'
+        source: 'api',
+        basePath: 'api/'
       }
     }
   ],
