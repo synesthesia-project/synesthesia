@@ -36,8 +36,9 @@ function processTypedoc(api) {
         };
         sectionMap.set(reflection.id, section);
         page.sections.push(section);
+        return page;
     };
-    outputTopLevelSection('', api, api.name);
+    const root = outputTopLevelSection('', api, api.name);
     for (const c of api.children || []) {
         processReflection(api, c);
     }
@@ -45,7 +46,7 @@ function processTypedoc(api) {
     for (const page of pages.values()) {
         output.push({
             url: page.url,
-            html: generate_html_1.generatePageHTML(pages, sectionMap, page),
+            html: generate_html_1.generatePageHTML(api, root, pages, sectionMap, page),
             title: page.sections[0].title
         });
     }

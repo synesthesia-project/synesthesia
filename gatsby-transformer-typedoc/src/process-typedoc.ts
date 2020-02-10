@@ -74,10 +74,11 @@ export function processTypedoc(api: JsonApi) {
     }
     sectionMap.set(reflection.id, section);
     page.sections.push(section);
+    return page;
   }
 
   // Organize into pages
-  outputTopLevelSection('', api, api.name);
+  const root = outputTopLevelSection('', api, api.name);
   for (const c of api.children || []) {
     processReflection(api, c);
   }
@@ -89,7 +90,7 @@ export function processTypedoc(api: JsonApi) {
   for (const page of pages.values()) {
     output.push({
       url: page.url,
-      html: generatePageHTML(pages, sectionMap, page),
+      html: generatePageHTML(api, root, pages, sectionMap, page),
       title: page.sections[0].title
     });
   }

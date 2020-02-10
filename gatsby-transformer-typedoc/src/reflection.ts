@@ -7,6 +7,10 @@ export type JsonApi = ModelToObject<ProjectReflection>;
 export type Reflection = ModelToObject<ModelReflection>;
 export type Container = ModelToObject<ContainerReflection>;
 
+export function isPackage(reflection: Reflection): reflection is Container {
+  return reflection.kind === ReflectionKind.Global;
+}
+
 export function isExternalModule(reflection: Reflection): reflection is Container {
   return reflection.kind === ReflectionKind.ExternalModule;
 }
