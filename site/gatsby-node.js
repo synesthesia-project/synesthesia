@@ -7,17 +7,15 @@ exports.createPages = async ({ graphql, actions }) => {
   const templates = {
     page: path.resolve(`./src/templates/page.js`)
   };
-  const result = await graphql(
+  const pages = await graphql(
     `
       {
         allMarkdownRemark {
           edges {
             node {
+              id
               fields {
                 slug
-              }
-              frontmatter {
-                title
               }
             }
           }
@@ -26,27 +24,19 @@ exports.createPages = async ({ graphql, actions }) => {
     `
   )
 
-  if (result.errors) {
-    throw result.errors
+  if (pages.errors) {
+    throw pages.errors
   }
 
-  // Create blog posts pages.
-  const posts = result.data.allMarkdownRemark.edges
-
-  posts.forEach((post, index) => {
-    const previous = index === posts.length - 1 ? null : posts[index + 1].node
-    const next = index === 0 ? null : posts[index - 1].node
-
+  for (const page of pages.data.allMarkdownRemark.edges) { 
     createPage({
-      path: post.node.fields.slug,
+      path: page.node.fields.slug,
       component: templates.page,
       context: {
-        slug: post.node.fields.slug,
-        previous,
-        next,
+        id: page.node.id
       },
-    })
-  })
+    });
+  }
 }
 
 exports.onCreateNode = ({ node, actions, getNode }) => {
