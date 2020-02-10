@@ -4,6 +4,7 @@ module.exports = {
   },
   plugins: [
     `gatsby-plugin-react-helmet`,
+    `gatsby-plugin-force-trailing-slashes`,
     {
       resolve: `gatsby-source-filesystem`,
       options: {

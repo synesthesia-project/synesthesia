@@ -12,6 +12,10 @@ export interface DocumentationSection {
 }
 
 export interface InitialDocumentationPage {
+  /**
+   * URL, without any preceeding or training slashes,
+   * relative to the root of the documentation for a particular API
+   */
   url: string;
   sections: DocumentationSection[];
 }

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { renderToString } from 'react-dom/server';
 import { ReflectionKind } from 'typedoc/dist/lib/models/reflections/abstract';
 import { InitialDocumentationPage, DocumentationSection } from './process-typedoc';
+import { getRelativeUrl } from './urls';
 
 export function generatePageHTML(
   pages: Map<string, InitialDocumentationPage>,
@@ -22,9 +23,15 @@ export function generatePageHTML(
     components.push(<div key='descendantModules'>
       <h2>Descendent Modules</h2>
       <ul>
-        {descendantModules.map(m => (
-          <li key={m.url}>Foo: {m.sections[0].title}</li>
-        ))}
+        {descendantModules.map(m => {
+          return (
+            <li key={m.url}>
+              <a href={getRelativeUrl(page, m)}>
+                Foo: {m.sections[0].title}
+              </a>
+            </li>
+          );
+        })}
       </ul>
     </div>);
   }  
