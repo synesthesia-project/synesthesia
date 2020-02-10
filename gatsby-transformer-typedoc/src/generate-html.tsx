@@ -9,7 +9,7 @@ const EXTRACT_LAST_PATH_COMPONENT = /^(?:(.*)(\/|\.))?([^\/]*)$/
 export function generatePageHTML(
   root: DocumentationSection,
   pages: Map<string, InitialDocumentationPage>,
-  _sectionMap: Map<number, DocumentationSection>,
+  sectionMap: Map<number, DocumentationSection>,
   page: InitialDocumentationPage) {
   const components: JSX.Element[] = [];
 
@@ -87,6 +87,7 @@ export function generatePageHTML(
   for (const section of page.sections) {
     const r = section.reflection;
     if (reflection.isExternalModule(r)) {
+      // Display import instructions for module
       components.push(
         <div key={components.length}>
           <h2>Usage:</h2>
@@ -95,6 +96,31 @@ export function generatePageHTML(
           </code></pre>
         </div>
       );
+    }
+    // Collect children
+    const classes: reflection.Reflection[] = [];
+    for (const child of section.reflection.children || []) {
+      if (reflection.isClass(child)) {
+        classes.push(child);
+      }
+    }
+    if (classes.length > 0) {
+      components.push(
+        <div key={components.length}>
+          <h2>Classes</h2>
+          <ul>
+            {classes.map((cls, i) => {
+              const section = sectionMap.get(cls.id);
+              if (!section) {
+                return null;
+              }
+              return (
+                <li key={i}><a href={getRelativeUrl(page, section.page)}>{cls.name}</a></li>
+              )
+            })}
+          </ul>
+        </div>
+      )
     }
   }
 
