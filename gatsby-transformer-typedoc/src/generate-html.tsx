@@ -32,11 +32,9 @@ export function generatePageHTML(
     } else {
       breadcrumbs.push(<span key={breadcrumbs.length}>{currentLabel}</span>);
     }
-    if (currentSeparator) {
-      breadcrumbs.push(<span key={breadcrumbs.length}>
-        {` ${currentSeparator} `}
-      </span>);
-    }
+    breadcrumbs.push(
+      <span key={breadcrumbs.length}>{` ${currentSeparator || '/'} `}</span>
+    );
   }
   breadcrumbs.push(
     <a key={breadcrumbs.length} href={getRelativeUrl(page, root.page)}>
