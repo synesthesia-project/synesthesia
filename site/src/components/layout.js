@@ -1,13 +1,24 @@
 import React from "react"
-import { Link } from "gatsby"
+import { useStaticQuery, Link } from "gatsby"
 
-const Layout = ({ location, title, children }) => {
+const Layout = ({ children }) => {
+  const { site } = useStaticQuery(
+    graphql`
+      query {
+        site {
+          siteMetadata {
+            title
+          }
+        }
+      }
+    `
+  )
   return (
     <div>
       <header>
         <h3>
           <Link to={`/`}>
-            {title}
+            {site.siteMetadata.title}
           </Link>
         </h3>
       </header>

@@ -8,6 +8,7 @@ type Reflection = ModelToObject<ModelReflection>;
 type Container = ModelToObject<ContainerReflection>;
 
 export interface DocumentationSection {
+  title: string;
   reflection: Reflection;
   children: DocumentationSection[];
 }
@@ -63,6 +64,7 @@ export function processTypedoc(api: JsonApi) {
       pages.set(url, page);
     }
     const section: DocumentationSection = {
+      title: 'Some API Document (TODO)', //TODO
       reflection,
       children: []
     }

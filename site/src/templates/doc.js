@@ -5,21 +5,19 @@ import Layout from "../components/layout"
 import SEO from "../components/seo"
 
 const BlogPostTemplate = ({ data, location }) => {
-  const page = data.markdownRemark
+  const doc = data.typeDoc;
+  const title = doc.title;
 
   return (
     <Layout location={location}>
       <SEO
-        title={page.frontmatter.title}
-        description={page.frontmatter.description || page.excerpt}
+        title={title}
       />
       <div>
         <header>
-          <h1>
-            {page.frontmatter.title}
-          </h1>
+          <h1>{title}</h1>
         </header>
-        <section dangerouslySetInnerHTML={{ __html: page.html }} />
+        <section dangerouslySetInnerHTML={{ __html: doc.html }} />
       </div>
     </Layout>
   )
@@ -28,12 +26,10 @@ const BlogPostTemplate = ({ data, location }) => {
 export default BlogPostTemplate
 
 export const pageQuery = graphql`
-  query PageById($id: String!) {
-    markdownRemark(id: { eq: $id }) {
+  query DocById($id: String!) {
+    typeDoc(id: { eq: $id }) {
       html
-      frontmatter {
-        title
-      }
+      title
     }
   }
 `

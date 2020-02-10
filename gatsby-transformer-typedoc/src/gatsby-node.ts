@@ -54,6 +54,7 @@ const onCreateNode: GatsbyNode['onCreateNode'] =
       const docNode = {
         id: `TypeDoc ${path}`,
         html,
+        title: doc.sections[0].title,
         children: [],
         parent: node.id,
         path,

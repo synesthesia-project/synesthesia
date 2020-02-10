@@ -5,9 +5,10 @@ exports.createPages = async ({ graphql, actions }) => {
   const { createPage } = actions
 
   const templates = {
-    page: path.resolve(`./src/templates/page.js`)
+    page: path.resolve(`./src/templates/page.js`),
+    doc: path.resolve(`./src/templates/doc.js`),
   };
-  const pages = await graphql(
+  const results = await graphql(
     `
       {
         allMarkdownRemark {
@@ -20,20 +21,38 @@ exports.createPages = async ({ graphql, actions }) => {
             }
           }
         }
+        allTypeDoc {
+          edges {
+            node {
+              id
+              path
+            }
+          }
+        }
       }
     `
   )
 
-  if (pages.errors) {
-    throw pages.errors
+  if (results.errors) {
+    throw results.errors;
   }
 
-  for (const page of pages.data.allMarkdownRemark.edges) { 
+  for (const page of results.data.allMarkdownRemark.edges) { 
     createPage({
       path: page.node.fields.slug,
       component: templates.page,
       context: {
         id: page.node.id
+      },
+    });
+  }
+
+  for (const doc of results.data.allTypeDoc.edges) {
+    createPage({
+      path: doc.node.path,
+      component: templates.doc,
+      context: {
+        id: doc.node.id
       },
     });
   }

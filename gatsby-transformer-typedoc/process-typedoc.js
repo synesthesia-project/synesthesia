@@ -32,6 +32,7 @@ function processTypedoc(api) {
             pages.set(url, page);
         }
         const section = {
+            title: 'Some API Document (TODO)',
             reflection,
             children: []
         };
