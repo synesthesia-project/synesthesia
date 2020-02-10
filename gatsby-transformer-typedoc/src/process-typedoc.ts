@@ -1,11 +1,9 @@
-import { Reflection as ModelReflection, ReflectionKind } from 'typedoc/dist/lib/models/reflections/abstract';
-import { ProjectReflection } from 'typedoc/dist/lib/models/reflections/project';
-import { ContainerReflection } from 'typedoc/dist/lib/models/reflections/container';
-import { ModelToObject } from 'typedoc/dist/lib/serialization/schema';
-
-type JsonApi = ModelToObject<ProjectReflection>;
-type Reflection = ModelToObject<ModelReflection>;
-type Container = ModelToObject<ContainerReflection>;
+import {
+  Reflection,
+  JsonApi,
+  isExternalModule
+} from './reflection';
+import { generatePageHTML } from './generate-html';
 
 export interface DocumentationSection {
   title: string;
@@ -13,13 +11,15 @@ export interface DocumentationSection {
   children: DocumentationSection[];
 }
 
-export interface DocumentationPage {
+export interface InitialDocumentationPage {
   url: string;
   sections: DocumentationSection[];
 }
 
-function isExternalModule(reflection: Reflection): reflection is Container {
-  return reflection.kind === ReflectionKind.ExternalModule;
+export interface ProcessedDocumentationPage {
+  url: string;
+  html: string;
+  title: string;
 }
 
 /**
@@ -39,7 +39,7 @@ export function processTypedoc(api: JsonApi) {
   /**
    * List of pages to output
    */
-  const pages = new Map<string,DocumentationPage>();
+  const pages = new Map<string, InitialDocumentationPage>();
   /**
    * Mapping from reflection IDs
    */
@@ -53,18 +53,18 @@ export function processTypedoc(api: JsonApi) {
         url = '';
       if (url.endsWith('/index'))
         url = url.substr(0, url.length - 6);
-      outputTopLevelSection(url, reflection);
+      outputTopLevelSection(url, reflection, api.name + '/' + url);
     }
   }
 
-  const outputTopLevelSection = (url: string, reflection: Reflection) => {
+  const outputTopLevelSection = (url: string, reflection: Reflection, title: string) => {
     let page = pages.get(url);
     if (!page) {
       page = { url, sections: [] };
       pages.set(url, page);
     }
     const section: DocumentationSection = {
-      title: 'Some API Document (TODO)', //TODO
+      title,
       reflection,
       children: []
     }
@@ -72,9 +72,22 @@ export function processTypedoc(api: JsonApi) {
     page.sections.push(section);
   }
 
-  outputTopLevelSection('', api);
+  // Organize into pages
+  outputTopLevelSection('', api, api.name);
   for (const c of api.children || []) {
     processReflection(api, c);
   }
-  return pages.values();
+
+  // TODO: sort sections of pages
+
+  // Generate HTML for pages
+  const output: ProcessedDocumentationPage[] = [];
+  for (const page of pages.values()) {
+    output.push({
+      url: page.url,
+      html: generatePageHTML(pages, sectionMap, page),
+      title: page.sections[0].title
+    });
+  }
+  return output;
 }

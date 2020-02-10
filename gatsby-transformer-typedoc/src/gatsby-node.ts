@@ -5,7 +5,6 @@ import { FileSystemNode, createFilePath } from 'gatsby-source-filesystem';
 import { GRAPHQL_TYPE } from './consts';
 import { PluginOptions, validateOptions } from './options';
 import { isTypedocApi, processTypedoc } from './process-typedoc';
-import { generatePageHTML } from './generate-html';
 import { stripSlashes } from './util';
 
 function isFilesystemNode(node: Node): node is FileSystemNode {
@@ -49,18 +48,21 @@ const onCreateNode: GatsbyNode['onCreateNode'] =
       stripSlashes(relativePath);
     console.log(relativePath);
     for (const doc of processTypedoc(parsedApi)){
-      const html = generatePageHTML(doc);
       const path = '/' + basePath + '/' + (doc.url ? (doc.url + '/') : '');
       const docNode = {
         id: `TypeDoc ${path}`,
-        html,
-        title: doc.sections[0].title,
+        html: doc.html,
+        title: doc.title,
         children: [],
         parent: node.id,
         path,
         internal: {
           type: GRAPHQL_TYPE,
-          contentDigest: crypto.createHash('sha1').update(html).digest('hex')
+          contentDigest: crypto
+            .createHash('sha1')
+            .update(doc.title)
+            .update(doc.html)
+            .digest('hex')
         }
       }
       actions.createNode(docNode);
