@@ -4,7 +4,7 @@ import * as reflection from './reflection';
 import { InitialDocumentationPage, DocumentationSection } from './process-typedoc';
 import { getRelativeUrl } from './urls';
 
-const EXTRACT_LAST_PATH_COMPONENT = /^(?:(.*)\/)?([^\/]*)$/
+const EXTRACT_LAST_PATH_COMPONENT = /^(?:(.*)(\/|\.))?([^\/]*)$/
 
 export function generatePageHTML(
   root: DocumentationSection,
@@ -21,7 +21,8 @@ export function generatePageHTML(
     const exec = EXTRACT_LAST_PATH_COMPONENT.exec(nextPath);
     if (!exec) break;
     nextPath = exec[1];
-    const currentLabel = exec[2];
+    const currentSeparator: undefined | string = exec[2];
+    const currentLabel = exec[3];
     if (p) {
       breadcrumbs.push(
         <a key={breadcrumbs.length} href={getRelativeUrl(page, p)}>
@@ -31,7 +32,11 @@ export function generatePageHTML(
     } else {
       breadcrumbs.push(<span key={breadcrumbs.length}>{currentLabel}</span>);
     }
-    breadcrumbs.push(<span key={breadcrumbs.length}>{' / '}</span>);
+    if (currentSeparator) {
+      breadcrumbs.push(<span key={breadcrumbs.length}>
+        {` ${currentSeparator} `}
+      </span>);
+    }
   }
   breadcrumbs.push(
     <a key={breadcrumbs.length} href={getRelativeUrl(page, root.page)}>
