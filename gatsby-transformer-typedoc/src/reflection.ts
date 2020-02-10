@@ -14,3 +14,7 @@ export function isPackage(reflection: Reflection): reflection is Container {
 export function isExternalModule(reflection: Reflection): reflection is Container {
   return reflection.kind === ReflectionKind.ExternalModule;
 }
+
+export function isClass(reflection: Reflection): reflection is Container {
+  return reflection.kind === ReflectionKind.Class;
+}

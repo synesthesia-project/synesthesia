@@ -7,8 +7,7 @@ import { getRelativeUrl } from './urls';
 const EXTRACT_LAST_PATH_COMPONENT = /^(?:(.*)\/)?([^\/]*)$/
 
 export function generatePageHTML(
-  api: reflection.JsonApi,
-  root: InitialDocumentationPage,
+  root: DocumentationSection,
   pages: Map<string, InitialDocumentationPage>,
   _sectionMap: Map<number, DocumentationSection>,
   page: InitialDocumentationPage) {
@@ -35,8 +34,8 @@ export function generatePageHTML(
     breadcrumbs.push(<span key={breadcrumbs.length}>{' / '}</span>);
   }
   breadcrumbs.push(
-    <a key={breadcrumbs.length} href={getRelativeUrl(page, root)}>
-      {api.name}
+    <a key={breadcrumbs.length} href={getRelativeUrl(page, root.page)}>
+      {root.reflection.name}
     </a>
   );
   components.push(
@@ -73,7 +72,7 @@ export function generatePageHTML(
           return (
             <li key={m.url}>
               <a href={getRelativeUrl(page, m)}>
-                Foo: {m.sections[0].title}
+                Foo: {m.title}
               </a>
             </li>
           );
@@ -89,7 +88,7 @@ export function generatePageHTML(
         <div key={components.length}>
           <h2>Usage:</h2>
           <pre><code>
-            {`import { ... } from "${section.title}"`}
+            {`import { ... } from "${page.title}"`}
           </code></pre>
         </div>
       );

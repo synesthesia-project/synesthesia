@@ -4,14 +4,16 @@ import {
   isExternalModule
 } from './reflection';
 import { generatePageHTML } from './generate-html';
+import { getUrl, requiresOwnPage } from './urls';
 
 export interface DocumentationSection {
-  title: string;
   reflection: Reflection;
   children: DocumentationSection[];
+  page: InitialDocumentationPage;
 }
 
 export interface InitialDocumentationPage {
+  title: string;
   /**
    * URL, without any preceeding or training slashes,
    * relative to the root of the documentation for a particular API
@@ -21,9 +23,9 @@ export interface InitialDocumentationPage {
 }
 
 export interface ProcessedDocumentationPage {
+  title: string;
   url: string;
   html: string;
-  title: string;
 }
 
 /**
@@ -49,7 +51,8 @@ export function processTypedoc(api: JsonApi) {
    */
   const sectionMap = new Map<number, DocumentationSection>();
 
-  const processReflection = (_parent: Reflection, reflection: Reflection) => {
+  const processReflection = (parent: DocumentationSection, reflection: Reflection) => {
+    let section: DocumentationSection | null = null;
     if (isExternalModule(reflection)) {
       // Strip quote marks
       let url = reflection.name.substr(1, reflection.name.length - 2);
@@ -57,30 +60,53 @@ export function processTypedoc(api: JsonApi) {
         url = '';
       if (url.endsWith('/index'))
         url = url.substr(0, url.length - 6);
-      outputTopLevelSection(url, reflection, api.name + '/' + url);
+      section = outputTopLevelSection(url, reflection, api.name + '/' + url);
+    } else if (requiresOwnPage(reflection)) {
+      const url = getUrl(parent, reflection);
+      section = outputTopLevelSection(url, reflection, api.name + '/' + url);
+    } else {
+      outputSupsection(parent, reflection);
+    }
+    if (section) {
+      if (reflection.children) {
+        for(const child of reflection.children) {
+          processReflection(section, child);
+        }
+      }
     }
   }
 
   const outputTopLevelSection = (url: string, reflection: Reflection, title: string) => {
     let page = pages.get(url);
     if (!page) {
-      page = { url, sections: [] };
+      page = { url, sections: [], title };
       pages.set(url, page);
     }
     const section: DocumentationSection = {
-      title,
       reflection,
-      children: []
+      children: [],
+      page
     }
     sectionMap.set(reflection.id, section);
     page.sections.push(section);
-    return page;
+    return section;
+  }
+
+  const outputSupsection = (parent: DocumentationSection, reflection: Reflection) => {
+    const section: DocumentationSection = {
+      reflection,
+      children: [],
+      page: parent.page
+    }
+    sectionMap.set(reflection.id, section);
+    parent.children.push(section);
+    return section;
   }
 
   // Organize into pages
   const root = outputTopLevelSection('', api, api.name);
   for (const c of api.children || []) {
-    processReflection(api, c);
+    processReflection(root, c);
   }
 
   // TODO: sort sections of pages
@@ -90,8 +116,8 @@ export function processTypedoc(api: JsonApi) {
   for (const page of pages.values()) {
     output.push({
       url: page.url,
-      html: generatePageHTML(api, root, pages, sectionMap, page),
-      title: page.sections[0].title
+      html: generatePageHTML(root, pages, sectionMap, page),
+      title: page.title
     });
   }
   return output;
