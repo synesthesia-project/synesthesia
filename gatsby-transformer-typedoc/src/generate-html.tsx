@@ -59,13 +59,13 @@ export function generatePageHTML(
   }
 
   // Check to see if there are any modules that share the same URL prefix
-  const descendantModules: InitialDocumentationPage[] = [];
+  const descendantModules: DocumentationSection[] = [];
   for (const p of pages.values()) {
     if (p !== page &&
         p.url.startsWith(page.url) &&
         p.sections.length === 1 &&
         reflection.isExternalModule(p.sections[0].reflection))
-      descendantModules.push(p);
+      descendantModules.push(p.sections[0]);
   }
   if (descendantModules.length > 0 ) {
     components.push(<div key={components.length}>
@@ -73,9 +73,9 @@ export function generatePageHTML(
       <ul>
         {descendantModules.map(m => {
           return (
-            <li key={m.url}>
-              <a href={getRelativeUrl(page, m)}>
-                Foo: {m.title}
+            <li key={m.page.url}>
+              <a href={getRelativeUrl(page, m.page)}>
+                {m.name || m.page.title}
               </a>
             </li>
           );
@@ -92,11 +92,12 @@ export function generatePageHTML(
         <div key={components.length}>
           <h2>Usage:</h2>
           <pre><code>
-            {`import { ... } from "${page.title}"`}
+            {`import { ... } from "${section.name}"`}
           </code></pre>
         </div>
       );
     }
+
     // Collect children
     const classes: reflection.Reflection[] = [];
     const interfaces: reflection.Reflection[] = [];

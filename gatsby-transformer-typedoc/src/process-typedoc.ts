@@ -1,7 +1,8 @@
 import {
   Reflection,
   JsonApi,
-  isExternalModule
+  isExternalModule,
+  reflectionTypeName
 } from './reflection';
 import { generatePageHTML } from './generate-html';
 import { getUrl, requiresOwnPage } from './urls';
@@ -10,6 +11,10 @@ export interface DocumentationSection {
   reflection: Reflection;
   children: DocumentationSection[];
   page: InitialDocumentationPage;
+  /**
+   * Name to use instead of `reflection.name`.
+   */
+  name?: string;
 }
 
 export interface InitialDocumentationPage {
@@ -60,10 +65,17 @@ export function processTypedoc(api: JsonApi) {
         url = '';
       if (url.endsWith('/index'))
         url = url.substr(0, url.length - 6);
-      section = outputTopLevelSection(url, reflection, api.name + '/' + url);
+      const name = api.name + '/' + url;
+      section = outputTopLevelSection(
+        url, reflection, 'Module ' + name, name
+      );
     } else if (requiresOwnPage(reflection)) {
       const url = getUrl(parent, reflection);
-      section = outputTopLevelSection(url, reflection, api.name + '/' + url);
+      section = outputTopLevelSection(
+        url,
+        reflection,
+        reflectionTypeName(reflection) + ' ' + reflection.name
+      );
     } else {
       outputSupsection(parent, reflection);
     }
@@ -76,7 +88,9 @@ export function processTypedoc(api: JsonApi) {
     }
   }
 
-  const outputTopLevelSection = (url: string, reflection: Reflection, title: string) => {
+  const outputTopLevelSection = (
+      url: string, reflection: Reflection, title: string, name?: string
+      ) => {
     let page = pages.get(url);
     if (!page) {
       page = { url, sections: [], title };
@@ -85,7 +99,8 @@ export function processTypedoc(api: JsonApi) {
     const section: DocumentationSection = {
       reflection,
       children: [],
-      page
+      page,
+      name
     }
     sectionMap.set(reflection.id, section);
     page.sections.push(section);

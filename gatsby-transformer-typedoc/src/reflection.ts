@@ -22,3 +22,7 @@ export function isClass(reflection: Reflection): reflection is Container {
 export function isInterface(reflection: Reflection): reflection is Container {
   return reflection.kind === ReflectionKind.Interface;
 }
+
+export function reflectionTypeName(reflection: Reflection) {
+  return ReflectionKind[reflection.kind];
+}
