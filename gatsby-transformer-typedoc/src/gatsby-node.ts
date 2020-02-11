@@ -47,7 +47,7 @@ const onCreateNode: GatsbyNode['onCreateNode'] =
       (options.basePath ? (stripSlashes(options.basePath) + '/') : '') +
       stripSlashes(relativePath);
     console.log(relativePath);
-    for (const doc of processTypedoc(parsedApi)){
+    for (const doc of await processTypedoc(parsedApi)){
       const path = '/' + basePath + '/' + (doc.url ? (doc.url + '/') : '');
       const docNode = {
         id: `TypeDoc ${path}`,

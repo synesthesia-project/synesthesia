@@ -62,6 +62,8 @@ dependencies:
   react-error-overlay: 6.0.5
   react-helmet: 5.2.1_react@16.12.0
   react-icons: 3.8.0_react@16.12.0
+  remark-html: 10.0.0
+  remark-parse: 7.0.2
   shallow-compare: 1.2.2
   source-map-loader: 0.2.4
   spotify-web-api-js: 0.23.0
@@ -71,6 +73,7 @@ dependencies:
   type2docfx: 0.10.2
   typedoc: 0.16.9
   typescript: 3.7.2
+  unified: 8.4.2
   utf-8-validate: 5.0.2
   webpack: 4.41.2_webpack@4.41.2
   ws: 7.2.0
@@ -8011,6 +8014,12 @@ packages:
     dev: false
     resolution:
       integrity: sha512-5xYHyEJMCf8lX/NT4iA5z6N43yoFsrJqXJ5GWwAbLn815URbIz+UNNFEgid33F9paZuDlqVKvB+K3Aqu5+DdSw==
+  /hast-util-sanitize/2.0.1:
+    dependencies:
+      xtend: 4.0.2
+    dev: false
+    resolution:
+      integrity: sha512-Hk9YC6+HURcdNuBFaPP5nX6xK6zPnm0Dr6QnU4hvvXoStzH5nLI1u71wux6u3fbEQk3/+kTEIcyxRtCA0jt9RA==
   /hast-util-to-html/4.0.1:
     dependencies:
       ccount: 1.0.5
@@ -8026,6 +8035,21 @@ packages:
     dev: false
     resolution:
       integrity: sha512-2emzwyf0xEsc4TBIPmDJmBttIw8R4SXAJiJZoiRR/s47ODYWgOqNoDbf2SJAbMbfNdFWMiCSOrI3OVnX6Qq2Mg==
+  /hast-util-to-html/6.1.0:
+    dependencies:
+      ccount: 1.0.5
+      comma-separated-tokens: 1.0.8
+      hast-util-is-element: 1.0.3
+      hast-util-whitespace: 1.0.3
+      html-void-elements: 1.0.5
+      property-information: 5.4.0
+      space-separated-tokens: 1.1.5
+      stringify-entities: 2.0.0
+      unist-util-is: 3.0.0
+      xtend: 4.0.2
+    dev: false
+    resolution:
+      integrity: sha512-IlC+LG2HGv0Y8js3wqdhg9O2sO4iVpRDbHOPwXd7qgeagpGsnY49i8yyazwqS35RA35WCzrBQE/n0M6GG/ewxA==
   /hast-util-to-parse5/4.0.1:
     dependencies:
       hast-to-hyperscript: 5.0.0
@@ -9046,6 +9070,12 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-caUMhCnfync8kqOQpKA7OfzVHT4=
+  /is-plain-obj/2.1.0:
+    dev: false
+    engines:
+      node: '>=8'
+    resolution:
+      integrity: sha512-YWnfyRwxL/+SsrWYfOpUtz5b3YD+nyfkHvjbcanzk8zgyO4ASD67uVMRt8k5bM4lLMDnXfriRhOpemw+NfT1eA==
   /is-plain-object/2.0.4:
     dependencies:
       isobject: 3.0.1
@@ -10112,6 +10142,22 @@ packages:
     dev: false
     resolution:
       integrity: sha512-/eIbly2YmyVgpJNo+bFLLMCI1XgolO/Ffowhf+pHDq3X4/V6FntC9sGQCDLM147eTS+uSXv5dRzJyFn+o0tazA==
+  /mdast-util-to-hast/6.0.2:
+    dependencies:
+      collapse-white-space: 1.0.6
+      detab: 2.0.3
+      mdast-util-definitions: 1.2.5
+      mdurl: 1.0.1
+      trim: 0.0.1
+      trim-lines: 1.1.3
+      unist-builder: 1.0.4
+      unist-util-generated: 1.1.5
+      unist-util-position: 3.0.4
+      unist-util-visit: 1.4.1
+      xtend: 4.0.2
+    dev: false
+    resolution:
+      integrity: sha512-GjcOimC9qHI0yNFAQdBesrZXzUkRdFleQlcoU8+TVNfDW6oLUazUx8MgUoTaUyCJzBOnE5AOgqhpURrSlf0QwQ==
   /mdast-util-to-nlcst/3.2.3:
     dependencies:
       nlcst-to-string: 2.0.3
@@ -12310,6 +12356,12 @@ packages:
     dev: false
     resolution:
       integrity: sha512-TlgDPagHh+eBKOnH2VYvk8qbwsCG/TAJdmTL7f1PROUcSO8qt/KSmShEQ/OKvock8X9tFjtqjCScyOkkkvIKVQ==
+  /property-information/5.4.0:
+    dependencies:
+      xtend: 4.0.2
+    dev: false
+    resolution:
+      integrity: sha512-nmMWAm/3vKFGmmOWOcdLjgq/Hlxa+hsuR/px1Lp/UGEyc5A22A6l78Shc2C0E71sPmAqglni+HrS7L7VJ7AUCA==
   /proto-list/1.2.4:
     dev: false
     resolution:
@@ -12937,6 +12989,15 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-E9ghzUtoLwDekPT0DYCp+c4h+bvuUpe6rRHCTYn6eGoqj1LgKXxT6I0Il4WbjhQkOghzi/V+y03bPKvbllL93Q==
+  /remark-html/10.0.0:
+    dependencies:
+      hast-util-sanitize: 2.0.1
+      hast-util-to-html: 6.1.0
+      mdast-util-to-hast: 6.0.2
+      xtend: 4.0.2
+    dev: false
+    resolution:
+      integrity: sha512-TbSQuedRFjAhXSk1NAbfaTqDK0jKAjfgn82D2ZYFFT8XpJ80uwXc8yVwK/Tl2eqboTMPxzNzCIss4kIucE5M8w==
   /remark-parse/6.0.3:
     dependencies:
       collapse-white-space: 1.0.6
@@ -12957,6 +13018,26 @@ packages:
     dev: false
     resolution:
       integrity: sha512-QbDXWN4HfKTUC0hHa4teU463KclLAnwpn/FBn87j9cKYJWWawbiLgMfP2Q4XwhxxuuuOxHlw+pSN0OKuJwyVvg==
+  /remark-parse/7.0.2:
+    dependencies:
+      collapse-white-space: 1.0.6
+      is-alphabetical: 1.0.4
+      is-decimal: 1.0.4
+      is-whitespace-character: 1.0.4
+      is-word-character: 1.0.4
+      markdown-escapes: 1.0.4
+      parse-entities: 1.2.2
+      repeat-string: 1.6.1
+      state-toggle: 1.0.3
+      trim: 0.0.1
+      trim-trailing-lines: 1.1.3
+      unherit: 1.1.3
+      unist-util-remove-position: 1.1.4
+      vfile-location: 2.0.6
+      xtend: 4.0.2
+    dev: false
+    resolution:
+      integrity: sha512-9+my0lQS80IQkYXsMA8Sg6m9QfXYJBnXjWYN5U+kFc5/n69t+XZVXU/ZBYr3cYH8FheEGf1v87rkFDhJ8bVgMA==
   /remark-retext/3.1.3:
     dependencies:
       mdast-util-to-nlcst: 3.2.3
@@ -14189,6 +14270,16 @@ packages:
     dev: false
     resolution:
       integrity: sha512-nrBAQClJAPN2p+uGCVJRPIPakKeKWZ9GtBCmormE7pWOSlHat7+x5A8gx85M7HM5Dt0BP3pP5RhVW77WdbJJ3A==
+  /stringify-entities/2.0.0:
+    dependencies:
+      character-entities-html4: 1.1.4
+      character-entities-legacy: 1.1.4
+      is-alphanumerical: 1.0.4
+      is-decimal: 1.0.4
+      is-hexadecimal: 1.0.4
+    dev: false
+    resolution:
+      integrity: sha512-fqqhZzXyAM6pGD9lky/GOPq6V4X0SeTAFBl0iXb/BzOegl40gpf/bV3QQP7zULNYvjr6+Dx8SCaDULjVoOru0A==
   /stringify-object/3.3.0:
     dependencies:
       get-own-enumerable-property-symbols: 3.0.2
@@ -15154,6 +15245,16 @@ packages:
     dev: false
     resolution:
       integrity: sha512-lbk82UOIGuCEsZhPj8rNAkXSDXd6p0QLzIuSsCdxrqnqU56St4eyOB+AlXsVgVeRmetPTYydIuvFfpDIed8mqw==
+  /unified/8.4.2:
+    dependencies:
+      bail: 1.0.5
+      extend: 3.0.2
+      is-plain-obj: 2.1.0
+      trough: 1.0.5
+      vfile: 4.0.2
+    dev: false
+    resolution:
+      integrity: sha512-JCrmN13jI4+h9UAyKEoGcDZV+i1E7BLFuG7OsaDvTXI5P0qhHX+vZO/kOhz9jn8HGENDKbwSeB0nVOg4gVStGA==
   /union-value/1.0.1:
     dependencies:
       arr-union: 3.1.0
@@ -15565,6 +15666,16 @@ packages:
     dev: false
     resolution:
       integrity: sha512-y7Y3gH9BsUSdD4KzHsuMaCzRjglXN0W2EcMf0gpvu6+SbsGhMje7xDc8AEoeXy6mIwCKMI6BkjMsRjzQbhMEjQ==
+  /vfile/4.0.2:
+    dependencies:
+      '@types/unist': 2.0.3
+      is-buffer: 2.0.4
+      replace-ext: 1.0.0
+      unist-util-stringify-position: 2.0.2
+      vfile-message: 2.0.2
+    dev: false
+    resolution:
+      integrity: sha512-yhoTU5cDMSsaeaMfJ5g0bUKYkYmZhAh9fn9TZicxqn+Cw4Z439il2v3oT9S0yjlpqlI74aFOQCt3nOV+pxzlkw==
   /vinyl-fs/3.0.3:
     dependencies:
       fs-mkdirp-stream: 1.0.0
@@ -16496,7 +16607,10 @@ packages:
       gulp: 4.0.2
       react: 16.12.0
       react-dom: 16.12.0_react@16.12.0
+      remark-html: 10.0.0
+      remark-parse: 7.0.2
       typedoc: 0.16.9
+      unified: 8.4.2
     dev: false
     id: 'file:projects/gatsby-transformer-typedoc.tgz'
     name: '@rush-temp/gatsby-transformer-typedoc'
@@ -16505,7 +16619,7 @@ packages:
       typescript: '*'
       utf-8-validate: '*'
     resolution:
-      integrity: sha512-OWBSFsnkNP9VZGGGNBZp2DA5o4oEJJ3TzZYoIpWVtj/NH6OcvKylYkS9qNrN/4MBZ/h1kyr+WyBa4un8bKi5ng==
+      integrity: sha512-etqm6uGHUDWS8UTtyIqrTdBA0dTcQoXZOWhnVcnFN7UzrcwmFmgMahWooh8f4BwkP5Fk6e+Ez64Oa9saurBrZA==
       tarball: 'file:projects/gatsby-transformer-typedoc.tgz'
     version: 0.0.0
   'file:projects/gulp-util.tgz':
@@ -16716,6 +16830,8 @@ specifiers:
   react-error-overlay: ~6.0.5
   react-helmet: ^5.1.3
   react-icons: ^3.3.0
+  remark-html: ~10.0.0
+  remark-parse: ~7.0.2
   shallow-compare: ~1.2.2
   source-map-loader: ~0.2.4
   spotify-web-api-js: ^0.23.0
@@ -16725,6 +16841,7 @@ specifiers:
   type2docfx: ^0.10.2
   typedoc: ^0.16.9
   typescript: ~3.7.2
+  unified: ~8.4.2
   utf-8-validate: ^5.0.2
   webpack: ~4.41.2
   ws: ^7.1.2

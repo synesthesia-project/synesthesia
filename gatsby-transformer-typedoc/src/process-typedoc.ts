@@ -46,7 +46,7 @@ export function isTypedocApi(api: any): api is JsonApi {
   )
 }
 
-export function processTypedoc(api: JsonApi) {
+export async function processTypedoc(api: JsonApi) {
   /**
    * List of pages to output
    */
@@ -131,7 +131,7 @@ export function processTypedoc(api: JsonApi) {
   for (const page of pages.values()) {
     output.push({
       url: page.url,
-      html: generatePageHTML(root, pages, sectionMap, page),
+      html: await generatePageHTML(root, pages, sectionMap, page),
       title: page.title
     });
   }

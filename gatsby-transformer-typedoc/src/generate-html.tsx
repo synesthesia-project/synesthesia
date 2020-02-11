@@ -3,10 +3,11 @@ import { renderToString } from 'react-dom/server';
 import * as reflection from './reflection';
 import { InitialDocumentationPage, DocumentationSection } from './process-typedoc';
 import { getRelativeUrl } from './urls';
+import { processMarkdown } from './markdown';
 
 const EXTRACT_LAST_PATH_COMPONENT = /^(?:(.*)(\/|\.))?([^\/]*)$/
 
-export function generatePageHTML(
+export async function generatePageHTML(
   root: DocumentationSection,
   pages: Map<string, InitialDocumentationPage>,
   sectionMap: Map<number, DocumentationSection>,
@@ -86,6 +87,22 @@ export function generatePageHTML(
 
   for (const section of page.sections) {
     const r = section.reflection;
+
+    // Main Documentation
+    if (r.comment) {
+      const shortHtml =
+        r.comment.shortText && await processMarkdown(r.comment.shortText) || '';
+      const html =
+        r.comment.text && await processMarkdown(r.comment.text) || '';
+      components.push(
+        <div key={components.length}>
+          <div dangerouslySetInnerHTML={{ __html: shortHtml }} />
+          <div dangerouslySetInnerHTML={{ __html: html }} />
+        </div>
+      );
+    }
+
+    // Usage
     if (reflection.isExternalModule(r)) {
       // Display import instructions for module
       components.push(
