@@ -18,3 +18,7 @@ export function isExternalModule(reflection: Reflection): reflection is Containe
 export function isClass(reflection: Reflection): reflection is Container {
   return reflection.kind === ReflectionKind.Class;
 }
+
+export function isInterface(reflection: Reflection): reflection is Container {
+  return reflection.kind === ReflectionKind.Interface;
+}

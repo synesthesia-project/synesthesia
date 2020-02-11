@@ -99,9 +99,12 @@ export function generatePageHTML(
     }
     // Collect children
     const classes: reflection.Reflection[] = [];
+    const interfaces: reflection.Reflection[] = [];
     for (const child of section.reflection.children || []) {
       if (reflection.isClass(child)) {
         classes.push(child);
+      } else if(reflection.isInterface(child)) {
+        interfaces.push(child);
       }
     }
     if (classes.length > 0) {
@@ -110,6 +113,24 @@ export function generatePageHTML(
           <h2>Classes</h2>
           <ul>
             {classes.map((cls, i) => {
+              const section = sectionMap.get(cls.id);
+              if (!section) {
+                return null;
+              }
+              return (
+                <li key={i}><a href={getRelativeUrl(page, section.page)}>{cls.name}</a></li>
+              )
+            })}
+          </ul>
+        </div>
+      )
+    }
+    if (interfaces.length > 0) {
+      components.push(
+        <div key={components.length}>
+          <h2>Interfaces</h2>
+          <ul>
+            {interfaces.map((cls, i) => {
               const section = sectionMap.get(cls.id);
               if (!section) {
                 return null;
