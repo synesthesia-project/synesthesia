@@ -5,7 +5,30 @@ import { InitialDocumentationPage, DocumentationSection } from './process-typedo
 import { getRelativeUrl } from './urls';
 import { processMarkdown } from './markdown';
 
-const EXTRACT_LAST_PATH_COMPONENT = /^(?:(.*)(\/|\.))?([^\/]*)$/
+const EXTRACT_LAST_PATH_COMPONENT = /^(?:(.*)(\/|\.))?([^\/]*)$/;
+
+/**
+ * Display information on a child that has it's own dedicated page
+ */
+async function linkedChild(
+  sectionMap: Map<number, DocumentationSection>,
+  page: InitialDocumentationPage,
+  child: reflection.Reflection,
+  key: number) {
+  const section = sectionMap.get(child.id);
+  if (!section) {
+    return null;
+  }
+  const description = child.comment?.shortText;
+  const descriptionHtml = description && await processMarkdown(description);
+  return (
+    <div key={key}>
+      <h3><a href={getRelativeUrl(page, section.page)}>{child.name}</a></h3>
+      {descriptionHtml &&
+        <p dangerouslySetInnerHTML={{ __html: descriptionHtml}}/>}
+    </div>
+  )
+}
 
 export async function generatePageHTML(
   root: DocumentationSection,
@@ -129,17 +152,9 @@ export async function generatePageHTML(
       components.push(
         <div key={components.length}>
           <h2>Classes</h2>
-          <ul>
-            {classes.map((cls, i) => {
-              const section = sectionMap.get(cls.id);
-              if (!section) {
-                return null;
-              }
-              return (
-                <li key={i}><a href={getRelativeUrl(page, section.page)}>{cls.name}</a></li>
-              )
-            })}
-          </ul>
+          {await Promise.all(
+            classes.map((c, i) => linkedChild(sectionMap, page, c, i))
+          )}
         </div>
       )
     }
@@ -147,17 +162,9 @@ export async function generatePageHTML(
       components.push(
         <div key={components.length}>
           <h2>Interfaces</h2>
-          <ul>
-            {interfaces.map((cls, i) => {
-              const section = sectionMap.get(cls.id);
-              if (!section) {
-                return null;
-              }
-              return (
-                <li key={i}><a href={getRelativeUrl(page, section.page)}>{cls.name}</a></li>
-              )
-            })}
-          </ul>
+          {await Promise.all(
+            interfaces.map((c, i) => linkedChild(sectionMap, page, c, i))
+          )}
         </div>
       )
     }
