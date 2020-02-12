@@ -77,13 +77,11 @@ export async function processTypedoc(api: JsonApi) {
         reflectionTypeName(reflection) + ' ' + reflection.name
       );
     } else {
-      outputSupsection(parent, reflection);
+      section = outputSubsection(parent, reflection);
     }
-    if (section) {
-      if (reflection.children) {
-        for(const child of reflection.children) {
-          processReflection(section, child);
-        }
+    if (reflection.children) {
+      for(const child of reflection.children) {
+        processReflection(section, child);
       }
     }
   }
@@ -107,7 +105,7 @@ export async function processTypedoc(api: JsonApi) {
     return section;
   }
 
-  const outputSupsection = (parent: DocumentationSection, reflection: Reflection) => {
+  const outputSubsection = (parent: DocumentationSection, reflection: Reflection) => {
     const section: DocumentationSection = {
       reflection,
       children: [],
