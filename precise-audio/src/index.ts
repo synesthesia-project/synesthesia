@@ -2,13 +2,17 @@
 
 type PlayState =
   {
-    state: 'paused',
-    positionMillis: number
+    state: 'paused';
+    positionMillis: number;
   } |
   {
-    state: 'playing',
-    source: AudioBufferSourceNode,
-    effectiveStartTimeMillis: number
+    state: 'playing';
+    source: AudioBufferSourceNode;
+    /**
+     * Millisecond timestamp (based on the AudioContext clock) that the song
+     * started playing at the current playback rate
+     */
+    effectiveStartTimeMillis: number;
   };
 
 type Listener = EventListener | EventListenerObject | null;
@@ -66,6 +70,7 @@ export class PreciseAudioEvent extends Event {
 export default class PreciseAudio extends EventTarget {
 
   private readonly context = new AudioContext();
+  private _playbackRate = 1;
   private song: {
     buffer: AudioBuffer;
     state: PlayState;
@@ -122,13 +127,15 @@ export default class PreciseAudio extends EventTarget {
     if (this.song) {
       const nowMillis = this.context.currentTime * 1000;
       const source = this.context.createBufferSource();
+      source.playbackRate.value = this._playbackRate;
       source.connect(this.context.destination);
       source.buffer = this.song.buffer;
       source.start(0, positionMillis / 1000);
       this.song.state = {
         state: 'playing',
         source,
-        effectiveStartTimeMillis: nowMillis - positionMillis
+        effectiveStartTimeMillis:
+          nowMillis - positionMillis / this._playbackRate
       };
     }
   }
@@ -156,7 +163,8 @@ export default class PreciseAudio extends EventTarget {
       this.song.state.source.stop();
       this.song.state = {
         state: 'paused',
-        positionMillis: nowMillis - this.song.state.effectiveStartTimeMillis
+        positionMillis: (nowMillis - this.song.state.effectiveStartTimeMillis) *
+          this._playbackRate
       };
       this.sendEvent('pause');
     }
@@ -182,7 +190,8 @@ export default class PreciseAudio extends EventTarget {
         return this.song.state.positionMillis;
       } else {
         const nowMillis = this.context.currentTime * 1000;
-        return nowMillis - this.song.state.effectiveStartTimeMillis;
+        return (nowMillis - this.song.state.effectiveStartTimeMillis) *
+          this._playbackRate;
       }
     }
     return 0;
@@ -216,16 +225,25 @@ export default class PreciseAudio extends EventTarget {
     }
   }
 
-  public set playbackRate(_playbackRate: number) {
-    // TODO
+  public set playbackRate(playbackRate: number) {
+    this._playbackRate = playbackRate;
+    if (this.song && this.song.state.state === 'playing') {
+      const oldPlaybackRate = this.song.state.source.playbackRate.value;
+      this.song.state.source.playbackRate.value = playbackRate;
+      // Update effective start time
+      const nowMillis = this.context.currentTime * 1000;
+      const positionMillis = (nowMillis - this.song.state.effectiveStartTimeMillis) *
+        oldPlaybackRate;
+      this.song.state.effectiveStartTimeMillis = nowMillis -
+        positionMillis / this._playbackRate
+    }
   }
 
   /**
    * @returns a number indicating the rate at which the media is being played back.
    */
   public get playbackRate() {
-    // TODO
-    return 1;
+    return this._playbackRate;
   }
 
   /**
