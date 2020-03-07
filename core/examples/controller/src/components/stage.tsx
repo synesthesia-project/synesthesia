@@ -4,7 +4,7 @@ import universalParse from 'id3-parser/lib/universal';
 import { ControllerEndpoint } from '@synesthesia-project/core/lib/protocols/control';
 import { DEFAULT_SYNESTHESIA_PORT } from '@synesthesia-project/core/lib/constants';
 
-import PreciseAudio, {PreciseAudioEvent} from '@synesthesia-project/precise-audio';
+import PreciseAudio from '@synesthesia-project/precise-audio';
 
 export class Stage extends React.Component<{}, {}> {
 
@@ -25,7 +25,7 @@ export class Stage extends React.Component<{}, {}> {
     this.audio.addEventListener('playing', this.updatePlayState);
     this.audio.addEventListener('pause', this.updatePlayState);
     this.audio.addEventListener('seeked', this.updatePlayState);
-    this.audio.addEventListener('error', (event: PreciseAudioEvent) => {
+    this.audio.addEventListener('error', event => {
       console.log('LOADING ERROR!', event.error);
     });
 

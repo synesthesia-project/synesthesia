@@ -19,6 +19,8 @@ type PlayState =
 
 type Listener = EventListener | EventListenerObject | null;
 
+type ErrorListener = (err: ErrorEvent) => void;
+
 type EventTypes =
     'canplay'
   | 'canplaythrough'
@@ -54,13 +56,11 @@ type Track = {
  */
 export class PreciseAudioEvent extends Event {
 
-  private readonly _error?: Error;
   private readonly _target: PreciseAudio;
 
-  public constructor(eventType: EventTypes, target: PreciseAudio, error?: Error) {
+  public constructor(eventType: EventTypes, target: PreciseAudio) {
     super(eventType);
     this._target = target;
-    this._error = error;
   }
 
   /**
@@ -75,14 +75,6 @@ export class PreciseAudioEvent extends Event {
    */
   public get currentTarget() {
     return this._target;
-  }
-
-  /**
-   * If the event was caused by an error,
-   * this property will reference that error.
-   */
-  public get error() {
-    return this._error;
   }
 }
 
@@ -139,8 +131,15 @@ export default class PreciseAudio extends EventTarget {
     }
   }
 
-  private sendEvent(eventType: EventTypes, error?: Error) {
-    const event = new PreciseAudioEvent(eventType, this, error);
+  private sendEvent(eventType: EventTypes) {
+    const event = new PreciseAudioEvent(eventType, this);
+    this.dispatchEvent(event);
+  }
+
+  private dispatchError(error: Error) {
+    const event = new ErrorEvent('error', {
+      error
+    });
     this.dispatchEvent(event);
   }
 
@@ -166,7 +165,7 @@ export default class PreciseAudio extends EventTarget {
       }
     }
     await this.loadFile(track, file).catch(e => {
-      this.sendEvent('error', e);
+      this.dispatchError(e);
       throw e;
     });
   }
@@ -195,7 +194,7 @@ export default class PreciseAudio extends EventTarget {
       const blob = await r.blob();
       await this.loadFile(track, blob);
     }).catch(e => {
-      this.sendEvent('error', e);
+      this.dispatchError(e);
     });
   }
 
@@ -418,7 +417,7 @@ export default class PreciseAudio extends EventTarget {
    *                 that expects a {@link @synesthesia-project/precise-audio.PreciseAudioEvent}
    *                 as a parameter
    */
-  public addEventListener(event: 'error', listener: Listener): void;
+  public addEventListener(event: 'error', listener: ErrorListener): void;
 
   /**
    * Fired when the first frame of the media has finished loading.
@@ -463,12 +462,12 @@ export default class PreciseAudio extends EventTarget {
    */
   public addEventListener(event: 'seeked', listener: Listener): void;
 
-  public addEventListener(event: EventTypes, listener: Listener) {
-    super.addEventListener(event, listener);
+  public addEventListener(event: EventTypes, listener: Listener | ErrorListener) {
+    super.addEventListener(event, listener as any);
   }
 
-  public removeEventListener(event: EventTypes, listener: Listener) {
-    super.removeEventListener(event, listener);
+  public removeEventListener(event: EventTypes, listener: Listener | ErrorListener) {
+    super.removeEventListener(event, listener as any);
   }
 
 }
