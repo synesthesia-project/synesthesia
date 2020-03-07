@@ -982,6 +982,57 @@ that resolves once the audio file has been successfully loaded.</p>
       </tr>
     </tbody>
   </table>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_setSinkId" data-uid="@synesthesia-project/precise-audio.PreciseAudio.setSinkId">setSinkId(string)</h4>
+  <div class="markdown level1 summary"><p>Sets the ID of the audio device to use for output and returns a <code>Promise</code>.
+This only works when the application is authorized to use
+the specified device.
+<em>Note: this is currently not implemented in PreciseAudio</em></p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">function setSinkId(sinkId: string)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">string</span></td>
+        <td><em>sinkId</em></td>
+        <td>
+          <p>The
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDeviceInfo/deviceId"><code>MediaDeviceInfo.deviceId</code></a>
+of the audio output device.</p>
+
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Promise&lt;void&gt;</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
 </article>
           </div>
           

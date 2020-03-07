@@ -92,6 +92,9 @@ references:
 - uid: '@synesthesia-project/precise-audio.PreciseAudio.removeEventListener'
   name: removeEventListener(EventTypes, Listener | ErrorListener)
   href: api/precise-audio/PreciseAudio.html#_synesthesia_project_precise_audio_PreciseAudio_removeEventListener
+- uid: '@synesthesia-project/precise-audio.PreciseAudio.setSinkId'
+  name: setSinkId(string)
+  href: api/precise-audio/PreciseAudio.html#_synesthesia_project_precise_audio_PreciseAudio_setSinkId
 - uid: '@synesthesia-project/precise-audio.PreciseAudio.src'
   name: src
   href: api/precise-audio/PreciseAudio.html#_synesthesia_project_precise_audio_PreciseAudio_src
