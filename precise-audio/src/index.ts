@@ -484,6 +484,21 @@ export default class PreciseAudio extends EventTarget {
   }
 
   /**
+   * Sets the ID of the audio device to use for output and returns a `Promise`.
+   * This only works when the application is authorized to use
+   * the specified device.
+   *
+   * *Note: this is currently not implemented in PreciseAudio*
+   *
+   * @param sinkId The
+   * [`MediaDeviceInfo.deviceId`](https://developer.mozilla.org/en-US/docs/Web/API/MediaDeviceInfo/deviceId)
+   * of the audio output device.
+   */
+  public async setSinkId(sinkId: string) {
+    throw new Error('Not implemented: ' + sinkId);
+  }
+
+  /**
    * Fired when the user agent can play the media, and estimates that enough
    * data has been loaded to play the media up to its end without having to stop
    * for further buffering of content.
