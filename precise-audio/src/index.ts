@@ -132,7 +132,7 @@ export default class PreciseAudio extends EventTarget {
       const source = this.context.createBufferSource();
       source.playbackRate.value = this._playbackRate;
       if (this._playbackRate !== 1 && this._adjustPitchWithPlaybackRate) {
-        var pitchShift = PitchShift(this.context);
+        const pitchShift = PitchShift(this.context);
         pitchShift.connect(this.context.destination);
         // Calculate the notes (in 100 cents) to shift the pitch by
         // based on the frequency ration

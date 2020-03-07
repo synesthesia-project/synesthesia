@@ -1,9 +1,9 @@
 declare module 'soundbank-pitch-shift' {
 
   class PitchShift extends AudioNode {
-    transpose: number;
-    readonly wet: AudioParam;
-    readonly dry: AudioParam;
+    public transpose: number;
+    public readonly wet: AudioParam;
+    public readonly dry: AudioParam;
   }
 
   function PitchShiftInit(context: AudioContext): PitchShift;
