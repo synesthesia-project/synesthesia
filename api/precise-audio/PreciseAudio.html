@@ -106,7 +106,7 @@ audio.loadAudioFile(...);
   <h4 id="_synesthesia_project_precise_audio_PreciseAudio_adjustPitchWithPlaybackRate" data-uid="@synesthesia-project/precise-audio.PreciseAudio.adjustPitchWithPlaybackRate">adjustPitchWithPlaybackRate</h4>
   <div class="markdown level1 summary"><p>Should this class attempt to adjust the pitch of the audio when changing
 playback rate to compensate.
-This is the usual behaviour for HTMLAudioElement</p>
+This is the usual behaviour for <code>HTMLAudioElement</code></p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -311,11 +311,213 @@ but returns the time in milliseconds rather than seconds.</p>
       </tr>
     </tbody>
   </table>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_src" data-uid="@synesthesia-project/precise-audio.PreciseAudio.src">src</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">string src</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">string</span></td>
+        <td><p>the URL of the track to play</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="methods">Methods
   </h3>
   
   
-  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener_1" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener_1">addEventListener(&quot;pause&quot;, Listener)</h4>
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener">addEventListener(&quot;canplay&quot;, Listener)</h4>
+  <div class="markdown level1 summary"><p>Fired when the user agent can play the media, and estimates that enough
+data has been loaded to play the media up to its end without having to stop
+for further buffering of content.
+Note: in contrast to <code>HTMLAudioElement</code>, <code>PreciseAudio</code> will always fire
+this event at the same time as <code>canplaythrough</code> and <code>loadeddata</code>,
+as all tracks are always fully preloaded.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">function addEventListener(event: &quot;canplay&quot;, listener: Listener)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">&quot;canplay&quot;</span></td>
+        <td><em>event</em></td>
+        <td>
+          
+          
+        </td>
+      </tr>
+      <tr>
+        <td><span class="xref">Listener</span></td>
+        <td><em>listener</em></td>
+        <td>
+          <p>an <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventListener">EventListener</a>
+that expects a <a class="xref" href="PreciseAudioEvent.html#_synesthesia_project_precise_audio_PreciseAudioEvent">PreciseAudioEvent</a>
+as a parameter</p>
+
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener_1" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener_1">addEventListener(&quot;canplaythrough&quot;, Listener)</h4>
+  <div class="markdown level1 summary"><p>Fired when the user agent can play the media, and estimates that enough
+data has been loaded to play the media up to its end without having to stop
+for further buffering of content.
+Note: in contrast to <code>HTMLAudioElement</code>, <code>PreciseAudio</code> will always fire
+this event at the same time as <code>canplay</code> and <code>loadeddata</code>,
+as all tracks are always fully preloaded.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">function addEventListener(event: &quot;canplaythrough&quot;, listener: Listener)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">&quot;canplaythrough&quot;</span></td>
+        <td><em>event</em></td>
+        <td>
+          
+          
+        </td>
+      </tr>
+      <tr>
+        <td><span class="xref">Listener</span></td>
+        <td><em>listener</em></td>
+        <td>
+          <p>an <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventListener">EventListener</a>
+that expects a <a class="xref" href="PreciseAudioEvent.html#_synesthesia_project_precise_audio_PreciseAudioEvent">PreciseAudioEvent</a>
+as a parameter</p>
+
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener_2" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener_2">addEventListener(&quot;error&quot;, Listener)</h4>
+  <div class="markdown level1 summary"><p>Fired when the track could not be loaded due to an error.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">function addEventListener(event: &quot;error&quot;, listener: Listener)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">&quot;error&quot;</span></td>
+        <td><em>event</em></td>
+        <td>
+          
+          
+        </td>
+      </tr>
+      <tr>
+        <td><span class="xref">Listener</span></td>
+        <td><em>listener</em></td>
+        <td>
+          <p>an <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventListener">EventListener</a>
+that expects a <a class="xref" href="PreciseAudioEvent.html#_synesthesia_project_precise_audio_PreciseAudioEvent">PreciseAudioEvent</a>
+as a parameter</p>
+
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener_3" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener_3">addEventListener(&quot;loadeddata&quot;, Listener)</h4>
+  <div class="markdown level1 summary"><p>Fired when the first frame of the media has finished loading.
+Note: in contrast to <code>HTMLAudioElement</code>, <code>PreciseAudio</code> will always fire
+this event at the same time as <code>canplay</code> and <code>canplaythrough</code>,
+as all tracks are always fully preloaded.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">function addEventListener(event: &quot;loadeddata&quot;, listener: Listener)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">&quot;loadeddata&quot;</span></td>
+        <td><em>event</em></td>
+        <td>
+          
+          
+        </td>
+      </tr>
+      <tr>
+        <td><span class="xref">Listener</span></td>
+        <td><em>listener</em></td>
+        <td>
+          <p>an <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventListener">EventListener</a>
+that expects a <a class="xref" href="PreciseAudioEvent.html#_synesthesia_project_precise_audio_PreciseAudioEvent">PreciseAudioEvent</a>
+as a parameter</p>
+
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener_5" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener_5">addEventListener(&quot;pause&quot;, Listener)</h4>
   <div class="markdown level1 summary"><p>Fired when the audio is paused
 (Notably not fired when the audio is stopped
 when a new file is being loaded)</p>
@@ -358,7 +560,7 @@ as a parameter</p>
   </table>
   
   
-  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener">addEventListener(&quot;playing&quot;, Listener)</h4>
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener_4" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener_4">addEventListener(&quot;playing&quot;, Listener)</h4>
   <div class="markdown level1 summary"><p>Fired when the audio starts playing</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -399,7 +601,7 @@ as a parameter</p>
   </table>
   
   
-  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener_2" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener_2">addEventListener(&quot;seeked&quot;, Listener)</h4>
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener_6" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener_6">addEventListener(&quot;seeked&quot;, Listener)</h4>
   <div class="markdown level1 summary"><p>Fired when a seek operation completes</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -485,7 +687,7 @@ as a parameter</p>
   </table>
   
   
-  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_loadAudioFile" data-uid="@synesthesia-project/precise-audio.PreciseAudio.loadAudioFile">loadAudioFile(File)</h4>
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_loadAudioFile" data-uid="@synesthesia-project/precise-audio.PreciseAudio.loadAudioFile">loadAudioFile(File | Blob)</h4>
   <div class="markdown level1 summary"><p>Read and load a new audio file.
 The loaded audio file will be paused once it's loaded,
 and will not play automatically.</p>
@@ -493,7 +695,7 @@ and will not play automatically.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-typeScript hljs">function loadAudioFile(file: File)</code></pre>
+    <pre><code class="lang-typeScript hljs">function loadAudioFile(file: File | Blob)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -506,14 +708,12 @@ and will not play automatically.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">File</span></td>
+        <td><span class="xref">File | Blob</span></td>
         <td><em>file</em></td>
         <td>
           <p>A <a href="https://developer.mozilla.org/en-US/docs/Web/API/File">File</a>
-object representing the audio file to be played,
-generally retrieved from a
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/FileList">FileList</a>
-object.</p>
+or <a href="https://developer.mozilla.org/en-US/docs/Web/API/Blob">Blob</a>
+object representing the audio file to be played.</p>
 
           
         </td>
