@@ -15,7 +15,7 @@ references:
   name: addEventListener("canplaythrough", Listener)
   href: api/precise-audio/PreciseAudio.html#_synesthesia_project_precise_audio_PreciseAudio_addEventListener_1
 - uid: '@synesthesia-project/precise-audio.PreciseAudio.addEventListener_2'
-  name: addEventListener("error", Listener)
+  name: addEventListener("error", ErrorListener)
   href: api/precise-audio/PreciseAudio.html#_synesthesia_project_precise_audio_PreciseAudio_addEventListener_2
 - uid: '@synesthesia-project/precise-audio.PreciseAudio.addEventListener_3'
   name: addEventListener("loadeddata", Listener)
@@ -74,7 +74,7 @@ references:
   href: api/precise-audio/PreciseAudio.html#_synesthesia_project_precise_audio_PreciseAudio_playbackRate
   fullName: playbackRate
 - uid: '@synesthesia-project/precise-audio.PreciseAudio.removeEventListener'
-  name: removeEventListener(EventTypes, Listener)
+  name: removeEventListener(EventTypes, Listener | ErrorListener)
   href: api/precise-audio/PreciseAudio.html#_synesthesia_project_precise_audio_PreciseAudio_removeEventListener
 - uid: '@synesthesia-project/precise-audio.PreciseAudio.src'
   name: src
@@ -116,7 +116,7 @@ references:
   name: composedPath()
   href: api/precise-audio/PreciseAudioEvent.html#_synesthesia_project_precise_audio_PreciseAudioEvent_composedPath
 - uid: '@synesthesia-project/precise-audio.PreciseAudioEvent.constructor'
-  name: PreciseAudioEvent(EventTypes, PreciseAudio, Error)
+  name: PreciseAudioEvent(EventTypes, PreciseAudio)
   href: api/precise-audio/PreciseAudioEvent.html#_synesthesia_project_precise_audio_PreciseAudioEvent_constructor
 - uid: '@synesthesia-project/precise-audio.PreciseAudioEvent.currentTarget'
   name: currentTarget
@@ -126,10 +126,6 @@ references:
   name: defaultPrevented
   href: api/precise-audio/PreciseAudioEvent.html#_synesthesia_project_precise_audio_PreciseAudioEvent_defaultPrevented
   fullName: defaultPrevented
-- uid: '@synesthesia-project/precise-audio.PreciseAudioEvent.error'
-  name: error
-  href: api/precise-audio/PreciseAudioEvent.html#_synesthesia_project_precise_audio_PreciseAudioEvent_error
-  fullName: error
 - uid: '@synesthesia-project/precise-audio.PreciseAudioEvent.Event'
   name: Event
   href: api/precise-audio/PreciseAudioEvent.html#_synesthesia_project_precise_audio_PreciseAudioEvent_Event

@@ -432,13 +432,13 @@ as a parameter</p>
   </table>
   
   
-  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener_2" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener_2">addEventListener(&quot;error&quot;, Listener)</h4>
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener_2" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener_2">addEventListener(&quot;error&quot;, ErrorListener)</h4>
   <div class="markdown level1 summary"><p>Fired when the track could not be loaded due to an error.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-typeScript hljs">function addEventListener(event: &quot;error&quot;, listener: Listener)</code></pre>
+    <pre><code class="lang-typeScript hljs">function addEventListener(event: &quot;error&quot;, listener: ErrorListener)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -459,7 +459,7 @@ as a parameter</p>
         </td>
       </tr>
       <tr>
-        <td><span class="xref">Listener</span></td>
+        <td><span class="xref">ErrorListener</span></td>
         <td><em>listener</em></td>
         <td>
           <p>an <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventListener">EventListener</a>
@@ -759,12 +759,12 @@ that resolves once the audio file has been successfully loaded.</p>
   </div>
   
   
-  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_removeEventListener" data-uid="@synesthesia-project/precise-audio.PreciseAudio.removeEventListener">removeEventListener(EventTypes, Listener)</h4>
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_removeEventListener" data-uid="@synesthesia-project/precise-audio.PreciseAudio.removeEventListener">removeEventListener(EventTypes, Listener | ErrorListener)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-typeScript hljs">function removeEventListener(event: EventTypes, listener: Listener)</code></pre>
+    <pre><code class="lang-typeScript hljs">function removeEventListener(event: EventTypes, listener: Listener | ErrorListener)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -785,7 +785,7 @@ that resolves once the audio file has been successfully loaded.</p>
         </td>
       </tr>
       <tr>
-        <td><span class="xref">Listener</span></td>
+        <td><span class="xref">Listener | ErrorListener</span></td>
         <td><em>listener</em></td>
         <td>
           
