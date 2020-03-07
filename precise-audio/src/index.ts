@@ -30,7 +30,8 @@ type EventTypes =
   | 'play'
   | 'pause'
   | 'ratechange'
-  | 'seeked';
+  | 'seeked'
+  | 'timeupdate';
 
 type TrackSource = {
   type: 'src';
@@ -106,6 +107,7 @@ export default class PreciseAudio extends EventTarget {
    * Increment to prevent an 'ended' event from being dispatched
    */
   private _suppressEndedEvents = 0;
+  private _animationFrameRequest: null | number = null;
   private _playbackRate = 1;
   private _adjustPitchWithPlaybackRate = true;
   private track: Track | null = null;
@@ -151,6 +153,22 @@ export default class PreciseAudio extends EventTarget {
   private stopWithoutEnding(source: AudioBufferSourceNode) {
     this._suppressEndedEvents++;
     source.stop();
+  }
+
+  /**
+   * Used with requestAnimationFrame to dispatch timeupdate events
+   */
+  private timeUpdated = () => {
+    if (this.track?.data?.state.state === 'playing') {
+      this.sendEvent('timeupdate');
+      this.scheduleTimeUpdated();
+    }
+  }
+
+  private scheduleTimeUpdated() {
+    if (this._animationFrameRequest !== null)
+      cancelAnimationFrame(this._animationFrameRequest);
+    this._animationFrameRequest = requestAnimationFrame(this.timeUpdated);
   }
 
   /**
@@ -255,6 +273,7 @@ export default class PreciseAudio extends EventTarget {
         effectiveStartTimeMillis:
           nowMillis - positionMillis / this._playbackRate
       };
+      this.scheduleTimeUpdated();
     }
   }
 
@@ -504,6 +523,18 @@ export default class PreciseAudio extends EventTarget {
    *                 as a parameter
    */
   public addEventListener(event: 'seeked', listener: Listener): void;
+
+  /**
+   * Fired when the time indicated by the currentTime attribute has been updated
+   *
+   * Note: this happens continuously, so instead this class will just call this
+   * at the framerate of the browser using requestAnimationFrame.
+   *
+   * @param listener an [EventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventListener)
+   *                 that expects a {@link @synesthesia-project/precise-audio.PreciseAudioEvent}
+   *                 as a parameter
+   */
+  public addEventListener(event: 'timeupdate', listener: Listener): void;
 
   public addEventListener(event: EventTypes, listener: Listener | ErrorListener) {
     super.addEventListener(event, listener as any);
