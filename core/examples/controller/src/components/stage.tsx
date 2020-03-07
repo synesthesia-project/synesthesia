@@ -32,6 +32,8 @@ export class Stage extends React.Component<{}, {}> {
 
     this.audio.adjustPitchWithPlaybackRate = false;
 
+    (window as any).a = this.audio;
+
     setInterval(this.updatePlayState, 1000);
   }
 

@@ -31,7 +31,8 @@ type EventTypes =
   | 'pause'
   | 'ratechange'
   | 'seeked'
-  | 'timeupdate';
+  | 'timeupdate'
+  | 'volumechange';
 
 type TrackSource = {
   type: 'src';
@@ -102,7 +103,8 @@ export class PreciseAudioEvent extends Event {
  */
 export default class PreciseAudio extends EventTarget {
 
-  private readonly context = new AudioContext();
+  private readonly context: AudioContext;
+  private readonly gainNode: GainNode;
   /**
    * Increment to prevent an 'ended' event from being dispatched
    */
@@ -110,7 +112,22 @@ export default class PreciseAudio extends EventTarget {
   private _animationFrameRequest: null | number = null;
   private _playbackRate = 1;
   private _adjustPitchWithPlaybackRate = true;
+  private readonly _volume = {
+    volume: 1,
+    muted: false
+  };
   private track: Track | null = null;
+
+  public constructor() {
+    super();
+    this.context = new AudioContext();
+    this.gainNode = this.context.createGain();
+    this.gainNode.connect(this.context.destination);
+  }
+
+  private updateGain() {
+    this.gainNode.gain.value = this._volume.muted ? 0 : this._volume.volume;
+  }
 
   private async loadFile(track: Track, file: File | Blob) {
     const fileBuffer = await new Promise<ArrayBuffer>((resolve, reject) => {
@@ -222,6 +239,39 @@ export default class PreciseAudio extends EventTarget {
   }
 
   /**
+   * @returns a double indicating the audio volume,
+   * from 0.0 (silent) to 1.0 (loudest).
+   */
+  public get volume() {
+    return this._volume.volume;
+  }
+
+  public set volume(volume: number) {
+    const v = Math.max(0, Math.min(1, volume));
+    if (v !== this._volume.volume) {
+      this._volume.volume = v;
+      this.updateGain();
+      this.sendEvent('volumechange');
+    }
+  }
+
+  /**
+   * @returns A Boolean that determines whether audio is muted.
+   * `true` if the audio is muted and `false` otherwise.
+   */
+  public get muted() {
+    return this._volume.muted;
+  }
+
+  public set muted(muted: boolean) {
+    if (muted !== this._volume.muted) {
+      this._volume.muted = muted;
+      this.updateGain();
+      this.sendEvent('volumechange');
+    }
+  }
+
+  /**
    * @returns the URL of the track to play
    */
   public get src(): string {
@@ -257,13 +307,13 @@ export default class PreciseAudio extends EventTarget {
       source.playbackRate.value = this._playbackRate;
       if (this._playbackRate !== 1 && this._adjustPitchWithPlaybackRate) {
         const pitchShift = PitchShift(this.context);
-        pitchShift.connect(this.context.destination);
+        pitchShift.connect(this.gainNode);
         // Calculate the notes (in 100 cents) to shift the pitch by
         // based on the frequency ration
         pitchShift.transpose = 12 * Math.log2(1 / this._playbackRate);
         source.connect(pitchShift);
       } else {
-        source.connect(this.context.destination);
+        source.connect(this.gainNode);
       }
       source.buffer = this.track.data.buffer;
       source.start(0, positionMillis / 1000);
@@ -535,6 +585,15 @@ export default class PreciseAudio extends EventTarget {
    *                 as a parameter
    */
   public addEventListener(event: 'timeupdate', listener: Listener): void;
+
+  /**
+   * Fired when the volume has changed.
+   *
+   * @param listener an [EventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventListener)
+   *                 that expects a {@link @synesthesia-project/precise-audio.PreciseAudioEvent}
+   *                 as a parameter
+   */
+  public addEventListener(event: 'volumechange', listener: Listener): void;
 
   public addEventListener(event: EventTypes, listener: Listener | ErrorListener) {
     super.addEventListener(event, listener as any);
