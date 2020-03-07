@@ -24,6 +24,7 @@ type ErrorListener = (err: ErrorEvent) => void;
 type EventTypes =
     'canplay'
   | 'canplaythrough'
+  | 'ended'
   | 'error'
   | 'loadeddata'
   | 'playing'
@@ -101,6 +102,10 @@ export class PreciseAudioEvent extends Event {
 export default class PreciseAudio extends EventTarget {
 
   private readonly context = new AudioContext();
+  /**
+   * Increment to prevent an 'ended' event from being dispatched
+   */
+  private _suppressEndedEvents = 0;
   private _playbackRate = 1;
   private _adjustPitchWithPlaybackRate = true;
   private track: Track | null = null;
@@ -143,6 +148,34 @@ export default class PreciseAudio extends EventTarget {
     this.dispatchEvent(event);
   }
 
+  private stopWithoutEnding(source: AudioBufferSourceNode) {
+    this._suppressEndedEvents++;
+    source.stop();
+  }
+
+  /**
+   * Create a listener that should get called when the currently playing track
+   * has ended
+   *
+   * @param track - the track that should be playing
+   */
+  private createTrackEndedListener(track: Track) {
+    return () => {
+      if (this._suppressEndedEvents > 0) {
+        // Reset for next time
+        this._suppressEndedEvents--;
+        return;
+      };
+      if (this.track !== track) return;
+      if (!track?.data) return
+      this.sendEvent('ended');
+      track.data.state = {
+        state: 'paused',
+        positionMillis: 0
+      }
+    }
+  }
+
   /**
    * Read and load a new audio file.
    *
@@ -157,7 +190,7 @@ export default class PreciseAudio extends EventTarget {
    */
   public async loadAudioFile(file: File | Blob) {
     if (this.track?.data?.state.state === 'playing') {
-      this.track.data.state.source.stop();
+      this.stopWithoutEnding(this.track.data.state.source);
     }
     const track: Track = this.track = {
       source: {
@@ -179,7 +212,7 @@ export default class PreciseAudio extends EventTarget {
 
   public set src(src: string) {
     if (this.track?.data?.state.state === 'playing') {
-      this.track.data.state.source.stop();
+      this.stopWithoutEnding(this.track.data.state.source);
     }
     if (src === '') {
       this.track = null;
@@ -202,6 +235,7 @@ export default class PreciseAudio extends EventTarget {
     if (this.track?.data) {
       const nowMillis = this.context.currentTime * 1000;
       const source = this.context.createBufferSource();
+      source.addEventListener('ended', this.createTrackEndedListener(this.track));
       source.playbackRate.value = this._playbackRate;
       if (this._playbackRate !== 1 && this._adjustPitchWithPlaybackRate) {
         const pitchShift = PitchShift(this.context);
@@ -244,7 +278,7 @@ export default class PreciseAudio extends EventTarget {
       this.context.resume();
     if (this.track?.data?.state?.state === 'playing') {
       const nowMillis = this.context.currentTime * 1000;
-      this.track.data.state.source.stop();
+      this.stopWithoutEnding(this.track.data.state.source);
       this.track.data.state = {
         state: 'paused',
         positionMillis:
@@ -303,7 +337,7 @@ export default class PreciseAudio extends EventTarget {
       if (this.track.data.state.state === 'paused') {
         this.track.data.state.positionMillis = positionMillis;
       } else {
-        this.track.data.state.source.stop();
+        this.stopWithoutEnding(this.track.data.state.source);
         this.playFrom(positionMillis);
       }
       this.sendEvent('seeked');
@@ -409,6 +443,15 @@ export default class PreciseAudio extends EventTarget {
    *                 as a parameter
    */
   public addEventListener(event: 'canplaythrough', listener: Listener): void;
+
+  /**
+   * Fired when playback stops when end of the track is reached
+   *
+   * @param listener an [EventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventListener)
+   *                 that expects a {@link @synesthesia-project/precise-audio.PreciseAudioEvent}
+   *                 as a parameter
+   */
+  public addEventListener(event: 'ended', listener: Listener): void;
 
   /**
    * Fired when the track could not be loaded due to an error.
