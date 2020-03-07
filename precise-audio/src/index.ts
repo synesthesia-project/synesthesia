@@ -19,7 +19,26 @@ type PlayState =
 
 type Listener = EventListener | EventListenerObject | null;
 
-type EventTypes = 'playing' | 'pause' | 'seeked';
+type EventTypes = 'playing' | 'pause' | 'seeked' | 'canplay' | 'canplaythrough' | 'loadeddata';
+
+type TrackSource = {
+  type: 'src';
+  src: string;
+} | {
+  type: 'file';
+  file: File | Blob;
+}
+
+type Track = {
+  source: TrackSource;
+  /**
+   * Set once successfully loaded
+   */
+  data?: {
+    buffer: AudioBuffer;
+    state: PlayState;
+  }
+};
 
 /**
  * An event triggered by a
@@ -74,13 +93,10 @@ export default class PreciseAudio extends EventTarget {
   private readonly context = new AudioContext();
   private _playbackRate = 1;
   private _adjustPitchWithPlaybackRate = true;
-  private song: {
-    buffer: AudioBuffer;
-    state: PlayState;
-  } | null = null;
+  private track: Track | null = null;
 
-  private loadFile(file: File): Promise<ArrayBuffer> {
-    return new Promise((resolve, reject) => {
+  private async loadFile(track: Track, file: File | Blob) {
+    const fileBuffer = await new Promise<ArrayBuffer>((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = ev => {
         resolve(ev.target?.result as ArrayBuffer);
@@ -91,6 +107,18 @@ export default class PreciseAudio extends EventTarget {
       };
       reader.readAsArrayBuffer(file);
     });
+    const buffer = await this.context.decodeAudioData(fileBuffer);
+    if (track === this.track) {
+      track.data = {
+        buffer,
+        state: {
+          state: 'paused', positionMillis: 0
+        }
+      };
+      this.sendEvent('loadeddata');
+      this.sendEvent('canplay');
+      this.sendEvent('canplaythrough');
+    }
   }
 
   private sendEvent(eventType: EventTypes) {
@@ -105,29 +133,47 @@ export default class PreciseAudio extends EventTarget {
    * and will not play automatically.
    *
    * @param file A [File](https://developer.mozilla.org/en-US/docs/Web/API/File)
-   *             object representing the audio file to be played,
-   *             generally retrieved from a
-   *             [FileList](https://developer.mozilla.org/en-US/docs/Web/API/FileList)
-   *             object.
+   *             or [Blob](https://developer.mozilla.org/en-US/docs/Web/API/Blob)
+   *             object representing the audio file to be played.
    * @returns A [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
    *          that resolves once the audio file has been successfully loaded.
    */
-  public async loadAudioFile(file: File) {
-    if (this.song?.state.state === 'playing') {
-      this.song.state.source.stop();
+  public async loadAudioFile(file: File | Blob) {
+    if (this.track?.data?.state.state === 'playing') {
+      this.track.data.state.source.stop();
     }
-    const fileBuffer = await this.loadFile(file);
-    const buffer = await this.context.decodeAudioData(fileBuffer);
-    this.song = {
-      buffer,
-      state: {
-        state: 'paused', positionMillis: 0
+    const track: Track = this.track = {
+      source: {
+        type: 'file', file
       }
-    };
+    }
+    await this.loadFile(track, file);
+  }
+
+  /**
+   * @returns the URL of the track to play
+   */
+  public get src(): string {
+    return this.track?.source.type === 'src' && this.track.source.src || '';
+  }
+
+  public set src(src: string) {
+    if (this.track?.data?.state.state === 'playing') {
+      this.track.data.state.source.stop();
+    }
+    const track: Track = this.track = {
+      source: {
+        type: 'src', src
+      }
+    }
+    fetch(src).then(async r => {
+      const blob = await r.blob();
+      await this.loadFile(track, blob);
+    });
   }
 
   private playFrom(positionMillis: number) {
-    if (this.song) {
+    if (this.track?.data) {
       const nowMillis = this.context.currentTime * 1000;
       const source = this.context.createBufferSource();
       source.playbackRate.value = this._playbackRate;
@@ -141,9 +187,9 @@ export default class PreciseAudio extends EventTarget {
       } else {
         source.connect(this.context.destination);
       }
-      source.buffer = this.song.buffer;
+      source.buffer = this.track.data.buffer;
       source.start(0, positionMillis / 1000);
-      this.song.state = {
+      this.track.data.state = {
         state: 'playing',
         source,
         effectiveStartTimeMillis:
@@ -158,8 +204,8 @@ export default class PreciseAudio extends EventTarget {
   public play() {
     if (this.context.state === 'suspended')
       this.context.resume();
-    if (this.song && this.song.state.state === 'paused') {
-      this.playFrom(this.song.state.positionMillis);
+    if (this.track?.data && this.track.data.state.state === 'paused') {
+      this.playFrom(this.track.data.state.positionMillis);
       this.sendEvent('playing');
     }
   }
@@ -170,12 +216,13 @@ export default class PreciseAudio extends EventTarget {
   public pause() {
     if (this.context.state === 'suspended')
       this.context.resume();
-    if (this.song && this.song.state.state === 'playing') {
+    if (this.track?.data?.state?.state === 'playing') {
       const nowMillis = this.context.currentTime * 1000;
-      this.song.state.source.stop();
-      this.song.state = {
+      this.track.data.state.source.stop();
+      this.track.data.state = {
         state: 'paused',
-        positionMillis: (nowMillis - this.song.state.effectiveStartTimeMillis) *
+        positionMillis:
+          (nowMillis - this.track.data.state.effectiveStartTimeMillis) *
           this._playbackRate
       };
       this.sendEvent('pause');
@@ -186,7 +233,7 @@ export default class PreciseAudio extends EventTarget {
    * @returns a boolean that indicates whether the audio element is paused.
    */
   public get paused() {
-    return this.song?.state.state === 'paused';
+    return this.track?.data?.state.state !== 'playing';
   }
 
   /**
@@ -197,12 +244,12 @@ export default class PreciseAudio extends EventTarget {
    * @returns The current playback time in milliseconds
    */
   public get currentTimeMillis() {
-    if (this.song) {
-      if (this.song.state.state === 'paused') {
-        return this.song.state.positionMillis;
+    if (this.track?.data) {
+      if (this.track.data.state.state === 'paused') {
+        return this.track.data.state.positionMillis;
       } else {
         const nowMillis = this.context.currentTime * 1000;
-        return (nowMillis - this.song.state.effectiveStartTimeMillis) *
+        return (nowMillis - this.track.data.state.effectiveStartTimeMillis) *
           this._playbackRate;
       }
     }
@@ -225,12 +272,12 @@ export default class PreciseAudio extends EventTarget {
   }
 
   public set currentTime(positionSeconds: number) {
-    if (this.song) {
+    if (this.track?.data) {
       const positionMillis = positionSeconds * 1000;
-      if (this.song.state.state === 'paused') {
-        this.song.state.positionMillis = positionMillis;
+      if (this.track.data.state.state === 'paused') {
+        this.track.data.state.positionMillis = positionMillis;
       } else {
-        this.song.state.source.stop();
+        this.track.data.state.source.stop();
         this.playFrom(positionMillis);
       }
       this.sendEvent('seeked');
@@ -247,7 +294,7 @@ export default class PreciseAudio extends EventTarget {
    */
   private changeConfiguration(callback: () => void) {
     let resume = false;
-    if (this.song && this.song.state.state === 'playing') {
+    if (this.track?.data?.state.state === 'playing') {
       this.pause();
       resume = true;
     }
@@ -267,7 +314,7 @@ export default class PreciseAudio extends EventTarget {
    * Should this class attempt to adjust the pitch of the audio when changing
    * playback rate to compensate.
    *
-   * This is the usual behaviour for HTMLAudioElement
+   * This is the usual behaviour for `HTMLAudioElement`
    *
    * @default true
    *
@@ -293,8 +340,8 @@ export default class PreciseAudio extends EventTarget {
    * @returns The length of the currently loaded audio track in seconds
    */
   public get duration() {
-    if (this.song) {
-      return this.song.buffer.duration;
+    if (this.track?.data) {
+      return this.track.data.buffer.duration;
     }
     return 0;
   }
@@ -305,6 +352,49 @@ export default class PreciseAudio extends EventTarget {
   public get durationMillis() {
     return this.duration * 1000;
   }
+
+  /**
+   * Fired when the user agent can play the media, and estimates that enough
+   * data has been loaded to play the media up to its end without having to stop
+   * for further buffering of content.
+   *
+   * Note: in contrast to `HTMLAudioElement`, `PreciseAudio` will always fire
+   * this event at the same time as `canplaythrough` and `loadeddata`,
+   * as all tracks are always fully preloaded.
+   *
+   * @param listener an [EventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventListener)
+   *                 that expects a {@link @synesthesia-project/precise-audio.PreciseAudioEvent}
+   *                 as a parameter
+   */
+  public addEventListener(event: 'canplay', listener: Listener): void;
+
+  /**
+   * Fired when the user agent can play the media, and estimates that enough
+   * data has been loaded to play the media up to its end without having to stop
+   * for further buffering of content.
+   *
+   * Note: in contrast to `HTMLAudioElement`, `PreciseAudio` will always fire
+   * this event at the same time as `canplay` and `loadeddata`,
+   * as all tracks are always fully preloaded.
+   *
+   * @param listener an [EventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventListener)
+   *                 that expects a {@link @synesthesia-project/precise-audio.PreciseAudioEvent}
+   *                 as a parameter
+   */
+  public addEventListener(event: 'canplaythrough', listener: Listener): void;
+
+  /**
+   * Fired when the first frame of the media has finished loading.
+   *
+   * Note: in contrast to `HTMLAudioElement`, `PreciseAudio` will always fire
+   * this event at the same time as `canplay` and `canplaythrough`,
+   * as all tracks are always fully preloaded.
+   *
+   * @param listener an [EventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventListener)
+   *                 that expects a {@link @synesthesia-project/precise-audio.PreciseAudioEvent}
+   *                 as a parameter
+   */
+  public addEventListener(event: 'loadeddata', listener: Listener): void;
 
   /**
    * Fired when the audio starts playing
