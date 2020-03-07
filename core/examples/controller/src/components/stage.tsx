@@ -4,7 +4,7 @@ import universalParse from 'id3-parser/lib/universal';
 import { ControllerEndpoint } from '@synesthesia-project/core/lib/protocols/control';
 import { DEFAULT_SYNESTHESIA_PORT } from '@synesthesia-project/core/lib/constants';
 
-import PreciseAudio from '@synesthesia-project/precise-audio';
+import PreciseAudio, {PreciseAudioEvent} from '@synesthesia-project/precise-audio';
 
 export class Stage extends React.Component<{}, {}> {
 
@@ -25,6 +25,9 @@ export class Stage extends React.Component<{}, {}> {
     this.audio.addEventListener('playing', this.updatePlayState);
     this.audio.addEventListener('pause', this.updatePlayState);
     this.audio.addEventListener('seeked', this.updatePlayState);
+    this.audio.addEventListener('error', (event: PreciseAudioEvent) => {
+      console.log('LOADING ERROR!', event.error);
+    });
 
     this.audio.adjustPitchWithPlaybackRate = false;
 
@@ -85,7 +88,7 @@ export class Stage extends React.Component<{}, {}> {
     if (files) {
       const file = files[0];
       const url = URL.createObjectURL(file);
-      this.audio.loadAudioFile(file).then(() => {
+      const parseID3 = () => {
         universalParse(url).then(tag => {
           if (tag.title) {
             this.meta = {
@@ -96,7 +99,11 @@ export class Stage extends React.Component<{}, {}> {
             this.updatePlayState();
           }
         });
-      });
+      };
+      // Alternative Loading Mechanism:
+      // this.audio.src = url;
+      // this.audio.addEventListener('canplaythrough', parseID3);
+      this.audio.loadAudioFile(file).then(parseID3);
     } else {
       console.error('no files');
     }

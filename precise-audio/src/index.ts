@@ -19,7 +19,15 @@ type PlayState =
 
 type Listener = EventListener | EventListenerObject | null;
 
-type EventTypes = 'playing' | 'pause' | 'seeked' | 'canplay' | 'canplaythrough' | 'loadeddata';
+type EventTypes =
+    'canplay'
+  | 'canplaythrough'
+  | 'error'
+  | 'loadeddata'
+  | 'playing'
+  | 'pause'
+  | 'ratechange'
+  | 'seeked';
 
 type TrackSource = {
   type: 'src';
@@ -46,11 +54,13 @@ type Track = {
  */
 export class PreciseAudioEvent extends Event {
 
+  private readonly _error?: Error;
   private readonly _target: PreciseAudio;
 
-  public constructor(eventType: EventTypes, target: PreciseAudio) {
+  public constructor(eventType: EventTypes, target: PreciseAudio, error?: Error) {
     super(eventType);
     this._target = target;
+    this._error = error;
   }
 
   /**
@@ -65,6 +75,14 @@ export class PreciseAudioEvent extends Event {
    */
   public get currentTarget() {
     return this._target;
+  }
+
+  /**
+   * If the event was caused by an error,
+   * this property will reference that error.
+   */
+  public get error() {
+    return this._error;
   }
 }
 
@@ -121,8 +139,8 @@ export default class PreciseAudio extends EventTarget {
     }
   }
 
-  private sendEvent(eventType: EventTypes) {
-    const event = new PreciseAudioEvent(eventType, this);
+  private sendEvent(eventType: EventTypes, error?: Error) {
+    const event = new PreciseAudioEvent(eventType, this, error);
     this.dispatchEvent(event);
   }
 
@@ -147,7 +165,10 @@ export default class PreciseAudio extends EventTarget {
         type: 'file', file
       }
     }
-    await this.loadFile(track, file);
+    await this.loadFile(track, file).catch(e => {
+      this.sendEvent('error', e);
+      throw e;
+    });
   }
 
   /**
@@ -161,6 +182,10 @@ export default class PreciseAudio extends EventTarget {
     if (this.track?.data?.state.state === 'playing') {
       this.track.data.state.source.stop();
     }
+    if (src === '') {
+      this.track = null;
+      return;
+    }
     const track: Track = this.track = {
       source: {
         type: 'src', src
@@ -169,6 +194,8 @@ export default class PreciseAudio extends EventTarget {
     fetch(src).then(async r => {
       const blob = await r.blob();
       await this.loadFile(track, blob);
+    }).catch(e => {
+      this.sendEvent('error', e);
     });
   }
 
@@ -327,6 +354,7 @@ export default class PreciseAudio extends EventTarget {
     this.changeConfiguration(() => {
       this._playbackRate = playbackRate;
     });
+    this.sendEvent('ratechange');
   }
 
   /**
@@ -382,6 +410,15 @@ export default class PreciseAudio extends EventTarget {
    *                 as a parameter
    */
   public addEventListener(event: 'canplaythrough', listener: Listener): void;
+
+  /**
+   * Fired when the track could not be loaded due to an error.
+   *
+   * @param listener an [EventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventListener)
+   *                 that expects a {@link @synesthesia-project/precise-audio.PreciseAudioEvent}
+   *                 as a parameter
+   */
+  public addEventListener(event: 'error', listener: Listener): void;
 
   /**
    * Fired when the first frame of the media has finished loading.
