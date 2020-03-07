@@ -26,6 +26,8 @@ export class Stage extends React.Component<{}, {}> {
     this.audio.addEventListener('pause', this.updatePlayState);
     this.audio.addEventListener('seeked', this.updatePlayState);
 
+    this.audio.adjustPitchWithPlaybackRate = false;
+
     setInterval(this.updatePlayState, 1000);
   }
 

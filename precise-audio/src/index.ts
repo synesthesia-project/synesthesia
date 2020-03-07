@@ -237,16 +237,49 @@ export default class PreciseAudio extends EventTarget {
     }
   }
 
-  public set playbackRate(playbackRate: number) {
+  /*
+   * Pause playback if neccesary,
+   * make some adjustments to the configuration,
+   * and then resume (if previously playing).
+   *
+   * This should be used when making a change to how you initialize the
+   * web audio pipeline (e.g. changing the pitch).
+   */
+  private changeConfiguration(callback: () => void) {
     let resume = false;
     if (this.song && this.song.state.state === 'playing') {
       this.pause();
       resume = true;
     }
-    this._playbackRate = playbackRate;
+    callback();
     if (resume) {
       this.play();
     }
+  }
+
+  public set adjustPitchWithPlaybackRate(adjust: boolean) {
+    this.changeConfiguration(() => {
+      this._adjustPitchWithPlaybackRate = adjust;
+    });
+  }
+
+  /**
+   * Should this class attempt to adjust the pitch of the audio when changing
+   * playback rate to compensate.
+   *
+   * This is the usual behaviour for HTMLAudioElement
+   *
+   * @default true
+   *
+   */
+  public get adjustPitchWithPlaybackRate() {
+    return this._adjustPitchWithPlaybackRate;
+  }
+
+  public set playbackRate(playbackRate: number) {
+    this.changeConfiguration(() => {
+      this._playbackRate = playbackRate;
+    });
   }
 
   /**
