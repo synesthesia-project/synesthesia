@@ -99,6 +99,17 @@ audio.loadAudioFile(...);
 </div>
   <div class="markdown level0 conceptual"></div>
   <h6><strong>Package</strong>: <a class="xref" href="index.html">@synesthesia-project/precise-audio</a></h6>
+  <h3 id="constructors">Constructors
+  </h3>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_constructor" data-uid="@synesthesia-project/precise-audio.PreciseAudio.constructor">PreciseAudio()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">new PreciseAudio()</code></pre>
+  </div>
   <h3 id="properties">Properties
   </h3>
   
@@ -263,6 +274,32 @@ but returns the time in milliseconds rather than seconds.</p>
   </table>
   
   
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_muted" data-uid="@synesthesia-project/precise-audio.PreciseAudio.muted">muted</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">boolean muted</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">boolean</span></td>
+        <td><p>A Boolean that determines whether audio is muted.
+<code>true</code> if the audio is muted and <code>false</code> otherwise.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
   <h4 id="_synesthesia_project_precise_audio_PreciseAudio_paused" data-uid="@synesthesia-project/precise-audio.PreciseAudio.paused">paused</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
@@ -332,6 +369,32 @@ but returns the time in milliseconds rather than seconds.</p>
       <tr>
         <td><span class="xref">string</span></td>
         <td><p>the URL of the track to play</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_volume" data-uid="@synesthesia-project/precise-audio.PreciseAudio.volume">volume</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">number volume</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">number</span></td>
+        <td><p>a double indicating the audio volume,
+from 0.0 (silent) to 1.0 (loudest).</p>
 </td>
       </tr>
     </tbody>
@@ -705,6 +768,47 @@ at the framerate of the browser using requestAnimationFrame.</p>
     <tbody>
       <tr>
         <td><span class="xref">&quot;timeupdate&quot;</span></td>
+        <td><em>event</em></td>
+        <td>
+          
+          
+        </td>
+      </tr>
+      <tr>
+        <td><span class="xref">Listener</span></td>
+        <td><em>listener</em></td>
+        <td>
+          <p>an <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventListener">EventListener</a>
+that expects a <a class="xref" href="PreciseAudioEvent.html#_synesthesia_project_precise_audio_PreciseAudioEvent">PreciseAudioEvent</a>
+as a parameter</p>
+
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener_9" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener_9">addEventListener(&quot;volumechange&quot;, Listener)</h4>
+  <div class="markdown level1 summary"><p>Fired when the volume has changed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">function addEventListener(event: &quot;volumechange&quot;, listener: Listener)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">&quot;volumechange&quot;</span></td>
         <td><em>event</em></td>
         <td>
           
