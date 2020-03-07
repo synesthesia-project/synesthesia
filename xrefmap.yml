@@ -15,20 +15,23 @@ references:
   name: addEventListener("canplaythrough", Listener)
   href: api/precise-audio/PreciseAudio.html#_synesthesia_project_precise_audio_PreciseAudio_addEventListener_1
 - uid: '@synesthesia-project/precise-audio.PreciseAudio.addEventListener_2'
-  name: addEventListener("error", ErrorListener)
+  name: addEventListener("ended", Listener)
   href: api/precise-audio/PreciseAudio.html#_synesthesia_project_precise_audio_PreciseAudio_addEventListener_2
 - uid: '@synesthesia-project/precise-audio.PreciseAudio.addEventListener_3'
-  name: addEventListener("loadeddata", Listener)
+  name: addEventListener("error", ErrorListener)
   href: api/precise-audio/PreciseAudio.html#_synesthesia_project_precise_audio_PreciseAudio_addEventListener_3
 - uid: '@synesthesia-project/precise-audio.PreciseAudio.addEventListener_4'
-  name: addEventListener("playing", Listener)
+  name: addEventListener("loadeddata", Listener)
   href: api/precise-audio/PreciseAudio.html#_synesthesia_project_precise_audio_PreciseAudio_addEventListener_4
 - uid: '@synesthesia-project/precise-audio.PreciseAudio.addEventListener_5'
-  name: addEventListener("pause", Listener)
+  name: addEventListener("playing", Listener)
   href: api/precise-audio/PreciseAudio.html#_synesthesia_project_precise_audio_PreciseAudio_addEventListener_5
 - uid: '@synesthesia-project/precise-audio.PreciseAudio.addEventListener_6'
-  name: addEventListener("seeked", Listener)
+  name: addEventListener("pause", Listener)
   href: api/precise-audio/PreciseAudio.html#_synesthesia_project_precise_audio_PreciseAudio_addEventListener_6
+- uid: '@synesthesia-project/precise-audio.PreciseAudio.addEventListener_7'
+  name: addEventListener("seeked", Listener)
+  href: api/precise-audio/PreciseAudio.html#_synesthesia_project_precise_audio_PreciseAudio_addEventListener_7
 - uid: '@synesthesia-project/precise-audio.PreciseAudio.adjustPitchWithPlaybackRate'
   name: adjustPitchWithPlaybackRate
   href: api/precise-audio/PreciseAudio.html#_synesthesia_project_precise_audio_PreciseAudio_adjustPitchWithPlaybackRate

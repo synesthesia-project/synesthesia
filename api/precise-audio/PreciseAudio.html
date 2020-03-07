@@ -432,7 +432,48 @@ as a parameter</p>
   </table>
   
   
-  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener_2" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener_2">addEventListener(&quot;error&quot;, ErrorListener)</h4>
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener_2" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener_2">addEventListener(&quot;ended&quot;, Listener)</h4>
+  <div class="markdown level1 summary"><p>Fired when playback stops when end of the track is reached</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">function addEventListener(event: &quot;ended&quot;, listener: Listener)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">&quot;ended&quot;</span></td>
+        <td><em>event</em></td>
+        <td>
+          
+          
+        </td>
+      </tr>
+      <tr>
+        <td><span class="xref">Listener</span></td>
+        <td><em>listener</em></td>
+        <td>
+          <p>an <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventListener">EventListener</a>
+that expects a <a class="xref" href="PreciseAudioEvent.html#_synesthesia_project_precise_audio_PreciseAudioEvent">PreciseAudioEvent</a>
+as a parameter</p>
+
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener_3" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener_3">addEventListener(&quot;error&quot;, ErrorListener)</h4>
   <div class="markdown level1 summary"><p>Fired when the track could not be loaded due to an error.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -473,7 +514,7 @@ as a parameter</p>
   </table>
   
   
-  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener_3" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener_3">addEventListener(&quot;loadeddata&quot;, Listener)</h4>
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener_4" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener_4">addEventListener(&quot;loadeddata&quot;, Listener)</h4>
   <div class="markdown level1 summary"><p>Fired when the first frame of the media has finished loading.
 Note: in contrast to <code>HTMLAudioElement</code>, <code>PreciseAudio</code> will always fire
 this event at the same time as <code>canplay</code> and <code>canplaythrough</code>,
@@ -517,7 +558,7 @@ as a parameter</p>
   </table>
   
   
-  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener_5" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener_5">addEventListener(&quot;pause&quot;, Listener)</h4>
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener_6" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener_6">addEventListener(&quot;pause&quot;, Listener)</h4>
   <div class="markdown level1 summary"><p>Fired when the audio is paused
 (Notably not fired when the audio is stopped
 when a new file is being loaded)</p>
@@ -560,7 +601,7 @@ as a parameter</p>
   </table>
   
   
-  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener_4" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener_4">addEventListener(&quot;playing&quot;, Listener)</h4>
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener_5" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener_5">addEventListener(&quot;playing&quot;, Listener)</h4>
   <div class="markdown level1 summary"><p>Fired when the audio starts playing</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -601,7 +642,7 @@ as a parameter</p>
   </table>
   
   
-  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener_6" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener_6">addEventListener(&quot;seeked&quot;, Listener)</h4>
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener_7" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener_7">addEventListener(&quot;seeked&quot;, Listener)</h4>
   <div class="markdown level1 summary"><p>Fired when a seek operation completes</p>
 </div>
   <div class="markdown level1 conceptual"></div>
