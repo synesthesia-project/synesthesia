@@ -683,6 +683,49 @@ as a parameter</p>
   </table>
   
   
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_addEventListener_8" data-uid="@synesthesia-project/precise-audio.PreciseAudio.addEventListener_8">addEventListener(&quot;timeupdate&quot;, Listener)</h4>
+  <div class="markdown level1 summary"><p>Fired when the time indicated by the currentTime attribute has been updated
+Note: this happens continuously, so instead this class will just call this
+at the framerate of the browser using requestAnimationFrame.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">function addEventListener(event: &quot;timeupdate&quot;, listener: Listener)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">&quot;timeupdate&quot;</span></td>
+        <td><em>event</em></td>
+        <td>
+          
+          
+        </td>
+      </tr>
+      <tr>
+        <td><span class="xref">Listener</span></td>
+        <td><em>listener</em></td>
+        <td>
+          <p>an <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventListener">EventListener</a>
+that expects a <a class="xref" href="PreciseAudioEvent.html#_synesthesia_project_precise_audio_PreciseAudioEvent">PreciseAudioEvent</a>
+as a parameter</p>
+
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
   <h4 id="_synesthesia_project_precise_audio_PreciseAudio_dispatchEvent" data-uid="@synesthesia-project/precise-audio.PreciseAudio.dispatchEvent">dispatchEvent(Event)</h4>
   <div class="markdown level1 summary"><p>Dispatches a synthetic event event to target and returns true if either event's cancelable attribute value is false or its preventDefault() method was not invoked, and false otherwise.</p>
 </div>

@@ -32,6 +32,9 @@ references:
 - uid: '@synesthesia-project/precise-audio.PreciseAudio.addEventListener_7'
   name: addEventListener("seeked", Listener)
   href: api/precise-audio/PreciseAudio.html#_synesthesia_project_precise_audio_PreciseAudio_addEventListener_7
+- uid: '@synesthesia-project/precise-audio.PreciseAudio.addEventListener_8'
+  name: addEventListener("timeupdate", Listener)
+  href: api/precise-audio/PreciseAudio.html#_synesthesia_project_precise_audio_PreciseAudio_addEventListener_8
 - uid: '@synesthesia-project/precise-audio.PreciseAudio.adjustPitchWithPlaybackRate'
   name: adjustPitchWithPlaybackRate
   href: api/precise-audio/PreciseAudio.html#_synesthesia_project_precise_audio_PreciseAudio_adjustPitchWithPlaybackRate
