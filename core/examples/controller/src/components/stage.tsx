@@ -84,7 +84,6 @@ export class Stage extends React.Component<{}, {}> {
     const files = ev.target.files;
     if (files) {
       const file = files[0];
-      this.audio.loadAudioFile(file);
       const url = URL.createObjectURL(file);
       this.audio.loadAudioFile(file).then(() => {
         universalParse(url).then(tag => {
