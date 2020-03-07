@@ -25,6 +25,7 @@
     "@synesthesia-project/gulp-util": "~0.0.1",
     "gulp": "~4.0.2",
     "gulp-clean": "^0.3.2",
+    "soundbank-pitch-shift": "~1.0.3",
     "source-map-loader": "~0.2.4",
     "type2docfx": "^0.10.2",
     "typedoc": "^0.16.9",

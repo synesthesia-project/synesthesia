@@ -1,3 +1,5 @@
+import PitchShift = require('soundbank-pitch-shift');
+
 /* tslint:disable:unified-signatures */
 
 type PlayState =
@@ -71,6 +73,7 @@ export default class PreciseAudio extends EventTarget {
 
   private readonly context = new AudioContext();
   private _playbackRate = 1;
+  private _adjustPitchWithPlaybackRate = true;
   private song: {
     buffer: AudioBuffer;
     state: PlayState;
@@ -128,7 +131,16 @@ export default class PreciseAudio extends EventTarget {
       const nowMillis = this.context.currentTime * 1000;
       const source = this.context.createBufferSource();
       source.playbackRate.value = this._playbackRate;
-      source.connect(this.context.destination);
+      if (this._playbackRate !== 1 && this._adjustPitchWithPlaybackRate) {
+        var pitchShift = PitchShift(this.context);
+        pitchShift.connect(this.context.destination);
+        // Calculate the notes (in 100 cents) to shift the pitch by
+        // based on the frequency ration
+        pitchShift.transpose = 12 * Math.log2(1 / this._playbackRate);
+        source.connect(pitchShift);
+      } else {
+        source.connect(this.context.destination);
+      }
       source.buffer = this.song.buffer;
       source.start(0, positionMillis / 1000);
       this.song.state = {
@@ -226,16 +238,14 @@ export default class PreciseAudio extends EventTarget {
   }
 
   public set playbackRate(playbackRate: number) {
-    this._playbackRate = playbackRate;
+    let resume = false;
     if (this.song && this.song.state.state === 'playing') {
-      const oldPlaybackRate = this.song.state.source.playbackRate.value;
-      this.song.state.source.playbackRate.value = playbackRate;
-      // Update effective start time
-      const nowMillis = this.context.currentTime * 1000;
-      const positionMillis = (nowMillis - this.song.state.effectiveStartTimeMillis) *
-        oldPlaybackRate;
-      this.song.state.effectiveStartTimeMillis = nowMillis -
-        positionMillis / this._playbackRate
+      this.pause();
+      resume = true;
+    }
+    this._playbackRate = playbackRate;
+    if (resume) {
+      this.play();
     }
   }
 
