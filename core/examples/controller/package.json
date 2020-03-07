@@ -16,7 +16,7 @@
   "private": true,
   "dependencies": {
     "@synesthesia-project/core": "^0.0.5",
-    "@synesthesia-project/precise-audio": "^0.0.4"
+    "@synesthesia-project/precise-audio": "^0.0.5"
   },
   "devDependencies": {
     "@synesthesia-project/gulp-util": "~0.0.1",
