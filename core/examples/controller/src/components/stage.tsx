@@ -22,7 +22,7 @@ export class Stage extends React.Component<{}, {}> {
     this.updatePlayState = this.updatePlayState.bind(this);
     this.playPause = this.playPause.bind(this);
 
-    this.audio.addEventListener('playing', this.updatePlayState);
+    this.audio.addEventListener('play', this.updatePlayState);
     this.audio.addEventListener('pause', this.updatePlayState);
     this.audio.addEventListener('ended', this.updatePlayState);
     this.audio.addEventListener('seeked', this.updatePlayState);

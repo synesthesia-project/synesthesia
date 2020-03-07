@@ -27,7 +27,7 @@ type EventTypes =
   | 'ended'
   | 'error'
   | 'loadeddata'
-  | 'playing'
+  | 'play'
   | 'pause'
   | 'ratechange'
   | 'seeked';
@@ -266,7 +266,7 @@ export default class PreciseAudio extends EventTarget {
       this.context.resume();
     if (this.track?.data && this.track.data.state.state === 'paused') {
       this.playFrom(this.track.data.state.positionMillis);
-      this.sendEvent('playing');
+      this.sendEvent('play');
     }
   }
 
@@ -482,7 +482,7 @@ export default class PreciseAudio extends EventTarget {
    *                 that expects a {@link @synesthesia-project/precise-audio.PreciseAudioEvent}
    *                 as a parameter
    */
-  public addEventListener(event: 'playing', listener: Listener): void;
+  public addEventListener(event: 'play', listener: Listener): void;
 
   /**
    * Fired when the audio is paused
