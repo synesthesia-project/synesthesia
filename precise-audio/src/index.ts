@@ -150,6 +150,7 @@ export default class PreciseAudio extends EventTarget {
       this.sendEvent('loadeddata');
       this.sendEvent('canplay');
       this.sendEvent('canplaythrough');
+      this.sendEvent('timeupdate');
     }
   }
 
@@ -174,8 +175,8 @@ export default class PreciseAudio extends EventTarget {
    * Used with requestAnimationFrame to dispatch timeupdate events
    */
   private timeUpdated = () => {
+    this.sendEvent('timeupdate');
     if (this.track?.data?.state.state === 'playing') {
-      this.sendEvent('timeupdate');
       this.scheduleTimeUpdated();
     }
   }
@@ -401,6 +402,7 @@ export default class PreciseAudio extends EventTarget {
       const positionMillis = positionSeconds * 1000;
       if (this.track.data.state.state === 'paused') {
         this.track.data.state.positionMillis = positionMillis;
+        this.sendEvent('timeupdate');
       } else {
         this.stopWithoutEnding(this.track.data.state);
         this.playFrom(positionMillis);
