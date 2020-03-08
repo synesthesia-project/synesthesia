@@ -47,6 +47,14 @@ type TrackSource = {
 type Track = {
   source: TrackSource;
   /**
+   * If set, we need to start playing as soon as the track has loaded,
+   * and call the given callback.
+   */
+  playOnLoad?: {
+    callback: () => void;
+    promise: Promise<void>;
+  }
+  /**
    * Set once successfully loaded
    */
   data?: {
@@ -151,6 +159,12 @@ export default class PreciseAudio extends EventTarget {
       this.sendEvent('canplay');
       this.sendEvent('canplaythrough');
       this.sendEvent('timeupdate');
+      if (track.playOnLoad) {
+        // Must start playing immediately
+        this.playFrom(0);
+        this.sendEvent('play');
+        track.playOnLoad.callback();
+      }
     }
   }
 
@@ -327,12 +341,32 @@ export default class PreciseAudio extends EventTarget {
   /**
    * Begins playback of the audio.
    */
-  public play() {
+  public async play() {
     if (this.context.state === 'suspended')
       this.context.resume();
-    if (this.track?.data && this.track.data.state.state === 'paused') {
-      this.playFrom(this.track.data.state.positionMillis);
-      this.sendEvent('play');
+    if (this.track) {
+      if (this.track.data && this.track.data.state.state === 'paused') {
+        this.playFrom(this.track.data.state.positionMillis);
+        this.sendEvent('play');
+      }
+      if (!this.track.data) {
+        // Track hasn't loaded yet
+        // Create a promise and callback if neccesary
+        if (this.track.playOnLoad) {
+          return this.track.playOnLoad.promise;
+        } else {
+          let callback: (() => void) | null = null;
+          const promise = new Promise<void>(resolve => {
+            callback = resolve;
+          });
+          if (callback) {
+            this.track.playOnLoad = {
+              callback, promise
+            }
+          }
+          return promise;
+        }
+      }
     }
   }
 
