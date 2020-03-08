@@ -29,6 +29,7 @@
     "@synesthesia-project/gulp-util": "~0.0.1",
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.7",
+    "@types/node": "^12.6.8",
     "chai": "^4.2.0",
     "gulp": "~4.0.2",
     "mocha": "^6.1.4",

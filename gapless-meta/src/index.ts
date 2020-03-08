@@ -1,3 +1,3 @@
-export function getMetadata() {
+export function getMetadata(_buffer: ArrayBuffer) {
   return 'todo';
 }
