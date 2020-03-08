@@ -2,20 +2,22 @@ import PitchShift = require('soundbank-pitch-shift');
 
 /* tslint:disable:unified-signatures */
 
+type PlayStatePlaying = {
+  state: 'playing';
+  source: AudioBufferSourceNode;
+  suppressEndedEvent: boolean;
+  /**
+   * Millisecond timestamp (based on the AudioContext clock) that the song
+   * started playing at the current playback rate
+   */
+  effectiveStartTimeMillis: number;
+};
+
 type PlayState =
   {
     state: 'paused';
     positionMillis: number;
-  } |
-  {
-    state: 'playing';
-    source: AudioBufferSourceNode;
-    /**
-     * Millisecond timestamp (based on the AudioContext clock) that the song
-     * started playing at the current playback rate
-     */
-    effectiveStartTimeMillis: number;
-  };
+  } | PlayStatePlaying;
 
 type Listener = EventListener | EventListenerObject | null;
 
@@ -105,10 +107,6 @@ export default class PreciseAudio extends EventTarget {
 
   private readonly context: AudioContext;
   private readonly gainNode: GainNode;
-  /**
-   * Increment to prevent an 'ended' event from being dispatched
-   */
-  private _suppressEndedEvents = 0;
   private _animationFrameRequest: null | number = null;
   private _playbackRate = 1;
   private _adjustPitchWithPlaybackRate = true;
@@ -167,9 +165,9 @@ export default class PreciseAudio extends EventTarget {
     this.dispatchEvent(event);
   }
 
-  private stopWithoutEnding(source: AudioBufferSourceNode) {
-    this._suppressEndedEvents++;
-    source.stop();
+  private stopWithoutEnding(state: PlayStatePlaying) {
+    state.suppressEndedEvent = true;
+    state.source.stop();
   }
 
   /**
@@ -194,19 +192,15 @@ export default class PreciseAudio extends EventTarget {
    *
    * @param track - the track that should be playing
    */
-  private createTrackEndedListener(track: Track) {
+  private createTrackEndedListener(state: PlayStatePlaying) {
     return () => {
-      if (this._suppressEndedEvents > 0) {
-        // Reset for next time
-        this._suppressEndedEvents--;
-        return;
-      };
-      if (this.track !== track) return;
-      if (!track?.data) return
-      this.sendEvent('ended');
-      track.data.state = {
-        state: 'paused',
-        positionMillis: 0
+      if (this.track?.data?.state !== state) return;
+      if (state.state === 'playing' && !state.suppressEndedEvent) {
+        this.sendEvent('ended');
+        this.track.data.state = {
+          state: 'paused',
+          positionMillis: 0
+        }
       }
     }
   }
@@ -225,7 +219,7 @@ export default class PreciseAudio extends EventTarget {
    */
   public async loadAudioFile(file: File | Blob) {
     if (this.track?.data?.state.state === 'playing') {
-      this.stopWithoutEnding(this.track.data.state.source);
+      this.stopWithoutEnding(this.track.data.state);
     }
     const track: Track = this.track = {
       source: {
@@ -280,7 +274,7 @@ export default class PreciseAudio extends EventTarget {
 
   public set src(src: string) {
     if (this.track?.data?.state.state === 'playing') {
-      this.stopWithoutEnding(this.track.data.state.source);
+      this.stopWithoutEnding(this.track.data.state);
     }
     if (src === '') {
       this.track = null;
@@ -303,7 +297,6 @@ export default class PreciseAudio extends EventTarget {
     if (this.track?.data) {
       const nowMillis = this.context.currentTime * 1000;
       const source = this.context.createBufferSource();
-      source.addEventListener('ended', this.createTrackEndedListener(this.track));
       source.playbackRate.value = this._playbackRate;
       if (this._playbackRate !== 1 && this._adjustPitchWithPlaybackRate) {
         const pitchShift = PitchShift(this.context);
@@ -319,10 +312,13 @@ export default class PreciseAudio extends EventTarget {
       source.start(0, positionMillis / 1000);
       this.track.data.state = {
         state: 'playing',
+        suppressEndedEvent: false,
         source,
         effectiveStartTimeMillis:
           nowMillis - positionMillis / this._playbackRate
       };
+      source.addEventListener('ended',
+        this.createTrackEndedListener(this.track.data.state));
       this.scheduleTimeUpdated();
     }
   }
@@ -347,7 +343,7 @@ export default class PreciseAudio extends EventTarget {
       this.context.resume();
     if (this.track?.data?.state?.state === 'playing') {
       const nowMillis = this.context.currentTime * 1000;
-      this.stopWithoutEnding(this.track.data.state.source);
+      this.stopWithoutEnding(this.track.data.state);
       this.track.data.state = {
         state: 'paused',
         positionMillis:
@@ -406,7 +402,7 @@ export default class PreciseAudio extends EventTarget {
       if (this.track.data.state.state === 'paused') {
         this.track.data.state.positionMillis = positionMillis;
       } else {
-        this.stopWithoutEnding(this.track.data.state.source);
+        this.stopWithoutEnding(this.track.data.state);
         this.playFrom(positionMillis);
       }
       this.sendEvent('seeked');
