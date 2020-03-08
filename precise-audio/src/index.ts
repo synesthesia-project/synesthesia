@@ -42,7 +42,7 @@ type TrackSource = {
 } | {
   type: 'file';
   file: File | Blob;
-}
+};
 
 type Track = {
   source: TrackSource;
@@ -215,9 +215,9 @@ export default class PreciseAudio extends EventTarget {
         this.track.data.state = {
           state: 'paused',
           positionMillis: 0
-        }
+        };
       }
-    }
+    };
   }
 
   /**
@@ -240,7 +240,7 @@ export default class PreciseAudio extends EventTarget {
       source: {
         type: 'file', file
       }
-    }
+    };
     await this.loadFile(track, file).catch(e => {
       this.dispatchError(e);
       throw e;
@@ -299,7 +299,7 @@ export default class PreciseAudio extends EventTarget {
       source: {
         type: 'src', src
       }
-    }
+    };
     fetch(src).then(async r => {
       const blob = await r.blob();
       await this.loadFile(track, blob);
@@ -362,7 +362,7 @@ export default class PreciseAudio extends EventTarget {
           if (callback) {
             this.track.playOnLoad = {
               callback, promise
-            }
+            };
           }
           return promise;
         }
