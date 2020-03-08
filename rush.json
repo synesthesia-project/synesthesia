@@ -367,6 +367,10 @@
       "projectFolder": "core/examples/controller"
     },
     {
+      "packageName": "@synesthesia-project/gapless-meta",
+      "projectFolder": "gapless-meta"
+    },
+    {
       "packageName": "@synesthesia-project/midi-consoles",
       "projectFolder": "midi-consoles"
     },
