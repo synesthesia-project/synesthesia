@@ -34,7 +34,7 @@ const BITRATES_RAW = {
 }
 
 /**
- * Version -> Layer -> [bitrate]
+ * Version -> Layer -> [bitrate] (in kilobits per second, not kibibits)
  *
  * See: https://www.codeproject.com/Articles/8295/MPEG-Audio-Frame-Header#Bitrate
  */
@@ -56,6 +56,28 @@ const BITRATES = {
   }
 }
 
+/**
+ * Version -> Layer -> [bitrate]
+ *
+ * See: https://www.codeproject.com/Articles/8295/MPEG-Audio-Frame-Header
+ */
+const SAMPLES_PER_FRAME = {
+  '1': {
+    '1': 384,
+    '2': 1152,
+    '3': 1152
+  },
+  '2': {
+    '1': 384,
+    '2': 1152,
+    '3': 576
+  },
+  '2.5': {
+    '1': 384,
+    '2': 1152,
+    '3': 576
+  }
+}
 
 /**
  * See information of frame layout here:
@@ -90,11 +112,13 @@ function parseAudioFrameHeader(bytes: Uint8Array, offset: number) {
   const layer = MPEGLayerMapping[layerIndex];
   const bitrate = BITRATES[version][layer][bitrateIndex];
   const sampleRate = SAMPLE_RATES[version][sampleRateIndex];
+  const spf = SAMPLES_PER_FRAME[version][layer];
 
   console.log('isFrame', MPEGAudioVersionMapping[audioVersion]);
   console.log(`MPEG ${version} layer ${layer}`);
   console.log(`Bitrate:`, bitrate);
   console.log(`Sample Rate:`, sampleRate);
+  console.log(`Samples per frame:`, spf);
   console.log(`padding:`, padding);
 }
 
