@@ -106,7 +106,7 @@ export class Stage extends React.Component<{}, {}> {
       // Alternative Loading Mechanism:
       // this.audio.src = url;
       // this.audio.addEventListener('canplaythrough', parseID3);
-      this.audio.loadAudioFile(file).then(parseID3);
+      this.audio.loadTrack(file).then(parseID3);
     } else {
       console.error('no files');
     }

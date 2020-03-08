@@ -36,13 +36,7 @@ type EventTypes =
   | 'timeupdate'
   | 'volumechange';
 
-type TrackSource = {
-  type: 'src';
-  src: string;
-} | {
-  type: 'file';
-  file: File | Blob;
-};
+type TrackSource = string | File | Blob;
 
 type Track = {
   source: TrackSource;
@@ -135,39 +129,6 @@ export default class PreciseAudio extends EventTarget {
     this.gainNode.gain.value = this._volume.muted ? 0 : this._volume.volume;
   }
 
-  private async loadFile(track: Track, file: File | Blob) {
-    const fileBuffer = await new Promise<ArrayBuffer>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = ev => {
-        resolve(ev.target?.result as ArrayBuffer);
-      };
-      reader.onerror = () => {
-        reader.abort();
-        reject(reader.error);
-      };
-      reader.readAsArrayBuffer(file);
-    });
-    const buffer = await this.context.decodeAudioData(fileBuffer);
-    if (track === this.track) {
-      track.data = {
-        buffer,
-        state: {
-          state: 'paused', positionMillis: 0
-        }
-      };
-      this.sendEvent('loadeddata');
-      this.sendEvent('canplay');
-      this.sendEvent('canplaythrough');
-      this.sendEvent('timeupdate');
-      if (track.playOnLoad) {
-        // Must start playing immediately
-        this.playFrom(0);
-        this.sendEvent('play');
-        track.playOnLoad.callback();
-      }
-    }
-  }
-
   private sendEvent(eventType: EventTypes) {
     const event = new PreciseAudioEvent(eventType, this);
     this.dispatchEvent(event);
@@ -226,25 +187,68 @@ export default class PreciseAudio extends EventTarget {
    * The loaded audio file will be paused once it's loaded,
    * and will not play automatically.
    *
-   * @param file A [File](https://developer.mozilla.org/en-US/docs/Web/API/File)
-   *             or [Blob](https://developer.mozilla.org/en-US/docs/Web/API/Blob)
-   *             object representing the audio file to be played.
+   * @param source A [`File`](https://developer.mozilla.org/en-US/docs/Web/API/File),
+   *               [`Blob`](https://developer.mozilla.org/en-US/docs/Web/API/Blob)
+   *               or `string` URL representing the audio file to be played.
+   *
+   *               If a `string` is used, the class will attempt to load the
+   *               file using the fetch API.
    * @returns A [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
    *          that resolves once the audio file has been successfully loaded.
    */
-  public async loadAudioFile(file: File | Blob) {
+  public async loadTrack(source: File | Blob | string) {
     if (this.track?.data?.state.state === 'playing') {
       this.stopWithoutEnding(this.track.data.state);
     }
-    const track: Track = this.track = {
-      source: {
-        type: 'file', file
+    if (source === '') {
+      this.track = null;
+      return;
+    }
+    try {
+      const track: Track = this.track = { source };
+      let src: Blob | File;
+      // Fetch the file if neccesary
+      if (typeof track.source === 'string') {
+        src = await fetch(track.source).then(r => r.blob());
+      } else {
+        src = track.source;
       }
-    };
-    await this.loadFile(track, file).catch(e => {
+      // Load the contents of the file into an ArrayBuffer
+      const fileBuffer = await new Promise<ArrayBuffer>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = ev => {
+          resolve(ev.target?.result as ArrayBuffer);
+        };
+        reader.onerror = () => {
+          reader.abort();
+          reject(reader.error);
+        };
+        reader.readAsArrayBuffer(src);
+      });
+      // Decode the raw waveform into an ArrayBuffer
+      const buffer = await this.context.decodeAudioData(fileBuffer);
+      if (track === this.track) {
+        track.data = {
+          buffer,
+          state: {
+            state: 'paused', positionMillis: 0
+          }
+        };
+        this.sendEvent('loadeddata');
+        this.sendEvent('canplay');
+        this.sendEvent('canplaythrough');
+        this.sendEvent('timeupdate');
+        if (track.playOnLoad) {
+          // Must start playing immediately
+          this.playFrom(0);
+          this.sendEvent('play');
+          track.playOnLoad.callback();
+        }
+      }
+    } catch (e) {
       this.dispatchError(e);
       throw e;
-    });
+    }
   }
 
   /**
@@ -284,28 +288,11 @@ export default class PreciseAudio extends EventTarget {
    * @returns the URL of the track to play
    */
   public get src(): string {
-    return this.track?.source.type === 'src' && this.track.source.src || '';
+    return typeof this.track?.source === 'string' && this.track.source || '';
   }
 
-  public set src(src: string) {
-    if (this.track?.data?.state.state === 'playing') {
-      this.stopWithoutEnding(this.track.data.state);
-    }
-    if (src === '') {
-      this.track = null;
-      return;
-    }
-    const track: Track = this.track = {
-      source: {
-        type: 'src', src
-      }
-    };
-    fetch(src).then(async r => {
-      const blob = await r.blob();
-      await this.loadFile(track, blob);
-    }).catch(e => {
-      this.dispatchError(e);
-    });
+  public set src(source: string) {
+    this.loadTrack(source);
   }
 
   private playFrom(positionMillis: number) {
