@@ -164,15 +164,39 @@ function parseAudioFrameHeader(bytes: Uint8Array, offset: number) {
   }
 
   if (dataStart !== null) {
+    const vbrStart = offset + dataStart;
     const vbrHeaderID = [
-      bytes[offset + dataStart],
-      bytes[offset + dataStart + 1],
-      bytes[offset + dataStart + 2],
-      bytes[offset + dataStart + 3]
+      bytes[vbrStart],
+      bytes[vbrStart + 1],
+      bytes[vbrStart + 2],
+      bytes[vbrStart + 3]
     ].map(c => String.fromCharCode(c)).join('');
     if (vbrHeaderID === 'Xing' || vbrHeaderID === 'Info') {
       // Valid VBR Header
       console.log('Valid VBR Header');
+      const hasFrames = (bytes[vbrStart + 7] & 0x1) === 0x1;
+      const hasBytes = (bytes[vbrStart + 7] & 0x2) === 0x2;
+      const hasTOC = (bytes[vbrStart + 7] & 0x4) === 0x4;
+      const hasQuality = (bytes[vbrStart + 7] & 0x8) === 0x8;
+      const lameExtensionStart =
+        // VBR Header
+        vbrStart + 8 +
+        (hasFrames ? 4 : 0) +
+        (hasBytes ? 4 : 0) +
+        (hasTOC ? 100 : 0) +
+        (hasQuality ? 4 : 0);
+      // Attempt to extract LAME extension information
+      let encoder = '';
+      for (let i = 0; i < 9; i++) {
+        const char = bytes[lameExtensionStart + i];
+        if (char > 31 && char < 127)
+          encoder += String.fromCharCode(char);
+      }
+      // Only continue extracting LAME info if we think a valid encoder has
+      // been specified.
+      if (encoder.length === 9) {
+        console.log('Has LAME info: ' + encoder);
+      }
     }
   }
 }
