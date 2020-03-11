@@ -21,11 +21,12 @@ describe('index.ts', () => {
       sampleRate: 44100,
       samplesPerFrame: 1152,
       vbrInfo: {
-        isCBR: false
+        isCBR: false,
+        numberOfFrames: 249,
       },
       lameInfo: {
-        encoder: 'LAME3.99r'
-      }
+        encoder: 'LAME3.99r',
+      },
     });
   });
 

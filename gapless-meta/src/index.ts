@@ -116,6 +116,7 @@ export interface Metadata {
 
 export interface VBRMetadata {
   isCBR: boolean;
+  numberOfFrames?: number;
 }
 
 export interface LameMetadata {
@@ -199,6 +200,19 @@ function parseAudioFrameHeader(bytes: Uint8Array, offset: number): Metadata | nu
       const hasBytes = (bytes[vbrStart + 7] & 0x2) === 0x2;
       const hasTOC = (bytes[vbrStart + 7] & 0x4) === 0x4;
       const hasQuality = (bytes[vbrStart + 7] & 0x8) === 0x8;
+      let numberOfFrames: number | undefined = undefined;
+      const framesStart = vbrStart + 8;
+      if (hasFrames) {
+        numberOfFrames =
+          (bytes[framesStart] << 24) +
+          (bytes[framesStart + 1] << 16) +
+          (bytes[framesStart + 2] << 8) +
+          bytes[framesStart + 3]
+      }
+      metadata.vbrInfo = {
+        isCBR: vbrHeaderID === 'Info',
+        numberOfFrames
+      };
       const lameExtensionStart =
         // VBR Header
         vbrStart + 8 +
@@ -206,10 +220,8 @@ function parseAudioFrameHeader(bytes: Uint8Array, offset: number): Metadata | nu
         (hasBytes ? 4 : 0) +
         (hasTOC ? 100 : 0) +
         (hasQuality ? 4 : 0);
-      metadata.vbrInfo = {
-        isCBR: vbrHeaderID === 'Info'
-      };
       // Attempt to extract LAME extension information
+      // See: http://gabriel.mp3-tech.org/mp3infotag.html#versionstring
       let encoder = '';
       for (let i = 0; i < 9; i++) {
         const char = bytes[lameExtensionStart + i];
@@ -220,6 +232,8 @@ function parseAudioFrameHeader(bytes: Uint8Array, offset: number): Metadata | nu
       // been specified.
       if (encoder.length === 9) {
         console.log('Has LAME info: ' + encoder);
+        // Encoder Delays
+
         metadata.lameInfo = {
           encoder
         }
