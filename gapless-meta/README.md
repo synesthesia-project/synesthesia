@@ -1,5 +1,9 @@
 # `gapless-meta`
 
+## TODO
+
+* CRC Verification
+
 ## Inspiration
 
 * https://github.com/jquense/mpeg-frame-parser

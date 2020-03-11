@@ -15,6 +15,8 @@ const MPEGLayerMapping: { [id: number]: MPEGLayer } = {
   3: '1'
 };
 
+const MODES = ['stereo', 'joint_stereo', 'dual_channel', 'mono'] as const;
+
 /**
  * Sample rate index mapping in Hz, for each audio version
  * From: https://www.codeproject.com/Articles/8295/MPEG-Audio-Frame-Header#SamplingRate
@@ -80,6 +82,26 @@ const SAMPLES_PER_FRAME = {
 }
 
 /**
+ * Version -> mode -> bytes
+ *
+ * @see https://www.codeproject.com/Articles/8295/MPEG-Audio-Frame-Header#SideInfo
+ */
+const LAYER_3_SIDE_INFORMATION_BYTES = {
+  '1': {
+    'dual': 32,
+    'mono': 17
+  },
+  '2': {
+    'dual': 17,
+    'mono': 9
+  },
+  '2.5': {
+    'dual': 17,
+    'mono': 9
+  }
+}
+
+/**
  * See information of frame layout here:
  * https://www.codeproject.com/Articles/8295/MPEG-Audio-Frame-Header
  */
@@ -95,10 +117,12 @@ function parseAudioFrameHeader(bytes: Uint8Array, offset: number) {
   const frameSync = (frameHeader[0] << 3) | (frameHeader[1] >> 5);
   const audioVersion = (frameHeader[1] >> 3) & 0x3;
   const layerIndex = (frameHeader[1] >> 1) & 0x3;
+  const protection = (frameHeader[1]) & 0x1;
 
   const bitrateIndex = frameHeader[2] >> 4;
   const sampleRateIndex = (frameHeader[2] >> 2) & 0x3;
   const padding = (frameHeader[2] >> 1) & 0x1;
+  const mode = MODES[(frameHeader[3] >> 6) & 0x3];
 
   // Validate (check sync, and ignore for any reserved values)
   if (frameSync !== 0x7ff) return;
@@ -120,6 +144,37 @@ function parseAudioFrameHeader(bytes: Uint8Array, offset: number) {
   console.log(`Sample Rate:`, sampleRate);
   console.log(`Samples per frame:`, spf);
   console.log(`padding:`, padding);
+  console.log(`protection bit:`, protection);
+  console.log(`mode:`, mode);
+
+  // Calculate the start of the data for the frame
+  let dataStart: null | number = null;
+
+  // Extract VBR Information
+  if (layer === '3') {
+    const sideMode = mode === 'mono' ? mode : 'dual';
+    const sideInformationBytes = LAYER_3_SIDE_INFORMATION_BYTES[version][sideMode];
+    dataStart =
+      // Header
+      4 +
+      // Side Information
+      sideInformationBytes;
+  } else {
+    console.log('Unable to calculate start of data frame (TODO)');
+  }
+
+  if (dataStart !== null) {
+    const vbrHeaderID = [
+      bytes[offset + dataStart],
+      bytes[offset + dataStart + 1],
+      bytes[offset + dataStart + 2],
+      bytes[offset + dataStart + 3]
+    ].map(c => String.fromCharCode(c)).join('');
+    if (vbrHeaderID === 'Xing' || vbrHeaderID === 'Info') {
+      // Valid VBR Header
+      console.log('Valid VBR Header');
+    }
+  }
 }
 
 
