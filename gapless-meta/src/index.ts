@@ -17,6 +17,8 @@ const MPEGLayerMapping: { [id: number]: MPEGLayer } = {
 
 const MODES = ['stereo', 'joint_stereo', 'dual_channel', 'mono'] as const;
 
+type Mode = (typeof MODES)[number];
+
 /**
  * Sample rate index mapping in Hz, for each audio version
  * From: https://www.codeproject.com/Articles/8295/MPEG-Audio-Frame-Header#SamplingRate
@@ -101,11 +103,30 @@ const LAYER_3_SIDE_INFORMATION_BYTES = {
   }
 }
 
+export interface Metadata {
+  version: MPEGAudioVersion;
+  layer: MPEGLayer;
+  bitrate: number;
+  sampleRate: number;
+  samplesPerFrame: number;
+  mode: Mode;
+  vbrInfo?: VBRMetadata;
+  lameInfo?: LameMetadata;
+}
+
+export interface VBRMetadata {
+  isCBR: boolean;
+}
+
+export interface LameMetadata {
+  encoder: string;
+}
+
 /**
  * See information of frame layout here:
  * https://www.codeproject.com/Articles/8295/MPEG-Audio-Frame-Header
  */
-function parseAudioFrameHeader(bytes: Uint8Array, offset: number) {
+function parseAudioFrameHeader(bytes: Uint8Array, offset: number): Metadata | null {
   // Frame header consists of 4 bytes
   const frameHeader = [
     bytes[offset],
@@ -117,35 +138,35 @@ function parseAudioFrameHeader(bytes: Uint8Array, offset: number) {
   const frameSync = (frameHeader[0] << 3) | (frameHeader[1] >> 5);
   const audioVersion = (frameHeader[1] >> 3) & 0x3;
   const layerIndex = (frameHeader[1] >> 1) & 0x3;
-  const protection = (frameHeader[1]) & 0x1;
+  // const protection = (frameHeader[1]) & 0x1;
 
   const bitrateIndex = frameHeader[2] >> 4;
   const sampleRateIndex = (frameHeader[2] >> 2) & 0x3;
-  const padding = (frameHeader[2] >> 1) & 0x1;
+  // const padding = (frameHeader[2] >> 1) & 0x1;
   const mode = MODES[(frameHeader[3] >> 6) & 0x3];
 
   // Validate (check sync, and ignore for any reserved values)
-  if (frameSync !== 0x7ff) return;
-  if (audioVersion === 0x1) return;
-  if (layerIndex === 0x0) return;
-  if (bitrateIndex === 0xf) return;
-  if (sampleRateIndex === 0x3) return;
+  if (frameSync !== 0x7ff) return null;
+  if (audioVersion === 0x1) return null;
+  if (layerIndex === 0x0) return null;
+  if (bitrateIndex === 0xf) return null;
+  if (sampleRateIndex === 0x3) return null;
 
   // Convert Information
   const version = MPEGAudioVersionMapping[audioVersion];
   const layer = MPEGLayerMapping[layerIndex];
   const bitrate = BITRATES[version][layer][bitrateIndex];
   const sampleRate = SAMPLE_RATES[version][sampleRateIndex];
-  const spf = SAMPLES_PER_FRAME[version][layer];
+  const samplesPerFrame = SAMPLES_PER_FRAME[version][layer];
 
-  console.log('isFrame', MPEGAudioVersionMapping[audioVersion]);
-  console.log(`MPEG ${version} layer ${layer}`);
-  console.log(`Bitrate:`, bitrate);
-  console.log(`Sample Rate:`, sampleRate);
-  console.log(`Samples per frame:`, spf);
-  console.log(`padding:`, padding);
-  console.log(`protection bit:`, protection);
-  console.log(`mode:`, mode);
+  const metadata: Metadata = {
+    version,
+    layer,
+    bitrate,
+    sampleRate,
+    samplesPerFrame,
+    mode
+  }
 
   // Calculate the start of the data for the frame
   let dataStart: null | number = null;
@@ -185,6 +206,9 @@ function parseAudioFrameHeader(bytes: Uint8Array, offset: number) {
         (hasBytes ? 4 : 0) +
         (hasTOC ? 100 : 0) +
         (hasQuality ? 4 : 0);
+      metadata.vbrInfo = {
+        isCBR: vbrHeaderID === 'Info'
+      };
       // Attempt to extract LAME extension information
       let encoder = '';
       for (let i = 0; i < 9; i++) {
@@ -196,14 +220,18 @@ function parseAudioFrameHeader(bytes: Uint8Array, offset: number) {
       // been specified.
       if (encoder.length === 9) {
         console.log('Has LAME info: ' + encoder);
+        metadata.lameInfo = {
+          encoder
+        }
       }
     }
   }
+
+  return metadata;
 }
 
 
 export function getMetadata(buffer: ArrayBuffer) {
   const bytes = new Uint8Array(buffer);
-  parseAudioFrameHeader(bytes, 0);
-  return 'todo';
+  return parseAudioFrameHeader(bytes, 0);
 }
