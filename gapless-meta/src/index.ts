@@ -205,7 +205,6 @@ function parseAudioFrameHeader(bytes: Uint8Array, offset: number): Metadata | nu
     ].map(c => String.fromCharCode(c)).join('');
     if (vbrHeaderID === 'Xing' || vbrHeaderID === 'Info') {
       // Valid VBR Header
-      console.log('Valid VBR Header');
       const hasFrames = (bytes[vbrStart + 7] & 0x1) === 0x1;
       const hasBytes = (bytes[vbrStart + 7] & 0x2) === 0x2;
       const hasTOC = (bytes[vbrStart + 7] & 0x4) === 0x4;
@@ -241,7 +240,6 @@ function parseAudioFrameHeader(bytes: Uint8Array, offset: number): Metadata | nu
       // Only continue extracting LAME info if we think a valid encoder has
       // been specified.
       if (encoder.length === 9) {
-        console.log('Has LAME info: ' + encoder);
         // Encoder Delays
         const paddingStart =
           (bytes[lameExtensionStart + 21] << 4) |
