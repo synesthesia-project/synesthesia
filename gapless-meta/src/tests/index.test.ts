@@ -26,6 +26,8 @@ describe('index.ts', () => {
       },
       lameInfo: {
         encoder: 'LAME3.99r',
+        paddingStart: 576,
+        paddingEnd: 576
       },
     });
   });

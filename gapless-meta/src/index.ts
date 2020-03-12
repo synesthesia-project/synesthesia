@@ -121,6 +121,16 @@ export interface VBRMetadata {
 
 export interface LameMetadata {
   encoder: string;
+  /**
+   * Number of samples that were added to the start (the encoder delay).
+   * Range: `0`-`4096`
+   */
+  paddingStart: number;
+  /**
+   * Number of samples of padding at the end of the track.
+   * Range: `0`-`4096`
+   */
+  paddingEnd: number;
 }
 
 /**
@@ -233,9 +243,16 @@ function parseAudioFrameHeader(bytes: Uint8Array, offset: number): Metadata | nu
       if (encoder.length === 9) {
         console.log('Has LAME info: ' + encoder);
         // Encoder Delays
-
+        const paddingStart =
+          (bytes[lameExtensionStart + 21] << 4) |
+          (bytes[lameExtensionStart + 22] >> 4);
+        const paddingEnd =
+          ((bytes[lameExtensionStart + 22] & 0xf) << 8) |
+          bytes[lameExtensionStart + 23];
         metadata.lameInfo = {
-          encoder
+          encoder,
+          paddingStart,
+          paddingEnd
         }
       }
     }
