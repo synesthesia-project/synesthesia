@@ -74,6 +74,27 @@ describe('index.ts', () => {
         },
       });
     });
+
+    it('sintel-clip-lavc-cbr-128-with-id3v2.mp3', async () => {
+      const src = path.join(TRACKS_SINTEL, 'sintel-clip-lavc-cbr-128-with-id3v2.mp3');
+      expect(await getMetadataFromFile(src)).to.deep.equal({
+        version: '1',
+        layer: '3',
+        bitrate: 128,
+        mode: 'stereo',
+        sampleRate: 44100,
+        samplesPerFrame: 1152,
+        vbrInfo: {
+          isCBR: true,
+          numberOfFrames: 185,
+        },
+        lameInfo: {
+          encoder: 'Lavc58.54',
+          paddingStart: 576,
+          paddingEnd: 1058
+        },
+      });
+    });
   });
 
 });

@@ -133,6 +133,16 @@ export interface LameMetadata {
   paddingEnd: number;
 }
 
+function extractAsciiString(bytes: Uint8Array, index: number, length: number) {
+  let str = '';
+  for (let i = 0; i < length; i++) {
+    const char = bytes[index + i];
+    if (char > 31 && char < 127)
+      str += String.fromCharCode(char);
+  }
+  return str;
+}
+
 /**
  * See information of frame layout here:
  * https://www.codeproject.com/Articles/8295/MPEG-Audio-Frame-Header
@@ -197,12 +207,7 @@ function parseAudioFrameHeader(bytes: Uint8Array, offset: number): Metadata | nu
 
   if (dataStart !== null) {
     const vbrStart = offset + dataStart;
-    const vbrHeaderID = [
-      bytes[vbrStart],
-      bytes[vbrStart + 1],
-      bytes[vbrStart + 2],
-      bytes[vbrStart + 3]
-    ].map(c => String.fromCharCode(c)).join('');
+    const vbrHeaderID = extractAsciiString(bytes, vbrStart, 4);
     if (vbrHeaderID === 'Xing' || vbrHeaderID === 'Info') {
       // Valid VBR Header
       const hasFrames = (bytes[vbrStart + 7] & 0x1) === 0x1;
@@ -231,12 +236,7 @@ function parseAudioFrameHeader(bytes: Uint8Array, offset: number): Metadata | nu
         (hasQuality ? 4 : 0);
       // Attempt to extract LAME extension information
       // See: http://gabriel.mp3-tech.org/mp3infotag.html#versionstring
-      let encoder = '';
-      for (let i = 0; i < 9; i++) {
-        const char = bytes[lameExtensionStart + i];
-        if (char > 31 && char < 127)
-          encoder += String.fromCharCode(char);
-      }
+      const encoder = extractAsciiString(bytes, lameExtensionStart, 9);
       // Only continue extracting LAME info if we think a valid encoder has
       // been specified.
       if (encoder.length === 9) {
@@ -259,8 +259,33 @@ function parseAudioFrameHeader(bytes: Uint8Array, offset: number): Metadata | nu
   return metadata;
 }
 
+/**
+ * @return the size of the ID3v2 tag located the given offset in bytes,
+ * or `0` if no tag is present at the given offset.
+ */
+function extractTagSize(bytes: Uint8Array, offset: number) {
+  if (extractAsciiString(bytes, offset, 3) === 'ID3') {
+    const flags = bytes[offset + 5];
+    const hasFooter = (flags & 0x10) === 0x10;
+    const size = (
+      // 32-bit Syncsafe integer (https://en.wikipedia.org/wiki/Synchsafe)
+      (bytes[offset + 6] << 21) |
+      (bytes[offset + 7] << 14) |
+      (bytes[offset + 8] << 7) |
+      (bytes[offset + 9])
+    );
+    return 10 + size + (hasFooter ? 10 : 0);
+  }
+  return 0;
+}
+
 
 export function getMetadata(buffer: ArrayBuffer) {
   const bytes = new Uint8Array(buffer);
-  return parseAudioFrameHeader(bytes, 0);
+  let offset = 0;
+  let tagSize = 0;
+  while ((tagSize = extractTagSize(bytes, offset)) !== 0)
+    offset += tagSize;
+  console.log('offset:', offset);
+  return parseAudioFrameHeader(bytes, offset);
 }
