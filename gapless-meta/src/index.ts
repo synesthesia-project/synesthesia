@@ -1,4 +1,4 @@
-
+/* tslint:disable:object-literal-key-quotes */
 type MPEGAudioVersion = '1' | '2' | '2.5';
 
 const MPEGAudioVersionMapping: {[id: number]: MPEGAudioVersion} = {
@@ -27,7 +27,7 @@ const SAMPLE_RATES = {
   '1':   [44100, 48000, 32000],
   '2':   [22050, 24000, 16000],
   '2.5': [11025, 12000,  8000]
-}
+};
 
 const BITRATES_RAW = {
   'MPEG-1-Layer-1': [0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448],
@@ -35,7 +35,7 @@ const BITRATES_RAW = {
   'MPEG-1-Layer-3': [0, 32, 40, 48,  56,  64,  80,  96, 112, 128, 160, 192, 224, 256, 320],
   'MPEG-2-Layer-1': [0, 32, 48, 56,  64,  80,  96, 112, 128, 144, 160, 176, 192, 224, 256],
   'MPEG-2-Layer-O': [0,  8, 16, 24,  32,  40,  48,  56,  64,  80,  96, 112, 128, 144, 160],
-}
+};
 
 /**
  * Version -> Layer -> [bitrate] (in kilobits per second, not kibibits)
@@ -58,7 +58,7 @@ const BITRATES = {
     '2': BITRATES_RAW['MPEG-2-Layer-O'],
     '3': BITRATES_RAW['MPEG-2-Layer-O']
   }
-}
+};
 
 /**
  * Version -> Layer -> [bitrate]
@@ -81,7 +81,7 @@ const SAMPLES_PER_FRAME = {
     '2': 1152,
     '3': 576
   }
-}
+};
 
 /**
  * Version -> mode -> bytes
@@ -101,7 +101,7 @@ const LAYER_3_SIDE_INFORMATION_BYTES = {
     'dual': 17,
     'mono': 9
   }
-}
+};
 
 export interface Metadata {
   version: MPEGAudioVersion;
@@ -187,7 +187,7 @@ function parseAudioFrameHeader(bytes: Uint8Array, offset: number): Metadata | nu
     sampleRate,
     samplesPerFrame,
     mode
-  }
+  };
 
   // Calculate the start of the data for the frame
   let dataStart: null | number = null;
@@ -214,14 +214,14 @@ function parseAudioFrameHeader(bytes: Uint8Array, offset: number): Metadata | nu
       const hasBytes = (bytes[vbrStart + 7] & 0x2) === 0x2;
       const hasTOC = (bytes[vbrStart + 7] & 0x4) === 0x4;
       const hasQuality = (bytes[vbrStart + 7] & 0x8) === 0x8;
-      let numberOfFrames: number | undefined = undefined;
+      let numberOfFrames: number | undefined;
       const framesStart = vbrStart + 8;
       if (hasFrames) {
         numberOfFrames =
           (bytes[framesStart] << 24) +
           (bytes[framesStart + 1] << 16) +
           (bytes[framesStart + 2] << 8) +
-          bytes[framesStart + 3]
+          bytes[framesStart + 3];
       }
       metadata.vbrInfo = {
         isCBR: vbrHeaderID === 'Info',
@@ -251,7 +251,7 @@ function parseAudioFrameHeader(bytes: Uint8Array, offset: number): Metadata | nu
           encoder,
           paddingStart,
           paddingEnd
-        }
+        };
       }
     }
   }
@@ -284,6 +284,7 @@ export function getMetadata(buffer: ArrayBuffer) {
   const bytes = new Uint8Array(buffer);
   let offset = 0;
   let tagSize = 0;
+  // tslint:disable-next-line: no-conditional-assignment
   while ((tagSize = extractTagSize(bytes, offset)) !== 0)
     offset += tagSize;
   console.log('offset:', offset);
