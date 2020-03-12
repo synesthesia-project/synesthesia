@@ -290,3 +290,5 @@ export function getMetadata(buffer: ArrayBuffer) {
   console.log('offset:', offset);
   return parseAudioFrameHeader(bytes, offset);
 }
+
+export default getMetadata;
