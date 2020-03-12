@@ -1,0 +1,38 @@
+{
+  "name": "@synesthesia-project/gapless-meta",
+  "version": "0.0.1",
+  "description": "Library for parsing gapless padding metadata for audiofiles to enable gapless playback",
+  "keywords": [
+    "webaudio",
+    "gapless",
+    "mpeg",
+    "mp3"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "types": "index.d.js",
+  "author": "Sam Lanning <sam@samlanning.com>",
+  "repository": "https://github.com/synesthesia-project/synesthesia/tree/master/precise-audio",
+  "scripts": {
+    "clean": "gulp clean",
+    "build": "gulp",
+    "tslint": "gulp tslint",
+    "test": "nyc --reporter=text-summary mocha tests/**/*.js"
+  },
+  "files": [
+    "lib/*",
+    "index.js",
+    "index.d.ts",
+    "README.md"
+  ],
+  "devDependencies": {
+    "@synesthesia-project/gulp-util": "~0.0.1",
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.6.8",
+    "chai": "^4.2.0",
+    "gulp": "~4.0.2",
+    "mocha": "^6.1.4",
+    "nyc": "~15.0.0"
+  }
+}
