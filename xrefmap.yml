@@ -68,9 +68,9 @@ references:
   name: EventTarget
   href: api/precise-audio/PreciseAudio.html#_synesthesia_project_precise_audio_PreciseAudio_EventTarget
   fullName: EventTarget
-- uid: '@synesthesia-project/precise-audio.PreciseAudio.loadAudioFile'
-  name: loadAudioFile(File | Blob)
-  href: api/precise-audio/PreciseAudio.html#_synesthesia_project_precise_audio_PreciseAudio_loadAudioFile
+- uid: '@synesthesia-project/precise-audio.PreciseAudio.loadTrack'
+  name: loadTrack(File | Blob | string)
+  href: api/precise-audio/PreciseAudio.html#_synesthesia_project_precise_audio_PreciseAudio_loadTrack
 - uid: '@synesthesia-project/precise-audio.PreciseAudio.muted'
   name: muted
   href: api/precise-audio/PreciseAudio.html#_synesthesia_project_precise_audio_PreciseAudio_muted

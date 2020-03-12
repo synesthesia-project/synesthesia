@@ -875,7 +875,7 @@ as a parameter</p>
   </table>
   
   
-  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_loadAudioFile" data-uid="@synesthesia-project/precise-audio.PreciseAudio.loadAudioFile">loadAudioFile(File | Blob)</h4>
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_loadTrack" data-uid="@synesthesia-project/precise-audio.PreciseAudio.loadTrack">loadTrack(File | Blob | string)</h4>
   <div class="markdown level1 summary"><p>Read and load a new audio file.
 The loaded audio file will be paused once it's loaded,
 and will not play automatically.</p>
@@ -883,7 +883,7 @@ and will not play automatically.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-typeScript hljs">function loadAudioFile(file: File | Blob)</code></pre>
+    <pre><code class="lang-typeScript hljs">function loadTrack(source: File | Blob | string)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -896,12 +896,15 @@ and will not play automatically.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">File | Blob</span></td>
-        <td><em>file</em></td>
+        <td><span class="xref">File | Blob | string</span></td>
+        <td><em>source</em></td>
         <td>
-          <p>A <a href="https://developer.mozilla.org/en-US/docs/Web/API/File">File</a>
-or <a href="https://developer.mozilla.org/en-US/docs/Web/API/Blob">Blob</a>
-object representing the audio file to be played.</p>
+          <p>A <a href="https://developer.mozilla.org/en-US/docs/Web/API/File"><code>File</code></a>,
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Blob"><code>Blob</code></a>
+or <code>string</code> URL representing the audio file to be played.</p>
+<pre><code>          If a `string` is used, the class will attempt to load the
+          file using the fetch API.
+</code></pre>
 
           
         </td>
