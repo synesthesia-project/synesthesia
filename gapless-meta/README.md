@@ -54,7 +54,11 @@ console.log(metadata);
 
 ## TODO
 
-* CRC Verification
+* MP3
+  * CRC Verification
+  * Support APEv2 tags at start of audio files
+  * Support more encoders
+  * Support MPEG Layer 1
 * MP4 AAC Support
 
 ## Inspiration
