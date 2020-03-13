@@ -12,6 +12,20 @@ type PlayStatePlaying = {
    * started playing at the current playback rate
    */
   effectiveStartTimeMillis: number;
+  /**
+   * The exact time (in the AudioBuffer's time coordinate system) that the song
+   * will stop playing,
+   * taking into account gapless padding at the song.
+   *
+   * (Used for accurately scheduling follow-up tracks).
+   *
+   * Note: this will change if the track is paused,
+   * or if the track position of playback speed changes.
+   *
+   * If no gapless metadata is available,
+   * the padding is assumed to be `0`.
+   */
+  stopTime: number;
 };
 
 type PlayState =
@@ -536,13 +550,45 @@ export default class PreciseAudio extends EventTarget {
       source.connect(this.gainNode);
     }
     source.buffer = trackData.buffer;
-    source.start(0, positionMillis / 1000);
+    const gaps = {
+      paddingStartSeconds: 0,
+      paddingEndSeconds: 0
+    };
+    // Get gapless information if available
+    if (trackData.meta?.vbrInfo?.numberOfFrames && trackData.meta.lameInfo) {
+      const samples = trackData.meta.samplesPerFrame *
+        trackData.meta.vbrInfo.numberOfFrames;
+      const realSamples =
+        samples -
+        trackData.meta.lameInfo.paddingStart -
+        trackData.meta.lameInfo.paddingEnd;
+      if (trackData.buffer.length === realSamples) {
+        console.log('Loaded track already gapless');
+      } else if (trackData.buffer.length === samples) {
+        gaps.paddingStartSeconds =
+          1 / trackData.meta.sampleRate * trackData.meta.lameInfo.paddingStart;
+        gaps.paddingEndSeconds =
+          1 / trackData.meta.sampleRate * trackData.meta.lameInfo.paddingEnd;
+        console.log('Adjusting for gapless playback');
+      } else {
+        console.log('Mismatch between gapless metadata and loaded audio');
+      }
+    } else {
+      console.log('Unable to get gapless metadata from track', trackData.meta);
+    }
+    const stopTime =
+      startTime +
+      trackData.buffer.duration -
+      gaps.paddingStartSeconds -
+      gaps.paddingEndSeconds;
+    source.start(startTime, positionMillis / 1000 + gaps.paddingStartSeconds);
     trackData.playState = {
       state: 'playing',
       suppressEndedEvent: false,
       source,
       effectiveStartTimeMillis:
-        startTime * 1000 - positionMillis / this._playbackRate
+        startTime * 1000 - positionMillis / this._playbackRate,
+      stopTime
     };
     source.addEventListener('ended',
       this.createTrackEndedListener(trackData.playState));
