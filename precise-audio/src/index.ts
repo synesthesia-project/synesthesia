@@ -338,7 +338,7 @@ export default class PreciseAudio extends EventTarget {
     this._tracks.splice(
       m + 1,
       this._tracks.length - m - 1,
-      ...followingSongs.map(source => ({ source }))
+      ...followingSongs.slice(m).map(source => ({ source }))
       );
     this.prepareUpcomingTracks();
   }

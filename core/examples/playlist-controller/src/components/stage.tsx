@@ -147,6 +147,7 @@ export class Stage extends React.Component<{}, State> {
     // TODO: send updated list to precise audio
     // this.audio.loadTrack(file); ...
     this.audio.updateTracks(...tracks);
+    console.log('tracks', this.audio.tracks());
   }
 
   private updatePlayState() {
