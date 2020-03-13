@@ -6,17 +6,29 @@ import { DEFAULT_SYNESTHESIA_PORT } from '@synesthesia-project/core/lib/constant
 
 import PreciseAudio from '@synesthesia-project/precise-audio';
 
-export class Stage extends React.Component<{}, {}> {
+interface Meta {
+  title: string;
+  artist?: string;
+  album?: string;
+}
+
+
+interface State {
+  tracks: File[];
+  meta: Map<File, Meta>;
+}
+
+export class Stage extends React.Component<{}, State> {
 
   private endpoint: Promise<ControllerEndpoint> | null = null;
   private readonly audio = new PreciseAudio();
-  private meta: {
-    title: string, artist?: string, album?: string;
-  } | null = null;
 
   public constructor(props: {}) {
     super(props);
-    this.state = {};
+    this.state = {
+      tracks: [],
+      meta: new Map()
+    };
 
     this.loadAudioFile = this.loadAudioFile.bind(this);
     this.updatePlayState = this.updatePlayState.bind(this);
@@ -89,41 +101,64 @@ export class Stage extends React.Component<{}, {}> {
   private loadAudioFile(ev: React.ChangeEvent<HTMLInputElement>) {
     const files = ev.target.files;
     if (files) {
-      const file = files[0];
-      const url = URL.createObjectURL(file);
-      const parseID3 = () => {
-        universalParse(url).then(tag => {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        this.setState(state => {
+          const s = {
+            tracks: state.tracks.slice()
+          };
+          s.tracks.push(file);
+          this.tracksUpdated(s.tracks);
+          return s;
+        });
+
+        universalParse(file).then(tag => {
           if (tag.title) {
-            this.meta = {
+            const meta: Meta = {
               title: tag.title,
               artist: tag.artist,
               album: tag.album
             };
-            this.updatePlayState();
+            this.setState(state => {
+              const s = {
+                meta: new Map(state.meta)
+              };
+              s.meta.set(file, meta);
+              this.updatePlayState();
+              return s;
+            });
           }
         });
-      };
-      // Alternative Loading Mechanism:
-      // this.audio.src = url;
-      // this.audio.addEventListener('canplaythrough', parseID3);
-      this.audio.loadTrack(file).then(parseID3);
+      }
     } else {
       console.error('no files');
     }
     ev.target.value = '';
   }
 
+  /**
+   * Called when a user action has triggered the list of tracks to change
+   */
+  private tracksUpdated(tracks: File[]) {
+    console.log('list of tracks has been updated');
+    // TODO: send updated list to precise audio
+    // this.audio.loadTrack(file); ...
+    this.audio.updateTracks(...tracks);
+  }
+
   private updatePlayState() {
-    console.log(this.meta);
     this.getEndpoint().then(endpoint => {
-      if (!this.meta) return;
+      const track = this.state.tracks[0];
+      if (!track) return;
+      const meta = this.state.meta.get(track);
+      if (!meta) return;
       endpoint.sendState({layers: [{
         // TODO: optionally send file path instead of meta
         file: {
           type: 'meta' as 'meta',
-          title: this.meta.title,
-          artist: this.meta.artist,
-          album: this.meta.album,
+          title: meta.title,
+          artist: meta.artist,
+          album: meta.album,
           lengthMillis: this.audio.duration * 1000
         },
         state: this.audio.paused ? {
@@ -146,10 +181,27 @@ export class Stage extends React.Component<{}, {}> {
   public render() {
     return (
       <div>
-        <input id="file_picker" type="file" onChange={this.loadAudioFile} />
         <div>
+          <input id="file_picker" type="file" onChange={this.loadAudioFile} multiple />
           <button onClick={this.playPause}>Play / Pause</button>
         </div>
+        <p><strong>Tracks:</strong></p>
+        <ul>
+          {this.state.tracks.map((track, i) => {
+            const meta = this.state.meta.get(track);
+            return (
+              <li key={i}>
+                {track.name}
+                {meta && (<span>
+                  {' - '}
+                  {meta.title}
+                  {meta.artist && ` - ${meta.artist}`}
+                  {meta.album && ` - ${meta.album}`}
+                </span>)}
+              </li>
+            );
+          })}
+        </ul>
       </div>
     );
   }
