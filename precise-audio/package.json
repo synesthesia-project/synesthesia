@@ -22,7 +22,8 @@
     "README.md"
   ],
   "dependencies": {
-    "soundbank-pitch-shift": "~1.0.3"
+    "soundbank-pitch-shift": "~1.0.3",
+    "@synesthesia-project/gapless-meta": "^0.0.1"
   },
   "devDependencies": {
     "@synesthesia-project/gulp-util": "~0.0.1",

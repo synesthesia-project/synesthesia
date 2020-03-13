@@ -5,6 +5,7 @@ dependencies:
   '@rush-temp/core': 'file:projects/core.tgz'
   '@rush-temp/core-example-consumer': 'file:projects/core-example-consumer.tgz'
   '@rush-temp/core-example-controller': 'file:projects/core-example-controller.tgz'
+  '@rush-temp/core-example-playlist-controller': 'file:projects/core-example-playlist-controller.tgz'
   '@rush-temp/gapless-meta': 'file:projects/gapless-meta.tgz'
   '@rush-temp/gulp-util': 'file:projects/gulp-util.tgz'
   '@rush-temp/midi-consoles': 'file:projects/midi-consoles.tgz'
@@ -349,6 +350,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-u/SJDyXwuihpwjXy7hOOghagLEV1KdAST6syfnOk6QZAMzZuWZqXy5aYYZbh8Jdpd4escVFP0MvftHNDb9pruA==
+  /@types/node/12.12.30:
+    dev: false
+    resolution:
+      integrity: sha512-sz9MF/zk6qVr3pAnM0BSQvYIBK44tS75QC5N+VbWSE4DjCV/pJ+UzCW/F+vVnl7TkOPcuwQureKNtSSwjBTaMg==
   /@types/prop-types/15.7.3:
     dev: false
     resolution:
@@ -359,6 +364,12 @@ packages:
     dev: false
     resolution:
       integrity: sha512-fya9xteU/n90tda0s+FtN5Ym4tbgxpq/hb/Af24dvs6uYnYn+fspaxw5USlw0R8apDNwxsqumdRoCoKitckQqw==
+  /@types/react-dom/16.9.5:
+    dependencies:
+      '@types/react': 16.9.23
+    dev: false
+    resolution:
+      integrity: sha512-BX6RQ8s9D+2/gDhxrj8OW+YD4R+8hj7FEM/OJHGNR0KipE1h1mSsf39YeyC81qafkq+N3rU3h3RFbLSwE5VqUg==
   /@types/react-native/0.60.23:
     dependencies:
       '@types/prop-types': 15.7.3
@@ -373,6 +384,13 @@ packages:
     dev: false
     resolution:
       integrity: sha512-LikzRslbiufJYHyzbHSW0GrAiff8QYLMBFeZmSxzCYGXKxi8m/1PHX+rsVOwhr7mJNq+VIu2Dhf7U6mjFERK6w==
+  /@types/react/16.9.23:
+    dependencies:
+      '@types/prop-types': 15.7.3
+      csstype: 2.6.9
+    dev: false
+    resolution:
+      integrity: sha512-SsGVT4E7L2wLN3tPYLiF20hmZTPGuzaayVunfgXzUn1x4uHVsKH6QDJQ/TdpHqwsTLd4CwrmQ2vOgxN7gE24gw==
   /@types/spotify-web-playback-sdk/0.1.7:
     dev: false
     resolution:
@@ -1529,6 +1547,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-9Mcn9sFbGBAdmimWb2gLVDtFJzeKtDGIr76TUqmjZrw9LFXBMSU70lcs+C0/7fyCd6iBDqmksUcCOUIkisPHsQ==
+  /csstype/2.6.9:
+    dev: false
+    resolution:
+      integrity: sha512-xz39Sb4+OaTsULgUERcCk+TJj8ylkL4aSVDQiX/ksxbELSqwkgt4d4RD7fovIdgJGSuNYqwZEiVjYY5l0ask+Q==
   /currently-unhandled/0.4.1:
     dependencies:
       array-find-index: 1.0.2
@@ -6304,6 +6326,23 @@ packages:
       integrity: sha512-AE/xjhmcJsVm5T5BiAPqOVnmR7U+Lzvv3XlthfN8OSLtkhAsuSUiWmbO7Qz2K/PIo/RdUwFbPYUhdEWKa0x5Zg==
       tarball: 'file:projects/core-example-controller.tgz'
     version: 0.0.0
+  'file:projects/core-example-playlist-controller.tgz':
+    dependencies:
+      '@types/node': 12.12.30
+      '@types/react': 16.9.23
+      '@types/react-dom': 16.9.5
+      gulp: 4.0.2
+      id3-parser: 2.0.0
+      react: 16.12.0
+      react-dom: 16.12.0_react@16.12.0
+      source-map-loader: 0.2.4
+      webpack: 4.41.6_webpack@4.41.6
+    dev: false
+    name: '@rush-temp/core-example-playlist-controller'
+    resolution:
+      integrity: sha512-ZmvN0mYKy0GULwu32lspxKYMp/YAnXswWYs0t6Ecn/y+X5lsP2DuDaakdRb7jmY9U2UU1Tq/tIE3HoFFGLBsmg==
+      tarball: 'file:projects/core-example-playlist-controller.tgz'
+    version: 0.0.0
   'file:projects/core.tgz':
     dependencies:
       '@types/json-socket': 0.1.17
@@ -6320,6 +6359,7 @@ packages:
       '@types/chai': 4.2.5
       '@types/json-socket': 0.1.17
       '@types/mocha': 5.2.7
+      '@types/node': 12.12.14
       chai: 4.2.0
       gulp: 4.0.2
       mocha: 6.2.2
@@ -6327,7 +6367,7 @@ packages:
     dev: false
     name: '@rush-temp/gapless-meta'
     resolution:
-      integrity: sha512-kxCb1eTt4eGHHEdDIf6U10KkQfSfUZ6wf01C2bM56ewQs78t1vspWps+XMmRTQtLsRmtWRrZW/lN2rVgN14w/A==
+      integrity: sha512-WSGlcApnN3bO+L/0ta7Hh5iMxVZUw3GhD/C5NWp2PfuTzPelOU7mak7nhigqWNaktmGOxkNBSBA7SrxHZiNv3w==
       tarball: 'file:projects/gapless-meta.tgz'
     version: 0.0.0
   'file:projects/gulp-util.tgz':
@@ -6399,7 +6439,7 @@ packages:
     dev: false
     name: '@rush-temp/precise-audio'
     resolution:
-      integrity: sha512-bdwfOGvjli1G1rt73laW7Q0GpEnKtwY3tqwVa4e9XbTdROS3gj1qJTxOfVqqgF1rnI7OYFJnCl9/1vMJryrImg==
+      integrity: sha512-qcn26J6i1GJnqOvkVcHQtRjoAdXlMXX4yCUhe6bFI4kVWgsdWXiy6t49J6qQOf1mN+hZeTQaiP8p1TZgKHN0PA==
       tarball: 'file:projects/precise-audio.tgz'
     version: 0.0.0
   'file:projects/server.tgz':
@@ -6441,6 +6481,7 @@ specifiers:
   '@rush-temp/core': 'file:./projects/core.tgz'
   '@rush-temp/core-example-consumer': 'file:./projects/core-example-consumer.tgz'
   '@rush-temp/core-example-controller': 'file:./projects/core-example-controller.tgz'
+  '@rush-temp/core-example-playlist-controller': 'file:./projects/core-example-playlist-controller.tgz'
   '@rush-temp/gapless-meta': 'file:./projects/gapless-meta.tgz'
   '@rush-temp/gulp-util': 'file:./projects/gulp-util.tgz'
   '@rush-temp/midi-consoles': 'file:./projects/midi-consoles.tgz'

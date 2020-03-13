@@ -1,0 +1,33 @@
+{
+  "name": "@synesthesia-project/core-example-playlist-controller",
+  "version": "0.0.1",
+  "description": "Example controller for synesthesia",
+  "license": "MIT",
+  "author": {
+    "name": "Sam Lanning",
+    "email": "sam@samlanning.com",
+    "url": "https://samlanning.com/"
+  },
+  "scripts": {
+    "clean": "gulp clean",
+    "build": "node --no-deprecation node_modules/gulp/bin/gulp.js",
+    "tslint": "gulp tslint"
+  },
+  "private": true,
+  "dependencies": {
+    "@synesthesia-project/core": "^0.0.5",
+    "@synesthesia-project/precise-audio": "^0.1.2"
+  },
+  "devDependencies": {
+    "@synesthesia-project/gulp-util": "~0.0.1",
+    "@types/node": "^12.6.8",
+    "@types/react": "^16.9.13",
+    "@types/react-dom": "~16.9.4",
+    "gulp": "~4.0.2",
+    "id3-parser": "^2.0.0",
+    "react": "~16.12.0",
+    "react-dom": "~16.12.0",
+    "source-map-loader": "~0.2.4",
+    "webpack": "~4.41.2"
+  }
+}
