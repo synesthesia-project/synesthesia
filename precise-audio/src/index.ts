@@ -596,16 +596,33 @@ export default class PreciseAudio extends EventTarget {
         samples -
         trackData.meta.lameInfo.paddingStart -
         trackData.meta.lameInfo.paddingEnd;
+      const paddingStartSeconds =
+        1 / trackData.meta.sampleRate * trackData.meta.lameInfo.paddingStart;
+      const paddingEndSeconds =
+        1 / trackData.meta.sampleRate * trackData.meta.lameInfo.paddingEnd;
       if (trackData.buffer.length === realSamples) {
         console.log('Loaded track already gapless');
       } else if (trackData.buffer.length === samples) {
-        gaps.paddingStartSeconds =
-          1 / trackData.meta.sampleRate * trackData.meta.lameInfo.paddingStart;
-        gaps.paddingEndSeconds =
-          1 / trackData.meta.sampleRate * trackData.meta.lameInfo.paddingEnd;
+        gaps.paddingStartSeconds = paddingStartSeconds;
+        gaps.paddingEndSeconds = paddingEndSeconds;
         console.log('Adjusting for gapless playback');
-      } else {
-        console.log('Mismatch between gapless metadata and loaded audio');
+      } else if (trackData.buffer.length === samples + 1152) {
+        // For some reason, firefox seems to add an additional 1152 samples of
+        // padding to the encoded track.
+        gaps.paddingStartSeconds =
+          paddingStartSeconds + 1 / trackData.meta.sampleRate * 576;
+        gaps.paddingEndSeconds =
+          paddingEndSeconds + 1 / trackData.meta.sampleRate * 576;
+      console.log('Adjusting for gapless playback, with additional 1152 samples');
+    } else {
+        console.log(
+          'Mismatch between gapless metadata and loaded audio, full:',
+          samples,
+          'real:',
+          realSamples,
+          'decoded:',
+          trackData.buffer.length
+        );
       }
     } else {
       console.log('Unable to get gapless metadata from track', trackData.meta);
