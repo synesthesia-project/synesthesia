@@ -36,9 +36,17 @@ export class Stage extends React.Component<{}, State> {
 
     this.audio.addEventListener('play', this.updatePlayState);
     this.audio.addEventListener('pause', this.updatePlayState);
-    this.audio.addEventListener('ended', this.updatePlayState);
+    this.audio.addEventListener('ended', () => {
+      console.log('ended');
+      this.updatePlayState();
+    });
     this.audio.addEventListener('next', () => {
-      console.log('next track!', this.audio.tracks());
+      const tracks = this.audio.tracks();
+      // remove track from list
+      this.setState(state => ({
+        tracks: state.tracks.slice(1)
+      }));
+      this.updatePlayState();
     });
     this.audio.addEventListener('seeked', this.updatePlayState);
     this.audio.addEventListener('error', event => {
@@ -152,9 +160,9 @@ export class Stage extends React.Component<{}, State> {
 
   private updatePlayState() {
     this.getEndpoint().then(endpoint => {
-      const track = this.state.tracks[0];
+      const track = this.audio.tracks()[0];
       if (!track) return;
-      const meta = this.state.meta.get(track);
+      const meta = this.state.meta.get(track as File);
       if (!meta) return;
       endpoint.sendState({layers: [{
         // TODO: optionally send file path instead of meta
