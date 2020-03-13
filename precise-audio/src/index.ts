@@ -186,7 +186,7 @@ export default class PreciseAudio extends EventTarget {
     volume: 1,
     muted: false
   };
-  private tracks: Track[] = [];
+  private _tracks: Track[] = [];
 
   public constructor() {
     super();
@@ -196,7 +196,7 @@ export default class PreciseAudio extends EventTarget {
   }
 
   private currentTrack() {
-    return strictArrayGet(this.tracks, 0);
+    return strictArrayGet(this._tracks, 0);
   }
 
   private updateGain() {
@@ -251,7 +251,7 @@ export default class PreciseAudio extends EventTarget {
       if (track?.data?.state !== 'ready' || track.data.playState !== state)
         return;
       if (state.state === 'playing' && !state.suppressEndedEvent) {
-        if (this.tracks.length === 1) {
+        if (this._tracks.length === 1) {
           // If there are no following tracks,
           // keep the last track, and moe the cursor to the beginning
           track.data.playState = {
@@ -260,7 +260,7 @@ export default class PreciseAudio extends EventTarget {
           };
           this.sendEvent('ended');
         } else {
-          this.tracks = this.tracks.slice(1);
+          this._tracks = this._tracks.slice(1);
           this.sendEvent('next');
         }
       }
@@ -289,11 +289,11 @@ export default class PreciseAudio extends EventTarget {
       this.stopWithoutEnding(currentTrack.data.playState);
     }
     if (source === '') {
-      this.tracks = [];
+      this._tracks = [];
       return;
     }
     const track: Track = { source };
-    this.tracks = [track];
+    this._tracks = [track];
     this.prepareUpcomingTracks();
   }
 
@@ -310,9 +310,9 @@ export default class PreciseAudio extends EventTarget {
           currentTrack.data.playState.state === 'playing') {
         this.stopWithoutEnding(currentTrack.data.playState);
       }
-      this.tracks = [];
+      this._tracks = [];
       if (firstTrack)
-        this.tracks.push({
+        this._tracks.push({
           source: firstTrack
         });
     }
@@ -331,16 +331,24 @@ export default class PreciseAudio extends EventTarget {
      * At the end of the loop, it will be equal to the number of tracks in
      */
     let m: number;
-    for (m = 0; m < followingSongs.length && m < this.tracks.length - 1; m++) {
-      if (this.tracks[m + 1].source !== followingSongs[m])
+    for (m = 0; m < followingSongs.length && m < this._tracks.length - 1; m++) {
+      if (this._tracks[m + 1].source !== followingSongs[m])
         break;
     }
-    this.tracks.splice(
+    this._tracks.splice(
       m + 1,
-      this.tracks.length - m - 1,
+      this._tracks.length - m - 1,
       ...followingSongs.map(source => ({ source }))
       );
     this.prepareUpcomingTracks();
+  }
+
+  /**
+   * Get the list of tracks, including the currently playing track
+   * and all tracks that are queued up to play afterward.
+   */
+  public tracks(): Array<File | Blob | string> {
+    return this._tracks.map(t => t.source);
   }
 
   /**
@@ -348,15 +356,22 @@ export default class PreciseAudio extends EventTarget {
    * tracks
    */
   private prepareUpcomingTracks() {
-    // TODO: enqueue tracks based on remaining play time
-    for (let i = 0; i < this.tracks.length; i++) {
-      const track = this.tracks[i];
+    // TODO: only load tracks within specific timeframe of required playback
+    let trackPlayingState: PlayStatePlaying | null = null;
+    for (let i = 0; i < this._tracks.length; i++) {
+      const previousTrackPlayingState = trackPlayingState;
+      trackPlayingState = null;
+      const track = this._tracks[i];
+
+      // TODO: set to true only when within thresholds
+      const withinDownloadThreashold = true;
+      const withinDecodeThreshold = true;
 
       if (!track.data) {
 
         // Track is not downloaded, do we need to download it?
 
-        if (i === 0) {
+        if (i === 0 || withinDownloadThreashold) {
           let download: Promise<Blob | File>;
           // Fetch the file if neccesary
           if (typeof track.source === 'string') {
@@ -400,7 +415,7 @@ export default class PreciseAudio extends EventTarget {
 
         // Track is not decoded, do we need to decode it?
 
-        if (i === 0) {
+        if (i === 0 || withinDecodeThreshold) {
           const bytes = track.data.bytes;
           const meta = track.data.meta;
           track.data = {
@@ -416,7 +431,7 @@ export default class PreciseAudio extends EventTarget {
                 state: 'paused', positionMillis: 0
               }
             }
-            if (this.tracks[0] === track) {
+            if (this._tracks[0] === track) {
               // If this is the current track,
               // Trigger relevant events
               this.sendEvent('loadeddata');
@@ -439,12 +454,25 @@ export default class PreciseAudio extends EventTarget {
           // Track is ready and paused, do we need to schedule it to play?
 
           if (i === 0 && track.playOnLoad) {
-            this.playFrom(0);
+            this.playFrom(0, true);
             this.sendEvent('play');
             track.playOnLoad.callback();
-            // TODO: schedule future playback
-            // (also do in this.playFrom())
           }
+
+          if (i > 0 && previousTrackPlayingState) {
+            // previous track is playing, let's enqueue  next track
+            this.scheduleTrack(
+              previousTrackPlayingState.stopTime,
+              track.data,
+              0
+            );
+          }
+        }
+
+        // If the track is currently playing, or has been changed to playing
+        // update previousTrackPlayingState
+        if (track.data.playState.state === 'playing') {
+          trackPlayingState = track.data.playState;
         }
       }
     }
@@ -497,17 +525,20 @@ export default class PreciseAudio extends EventTarget {
 
   /**
    * Play the current song from the given timestamp.
-   * And cancel the scheduling of any upcoming songs
+   * And cancel the scheduling of any upcoming songs.
+   *
+   * @param dontPrepareUpcomingTracks Set to `true` when being called from
+   * `this.prepareUpcomingTracks()`, to avoid calling the callee uneccesarily.
    */
-  private playFrom(positionMillis: number) {
+  private playFrom(positionMillis: number, dontPrepareUpcomingTracks?: true) {
     // Play with a little delay
     const track = this.currentTrack();
     if (track && track.data?.state === 'ready') {
       const startTime = this.context.currentTime + 0.05;
       this.scheduleTrack(startTime, track.data, positionMillis);
       // Deschedule any following tracks
-      for (let i = 1; i < this.tracks.length; i++) {
-        const track = this.tracks[i];
+      for (let i = 1; i < this._tracks.length; i++) {
+        const track = this._tracks[i];
         if (track?.data?.state === 'ready' &&
           track.data.playState.state === 'playing') {
           this.stopWithoutEnding(track.data.playState);
@@ -516,6 +547,9 @@ export default class PreciseAudio extends EventTarget {
           };
         }
       }
+    }
+    if (!dontPrepareUpcomingTracks) {
+      this.prepareUpcomingTracks();
     }
   }
 
@@ -857,6 +891,15 @@ export default class PreciseAudio extends EventTarget {
    *                 as a parameter
    */
   public addEventListener(event: 'loadeddata', listener: Listener): void;
+
+  /**
+   * Fired when the the next song has started playing (gaplessly).
+   *
+   * @param listener an [EventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventListener)
+   *                 that expects a {@link @synesthesia-project/precise-audio.PreciseAudioEvent}
+   *                 as a parameter
+   */
+  public addEventListener(event: 'next', listener: Listener): void;
 
   /**
    * Fired when the audio starts playing

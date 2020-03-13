@@ -37,6 +37,9 @@ export class Stage extends React.Component<{}, State> {
     this.audio.addEventListener('play', this.updatePlayState);
     this.audio.addEventListener('pause', this.updatePlayState);
     this.audio.addEventListener('ended', this.updatePlayState);
+    this.audio.addEventListener('next', () => {
+      console.log('next track!', this.audio.tracks());
+    });
     this.audio.addEventListener('seeked', this.updatePlayState);
     this.audio.addEventListener('error', event => {
       console.log('LOADING ERROR!', event.error);
