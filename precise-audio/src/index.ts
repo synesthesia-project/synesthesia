@@ -86,11 +86,7 @@ export default class PreciseAudio extends EventTarget {
    *          that resolves once the audio file has been successfully loaded.
    */
   public loadTrack(source: File | Blob | string) {
-    const currentTrack = this.state.currentTrack();
-    if (currentTrack?.data?.state === 'ready' &&
-      currentTrack.data.playState.state === 'playing') {
-      playback.stopWithoutEnding(currentTrack.data.playState);
-    }
+    playback.stopAllTracksWithoutEnding(this.state.tracks);
     if (source === '') {
       this.state.tracks = [];
       return;
@@ -109,10 +105,7 @@ export default class PreciseAudio extends EventTarget {
     const currentTrack = this.state.currentTrack();
     if (!firstTrack || currentTrack?.source !== firstTrack) {
       // Currently playing track needs updating
-      if (currentTrack?.data?.state === 'ready' &&
-          currentTrack.data.playState.state === 'playing') {
-        playback.stopWithoutEnding(currentTrack.data.playState);
-      }
+      playback.stopAllTracksWithoutEnding(this.state.tracks);
       this.state.tracks = [];
       if (firstTrack)
         this.state.tracks.push({
@@ -302,13 +295,10 @@ export default class PreciseAudio extends EventTarget {
     if (track?.data?.state === 'ready' &&
         track.data.playState.state === 'playing') {
       const nowMillis = this.state.context.currentTime * 1000;
-      playback.stopWithoutEnding(track.data.playState);
-      track.data.playState = {
-        state: 'paused',
-        positionMillis:
-          (nowMillis - track.data.playState.effectiveStartTimeMillis) *
-          this.state.playbackRate
-      };
+      const positionMillis =
+      (nowMillis - track.data.playState.effectiveStartTimeMillis) *
+        this.state.playbackRate
+      playback.stopAllTracksWithoutEnding(this.state.tracks, positionMillis);
       if (!suppressEvent)
         this.state.sendEvent('pause');
     }
@@ -366,7 +356,6 @@ export default class PreciseAudio extends EventTarget {
         track.data.playState.positionMillis = positionMillis;
         this.state.sendEvent('timeupdate');
       } else {
-        playback.stopWithoutEnding(track.data.playState);
         playback.playCurrentTrackFrom(this.state, positionMillis);
       }
       this.state.sendEvent('seeked');

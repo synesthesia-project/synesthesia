@@ -1,6 +1,6 @@
 import PitchShift = require('soundbank-pitch-shift');
 
-import { PlayStatePlaying, TrackDataReady } from './data';
+import { Track, PlayStatePlaying, TrackDataReady } from './data';
 import { prepareUpcomingTracks } from './scheduling';
 import { State } from './state';
 
@@ -13,22 +13,13 @@ import { State } from './state';
  */
 export function playCurrentTrackFrom(
     state: State, positionMillis: number, dontPrepareUpcomingTracks ?: true) {
+  // Stop / Deschedule all currently playing tracks
+  stopAllTracksWithoutEnding(state.tracks);
   // Play with a little delay
   const track = state.currentTrack();
   if (track && track.data?.state === 'ready') {
     const startTime = state.context.currentTime + 0.05;
     playTrack(state, startTime, track.data, positionMillis);
-    // Deschedule any following tracks
-    for (let i = 1; i < state.tracks.length; i++) {
-      const track = state.tracks[i];
-      if (track?.data?.state === 'ready' &&
-        track.data.playState.state === 'playing') {
-        stopWithoutEnding(track.data.playState);
-        track.data.playState = {
-          state: 'paused', positionMillis: 0
-        };
-      }
-    }
   }
   if (!dontPrepareUpcomingTracks) {
     prepareUpcomingTracks(state);
@@ -154,9 +145,28 @@ function createTrackEndedListener(state: State, playState: PlayStatePlaying) {
   };
 }
 
-export function stopWithoutEnding(state: PlayStatePlaying) {
-  state.suppressEndedEvent = true;
-  state.source.stop();
+/**
+ * Stop the current track, and any other tracks that have already been scheduled
+ * to start playing once the current track has ended,
+ * while ignoring the 'ended' event that will
+ * be dispatched by the `AudioBufferSourceNode`.
+ *
+ * @param positionMillis the value to use for the positionMillis property of the
+ *                       current track (track `0`) once paused.
+ */
+export function stopAllTracksWithoutEnding(tracks: Track[], positionMillis = 0) {
+  for (let i = 0; i < tracks.length; i++) {
+    const track = tracks[i];
+    if (track.data?.state === 'ready' &&
+        track.data.playState.state === 'playing') {
+      track.data.playState.suppressEndedEvent = true;
+      track.data.playState.source.stop();
+      track.data.playState = {
+        state: 'paused',
+        positionMillis: i === 0 ? positionMillis : 0
+      };
+    }
+  }
 }
 
 /**

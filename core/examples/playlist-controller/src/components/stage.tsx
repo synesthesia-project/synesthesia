@@ -44,7 +44,7 @@ export class Stage extends React.Component<{}, State> {
       for (const track of this.audio.trackStates()) {
         trackStates.set(track.src as File, track);
       }
-      this.setState({trackStates})
+      this.setState({trackStates});
     });
     this.audio.addEventListener('ended', () => {
       console.log('ended');
