@@ -171,17 +171,16 @@ export class Stage extends React.Component<{}, State> {
 
   private updatePlayState() {
     this.getEndpoint().then(endpoint => {
-      const track = this.audio.tracks()[0];
+      const track = this.audio.tracks()[0] as File | undefined;
       if (!track) return;
-      const meta = this.state.meta.get(track as File);
-      if (!meta) return;
+      const meta = this.state.meta.get(track);
       endpoint.sendState({layers: [{
         // TODO: optionally send file path instead of meta
         file: {
           type: 'meta' as 'meta',
-          title: meta.title,
-          artist: meta.artist,
-          album: meta.album,
+          title: meta?.title || track.name,
+          artist: meta?.artist,
+          album: meta?.album,
           lengthMillis: this.audio.duration * 1000
         },
         state: this.audio.paused ? {
