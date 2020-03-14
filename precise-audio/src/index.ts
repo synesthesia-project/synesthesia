@@ -84,9 +84,20 @@ type Track = {
   data?:
   {
     /**
+     * We are determining the playtime of the track using an Audio element
+     * before fully downloading / loading all bytes into memory.
+     */
+    state: 'preparing-download';
+  } |
+  {
+    /**
      * The file is downloading / being loaded
      */
     state: 'downloading';
+    /**
+     * Total duration of the track in seconds
+     */
+    duration: number;
   } |
   {
     /**
@@ -94,6 +105,10 @@ type Track = {
      * but not decoded
      */
     state: 'downloaded';
+    /**
+     * Total duration of the track in seconds
+     */
+    duration: number;
     /**
      * The raw contents of the audio file
      */
@@ -109,6 +124,10 @@ type Track = {
      */
     state: 'decoding';
     /**
+     * Total duration of the track in seconds
+     */
+    duration: number;
+    /**
      * The metadata of the file, parsed by `@synesthesia-project/gapless-meta`
      */
     meta: Metadata | null;
@@ -122,6 +141,26 @@ type Track = {
     error: Error;
   }
 };
+
+export interface Thresholds {
+  /**
+   * How long before the current song ends will we start to
+   * download the next track, and load it into RAM.
+   *
+   * More precisely, at what point before we run out of ready audio do we start
+   * to download the next track. More than one track may need to be downloaded
+   * and queued when the length of a track is less than this threshold.
+   */
+  downloadThresholdSeconds: number;
+  /**
+   * How long before the current song ends will we start to
+   * decode (uncompress) the next track into PCM.
+   *
+   * This is usually a pretty quick process, but can take some time for longer
+   * tracks. It's good to hold off doing this until later to save on RAM usage.
+   */
+  decodeThresholdSeconds: number;
+}
 
 /**
  * An event triggered by a
@@ -187,6 +226,10 @@ export default class PreciseAudio extends EventTarget {
     muted: false
   };
   private _tracks: Track[] = [];
+  private readonly _thresholds: Thresholds = {
+    downloadThresholdSeconds: 3,
+    decodeThresholdSeconds: 2
+  };
 
   public constructor() {
     super();
@@ -352,56 +395,107 @@ export default class PreciseAudio extends EventTarget {
   }
 
   /**
+   * Configuration options for different thresholds for gapless playback,
+   * this property can't be reassigned, but the properties of the object
+   * it returns can be.
+   *
+   * @readonly
+   */
+  public get thresholds() {
+    return this._thresholds;
+  }
+
+  /**
    * Called whenever we may need to download, decode or schedule any upcoming
    * tracks
    */
   private prepareUpcomingTracks() {
-    // TODO: only load tracks within specific timeframe of required playback
-    let trackPlayingState: PlayStatePlaying | null = null;
+    const now = this.context.currentTime;
+    let trackExpectedPlayingState: {stopTime: number} | null = null;
     for (let i = 0; i < this._tracks.length; i++) {
-      const previousTrackPlayingState = trackPlayingState;
-      trackPlayingState = null;
+      // Type annotation fix for: https://github.com/microsoft/TypeScript/issues/33191
+      const previousTrackExpectedPlayingState: { stopTime: number } | null =
+        trackExpectedPlayingState;
+      trackExpectedPlayingState = null;
       const track = this._tracks[i];
 
-      // TODO: set to true only when within thresholds
-      const withinDownloadThreashold = true;
-      const withinDecodeThreshold = true;
+      /**
+       * How long is the previous track playing until,
+       * if we don't yet know,
+       * this will be undefined.
+       *
+       * Type annotations are fix for:
+       * https://github.com/microsoft/TypeScript/issues/33191
+       */
+      const playingUntil: number | undefined = i === 0 ? now :
+        (previousTrackExpectedPlayingState as any)?.stopTime;
+      const withinDownloadThreshold = i === 0 || true;
+      const withinDecodeThreshold = i === 0 || true;
 
       if (!track.data) {
 
         // Track is not downloaded, do we need to download it?
 
-        if (i === 0 || withinDownloadThreashold) {
-          let download: Promise<Blob | File>;
-          // Fetch the file if neccesary
-          if (typeof track.source === 'string') {
-            download = fetch(track.source).then(r => r.blob());
-          } else {
-            download = Promise.resolve(track.source);
-          }
-          const promise = download.then(file =>
-            new Promise<ArrayBuffer>((resolve, reject) => {
-              const reader = new FileReader();
-              reader.onload = ev => {
-                resolve(ev.target?.result as ArrayBuffer);
-              };
-              reader.onerror = () => {
-                reader.abort();
-                reject(reader.error);
-              };
-              reader.readAsArrayBuffer(file);
-            })
-          );
+        if (withinDownloadThreshold) {
+          console.log('Preloading track: ', track.source);
           track.data = {
-            state: 'downloading'
+            state: 'preparing-download'
           };
-          promise.then(bytes => {
+          // Firstly, use an HTMLAudioElement to get the approximate duration
+          // of the track
+          const durationPromise = new Promise<{ duration: number }>((resolve, reject) => {
+            console.log()
+            const a = new Audio();
+            const src = typeof track.source === 'string' ?
+              track.source : URL.createObjectURL(track.source);
+            a.src = src;
+            a.addEventListener('loadedmetadata', () => {
+              const duration = a.duration;
+              a.src = '';
+              if (typeof track.source !== 'string')
+                URL.revokeObjectURL(src);
+              resolve({duration});
+            });
+            a.addEventListener('error', e => {
+              if (typeof track.source !== 'string')
+                URL.revokeObjectURL(src);
+              reject(e.error);
+            })
+          });
+          durationPromise.then(({duration}) => {
+            let download: Promise<Blob | File>;
+            // Fetch the file if neccesary
+            if (typeof track.source === 'string') {
+              download = fetch(track.source).then(r => r.blob());
+            } else {
+              download = Promise.resolve(track.source);
+            }
+            console.log('Downloading track: ', track.source, 'duration:', duration);
             track.data = {
-              state: 'downloaded',
-              bytes,
-              meta: getMetadata(bytes)
+              state: 'downloading',
+              duration
             };
-            this.prepareUpcomingTracks();
+            return download.then(file =>
+              new Promise<ArrayBuffer>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = ev => {
+                  resolve(ev.target?.result as ArrayBuffer);
+                };
+                reader.onerror = () => {
+                  reader.abort();
+                  reject(reader.error);
+                };
+                reader.readAsArrayBuffer(file);
+              }).then(bytes => {
+                track.data = {
+                  state: 'downloaded',
+                  duration,
+                  bytes,
+                  meta: getMetadata(bytes)
+                };
+                this.prepareUpcomingTracks();
+              })
+            );
           }).catch(error => {
             track.data = {
               state: 'error',
@@ -410,16 +504,33 @@ export default class PreciseAudio extends EventTarget {
             this.dispatchError(error);
           });
         }
+      } else if (track.data.state === 'downloading') {
 
-      } else if(track.data.state === 'downloaded') {
+        // Set the current expected time to play until if possible
+        if (playingUntil !== undefined) {
+          trackExpectedPlayingState = {
+            stopTime: playingUntil + track.data.duration
+          }
+        }
+
+      } else if (track.data.state === 'downloaded') {
+
+        // Set the current expected time to play until if possible
+        if (playingUntil !== undefined) {
+          trackExpectedPlayingState = {
+            stopTime: playingUntil + track.data.duration
+          }
+        }
 
         // Track is not decoded, do we need to decode it?
 
-        if (i === 0 || withinDecodeThreshold) {
+        if (withinDecodeThreshold) {
           const bytes = track.data.bytes;
           const meta = track.data.meta;
+          console.log('Decoding track: ', track.source);
           track.data = {
             state: 'decoding',
+            duration: track.data.duration,
             meta: meta
           };
           this.context.decodeAudioData(bytes).then(buffer => {
@@ -459,10 +570,10 @@ export default class PreciseAudio extends EventTarget {
             track.playOnLoad.callback();
           }
 
-          if (i > 0 && previousTrackPlayingState) {
+          if (i > 0 && previousTrackExpectedPlayingState) {
             // previous track is playing, let's enqueue  next track
             this.scheduleTrack(
-              previousTrackPlayingState.stopTime,
+              previousTrackExpectedPlayingState.stopTime,
               track.data,
               0
             );
@@ -472,7 +583,7 @@ export default class PreciseAudio extends EventTarget {
         // If the track is currently playing, or has been changed to playing
         // update previousTrackPlayingState
         if (track.data.playState.state === 'playing') {
-          trackPlayingState = track.data.playState;
+          trackExpectedPlayingState = track.data.playState;
         }
       }
     }

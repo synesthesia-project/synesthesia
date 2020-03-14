@@ -102,3 +102,9 @@ audio.loadAudioFile(...);
 
 Full documentation on the `PreciseAudio` api can be found
 [on the synesthesia project website](https://synesthesia-project.org/api/precise-audio/PreciseAudio.html).
+
+## TODO
+
+* Allow specifying a threshold for maximum length of a song to fully decode,
+  disabling gapless playback and reducing precision for songs outside that
+  threshold by falling back to using HTMLAudioElement internally.
