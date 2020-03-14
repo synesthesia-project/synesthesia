@@ -74,6 +74,13 @@ type TrackDataReady = {
 type Track = {
   source: TrackSource;
   /**
+   * Timers scheduled to trigger downloads or decoding for this track
+   */
+  timeouts?: {
+    download?: number;
+    decode?: number;
+  }
+  /**
    * If set, we need to start playing as soon as the track has loaded,
    * and call the given callback.
    */
@@ -227,7 +234,7 @@ export default class PreciseAudio extends EventTarget {
   };
   private _tracks: Track[] = [];
   private readonly _thresholds: Thresholds = {
-    downloadThresholdSeconds: 3,
+    downloadThresholdSeconds: 10,
     decodeThresholdSeconds: 2
   };
 
@@ -409,7 +416,7 @@ export default class PreciseAudio extends EventTarget {
    * Called whenever we may need to download, decode or schedule any upcoming
    * tracks
    */
-  private prepareUpcomingTracks() {
+  private prepareUpcomingTracks = () => {
     const now = this.context.currentTime;
     let trackExpectedPlayingState: {stopTime: number} | null = null;
     for (let i = 0; i < this._tracks.length; i++) {
@@ -421,30 +428,56 @@ export default class PreciseAudio extends EventTarget {
 
       /**
        * How long is the previous track playing until,
-       * if we don't yet know,
-       * this will be undefined.
+       * if we don't yet know, this will be undefined.
        *
        * Type annotations are fix for:
        * https://github.com/microsoft/TypeScript/issues/33191
        */
       const playingUntil: number | undefined = i === 0 ? now :
         (previousTrackExpectedPlayingState as any)?.stopTime;
-      const withinDownloadThreshold = i === 0 || true;
-      const withinDecodeThreshold = i === 0 || true;
+
+      // If we don't know when the previous song was playing until,
+      // no more actions will be done for the remaining tracks.
+      if (playingUntil === undefined) return;
+
+      const timeRemaining = playingUntil - now;
+      const withinDownloadThreshold = i === 0 ||
+        timeRemaining < this._thresholds.downloadThresholdSeconds;
+      const withinDecodeThreshold = i === 0 ||
+        timeRemaining < this._thresholds.decodeThresholdSeconds;
+
+      // Schedule timers for preparing next tracks at thresholds
+      // (with a few extra milliseconds)
+      if (!withinDownloadThreshold) {
+        const diff = timeRemaining - this._thresholds.downloadThresholdSeconds;
+        const millis = Math.max(0, diff * 1000) + 10;
+        if (track.timeouts?.download)
+          clearTimeout(track.timeouts.download);
+        track.timeouts = track.timeouts || {};
+        track.timeouts.download =
+          setTimeout(this.prepareUpcomingTracks, millis);
+      }
+      if (!withinDecodeThreshold) {
+        const diff = timeRemaining - this._thresholds.decodeThresholdSeconds;
+        const millis = Math.max(0, diff * 1000) + 10;
+        if (track.timeouts?.decode)
+          clearTimeout(track.timeouts?.decode);
+        track.timeouts = track.timeouts || {};
+        track.timeouts.decode =
+          setTimeout(this.prepareUpcomingTracks, millis);
+      }
 
       if (!track.data) {
 
         // Track is not downloaded, do we need to download it?
 
         if (withinDownloadThreshold) {
-          console.log('Preloading track: ', track.source);
           track.data = {
             state: 'preparing-download'
           };
           // Firstly, use an HTMLAudioElement to get the approximate duration
           // of the track
           const durationPromise = new Promise<{ duration: number }>((resolve, reject) => {
-            console.log()
             const a = new Audio();
             const src = typeof track.source === 'string' ?
               track.source : URL.createObjectURL(track.source);
@@ -470,7 +503,6 @@ export default class PreciseAudio extends EventTarget {
             } else {
               download = Promise.resolve(track.source);
             }
-            console.log('Downloading track: ', track.source, 'duration:', duration);
             track.data = {
               state: 'downloading',
               duration
@@ -527,7 +559,6 @@ export default class PreciseAudio extends EventTarget {
         if (withinDecodeThreshold) {
           const bytes = track.data.bytes;
           const meta = track.data.meta;
-          console.log('Decoding track: ', track.source);
           track.data = {
             state: 'decoding',
             duration: track.data.duration,
