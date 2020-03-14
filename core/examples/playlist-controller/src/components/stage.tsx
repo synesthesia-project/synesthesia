@@ -4,7 +4,7 @@ import universalParse from 'id3-parser/lib/universal';
 import { ControllerEndpoint } from '@synesthesia-project/core/lib/protocols/control';
 import { DEFAULT_SYNESTHESIA_PORT } from '@synesthesia-project/core/lib/constants';
 
-import PreciseAudio from '@synesthesia-project/precise-audio';
+import PreciseAudio, {TrackState} from '@synesthesia-project/precise-audio';
 
 interface Meta {
   title: string;
@@ -12,10 +12,11 @@ interface Meta {
   album?: string;
 }
 
-
 interface State {
   tracks: File[];
   meta: Map<File, Meta>;
+  trackStates: Map<File, TrackState>;
+  now: number;
 }
 
 export class Stage extends React.Component<{}, State> {
@@ -27,7 +28,9 @@ export class Stage extends React.Component<{}, State> {
     super(props);
     this.state = {
       tracks: [],
-      meta: new Map()
+      meta: new Map(),
+      trackStates: new Map(),
+      now: performance.now()
     };
 
     this.loadAudioFile = this.loadAudioFile.bind(this);
@@ -36,6 +39,13 @@ export class Stage extends React.Component<{}, State> {
 
     this.audio.addEventListener('play', this.updatePlayState);
     this.audio.addEventListener('pause', this.updatePlayState);
+    this.audio.addEventListener('trackstateupdate', () => {
+      const trackStates = new Map<File, TrackState>();
+      for (const track of this.audio.trackStates()) {
+        trackStates.set(track.src as File, track);
+      }
+      this.setState({trackStates})
+    });
     this.audio.addEventListener('ended', () => {
       console.log('ended');
       this.updatePlayState();
@@ -58,6 +68,7 @@ export class Stage extends React.Component<{}, State> {
     (window as any).a = this.audio;
 
     setInterval(this.updatePlayState, 1000);
+    requestAnimationFrame(this.updateNow);
   }
 
   private getEndpoint(): Promise<ControllerEndpoint> {
@@ -190,7 +201,17 @@ export class Stage extends React.Component<{}, State> {
     this.audio.paused ? this.audio.play() : this.audio.pause();
   }
 
+  private timeDisplay(millis: number) {
+    return `${Math.round(millis / 100) / 10}s`;
+  }
+
+  private updateNow = () => {
+    requestAnimationFrame(this.updateNow);
+    this.setState({ now: performance.now() });
+  }
+
   public render() {
+    const now = this.state.now;
     return (
       <div>
         <div>
@@ -201,6 +222,7 @@ export class Stage extends React.Component<{}, State> {
         <ul>
           {this.state.tracks.map((track, i) => {
             const meta = this.state.meta.get(track);
+            const state = this.state.trackStates.get(track);
             return (
               <li key={i}>
                 {track.name}
@@ -209,6 +231,12 @@ export class Stage extends React.Component<{}, State> {
                   {meta.title}
                   {meta.artist && ` - ${meta.artist}`}
                   {meta.album && ` - ${meta.album}`}
+                </span>)}
+                {state && (<span>
+                  {' - '}
+                  {state.state !== 'download-scheduled' && state.state !== 'decoding-scheduled' && state.state}
+                  {state.state === 'download-scheduled' && `downloading in: ${this.timeDisplay(state.downloadingAt - now)}`}
+                  {state.state === 'decoding-scheduled' && `decoding in: ${this.timeDisplay(state.decodingAt - now)}`}
                 </span>)}
               </li>
             );

@@ -51,6 +51,7 @@ type EventTypes =
   | 'ratechange'
   | 'seeked'
   | 'timeupdate'
+  | 'trackstateupdate'
   | 'volumechange';
 
 type TrackSource = string | File | Blob;
@@ -78,7 +79,9 @@ type Track = {
    */
   timeouts?: {
     download?: number;
+    downloadScheduledAt?: number;
     decode?: number;
+    decodeScheduledAt?: number;
   }
   /**
    * If set, we need to start playing as soon as the track has loaded,
@@ -148,6 +151,34 @@ type Track = {
     error: Error;
   }
 };
+
+/**
+ * Status representing the current load state of various tracks
+ */
+export type TrackState = {
+  src: string | File | Blob;
+} & (
+  {
+    state: 'none' | 'idle' | 'preparing-download' | 'downloading' | 'decoding' | 'ready'
+  } | {
+    state: 'download-scheduled';
+    /**
+     * The timestamp (in the same time coordinate system as `performance.now()`)
+     * at which downloading will begin for this file
+     */
+    downloadingAt: number;
+  } | {
+    state: 'decoding-scheduled';
+    /**
+     * The timestamp (in the same time coordinate system as `performance.now()`)
+     * at which this file will be decoded
+     */
+    decodingAt: number;
+  } | {
+    state: 'error';
+    error: Error;
+  }
+);
 
 export interface Thresholds {
   /**
@@ -402,6 +433,46 @@ export default class PreciseAudio extends EventTarget {
   }
 
   /**
+   * Get the download and decode status of every track that is to be played,
+   * including the current one.
+   */
+  public trackStates() {
+    return this._tracks.map<TrackState>(track => {
+      const src = track.source;
+      if (!track.data) {
+        if (track.timeouts?.downloadScheduledAt) {
+          return {
+            src,
+            state: 'download-scheduled',
+            downloadingAt: track.timeouts.downloadScheduledAt
+          };
+        } else {
+          return { src, state: 'none' };
+        }
+      } else {
+        if (track.data.state === 'downloaded') {
+          return {
+            src,
+            state: 'decoding-scheduled',
+            decodingAt: track.timeouts?.decodeScheduledAt || 0
+          };
+        } else if(track.data.state === 'error') {
+          return {
+            src,
+            state: 'error',
+            error: track.data.error
+          };
+        } else {
+          return {
+            src,
+            state: track.data.state
+          };
+        }
+      }
+    })
+  }
+
+  /**
    * Configuration options for different thresholds for gapless playback,
    * this property can't be reassigned, but the properties of the object
    * it returns can be.
@@ -417,6 +488,7 @@ export default class PreciseAudio extends EventTarget {
    * tracks
    */
   private prepareUpcomingTracks = () => {
+    let changesMade = false;
     const now = this.context.currentTime;
     let trackExpectedPlayingState: {stopTime: number} | null = null;
     for (let i = 0; i < this._tracks.length; i++) {
@@ -438,7 +510,7 @@ export default class PreciseAudio extends EventTarget {
 
       // If we don't know when the previous song was playing until,
       // no more actions will be done for the remaining tracks.
-      if (playingUntil === undefined) return;
+      if (playingUntil === undefined) break;
 
       const timeRemaining = playingUntil - now;
       const withinDownloadThreshold = i === 0 ||
@@ -454,8 +526,10 @@ export default class PreciseAudio extends EventTarget {
         if (track.timeouts?.download)
           clearTimeout(track.timeouts.download);
         track.timeouts = track.timeouts || {};
+        track.timeouts.downloadScheduledAt = performance.now() + millis;
         track.timeouts.download =
           setTimeout(this.prepareUpcomingTracks, millis);
+        changesMade = true;
       }
       if (!withinDecodeThreshold) {
         const diff = timeRemaining - this._thresholds.decodeThresholdSeconds;
@@ -463,8 +537,10 @@ export default class PreciseAudio extends EventTarget {
         if (track.timeouts?.decode)
           clearTimeout(track.timeouts?.decode);
         track.timeouts = track.timeouts || {};
+        track.timeouts.decodeScheduledAt = performance.now() + millis;
         track.timeouts.decode =
           setTimeout(this.prepareUpcomingTracks, millis);
+        changesMade = true;
       }
 
       if (!track.data) {
@@ -475,6 +551,7 @@ export default class PreciseAudio extends EventTarget {
           track.data = {
             state: 'preparing-download'
           };
+          changesMade = true;
           // Firstly, use an HTMLAudioElement to get the approximate duration
           // of the track
           const durationPromise = new Promise<{ duration: number }>((resolve, reject) => {
@@ -507,6 +584,7 @@ export default class PreciseAudio extends EventTarget {
               state: 'downloading',
               duration
             };
+            this.sendEvent('trackstateupdate');
             return download.then(file =>
               new Promise<ArrayBuffer>((resolve, reject) => {
                 const reader = new FileReader();
@@ -525,6 +603,7 @@ export default class PreciseAudio extends EventTarget {
                   bytes,
                   meta: getMetadata(bytes)
                 };
+                this.sendEvent('trackstateupdate');
                 this.prepareUpcomingTracks();
               })
             );
@@ -534,6 +613,7 @@ export default class PreciseAudio extends EventTarget {
               error
             };
             this.dispatchError(error);
+            this.sendEvent('trackstateupdate');
           });
         }
       } else if (track.data.state === 'downloading') {
@@ -564,6 +644,7 @@ export default class PreciseAudio extends EventTarget {
             duration: track.data.duration,
             meta: meta
           };
+          changesMade = true;
           this.context.decodeAudioData(bytes).then(buffer => {
             track.data = {
               state: 'ready',
@@ -573,6 +654,7 @@ export default class PreciseAudio extends EventTarget {
                 state: 'paused', positionMillis: 0
               }
             }
+            this.sendEvent('trackstateupdate');
             if (this._tracks[0] === track) {
               // If this is the current track,
               // Trigger relevant events
@@ -588,6 +670,7 @@ export default class PreciseAudio extends EventTarget {
               error
             };
             this.dispatchError(error);
+            this.sendEvent('trackstateupdate');
           });;
         }
       } else if(track.data.state === 'ready') {
@@ -618,6 +701,9 @@ export default class PreciseAudio extends EventTarget {
         }
       }
     }
+
+    if (changesMade)
+      this.sendEvent('trackstateupdate');
   }
 
   /**
@@ -1110,6 +1196,18 @@ export default class PreciseAudio extends EventTarget {
    *                 as a parameter
    */
   public addEventListener(event: 'volumechange', listener: Listener): void;
+
+  /**
+   * Fired when the state of any of the enqueued tracks has changed.
+   *
+   * I.E: called whenever the returned value from `trackStatuses()`
+   * will be different.
+   *
+   * @param listener an [EventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventListener)
+   *                 that expects a {@link @synesthesia-project/precise-audio.PreciseAudioEvent}
+   *                 as a parameter
+   */
+  public addEventListener(event: 'trackstateupdate', listener: Listener): void;
 
   public addEventListener(event: EventTypes, listener: Listener | ErrorListener) {
     super.addEventListener(event, listener as any);
