@@ -856,7 +856,8 @@ export default class PreciseAudio extends EventTarget {
       console.log('Unable to get gapless metadata from track', trackData.meta);
     }
     const stopTime =
-      startTime +
+      startTime -
+      positionMillis / 1000 +
       trackData.buffer.duration -
       gaps.paddingStartSeconds -
       gaps.paddingEndSeconds;
