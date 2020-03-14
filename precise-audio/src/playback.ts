@@ -97,11 +97,11 @@ export function playTrack(state: State, startTime: number, trackData: TrackDataR
     console.log('Unable to get gapless metadata from track', trackData.meta);
   }
   const stopTime =
-    startTime -
-    positionMillis / 1000 +
-    trackData.buffer.duration -
+    startTime +
+    (trackData.buffer.duration -
     gaps.paddingStartSeconds -
-    gaps.paddingEndSeconds;
+    gaps.paddingEndSeconds -
+    positionMillis / 1000) / state.playbackRate;
   source.start(startTime, positionMillis / 1000 + gaps.paddingStartSeconds);
   trackData.playState = {
     state: 'playing',
