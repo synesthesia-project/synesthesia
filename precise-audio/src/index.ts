@@ -159,7 +159,7 @@ export type TrackState = {
   src: string | File | Blob;
 } & (
   {
-    state: 'none' | 'idle' | 'preparing-download' | 'downloading' | 'decoding' | 'ready'
+    state: 'none' | 'idle' | 'preparing-download' | 'downloading' | 'downloaded' | 'decoding' | 'ready'
   } | {
     state: 'download-scheduled';
     /**
@@ -450,11 +450,12 @@ export default class PreciseAudio extends EventTarget {
           return { src, state: 'none' };
         }
       } else {
-        if (track.data.state === 'downloaded') {
+        if (track.data.state === 'downloaded' &&
+            track.timeouts?.decodeScheduledAt) {
           return {
             src,
             state: 'decoding-scheduled',
-            decodingAt: track.timeouts?.decodeScheduledAt || 0
+            decodingAt: track.timeouts.decodeScheduledAt
           };
         } else if(track.data.state === 'error') {
           return {
@@ -498,6 +499,17 @@ export default class PreciseAudio extends EventTarget {
       trackExpectedPlayingState = null;
       const track = this._tracks[i];
 
+      // Clear any previous timeouts for this track
+      if (track.timeouts?.download) {
+        clearTimeout(track.timeouts.download);
+        changesMade = true;
+      }
+      if (track.timeouts?.decode) {
+        clearTimeout(track.timeouts?.decode);
+        changesMade = true;
+      }
+      track.timeouts = {};
+
       /**
        * How long is the previous track playing until,
        * if we don't yet know, this will be undefined.
@@ -508,9 +520,9 @@ export default class PreciseAudio extends EventTarget {
       const playingUntil: number | undefined = i === 0 ? now :
         (previousTrackExpectedPlayingState as any)?.stopTime;
 
-      // If we don't know when the previous song was playing until,
-      // no more actions will be done for the remaining tracks.
-      if (playingUntil === undefined) break;
+      // If we don't know when the previous song will be playing until,
+      // there's nothing more we can do for this track.
+      if (playingUntil === undefined) continue;
 
       const timeRemaining = playingUntil - now;
       const withinDownloadThreshold = i === 0 ||
@@ -520,27 +532,24 @@ export default class PreciseAudio extends EventTarget {
 
       // Schedule timers for preparing next tracks at thresholds
       // (with a few extra milliseconds)
-      if (!withinDownloadThreshold) {
-        const diff = timeRemaining - this._thresholds.downloadThresholdSeconds;
-        const millis = Math.max(0, diff * 1000) + 10;
-        if (track.timeouts?.download)
-          clearTimeout(track.timeouts.download);
-        track.timeouts = track.timeouts || {};
-        track.timeouts.downloadScheduledAt = performance.now() + millis;
-        track.timeouts.download =
-          setTimeout(this.prepareUpcomingTracks, millis);
-        changesMade = true;
-      }
-      if (!withinDecodeThreshold) {
-        const diff = timeRemaining - this._thresholds.decodeThresholdSeconds;
-        const millis = Math.max(0, diff * 1000) + 10;
-        if (track.timeouts?.decode)
-          clearTimeout(track.timeouts?.decode);
-        track.timeouts = track.timeouts || {};
-        track.timeouts.decodeScheduledAt = performance.now() + millis;
-        track.timeouts.decode =
-          setTimeout(this.prepareUpcomingTracks, millis);
-        changesMade = true;
+      // (if playing)
+      if (!this.paused) {
+        if (!withinDownloadThreshold) {
+          const diff = timeRemaining - this._thresholds.downloadThresholdSeconds;
+          const millis = Math.max(0, diff * 1000) + 10;
+          track.timeouts.downloadScheduledAt = performance.now() + millis;
+          track.timeouts.download =
+            setTimeout(this.prepareUpcomingTracks, millis);
+          changesMade = true;
+        }
+        if (!withinDecodeThreshold) {
+          const diff = timeRemaining - this._thresholds.decodeThresholdSeconds;
+          const millis = Math.max(0, diff * 1000) + 10;
+          track.timeouts.decodeScheduledAt = performance.now() + millis;
+          track.timeouts.decode =
+            setTimeout(this.prepareUpcomingTracks, millis);
+          changesMade = true;
+        }
       }
 
       if (!track.data) {
@@ -929,6 +938,7 @@ export default class PreciseAudio extends EventTarget {
       if (!suppressEvent)
         this.sendEvent('pause');
     }
+    this.prepareUpcomingTracks();
   }
 
   /**
