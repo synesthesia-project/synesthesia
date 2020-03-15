@@ -22,11 +22,7 @@ export class State {
     muted: false
   };
   public tracks: Track[] = [];
-  public readonly thresholds: Thresholds = {
-    basicModeThresholdSeconds: 1,
-    downloadThresholdSeconds: 10,
-    decodeThresholdSeconds: 2
-  };
+  public readonly thresholds = new Thresholds();
   /**
    * Dispatch the given event to listeners
    */

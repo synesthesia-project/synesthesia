@@ -33,6 +33,8 @@ export class Stage extends React.Component<{}, State> {
       now: performance.now()
     };
 
+    this.audio.thresholds.basicModeThresholdSeconds = 10;
+
     this.loadAudioFile = this.loadAudioFile.bind(this);
     this.updatePlayState = this.updatePlayState.bind(this);
     this.playPause = this.playPause.bind(this);

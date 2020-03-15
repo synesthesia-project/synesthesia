@@ -102,7 +102,11 @@ export function prepareUpcomingTracks(state: State) {
           audio.src = src;
           audio.addEventListener('loadedmetadata', () => {
             const duration = audio.duration;
-            if (duration > state.thresholds.basicModeThresholdSeconds) {
+            const threshold = state.thresholds.basicModeThresholdSeconds;
+            const useBasic =
+              threshold === 'always' ||
+              threshold !== 'never' && threshold < duration;
+            if (useBasic) {
               resolve({ mode: 'basic', audio });
             } else {
               audio.src = '';
