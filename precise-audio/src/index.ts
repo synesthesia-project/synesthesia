@@ -376,7 +376,7 @@ export default class PreciseAudio extends EventTarget {
         } else {
           track.data.playState = {
             state: 'paused', positionMillis
-          }
+          };
         }
         this.state.sendEvent('timeupdate');
       } else {

@@ -114,7 +114,7 @@ export function prepareUpcomingTracks(state: State) {
               audio.src = '';
               if (typeof track.source !== 'string')
                 URL.revokeObjectURL(src);
-              resolve({ mode: 'full',duration });
+              resolve({ mode: 'full', duration });
             }
           });
           audio.addEventListener('error', e => {

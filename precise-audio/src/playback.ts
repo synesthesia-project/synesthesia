@@ -18,7 +18,7 @@ export function getPlayState(state: State, data: TrackDataReady): PlayStateBasic
           state: 'playing',
           effectiveStartTimeMillis: data.scheduled.startTime * 1000,
           stopTime: data.scheduled.startTime + data.audio.duration
-        }
+        };
       } else {
         return {
           mode: 'basic',
@@ -30,13 +30,13 @@ export function getPlayState(state: State, data: TrackDataReady): PlayStateBasic
       const effectiveStartTimeMillis =
         (state.context.currentTime -
           data.audio.currentTime / data.audio.playbackRate)
-        * 1000
+        * 1000;
       return {
         mode: 'basic',
         state: 'playing',
         effectiveStartTimeMillis,
         stopTime: effectiveStartTimeMillis / 1000 + data.audio.duration
-      }
+      };
     }
   }
 }
@@ -162,7 +162,7 @@ export function playTrack(state: State, startTime: number, trackData: TrackDataR
       trackData.audio.playbackRate = state.playbackRate;
       trackData.audio.currentTime = Math.max(0, now - effectiveStartTimeSeconds),
       trackData.audio.play();
-    }
+    };
     if (effectiveStartTimeSeconds <= now) {
       play();
     } else {
@@ -311,7 +311,7 @@ export function stopAllTracksWithoutEnding(tracks: Track[], positionMillis = 0) 
           state: 'paused',
           positionMillis: i === 0 ? positionMillis : 0
         };
-      } else if (track.data.mode === "basic") {
+      } else if (track.data.mode === 'basic') {
         if (!track.data.audio.paused) {
           track.data.suppressEndedEvent = true;
           track.data.audio.pause();

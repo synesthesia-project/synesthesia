@@ -21,7 +21,7 @@ type PlayStatePlayingBase = {
    * the padding is assumed to be `0`.
    */
   stopTime: number;
-}
+};
 
 export type PlayStatePlaying = PlayStatePlayingBase & {
   source: AudioBufferSourceNode;
@@ -31,7 +31,7 @@ export type PlayStatePlaying = PlayStatePlayingBase & {
 type PlayStatePaused = {
   state: 'paused';
   positionMillis: number;
-}
+};
 
 type PlayState = PlayStatePaused | PlayStatePlaying;
 
@@ -53,7 +53,7 @@ export type TrackDataModeFull = {
    */
   buffer: AudioBuffer;
   playState: PlayState;
-}
+};
 
 export type TrackDataModeBasic = {
   /**
