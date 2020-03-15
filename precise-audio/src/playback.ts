@@ -35,7 +35,7 @@ export function getPlayState(state: State, data: TrackDataReady): PlayStateBasic
         mode: 'basic',
         state: 'playing',
         effectiveStartTimeMillis,
-        stopTime: effectiveStartTimeMillis + data.audio.duration * 1000
+        stopTime: effectiveStartTimeMillis / 1000 + data.audio.duration
       }
     }
   }
