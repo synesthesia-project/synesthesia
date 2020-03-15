@@ -10,7 +10,11 @@ export class State {
   public readonly context: AudioContext;
   public readonly gainNode: GainNode;
   public animationFrameRequest: null | number = null;
+  /**
+   * Playback rate for the current queue of tracks
+   */
   public playbackRate = 1;
+  public defaultPlaybackRate = 1;
   public adjustPitchWithPlaybackRate = true;
   public readonly volume = {
     volume: 1,

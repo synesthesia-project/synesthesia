@@ -115,6 +115,7 @@ export default class PreciseAudio extends EventTarget {
     if (!firstTrack || currentTrack?.source !== firstTrack) {
       // Currently playing track needs updating
       playback.stopAllTracksWithoutEnding(this.state.tracks);
+      this.state.playbackRate = this.state.defaultPlaybackRate;
       this.state.tracks = [];
       if (firstTrack)
         this.state.tracks.push({
@@ -419,9 +420,28 @@ export default class PreciseAudio extends EventTarget {
   }
 
   /**
-   * @returns a number indicating the rate at which the media is being played back.
+   * A number indicating the rate at which the media is being played back.
+   * This value is reset to be the same as `defaultPlaybackRate` whenever the
+   * queue of tracks is completely replaced (i.e, when the current track is
+   * changed).
+   *
+   * @returns The number indicating the rate at which the media
+   *          is being played back.
    */
   public get playbackRate() {
+    return this.state.playbackRate;
+  }
+
+  public set defaultPlaybackRate(defaultPlaybackRate: number) {
+    this.state.defaultPlaybackRate = defaultPlaybackRate;
+  }
+
+  /**
+   * The value used as the `playbackRate` whenever new music is queued.
+   *
+   * @returns A number indicating the default playback rate
+   */
+  public get defaultPlaybackRate() {
     return this.state.playbackRate;
   }
 
