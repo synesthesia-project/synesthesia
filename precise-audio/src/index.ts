@@ -278,20 +278,7 @@ export default class PreciseAudio extends EventTarget {
       } else {
         // Track hasn't loaded yet
         // Create a promise and callback if neccesary
-        if (track.playOnLoad) {
-          return track.playOnLoad.promise;
-        } else {
-          let callback: (() => void) | null = null;
-          const promise = new Promise<void>(resolve => {
-            callback = resolve;
-          });
-          if (callback) {
-            track.playOnLoad = {
-              callback, promise
-            };
-          }
-          return promise;
-        }
+        return playback.playTrackWhenLoaded(track);
       }
     }
   }
@@ -314,6 +301,15 @@ export default class PreciseAudio extends EventTarget {
         this.state.sendEvent('pause');
     }
     scheduling.prepareUpcomingTracks(this.state);
+  }
+
+  /**
+   * Skip a certain number of tracks ahead in the queue
+   *
+   * @param count - how many tracks to skip ahead by, default: `1`
+   */
+  public skip(count = 1) {
+    playback.skip(this.state, count);
   }
 
   /**

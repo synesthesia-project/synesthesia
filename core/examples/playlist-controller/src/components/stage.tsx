@@ -199,6 +199,14 @@ export class Stage extends React.Component<{}, State> {
     this.audio.paused ? this.audio.play() : this.audio.pause();
   }
 
+  private skip = () => {
+    this.audio.skip();
+  }
+
+  private skip2 = () => {
+    this.audio.skip(2);
+  }
+
   private timeDisplay(millis: number) {
     return `${Math.round(millis / 100) / 10}s`;
   }
@@ -215,6 +223,8 @@ export class Stage extends React.Component<{}, State> {
         <div>
           <input id="file_picker" type="file" onChange={this.loadAudioFile} multiple />
           <button onClick={this.playPause}>Play / Pause</button>
+          <button onClick={this.skip}>Skip</button>
+          <button onClick={this.skip2}>Skip 2</button>
         </div>
         <p><strong>Tracks:</strong></p>
         <ul>

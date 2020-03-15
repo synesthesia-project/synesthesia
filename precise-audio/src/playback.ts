@@ -146,6 +146,60 @@ function createTrackEndedListener(state: State, playState: PlayStatePlaying) {
 }
 
 /**
+ * Skip a certain number of tracks ahead.
+ */
+export function skip(state: State, count: number) {
+  if (count < 1)
+    throw new Error('Invalid number of tracks to skip: ' + count);
+  const track = state.currentTrack();
+  let ended = false;
+  if (track) {
+    /** Begin playback of next track automatically? */
+    const beginPlayback = !!(
+      track.data?.state === 'ready' && track.data.playState.state === 'playing'
+      || track.data?.state !== 'ready' && track?.playOnLoad);
+    stopAllTracksWithoutEnding(state.tracks);
+    count = Math.min(count, state.tracks.length);
+    state.tracks = state.tracks.slice(count);
+    if (state.tracks.length > 0) {
+      if (beginPlayback) {
+        const track = state.tracks[0];
+        if (track.data?.state === 'ready') {
+          playCurrentTrackFrom(state, 0);
+        } else {
+          playTrackWhenLoaded(track);
+        }
+      }
+      prepareUpcomingTracks(state);
+    } else {
+      ended = true;
+    }
+  }
+  // Send Events
+  for (let i = 0; i < count ; i++)
+    state.sendEvent('next');
+  if (ended)
+    state.sendEvent('ended');
+}
+
+export function playTrackWhenLoaded(track: Track) {
+  if (track.playOnLoad) {
+    return track.playOnLoad.promise;
+  } else {
+    let callback: (() => void) | null = null;
+    const promise = new Promise<void>(resolve => {
+      callback = resolve;
+    });
+    if (callback) {
+      track.playOnLoad = {
+        callback, promise
+      };
+    }
+    return promise;
+  }
+}
+
+/**
  * Stop all the tracks in the given array
  * (including tracks that have been scheduled to play in the future,
  * but have not yet started),
