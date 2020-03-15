@@ -183,6 +183,12 @@ export default class PreciseAudio extends EventTarget {
             state: 'decoding-scheduled',
             decodingAt: track.timeouts.decodeScheduledAt
           };
+        } else if (track.data.state === 'ready') {
+          return {
+            src,
+            state: 'ready',
+            mode: track.data.mode
+          };
         } else if (track.data.state === 'error') {
           return {
             src,
@@ -269,9 +275,10 @@ export default class PreciseAudio extends EventTarget {
     const track = this.state.currentTrack();
     if (track) {
       if (track.data?.state === 'ready') {
-        if (track.data.playState.state === 'paused') {
+        const playState = playback.getPlayState(this.state, track.data);
+        if (playState.state === 'paused') {
           playback.playCurrentTrackFrom(
-            this.state, track.data.playState.positionMillis);
+            this.state, playState.positionMillis);
           if (!suppressEvent)
             this.state.sendEvent('play');
         }
@@ -290,15 +297,17 @@ export default class PreciseAudio extends EventTarget {
     if (this.state.context.state === 'suspended')
       this.state.context.resume();
     const track = this.state.currentTrack();
-    if (track?.data?.state === 'ready' &&
-        track.data.playState.state === 'playing') {
-      const nowMillis = this.state.context.currentTime * 1000;
-      const positionMillis =
-        (nowMillis - track.data.playState.effectiveStartTimeMillis) *
-        this.state.playbackRate;
-      playback.stopAllTracksWithoutEnding(this.state.tracks, positionMillis);
-      if (!suppressEvent)
-        this.state.sendEvent('pause');
+    if (track?.data?.state === 'ready') {
+      const playState = playback.getPlayState(this.state, track.data);
+      if (playState.state === 'playing') {
+        const nowMillis = this.state.context.currentTime * 1000;
+        const positionMillis =
+          (nowMillis - playState.effectiveStartTimeMillis) *
+          this.state.playbackRate;
+        playback.stopAllTracksWithoutEnding(this.state.tracks, positionMillis);
+        if (!suppressEvent)
+          this.state.sendEvent('pause');
+      }
     }
     scheduling.prepareUpcomingTracks(this.state);
   }
@@ -329,11 +338,12 @@ export default class PreciseAudio extends EventTarget {
   public get currentTimeMillis() {
     const track = this.state.currentTrack();
     if (track?.data?.state === 'ready') {
-      if (track.data.playState.state === 'paused') {
-        return track.data.playState.positionMillis;
+      const playState = playback.getPlayState(this.state, track.data);
+      if (playState.state === 'paused') {
+        return playState.positionMillis;
       } else {
         const nowMillis = this.state.context.currentTime * 1000;
-        return (nowMillis - track.data.playState.effectiveStartTimeMillis) *
+        return (nowMillis - playState.effectiveStartTimeMillis) *
           this.state.playbackRate;
       }
     }
@@ -359,8 +369,15 @@ export default class PreciseAudio extends EventTarget {
     const track = this.state.currentTrack();
     if (track?.data?.state === 'ready') {
       const positionMillis = positionSeconds * 1000;
-      if (track.data.playState.state === 'paused') {
-        track.data.playState.positionMillis = positionMillis;
+      const playState = playback.getPlayState(this.state, track.data);
+      if (playState.state === 'paused') {
+        if (track.data.mode === 'basic') {
+          track.data.audio.currentTime = positionMillis / 1000;
+        } else {
+          track.data.playState = {
+            state: 'paused', positionMillis
+          };
+        }
         this.state.sendEvent('timeupdate');
       } else {
         playback.playCurrentTrackFrom(this.state, positionMillis);
@@ -447,7 +464,11 @@ export default class PreciseAudio extends EventTarget {
   public get duration() {
     const track = this.state.currentTrack();
     if (track?.data?.state === 'ready') {
-      return track.data.buffer.duration;
+      if (track.data.mode === 'basic') {
+        return track.data.audio.duration;
+      } else {
+        return track.data.buffer.duration;
+      }
     }
     return 0;
   }

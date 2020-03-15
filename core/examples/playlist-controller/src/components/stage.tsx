@@ -33,6 +33,8 @@ export class Stage extends React.Component<{}, State> {
       now: performance.now()
     };
 
+    this.audio.thresholds.basicModeThresholdSeconds = 10;
+
     this.loadAudioFile = this.loadAudioFile.bind(this);
     this.updatePlayState = this.updatePlayState.bind(this);
     this.playPause = this.playPause.bind(this);
@@ -243,6 +245,7 @@ export class Stage extends React.Component<{}, State> {
                 {state && (<span>
                   {' - '}
                   {state.state !== 'download-scheduled' && state.state !== 'decoding-scheduled' && state.state}
+                  {state.state === 'ready' && ` (${state.mode})`}
                   {state.state === 'download-scheduled' && `downloading in: ${this.timeDisplay(state.downloadingAt - now)}`}
                   {state.state === 'decoding-scheduled' && `decoding in: ${this.timeDisplay(state.decodingAt - now)}`}
                 </span>)}

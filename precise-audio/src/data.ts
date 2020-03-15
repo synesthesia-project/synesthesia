@@ -1,9 +1,7 @@
 import { Metadata } from '@synesthesia-project/gapless-meta';
 
-export type PlayStatePlaying = {
+type PlayStatePlayingBase = {
   state: 'playing';
-  source: AudioBufferSourceNode;
-  suppressEndedEvent: boolean;
   /**
    * Millisecond timestamp (based on the AudioContext clock) that the song
    * started playing at the current playback rate
@@ -25,19 +23,27 @@ export type PlayStatePlaying = {
   stopTime: number;
 };
 
-type PlayState =
-  {
-    state: 'paused';
-    positionMillis: number;
-  } | PlayStatePlaying;
+export type PlayStatePlaying = PlayStatePlayingBase & {
+  source: AudioBufferSourceNode;
+  suppressEndedEvent: boolean;
+};
+
+type PlayStatePaused = {
+  state: 'paused';
+  positionMillis: number;
+};
+
+type PlayState = PlayStatePaused | PlayStatePlaying;
+
+export type PlayStateBasic = Readonly<PlayStatePaused | PlayStatePlayingBase>;
 
 export type TrackSource = string | File | Blob;
 
-export type TrackDataReady = {
+export type TrackDataModeFull = {
   /**
    * The audio file has been decoded and is ready for immediate playback.
    */
-  state: 'ready';
+  mode: 'full';
   /**
    * The metadata of the file, parsed by `@synesthesia-project/gapless-meta`
    */
@@ -48,6 +54,38 @@ export type TrackDataReady = {
   buffer: AudioBuffer;
   playState: PlayState;
 };
+
+export type TrackDataModeBasic = {
+  /**
+   * The audio file was too big to download and decode fully,
+   * so an HTMLAudioElement is being used instead.
+   *
+   * Gapless playback and precise timing is unavailable for this track.
+   */
+  mode: 'basic';
+  audio: HTMLAudioElement;
+  suppressEndedEvent?: true;
+  /**
+   * If set, the current audio track is scheduled to start playing.
+   */
+  scheduled?: {
+    /** The timeout returned by setTimeout */
+    timeout: number;
+    /**
+     * The time (in the AudioContext's time coordinate system) that the timeout
+     * will approximately execute, and playback begin.
+     */
+    startTime: number;
+  }
+};
+
+export type TrackDataReady = {
+  /**
+   * The track has either been fully loaded,
+   * or it is ready using an HTMLAudioELement
+   */
+  state: 'ready';
+} & (TrackDataModeFull | TrackDataModeBasic);
 
 export type Track = {
   source: TrackSource;
@@ -136,7 +174,7 @@ export type TrackState = {
   src: string | File | Blob;
 } & (
   {
-    state: 'none' | 'idle' | 'preparing-download' | 'downloading' | 'downloaded' | 'decoding' | 'ready'
+    state: 'none' | 'idle' | 'preparing-download' | 'downloading' | 'downloaded' | 'decoding'
   } | {
     state: 'download-scheduled';
     /**
@@ -151,6 +189,18 @@ export type TrackState = {
      * at which this file will be decoded
      */
     decodingAt: number;
+  } | {
+    state: 'ready';
+    /**
+     * Property detailing whether the track has been fully decoded and loaded
+     * into memory (`"full"` mode),
+     * or if an HTMLAudioElement is being used instead (`"basic"` mode).
+     * Precise scrubbing, and gapless playback is only available for tracks
+     * that have been loaded in `full` mode.
+     * Tracks that are longer than the `basicModeThresholdSeconds` threshold
+     * will be loaded in `basic` mode.
+     */
+    mode: 'basic' | 'full';
   } | {
     state: 'error';
     error: Error;
