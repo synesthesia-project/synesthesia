@@ -189,6 +189,32 @@ but returns the time in milliseconds rather than seconds.</p>
   </table>
   
   
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_defaultPlaybackRate" data-uid="@synesthesia-project/precise-audio.PreciseAudio.defaultPlaybackRate">defaultPlaybackRate</h4>
+  <div class="markdown level1 summary"><p>The value used as the <code>playbackRate</code> whenever new music is queued.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">number defaultPlaybackRate</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">number</span></td>
+        <td><p>A number indicating the default playback rate</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
   <h4 id="_synesthesia_project_precise_audio_PreciseAudio_duration" data-uid="@synesthesia-project/precise-audio.PreciseAudio.duration">duration</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
@@ -315,7 +341,11 @@ but returns the time in milliseconds rather than seconds.</p>
   
   
   <h4 id="_synesthesia_project_precise_audio_PreciseAudio_playbackRate" data-uid="@synesthesia-project/precise-audio.PreciseAudio.playbackRate">playbackRate</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>A number indicating the rate at which the media is being played back.
+This value is reset to be the same as <code>defaultPlaybackRate</code> whenever the
+queue of tracks is completely replaced (i.e, when the current track is
+changed).</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -332,7 +362,8 @@ but returns the time in milliseconds rather than seconds.</p>
     <tbody>
       <tr>
         <td><span class="xref">number</span></td>
-        <td><p>a number indicating the rate at which the media is being played back.</p>
+        <td><p>The number indicating the rate at which the media
+is being played back.</p>
 </td>
       </tr>
     </tbody>
@@ -1163,6 +1194,37 @@ of the audio output device.</p>
       <tr>
         <td><span class="xref">Promise&lt;void&gt;</span></td>
         <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_skip" data-uid="@synesthesia-project/precise-audio.PreciseAudio.skip">skip(number)</h4>
+  <div class="markdown level1 summary"><p>Skip a certain number of tracks ahead in the queue</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">function skip(count: number)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">number</span></td>
+        <td><em>count</em></td>
+        <td>
+          <p>how many tracks to skip ahead by, default: <code>1</code></p>
+
+          
+        </td>
       </tr>
     </tbody>
   </table>
