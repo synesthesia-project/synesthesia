@@ -211,6 +211,7 @@ export function prepareUpcomingTracks(state: State) {
           playback.playCurrentTrackFrom(state, 0, true);
           state.sendEvent('play');
           track.playOnLoad.callback();
+          track.playOnLoad = undefined;
         }
 
         if (i > 0 && previousTrackExpectedPlayingState) {
