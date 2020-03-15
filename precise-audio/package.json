@@ -1,7 +1,7 @@
 {
   "name": "@synesthesia-project/precise-audio",
-  "version": "0.1.2",
-  "description": "An audio playing API with precise seeking and timestamps",
+  "version": "0.2.0",
+  "description": "An API for playing audio with precise seeking and timestamps, and gapless playback.",
   "keywords": [
     "webaudio",
     "gapless",
