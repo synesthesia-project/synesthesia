@@ -123,8 +123,7 @@ export class Stage extends React.Component<{}, State> {
   private loadAudioFile(ev: React.ChangeEvent<HTMLInputElement>) {
     const files = ev.target.files;
     if (files) {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
+      for (const file of files) {
         this.setState(state => {
           const s = {
             tracks: state.tracks.slice()

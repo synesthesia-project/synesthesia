@@ -99,7 +99,7 @@ export function prepareUpcomingTracks(state: State) {
             if (typeof track.source !== 'string')
               URL.revokeObjectURL(src);
             reject(e.error);
-          })
+          });
         });
         durationPromise.then(({ duration }) => {
           let download: Promise<Blob | File>;
@@ -151,7 +151,7 @@ export function prepareUpcomingTracks(state: State) {
       if (playingUntil !== undefined) {
         trackExpectedPlayingState = {
           stopTime: playingUntil + track.data.duration
-        }
+        };
       }
 
     } else if (track.data.state === 'downloaded') {
@@ -160,7 +160,7 @@ export function prepareUpcomingTracks(state: State) {
       if (playingUntil !== undefined) {
         trackExpectedPlayingState = {
           stopTime: playingUntil + track.data.duration
-        }
+        };
       }
 
       // Track is not decoded, do we need to decode it?
@@ -171,7 +171,7 @@ export function prepareUpcomingTracks(state: State) {
         track.data = {
           state: 'decoding',
           duration: track.data.duration,
-          meta: meta
+          meta
         };
         changesMade = true;
         state.context.decodeAudioData(bytes).then(buffer => {
@@ -182,7 +182,7 @@ export function prepareUpcomingTracks(state: State) {
             playState: {
               state: 'paused', positionMillis: 0
             }
-          }
+          };
           state.sendEvent('trackstateupdate');
           if (state.tracks[0] === track) {
             // If this is the current track,
@@ -200,7 +200,7 @@ export function prepareUpcomingTracks(state: State) {
           };
           state.dispatchError(error);
           state.sendEvent('trackstateupdate');
-        });;
+        });
       }
     } else if (track.data.state === 'ready') {
 

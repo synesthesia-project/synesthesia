@@ -147,7 +147,7 @@ export default class PreciseAudio extends EventTarget {
             state: 'decoding-scheduled',
             decodingAt: track.timeouts.decodeScheduledAt
           };
-        } else if(track.data.state === 'error') {
+        } else if (track.data.state === 'error') {
           return {
             src,
             state: 'error',
@@ -160,7 +160,7 @@ export default class PreciseAudio extends EventTarget {
           };
         }
       }
-    })
+    });
   }
 
   /**
@@ -216,7 +216,7 @@ export default class PreciseAudio extends EventTarget {
    * @returns the URL of the track to play
    */
   public get src(): string {
-    const track = this.state.currentTrack()
+    const track = this.state.currentTrack();
     return typeof track?.source === 'string' && track.source || '';
   }
 
@@ -233,7 +233,7 @@ export default class PreciseAudio extends EventTarget {
     const track = this.state.currentTrack();
     if (track) {
       if (track.data?.state === 'ready') {
-        if(track.data.playState.state === 'paused') {
+        if (track.data.playState.state === 'paused') {
           playback.playCurrentTrackFrom(
             this.state, track.data.playState.positionMillis);
           if (!suppressEvent)
@@ -271,8 +271,8 @@ export default class PreciseAudio extends EventTarget {
         track.data.playState.state === 'playing') {
       const nowMillis = this.state.context.currentTime * 1000;
       const positionMillis =
-      (nowMillis - track.data.playState.effectiveStartTimeMillis) *
-        this.state.playbackRate
+        (nowMillis - track.data.playState.effectiveStartTimeMillis) *
+        this.state.playbackRate;
       playback.stopAllTracksWithoutEnding(this.state.tracks, positionMillis);
       if (!suppressEvent)
         this.state.sendEvent('pause');
