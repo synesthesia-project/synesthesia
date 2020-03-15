@@ -3,7 +3,11 @@
   "version": "0.1.2",
   "description": "An audio playing API with precise seeking and timestamps",
   "keywords": [
-    "webaudio"
+    "webaudio",
+    "gapless",
+    "mpeg",
+    "mp3",
+    "lame"
   ],
   "license": "MIT",
   "main": "lib/index.js",
