@@ -471,7 +471,7 @@ export default class PreciseAudio extends EventTarget {
    * of the audio output device.
    */
   public async setSinkId(sinkId: string) {
-    throw new Error('Not implemented: ' + sinkId);
+    console.error('setSinkId() not implemented in PreciseAudio: ' + sinkId);
   }
 
   /**
