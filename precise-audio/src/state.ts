@@ -1,6 +1,7 @@
 import { Track } from './data';
 import { EventTypes } from './events';
 import { Thresholds } from './tresholds';
+import { getPlayState } from './playback';
 
 function strictArrayGet<T>(arr: T[], i: number): T | undefined {
   return arr[i];
@@ -22,6 +23,7 @@ export class State {
   };
   public tracks: Track[] = [];
   public readonly thresholds: Thresholds = {
+    basicModeThresholdSeconds: 1,
     downloadThresholdSeconds: 10,
     decodeThresholdSeconds: 2
   };
@@ -48,6 +50,6 @@ export class State {
   public paused() {
     const track = this.currentTrack();
     return track?.data?.state !== 'ready' ||
-      track.data.playState.state !== 'playing';
+      getPlayState(this, track.data).state === 'paused';
   }
 }

@@ -3,6 +3,11 @@ import getMetadata from '@synesthesia-project/gapless-meta';
 import { State } from './state';
 import * as playback from './playback';
 
+type ExpectedPlayingState = {
+  stopTime: number;
+  mode: 'full' | 'basic';
+} | null;
+
 /**
  * Download, decode or schedule the playback for any
  * upcoming tracks that require it.
@@ -11,10 +16,10 @@ export function prepareUpcomingTracks(state: State) {
   const self = () => prepareUpcomingTracks(state);
   let changesMade = false;
   const now = state.context.currentTime;
-  let trackExpectedPlayingState: { stopTime: number } | null = null;
+  let trackExpectedPlayingState: ExpectedPlayingState = null;
   for (let i = 0; i < state.tracks.length; i++) {
     // Type annotation fix for: https://github.com/microsoft/TypeScript/issues/33191
-    const previousTrackExpectedPlayingState: { stopTime: number } | null =
+    const previousTrackExpectedPlayingState: ExpectedPlayingState =
       trackExpectedPlayingState;
     trackExpectedPlayingState = null;
     const track = state.tracks[i];
@@ -83,59 +88,81 @@ export function prepareUpcomingTracks(state: State) {
         changesMade = true;
         // Firstly, use an HTMLAudioElement to get the approximate duration
         // of the track
-        const durationPromise = new Promise<{ duration: number }>((resolve, reject) => {
-          const a = new Audio();
+        type PlaybackMode = {
+          mode: 'basic';
+          audio: HTMLAudioElement;
+        } | {
+          mode: 'full';
+          duration: number;
+        };
+        const durationPromise = new Promise<PlaybackMode>((resolve, reject) => {
+          const audio = new Audio();
           const src = typeof track.source === 'string' ?
             track.source : URL.createObjectURL(track.source);
-          a.src = src;
-          a.addEventListener('loadedmetadata', () => {
-            const duration = a.duration;
-            a.src = '';
-            if (typeof track.source !== 'string')
-              URL.revokeObjectURL(src);
-            resolve({ duration });
+          audio.src = src;
+          audio.addEventListener('loadedmetadata', () => {
+            const duration = audio.duration;
+            if (duration > state.thresholds.basicModeThresholdSeconds) {
+              resolve({ mode: 'basic', audio });
+            } else {
+              audio.src = '';
+              if (typeof track.source !== 'string')
+                URL.revokeObjectURL(src);
+              resolve({ mode: 'full',duration });
+            }
           });
-          a.addEventListener('error', e => {
+          audio.addEventListener('error', e => {
             if (typeof track.source !== 'string')
               URL.revokeObjectURL(src);
             reject(e.error);
           });
         });
-        durationPromise.then(({ duration }) => {
-          let download: Promise<Blob | File>;
-          // Fetch the file if neccesary
-          if (typeof track.source === 'string') {
-            download = fetch(track.source).then(r => r.blob());
+        durationPromise.then(playbackMode => {
+          if (playbackMode.mode === 'basic') {
+            track.data = {
+              state: 'ready',
+              mode: 'basic',
+              audio: playbackMode.audio
+            };
+            state.sendEvent('trackstateupdate');
+            self();
           } else {
-            download = Promise.resolve(track.source);
+            const { duration } = playbackMode;
+            let download: Promise<Blob | File>;
+            // Fetch the file if neccesary
+            if (typeof track.source === 'string') {
+              download = fetch(track.source).then(r => r.blob());
+            } else {
+              download = Promise.resolve(track.source);
+            }
+            track.data = {
+              state: 'downloading',
+              duration
+            };
+            state.sendEvent('trackstateupdate');
+            return download.then(file =>
+              new Promise<ArrayBuffer>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = ev => {
+                  resolve(ev.target?.result as ArrayBuffer);
+                };
+                reader.onerror = () => {
+                  reader.abort();
+                  reject(reader.error);
+                };
+                reader.readAsArrayBuffer(file);
+              }).then(bytes => {
+                track.data = {
+                  state: 'downloaded',
+                  duration,
+                  bytes,
+                  meta: getMetadata(bytes)
+                };
+                state.sendEvent('trackstateupdate');
+                self();
+              })
+            );
           }
-          track.data = {
-            state: 'downloading',
-            duration
-          };
-          state.sendEvent('trackstateupdate');
-          return download.then(file =>
-            new Promise<ArrayBuffer>((resolve, reject) => {
-              const reader = new FileReader();
-              reader.onload = ev => {
-                resolve(ev.target?.result as ArrayBuffer);
-              };
-              reader.onerror = () => {
-                reader.abort();
-                reject(reader.error);
-              };
-              reader.readAsArrayBuffer(file);
-            }).then(bytes => {
-              track.data = {
-                state: 'downloaded',
-                duration,
-                bytes,
-                meta: getMetadata(bytes)
-              };
-              state.sendEvent('trackstateupdate');
-              self();
-            })
-          );
         }).catch(error => {
           track.data = {
             state: 'error',
@@ -147,21 +174,19 @@ export function prepareUpcomingTracks(state: State) {
       }
     } else if (track.data.state === 'downloading') {
 
-      // Set the current expected time to play until if possible
-      if (playingUntil !== undefined) {
-        trackExpectedPlayingState = {
-          stopTime: playingUntil + track.data.duration
-        };
-      }
+      // Set the current expected time to play until
+      trackExpectedPlayingState = {
+        mode: 'full',
+        stopTime: playingUntil + track.data.duration
+      };
 
     } else if (track.data.state === 'downloaded') {
 
-      // Set the current expected time to play until if possible
-      if (playingUntil !== undefined) {
-        trackExpectedPlayingState = {
-          stopTime: playingUntil + track.data.duration
-        };
-      }
+      // Set the current expected time to play until
+      trackExpectedPlayingState = {
+        mode: 'full',
+        stopTime: playingUntil + track.data.duration
+      };
 
       // Track is not decoded, do we need to decode it?
 
@@ -177,6 +202,7 @@ export function prepareUpcomingTracks(state: State) {
         state.context.decodeAudioData(bytes).then(buffer => {
           track.data = {
             state: 'ready',
+            mode: 'full',
             buffer,
             meta,
             playState: {
@@ -204,7 +230,9 @@ export function prepareUpcomingTracks(state: State) {
       }
     } else if (track.data.state === 'ready') {
 
-      if (track.data.playState.state === 'paused') {
+      /** Play state *before* possibly playing */
+      const playState1 = playback.getPlayState(state, track.data);
+      if (playState1.state === 'paused') {
         // Track is ready and paused, do we need to schedule it to play?
 
         if (i === 0 && track.playOnLoad) {
@@ -214,8 +242,11 @@ export function prepareUpcomingTracks(state: State) {
           track.playOnLoad = undefined;
         }
 
-        if (i > 0 && previousTrackExpectedPlayingState) {
-          // previous track is playing, let's enqueue  next track
+        if (i > 0 &&
+            previousTrackExpectedPlayingState &&
+            previousTrackExpectedPlayingState.mode === 'full') {
+          // previous track is playing, let's enqueue next track
+          // (but only if it's in full mode)
           playback.playTrack(
             state,
             previousTrackExpectedPlayingState.stopTime,
@@ -227,8 +258,10 @@ export function prepareUpcomingTracks(state: State) {
 
       // If the track is currently playing, or has been changed to playing
       // update previousTrackPlayingState
-      if (track.data.playState.state === 'playing') {
-        trackExpectedPlayingState = track.data.playState;
+      /** Play state *after* possibly begining playback */
+      const playState2 = playback.getPlayState(state, track.data);
+      if (playState2.state === 'playing') {
+        trackExpectedPlayingState = playState2;
       }
     }
   }

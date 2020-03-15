@@ -243,6 +243,7 @@ export class Stage extends React.Component<{}, State> {
                 {state && (<span>
                   {' - '}
                   {state.state !== 'download-scheduled' && state.state !== 'decoding-scheduled' && state.state}
+                  {state.state === 'ready' && ` (${state.mode})`}
                   {state.state === 'download-scheduled' && `downloading in: ${this.timeDisplay(state.downloadingAt - now)}`}
                   {state.state === 'decoding-scheduled' && `decoding in: ${this.timeDisplay(state.decodingAt - now)}`}
                 </span>)}

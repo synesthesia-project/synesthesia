@@ -1,5 +1,10 @@
 export interface Thresholds {
   /**
+   * How many seconds long does a song need to be for it not to be loaded in
+   * "basic" mode instead of "full" mode.
+   */
+  basicModeThresholdSeconds: number;
+  /**
    * How long before the current song ends will we start to
    * download the next track, and load it into RAM.
    *
