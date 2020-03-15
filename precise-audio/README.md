@@ -1,10 +1,9 @@
 # `PreciseAudio`
 
-
 [![](https://img.shields.io/npm/v/@synesthesia-project/precise-audio.svg)](https://www.npmjs.com/package/@synesthesia-project/precise-audio)
 
-A browser-based API for more precise playback, scrubbing/seeking and timestamp
-functionality.
+A browser-based API for more precise audio playback,
+scrubbing/seeking and gapless playback.
 
 ## Background
 
@@ -57,6 +56,28 @@ Note though that doing this goes directly against the
 For applications such as synesthesia though,
 this precision is neccesary.
 
+## Gapless Playback
+
+As this library use the
+[Web Audio API ](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
+to fully decode each track into an
+[`AudioBuffer`](https://developer.mozilla.org/en-US/docs/Web/API/AudioBuffer),
+we are able to schedule playback with accuracy down to each individual sample.
+This makes it possible to schedule adjacent tracks to play
+in such a way as to remove any audible gaps between tracks.
+The library has been extended with an API for queueing multiple tracks,
+and when used it will attempt to play these tracks gaplessly.
+
+The NPM package
+[`@synesthesia-project/gapless-meta`](https://www.npmjs.com/package/@synesthesia-project/gapless-meta)
+is used to try to determine any gapless padding
+that has been added to audio tracks,
+when it's not possible to determine padding,
+it is assumed to be 0.
+
+For instructions on how to use the gapless API,
+see [Gapless API](#gapless-api).
+
 ## Usage
 
 This library can either be used in a `<script>` tag directly on your pages,
@@ -83,7 +104,7 @@ npm install @synesthesia-project/precise-audio
 
   ```ts
   const audio = new PreciseAudio();
-  audio.loadAudioFile(...);
+  audio.src = "...";
   ```
 
 ### Using Webpack
@@ -95,10 +116,29 @@ You can simply import the module and use it:
 import PreciseAudio from '@synesthesia-project/precise-audio';
 
 const audio = new PreciseAudio();
-audio.loadAudioFile(...);
+audio.src = "...";
+```
+
+## Gapless API
+
+To take advantage of the gapless playback functionality,
+you need to queue multiple tracks at the same time using either
+`updateTracks` or `updateUpcomingTracks`.
+
+**Example:**
+
+```ts
+const audio = new PreciseAudio();
+audio.updateTracks('track1.mp3', 'track2.mp3');
 ```
 
 ## API
 
 Full documentation on the `PreciseAudio` api can be found
 [on the synesthesia project website](https://synesthesia-project.org/api/precise-audio/PreciseAudio.html).
+
+## TODO
+
+* Allow specifying a threshold for maximum length of a song to fully decode,
+  disabling gapless playback and reducing precision for songs outside that
+  threshold by falling back to using HTMLAudioElement internally.

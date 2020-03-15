@@ -1,5 +1,8 @@
 # `gapless-meta`
 
+
+[![](https://img.shields.io/npm/v/@synesthesia-project/gapless-meta.svg)](https://www.npmjs.com/package/@synesthesia-project/gapless-meta)
+
 This library is designed to extract metadata from audiofiles to allow for
 gapless playback (for example, in browser-based media players),
 but also extracts some other standard metadata.

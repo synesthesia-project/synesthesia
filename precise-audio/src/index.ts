@@ -1,61 +1,12 @@
-import PitchShift = require('soundbank-pitch-shift');
+import { TrackState } from './data';
+import { ErrorListener, EventTypes, Listener} from './events';
+import * as playback from './playback';
+import * as scheduling from './scheduling';
+import { State } from './state';
 
 /* tslint:disable:unified-signatures */
 
-type PlayStatePlaying = {
-  state: 'playing';
-  source: AudioBufferSourceNode;
-  suppressEndedEvent: boolean;
-  /**
-   * Millisecond timestamp (based on the AudioContext clock) that the song
-   * started playing at the current playback rate
-   */
-  effectiveStartTimeMillis: number;
-};
-
-type PlayState =
-  {
-    state: 'paused';
-    positionMillis: number;
-  } | PlayStatePlaying;
-
-type Listener = EventListener | EventListenerObject | null;
-
-type ErrorListener = (err: ErrorEvent) => void;
-
-type EventTypes =
-    'canplay'
-  | 'canplaythrough'
-  | 'ended'
-  | 'error'
-  | 'loadeddata'
-  | 'play'
-  | 'pause'
-  | 'ratechange'
-  | 'seeked'
-  | 'timeupdate'
-  | 'volumechange';
-
-type TrackSource = string | File | Blob;
-
-type Track = {
-  source: TrackSource;
-  /**
-   * If set, we need to start playing as soon as the track has loaded,
-   * and call the given callback.
-   */
-  playOnLoad?: {
-    callback: () => void;
-    promise: Promise<void>;
-  }
-  /**
-   * Set once successfully loaded
-   */
-  data?: {
-    buffer: AudioBuffer;
-    state: PlayState;
-  }
-};
+export { TrackState };
 
 /**
  * An event triggered by a
@@ -107,148 +58,125 @@ export class PreciseAudioEvent extends Event {
  */
 export default class PreciseAudio extends EventTarget {
 
-  private readonly context: AudioContext;
-  private readonly gainNode: GainNode;
-  private _animationFrameRequest: null | number = null;
-  private _playbackRate = 1;
-  private _adjustPitchWithPlaybackRate = true;
-  private readonly _volume = {
-    volume: 1,
-    muted: false
-  };
-  private track: Track | null = null;
+  private readonly state = new State(
+    (eventType: EventTypes) => {
+      const event = new PreciseAudioEvent(eventType, this);
+      this.dispatchEvent(event);
+    },
+    (error: Error) => {
+      const event = new ErrorEvent('error', {
+        error
+      });
+      this.dispatchEvent(event);
+    });
 
-  public constructor() {
-    super();
-    this.context = new AudioContext();
-    this.gainNode = this.context.createGain();
-    this.gainNode.connect(this.context.destination);
+  /**
+   * Change the currently playing track,
+   * and the list of tracks that will play afterward.
+   */
+  public updateTracks(...tracks: Array<File | Blob | string>) {
+    const [firstTrack, ...remaining] = tracks;
+    const currentTrack = this.state.currentTrack();
+    if (!firstTrack || currentTrack?.source !== firstTrack) {
+      // Currently playing track needs updating
+      playback.stopAllTracksWithoutEnding(this.state.tracks);
+      this.state.tracks = [];
+      if (firstTrack)
+        this.state.tracks.push({
+          source: firstTrack
+        });
+    }
+    this.updateUpcomingTracks(...remaining);
+  }
+
+  /**
+   * Update the list of songs that will play after the current song.
+   */
+  public updateUpcomingTracks(...followingSongs: Array<File | Blob | string>) {
+    /* Update the list of tracks without changing the songs at the start of the
+     * list that are unchanged,to avoid uneccesary loading and potential delays.
+     */
+    /**
+     * The iteration variable & partition point.
+     * At the end of the loop, it will be equal to the number of tracks in
+     */
+    let m: number;
+    for (m = 0; m < followingSongs.length && m < this.state.tracks.length - 1; m++) {
+      if (this.state.tracks[m + 1].source !== followingSongs[m])
+        break;
+    }
+    const removed = this.state.tracks.splice(
+      m + 1,
+      this.state.tracks.length - m - 1,
+      ...followingSongs.slice(m).map(source => ({ source }))
+      );
+    playback.stopAllTracksWithoutEnding(removed);
+    scheduling.prepareUpcomingTracks(this.state);
+  }
+
+  /**
+   * Get the list of tracks, including the currently playing track
+   * and all tracks that are queued up to play afterward.
+   */
+  public tracks(): Array<File | Blob | string> {
+    return this.state.tracks.map(t => t.source);
+  }
+
+  /**
+   * Get the download and decode status of every track that is to be played,
+   * including the current one.
+   */
+  public trackStates() {
+    return this.state.tracks.map<TrackState>(track => {
+      const src = track.source;
+      if (!track.data) {
+        if (track.timeouts?.downloadScheduledAt) {
+          return {
+            src,
+            state: 'download-scheduled',
+            downloadingAt: track.timeouts.downloadScheduledAt
+          };
+        } else {
+          return { src, state: 'none' };
+        }
+      } else {
+        if (track.data.state === 'downloaded' &&
+            track.timeouts?.decodeScheduledAt) {
+          return {
+            src,
+            state: 'decoding-scheduled',
+            decodingAt: track.timeouts.decodeScheduledAt
+          };
+        } else if (track.data.state === 'error') {
+          return {
+            src,
+            state: 'error',
+            error: track.data.error
+          };
+        } else {
+          return {
+            src,
+            state: track.data.state
+          };
+        }
+      }
+    });
+  }
+
+  /**
+   * Configuration options for different thresholds for gapless playback,
+   * this property can't be reassigned, but the properties of the object
+   * it returns can be.
+   *
+   * @readonly
+   */
+  public get thresholds() {
+    return this.state.thresholds;
   }
 
   private updateGain() {
-    this.gainNode.gain.value = this._volume.muted ? 0 : this._volume.volume;
-  }
-
-  private sendEvent(eventType: EventTypes) {
-    const event = new PreciseAudioEvent(eventType, this);
-    this.dispatchEvent(event);
-  }
-
-  private dispatchError(error: Error) {
-    const event = new ErrorEvent('error', {
-      error
-    });
-    this.dispatchEvent(event);
-  }
-
-  private stopWithoutEnding(state: PlayStatePlaying) {
-    state.suppressEndedEvent = true;
-    state.source.stop();
-  }
-
-  /**
-   * Used with requestAnimationFrame to dispatch timeupdate events
-   */
-  private timeUpdated = () => {
-    this.sendEvent('timeupdate');
-    if (this.track?.data?.state.state === 'playing') {
-      this.scheduleTimeUpdated();
-    }
-  }
-
-  private scheduleTimeUpdated() {
-    if (this._animationFrameRequest !== null)
-      cancelAnimationFrame(this._animationFrameRequest);
-    this._animationFrameRequest = requestAnimationFrame(this.timeUpdated);
-  }
-
-  /**
-   * Create a listener that should get called when the currently playing track
-   * has ended
-   *
-   * @param track - the track that should be playing
-   */
-  private createTrackEndedListener(state: PlayStatePlaying) {
-    return () => {
-      if (this.track?.data?.state !== state) return;
-      if (state.state === 'playing' && !state.suppressEndedEvent) {
-        this.sendEvent('ended');
-        this.track.data.state = {
-          state: 'paused',
-          positionMillis: 0
-        };
-      }
-    };
-  }
-
-  /**
-   * Read and load a new audio file.
-   *
-   * The loaded audio file will be paused once it's loaded,
-   * and will not play automatically.
-   *
-   * @param source A [`File`](https://developer.mozilla.org/en-US/docs/Web/API/File),
-   *               [`Blob`](https://developer.mozilla.org/en-US/docs/Web/API/Blob)
-   *               or `string` URL representing the audio file to be played.
-   *
-   *               If a `string` is used, the class will attempt to load the
-   *               file using the fetch API.
-   * @returns A [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
-   *          that resolves once the audio file has been successfully loaded.
-   */
-  public async loadTrack(source: File | Blob | string) {
-    if (this.track?.data?.state.state === 'playing') {
-      this.stopWithoutEnding(this.track.data.state);
-    }
-    if (source === '') {
-      this.track = null;
-      return;
-    }
-    try {
-      const track: Track = this.track = { source };
-      let src: Blob | File;
-      // Fetch the file if neccesary
-      if (typeof track.source === 'string') {
-        src = await fetch(track.source).then(r => r.blob());
-      } else {
-        src = track.source;
-      }
-      // Load the contents of the file into an ArrayBuffer
-      const fileBuffer = await new Promise<ArrayBuffer>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = ev => {
-          resolve(ev.target?.result as ArrayBuffer);
-        };
-        reader.onerror = () => {
-          reader.abort();
-          reject(reader.error);
-        };
-        reader.readAsArrayBuffer(src);
-      });
-      // Decode the raw waveform into an ArrayBuffer
-      const buffer = await this.context.decodeAudioData(fileBuffer);
-      if (track === this.track) {
-        track.data = {
-          buffer,
-          state: {
-            state: 'paused', positionMillis: 0
-          }
-        };
-        this.sendEvent('loadeddata');
-        this.sendEvent('canplay');
-        this.sendEvent('canplaythrough');
-        this.sendEvent('timeupdate');
-        if (track.playOnLoad) {
-          // Must start playing immediately
-          this.playFrom(0);
-          this.sendEvent('play');
-          track.playOnLoad.callback();
-        }
-      }
-    } catch (e) {
-      this.dispatchError(e);
-      throw e;
-    }
+    this.state.gainNode.gain.value =
+      this.state.volume.muted ? 0 : this.state.volume.volume;
   }
 
   /**
@@ -256,15 +184,15 @@ export default class PreciseAudio extends EventTarget {
    * from 0.0 (silent) to 1.0 (loudest).
    */
   public get volume() {
-    return this._volume.volume;
+    return this.state.volume.volume;
   }
 
   public set volume(volume: number) {
     const v = Math.max(0, Math.min(1, volume));
-    if (v !== this._volume.volume) {
-      this._volume.volume = v;
+    if (v !== this.state.volume.volume) {
+      this.state.volume.volume = v;
       this.updateGain();
-      this.sendEvent('volumechange');
+      this.state.sendEvent('volumechange');
     }
   }
 
@@ -273,14 +201,14 @@ export default class PreciseAudio extends EventTarget {
    * `true` if the audio is muted and `false` otherwise.
    */
   public get muted() {
-    return this._volume.muted;
+    return this.state.volume.muted;
   }
 
   public set muted(muted: boolean) {
-    if (muted !== this._volume.muted) {
-      this._volume.muted = muted;
+    if (muted !== this.state.volume.muted) {
+      this.state.volume.muted = muted;
       this.updateGain();
-      this.sendEvent('volumechange');
+      this.state.sendEvent('volumechange');
     }
   }
 
@@ -288,66 +216,41 @@ export default class PreciseAudio extends EventTarget {
    * @returns the URL of the track to play
    */
   public get src(): string {
-    return typeof this.track?.source === 'string' && this.track.source || '';
+    const track = this.state.currentTrack();
+    return typeof track?.source === 'string' && track.source || '';
   }
 
   public set src(source: string) {
-    this.loadTrack(source);
-  }
-
-  private playFrom(positionMillis: number) {
-    if (this.track?.data) {
-      const nowMillis = this.context.currentTime * 1000;
-      const source = this.context.createBufferSource();
-      source.playbackRate.value = this._playbackRate;
-      if (this._playbackRate !== 1 && this._adjustPitchWithPlaybackRate) {
-        const pitchShift = PitchShift(this.context);
-        pitchShift.connect(this.gainNode);
-        // Calculate the notes (in 100 cents) to shift the pitch by
-        // based on the frequency ration
-        pitchShift.transpose = 12 * Math.log2(1 / this._playbackRate);
-        source.connect(pitchShift);
-      } else {
-        source.connect(this.gainNode);
-      }
-      source.buffer = this.track.data.buffer;
-      source.start(0, positionMillis / 1000);
-      this.track.data.state = {
-        state: 'playing',
-        suppressEndedEvent: false,
-        source,
-        effectiveStartTimeMillis:
-          nowMillis - positionMillis / this._playbackRate
-      };
-      source.addEventListener('ended',
-        this.createTrackEndedListener(this.track.data.state));
-      this.scheduleTimeUpdated();
-    }
+    this.updateTracks(source);
   }
 
   /**
-   * Begins playback of the audio.
+   * Begin playback of the audio.
    */
-  public async play() {
-    if (this.context.state === 'suspended')
-      this.context.resume();
-    if (this.track) {
-      if (this.track.data && this.track.data.state.state === 'paused') {
-        this.playFrom(this.track.data.state.positionMillis);
-        this.sendEvent('play');
-      }
-      if (!this.track.data) {
+  public async play(suppressEvent?: boolean) {
+    if (this.state.context.state === 'suspended')
+      this.state.context.resume();
+    const track = this.state.currentTrack();
+    if (track) {
+      if (track.data?.state === 'ready') {
+        if (track.data.playState.state === 'paused') {
+          playback.playCurrentTrackFrom(
+            this.state, track.data.playState.positionMillis);
+          if (!suppressEvent)
+            this.state.sendEvent('play');
+        }
+      } else {
         // Track hasn't loaded yet
         // Create a promise and callback if neccesary
-        if (this.track.playOnLoad) {
-          return this.track.playOnLoad.promise;
+        if (track.playOnLoad) {
+          return track.playOnLoad.promise;
         } else {
           let callback: (() => void) | null = null;
           const promise = new Promise<void>(resolve => {
             callback = resolve;
           });
           if (callback) {
-            this.track.playOnLoad = {
+            track.playOnLoad = {
               callback, promise
             };
           }
@@ -360,27 +263,28 @@ export default class PreciseAudio extends EventTarget {
   /**
    * Pauses the audio playback.
    */
-  public pause() {
-    if (this.context.state === 'suspended')
-      this.context.resume();
-    if (this.track?.data?.state?.state === 'playing') {
-      const nowMillis = this.context.currentTime * 1000;
-      this.stopWithoutEnding(this.track.data.state);
-      this.track.data.state = {
-        state: 'paused',
-        positionMillis:
-          (nowMillis - this.track.data.state.effectiveStartTimeMillis) *
-          this._playbackRate
-      };
-      this.sendEvent('pause');
+  public pause(suppressEvent?: boolean) {
+    if (this.state.context.state === 'suspended')
+      this.state.context.resume();
+    const track = this.state.currentTrack();
+    if (track?.data?.state === 'ready' &&
+        track.data.playState.state === 'playing') {
+      const nowMillis = this.state.context.currentTime * 1000;
+      const positionMillis =
+        (nowMillis - track.data.playState.effectiveStartTimeMillis) *
+        this.state.playbackRate;
+      playback.stopAllTracksWithoutEnding(this.state.tracks, positionMillis);
+      if (!suppressEvent)
+        this.state.sendEvent('pause');
     }
+    scheduling.prepareUpcomingTracks(this.state);
   }
 
   /**
    * @returns a boolean that indicates whether the audio element is paused.
    */
   public get paused() {
-    return this.track?.data?.state.state !== 'playing';
+    return this.state.paused();
   }
 
   /**
@@ -391,13 +295,14 @@ export default class PreciseAudio extends EventTarget {
    * @returns The current playback time in milliseconds
    */
   public get currentTimeMillis() {
-    if (this.track?.data) {
-      if (this.track.data.state.state === 'paused') {
-        return this.track.data.state.positionMillis;
+    const track = this.state.currentTrack();
+    if (track?.data?.state === 'ready') {
+      if (track.data.playState.state === 'paused') {
+        return track.data.playState.positionMillis;
       } else {
-        const nowMillis = this.context.currentTime * 1000;
-        return (nowMillis - this.track.data.state.effectiveStartTimeMillis) *
-          this._playbackRate;
+        const nowMillis = this.state.context.currentTime * 1000;
+        return (nowMillis - track.data.playState.effectiveStartTimeMillis) *
+          this.state.playbackRate;
       }
     }
     return 0;
@@ -419,16 +324,16 @@ export default class PreciseAudio extends EventTarget {
   }
 
   public set currentTime(positionSeconds: number) {
-    if (this.track?.data) {
+    const track = this.state.currentTrack();
+    if (track?.data?.state === 'ready') {
       const positionMillis = positionSeconds * 1000;
-      if (this.track.data.state.state === 'paused') {
-        this.track.data.state.positionMillis = positionMillis;
-        this.sendEvent('timeupdate');
+      if (track.data.playState.state === 'paused') {
+        track.data.playState.positionMillis = positionMillis;
+        this.state.sendEvent('timeupdate');
       } else {
-        this.stopWithoutEnding(this.track.data.state);
-        this.playFrom(positionMillis);
+        playback.playCurrentTrackFrom(this.state, positionMillis);
       }
-      this.sendEvent('seeked');
+      this.state.sendEvent('seeked');
     }
   }
 
@@ -442,19 +347,19 @@ export default class PreciseAudio extends EventTarget {
    */
   private changeConfiguration(callback: () => void) {
     let resume = false;
-    if (this.track?.data?.state.state === 'playing') {
-      this.pause();
+    if (!this.paused) {
+      this.pause(true);
       resume = true;
     }
     callback();
     if (resume) {
-      this.play();
+      this.play(true);
     }
   }
 
   public set adjustPitchWithPlaybackRate(adjust: boolean) {
     this.changeConfiguration(() => {
-      this._adjustPitchWithPlaybackRate = adjust;
+      this.state.adjustPitchWithPlaybackRate = adjust;
     });
   }
 
@@ -468,29 +373,30 @@ export default class PreciseAudio extends EventTarget {
    *
    */
   public get adjustPitchWithPlaybackRate() {
-    return this._adjustPitchWithPlaybackRate;
+    return this.state.adjustPitchWithPlaybackRate;
   }
 
   public set playbackRate(playbackRate: number) {
     this.changeConfiguration(() => {
-      this._playbackRate = playbackRate;
+      this.state.playbackRate = playbackRate;
     });
-    this.sendEvent('ratechange');
+    this.state.sendEvent('ratechange');
   }
 
   /**
    * @returns a number indicating the rate at which the media is being played back.
    */
   public get playbackRate() {
-    return this._playbackRate;
+    return this.state.playbackRate;
   }
 
   /**
    * @returns The length of the currently loaded audio track in seconds
    */
   public get duration() {
-    if (this.track?.data) {
-      return this.track.data.buffer.duration;
+    const track = this.state.currentTrack();
+    if (track?.data?.state === 'ready') {
+      return track.data.buffer.duration;
     }
     return 0;
   }
@@ -579,6 +485,15 @@ export default class PreciseAudio extends EventTarget {
   public addEventListener(event: 'loadeddata', listener: Listener): void;
 
   /**
+   * Fired when the the next song has started playing (gaplessly).
+   *
+   * @param listener an [EventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventListener)
+   *                 that expects a {@link @synesthesia-project/precise-audio.PreciseAudioEvent}
+   *                 as a parameter
+   */
+  public addEventListener(event: 'next', listener: Listener): void;
+
+  /**
    * Fired when the audio starts playing
    *
    * @param listener an [EventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventListener)
@@ -628,6 +543,18 @@ export default class PreciseAudio extends EventTarget {
    *                 as a parameter
    */
   public addEventListener(event: 'volumechange', listener: Listener): void;
+
+  /**
+   * Fired when the state of any of the enqueued tracks has changed.
+   *
+   * I.E: called whenever the returned value from `trackStatuses()`
+   * will be different.
+   *
+   * @param listener an [EventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventListener)
+   *                 that expects a {@link @synesthesia-project/precise-audio.PreciseAudioEvent}
+   *                 as a parameter
+   */
+  public addEventListener(event: 'trackstateupdate', listener: Listener): void;
 
   public addEventListener(event: EventTypes, listener: Listener | ErrorListener) {
     super.addEventListener(event, listener as any);

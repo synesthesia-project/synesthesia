@@ -367,6 +367,10 @@
       "projectFolder": "core/examples/controller"
     },
     {
+      "packageName": "@synesthesia-project/core-example-playlist-controller",
+      "projectFolder": "core/examples/playlist-controller"
+    },
+    {
       "packageName": "@synesthesia-project/gapless-meta",
       "projectFolder": "gapless-meta"
     },
