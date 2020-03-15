@@ -107,6 +107,8 @@ export function prepareUpcomingTracks(state: State) {
               threshold === 'always' ||
               threshold !== 'never' && threshold < duration;
             if (useBasic) {
+              const node = state.context.createMediaElementSource(audio);
+              node.connect(state.gainNode);
               resolve({ mode: 'basic', audio });
             } else {
               audio.src = '';
