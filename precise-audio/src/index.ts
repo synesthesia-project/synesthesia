@@ -36,6 +36,24 @@ export class PreciseAudioEvent extends Event {
   }
 }
 
+export interface AudioNodes {
+  /**
+   * The [`AudioContext`](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext)
+   * in use by the respective instance of `PreciseAudio`.
+   */
+  context: AudioContext;
+  /**
+   * A node representing the audio that is being played,
+   * after volume adjustment.
+   * By default, this node is connected directly to `output`.
+   */
+  input: AudioNode;
+  /**
+   * The node that the library is outputting audio to.
+   */
+  output: AudioNode;
+}
+
 /**
  * An audio player that can seek and provide timestamps with millisecond
  * accuracy.
@@ -69,6 +87,23 @@ export default class PreciseAudio extends EventTarget {
       });
       this.dispatchEvent(event);
     });
+
+  /**
+   * Retreive the
+   * [`AudioContext`](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext)
+   * and some of the internal audio nodes that are being used by the class,
+   * to allow for modification of the audio-processing graph,
+   * for example to add an equalizer or attach an analyser for visualizations.
+   *
+   * By default, the `input` returned is directly connected to `output`.
+   */
+  public getAudioNodes(): AudioNodes {
+    return {
+      context: this.state.context,
+      input: this.state.gainNode,
+      output: this.state.context.destination
+    };
+  }
 
   /**
    * Change the currently playing track,
