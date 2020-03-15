@@ -18,7 +18,19 @@
       "output": {
         ".html": {
           "relative_path": "api/index.html",
-          "hash": "lJV6ypFwPktkI35MEUhr6Q=="
+          "hash": "gWzLFtxl+vGtQ/NHB2V8xg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "UniversalReference",
+      "source_relative_path": "api/precise-audio/AudioNodes.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/precise-audio/AudioNodes.html",
+          "hash": "shzNevbEvOjYWnHT7bl5yw=="
         }
       },
       "is_incremental": false,
@@ -30,7 +42,7 @@
       "output": {
         ".html": {
           "relative_path": "api/precise-audio/PreciseAudio.html",
-          "hash": "uRZVIAlglX/nJSkCHlzeSg=="
+          "hash": "yh7aYRWpxc6xXCxsRE7KrA=="
         }
       },
       "is_incremental": false,
@@ -54,7 +66,7 @@
       "output": {
         ".html": {
           "relative_path": "api/precise-audio/index.html",
-          "hash": "zSJVnegzMV5BLcY2vFThHA=="
+          "hash": "F04T4znDc3eO7mZyCApo8g=="
         }
       },
       "is_incremental": false,
@@ -66,7 +78,7 @@
       "output": {
         ".html": {
           "relative_path": "api/precise-audio/toc.html",
-          "hash": "cc2kZWvBK7dgBEPUndy/Hg=="
+          "hash": "CjdF7vK/UsbZu1/5XrmKjQ=="
         }
       },
       "is_incremental": false,
@@ -123,7 +135,7 @@
       "output": {
         ".html": {
           "relative_path": "index.html",
-          "hash": "JqBNMgu9uP2L/+6mbR9lJQ=="
+          "hash": "SRRN3Ljs7/PtinfV6DlwjA=="
         }
       },
       "is_incremental": false,

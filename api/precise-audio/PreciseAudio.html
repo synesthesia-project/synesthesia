@@ -975,6 +975,36 @@ as a parameter</p>
   </table>
   
   
+  <h4 id="_synesthesia_project_precise_audio_PreciseAudio_getAudioNodes" data-uid="@synesthesia-project/precise-audio.PreciseAudio.getAudioNodes">getAudioNodes()</h4>
+  <div class="markdown level1 summary"><p>Retreive the
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/AudioContext"><code>AudioContext</code></a>
+and some of the internal audio nodes that are being used by the class,
+to allow for modification of the audio-processing graph,
+for example to add an equalizer or attach an analyser for visualizations.
+By default, the <code>input</code> returned is directly connected to <code>output</code>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-typeScript hljs">function getAudioNodes()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="AudioNodes.html#_synesthesia_project_precise_audio_AudioNodes">AudioNodes</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
   <h4 id="_synesthesia_project_precise_audio_PreciseAudio_pause" data-uid="@synesthesia-project/precise-audio.PreciseAudio.pause">pause(boolean)</h4>
   <div class="markdown level1 summary"><p>Pauses the audio playback.</p>
 </div>
