@@ -1,4 +1,4 @@
-import { Track, TrackState } from './data';
+import { TrackState } from './data';
 import { ErrorListener, EventTypes, Listener} from './events';
 import * as playback from './playback';
 import * as scheduling from './scheduling';
@@ -71,37 +71,11 @@ export default class PreciseAudio extends EventTarget {
     });
 
   /**
-   * Read and load a new audio file.
-   *
-   * The loaded audio file will be paused once it's loaded,
-   * and will not play automatically.
-   *
-   * @param source A [`File`](https://developer.mozilla.org/en-US/docs/Web/API/File),
-   *               [`Blob`](https://developer.mozilla.org/en-US/docs/Web/API/Blob)
-   *               or `string` URL representing the audio file to be played.
-   *
-   *               If a `string` is used, the class will attempt to load the
-   *               file using the fetch API.
-   * @returns A [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
-   *          that resolves once the audio file has been successfully loaded.
-   */
-  public loadTrack(source: File | Blob | string) {
-    playback.stopAllTracksWithoutEnding(this.state.tracks);
-    if (source === '') {
-      this.state.tracks = [];
-      return;
-    }
-    const track: Track = { source };
-    this.state.tracks = [track];
-    scheduling.prepareUpcomingTracks(this.state);
-  }
-
-  /**
-   * Change the currently playing song,
-   * and the list of songs that will play afterward.
+   * Change the currently playing track,
+   * and the list of tracks that will play afterward.
    */
   public updateTracks(...tracks: Array<File | Blob | string>) {
-    const firstTrack = tracks.length > 0 ? tracks[0] : null;
+    const [firstTrack, ...remaining] = tracks;
     const currentTrack = this.state.currentTrack();
     if (!firstTrack || currentTrack?.source !== firstTrack) {
       // Currently playing track needs updating
@@ -112,7 +86,7 @@ export default class PreciseAudio extends EventTarget {
           source: firstTrack
         });
     }
-    this.updateUpcomingTracks(...tracks.slice(1));
+    this.updateUpcomingTracks(...remaining);
   }
 
   /**
@@ -131,11 +105,12 @@ export default class PreciseAudio extends EventTarget {
       if (this.state.tracks[m + 1].source !== followingSongs[m])
         break;
     }
-    this.state.tracks.splice(
+    const removed = this.state.tracks.splice(
       m + 1,
       this.state.tracks.length - m - 1,
       ...followingSongs.slice(m).map(source => ({ source }))
       );
+    playback.stopAllTracksWithoutEnding(removed);
     scheduling.prepareUpcomingTracks(this.state);
   }
 
@@ -246,7 +221,7 @@ export default class PreciseAudio extends EventTarget {
   }
 
   public set src(source: string) {
-    this.loadTrack(source);
+    this.updateTracks(source);
   }
 
   /**

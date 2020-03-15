@@ -146,13 +146,14 @@ function createTrackEndedListener(state: State, playState: PlayStatePlaying) {
 }
 
 /**
- * Stop the current track, and any other tracks that have already been scheduled
- * to start playing once the current track has ended,
+ * Stop all the tracks in the given array
+ * (including tracks that have been scheduled to play in the future,
+ * but have not yet started),
  * while ignoring the 'ended' event that will
  * be dispatched by the `AudioBufferSourceNode`.
  *
- * @param positionMillis the value to use for the positionMillis property of the
- *                       current track (track `0`) once paused.
+ * @param positionMillis the value to set for the positionMillis of the first
+ *                       track in the array once paused.
  */
 export function stopAllTracksWithoutEnding(tracks: Track[], positionMillis = 0) {
   for (let i = 0; i < tracks.length; i++) {

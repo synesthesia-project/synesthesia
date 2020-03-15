@@ -90,9 +90,8 @@ export class Stage extends React.Component<{}, {}> {
     const files = ev.target.files;
     if (files) {
       const file = files[0];
-      const url = URL.createObjectURL(file);
       const parseID3 = () => {
-        universalParse(url).then(tag => {
+        universalParse(file).then(tag => {
           if (tag.title) {
             this.meta = {
               title: tag.title,
@@ -103,10 +102,8 @@ export class Stage extends React.Component<{}, {}> {
           }
         });
       };
-      // Alternative Loading Mechanism:
-      // this.audio.src = url;
-      // this.audio.addEventListener('canplaythrough', parseID3);
-      this.audio.loadTrack(file).then(parseID3);
+      this.audio.updateTracks(file);
+      this.audio.addEventListener('canplaythrough', parseID3);
     } else {
       console.error('no files');
     }
