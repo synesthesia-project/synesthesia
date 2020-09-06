@@ -1,4 +1,4 @@
-import { RGBAColor, TRANSPARENT } from '../color';
+import { RGBAColor, RGBA_TRANSPARENT } from '../color';
 import { PixelMap, PixelInfo, CompositorModule } from './';
 
 interface ScanOptions {
@@ -92,7 +92,7 @@ export default class ScanModule<State> implements CompositorModule<State> {
       const pixelXRatio = (pixel.x - map.xMin) / mapWidth;
       const distance = Math.abs(pixelXRatio - xRatio);
       const brightness = Math.max(0, 1 - distance / this.beamFadeWidth);
-      return brightness === 0 ? TRANSPARENT : new RGBAColor(color.r, color.g, color.b, color.alpha * brightness);
+      return brightness === 0 ? RGBA_TRANSPARENT : new RGBAColor(color.r, color.g, color.b, color.alpha * brightness);
     });
   }
 
