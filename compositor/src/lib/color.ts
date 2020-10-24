@@ -31,7 +31,7 @@ export class RGBAColor {
     const r = Math.max(0, Math.min(255, Math.round(other.r * ratio + this.r * (1 - ratio))));
     const g = Math.max(0, Math.min(255, Math.round(other.g * ratio + this.g * (1 - ratio))));
     const b = Math.max(0, Math.min(255, Math.round(other.b * ratio + this.b * (1 - ratio))));
-    const a = Math.max(0, Math.min(255, Math.round(other.alpha * ratio + this.alpha * (1 - ratio))));
+    const a = Math.max(0, Math.min(1, other.alpha * ratio + this.alpha * (1 - ratio)));
     return new RGBAColor(r, g, b, a);
   }
 }
