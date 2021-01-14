@@ -30,6 +30,8 @@ type MouseMat = {
   buffer: openrazer.RGB[];
 };
 
+let frame = 0;
+
 export class Display {
 
   private state: SynesthesiaPlayState = {
@@ -47,6 +49,8 @@ export class Display {
     compositor: Compositor<PixelData, { synesthesia: SynesthesiaPlayState }>;
   } | null = null;
   private x = 0;
+
+  private writingFrame = false;
 
   public constructor() {
     this.frame = this.frame.bind(this);
@@ -208,12 +212,26 @@ export class Display {
     }
   }
 
+  private resetFrame = () => {
+    this.writingFrame = false;
+    console.log('frame failed to write');
+  }
+
   private async frame() {
+
+    const f = frame++;
+
+    if (this.writingFrame) {
+      // Skip Frame
+      return;
+    }
 
     // const timestampMillis = new Date().getTime();
 
     try {
       if (this.devices) {
+        this.writingFrame = true;
+        const resetFrameTimeout = setTimeout(this.resetFrame, 5000);
         const frame = this.devices.compositor.renderFrame();
         for (const p of frame) {
           if (p.pixel.data.type === 'keyboard') {
@@ -229,6 +247,8 @@ export class Display {
           }
           await this.devices.mousemat.dev.writeCustomFrame(0, this.devices.mousemat.buffer);
         }
+        clearTimeout(resetFrameTimeout);
+        this.writingFrame = false;
       }
     } catch (e) {
       console.log(e);
