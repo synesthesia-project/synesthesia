@@ -38,7 +38,7 @@ export default class SynesthesiaModulateModule<State extends { synesthesia: Syne
   private readonly activeMaxAlpha = 1;
 
   public render(map: PixelMap, pixels: PixelInfo<unknown>[], state: State): RGBAColor[] {
-    const timestampMillis = performance.now();
+    const timestampMillis = Date.now();
     let alpha: number;
     if (state.synesthesia.playState.layers.length === 0) {
       alpha = this.idleAlpha;
