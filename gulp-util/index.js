@@ -24,6 +24,7 @@ exports.typescriptTasks = function (opts) {
   var prefix = opts.prefix || '';
   var sourcemap = opts.sourcemap || false;
   var sourceRoot = opts.sourcemapSourceRoot || 'src';
+  var tslintConfig = opts.tslintConfig || path.join(path.dirname(__dirname), 'tslint.json');
 
   var tsProject = ts.createProject(opts.tsconfig);
 
@@ -57,7 +58,7 @@ exports.typescriptTasks = function (opts) {
     return gulp.src(opts.tslintSrc)
       .pipe(gulpTslint({
         formatter: 'verbose',
-        configuration: path.join(path.dirname(__dirname), 'tslint.json'),
+        configuration: tslintConfig,
         program
       }))
       .on('error', handleError)
