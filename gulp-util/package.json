@@ -4,6 +4,7 @@
   "description": "Common configuration and utilities for synesthesia typescript projects",
   "license": "MIT",
   "main": "index.js",
+  "private": false,
   "author": {
     "name": "Sam Lanning",
     "email": "sam@samlanning.com",
@@ -31,5 +32,8 @@
   },
   "peerDependencies": {
     "gulp": "~4.0.2"
-  }
+  },
+  "files": [
+    "index.js"
+  ]
 }
