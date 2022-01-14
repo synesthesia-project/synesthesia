@@ -28,7 +28,7 @@ const fileNotFound = (err: Error) => {
     throw err;
   }
   return expect(true);
-}
+};
 
 describe('Storage', () => {
 
