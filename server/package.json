@@ -15,7 +15,7 @@
   "scripts": {
     "clean": "gulp clean",
     "build": "gulp",
-    "test": "rm -rf build/data; mocha build/test/**/*.js",
+    "test": "rm -rf build/data; mocha --require source-map-support/register build/test/**/*.js",
     "tslint": "gulp tslint"
   },
   "dependencies": {
@@ -23,16 +23,17 @@
     "ws": "^7.1.2"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.7",
     "@synesthesia-project/composer": "^0.0.1",
     "@synesthesia-project/core": "^0.0.5",
     "@synesthesia-project/gulp-util": "~0.0.1",
+    "@types/chai": "^4.1.7",
     "@types/lodash": "^4.14.120",
     "@types/mocha": "^5.2.7",
     "@types/ws": "^6.0.1",
     "chai": "^4.2.0",
     "gulp": "~4.0.2",
     "gulp-mocha": "^6.0.0",
-    "mocha": "^6.1.4"
+    "mocha": "^6.1.4",
+    "source-map-support": "~0.5.16"
   }
 }
