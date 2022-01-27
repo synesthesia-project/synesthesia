@@ -1,6 +1,6 @@
 {
   "name": "@synesthesia-project/compositor",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Combine layers and patterns for arbitrary pixel maps, and sync with music",
   "license": "MIT",
   "main": "index.js",
