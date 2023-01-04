@@ -82,11 +82,11 @@ export class Display {
       const endpoint = this.connectToServer(port);
       endpoint
         .then(() => console.log(`Connected to server on port: ${port}`))
-        .catch(err => console.error(`Could not connect to server on port: ${port}`));
+        .catch(err => console.error(`Could not connect to server on port: ${port}`, err));
     });
 
     const endpoint = this.connectToServer(DEFAULT_SYNESTHESIA_PORT);
-    endpoint.catch(err => console.error(`Could not connect to server on port: ${DEFAULT_SYNESTHESIA_PORT}`));
+    endpoint.catch(err => console.error(`Could not connect to server on port: ${DEFAULT_SYNESTHESIA_PORT}`, err));
   }
 
   private connectToServer(port: number): Promise<DownstreamEndpoint> {
@@ -122,7 +122,7 @@ export class Display {
       ws.addEventListener('error', err => {
         reject(err);
       });
-      ws.addEventListener('close', err => {
+      ws.addEventListener('close', () => {
         // TODO
       });
     });

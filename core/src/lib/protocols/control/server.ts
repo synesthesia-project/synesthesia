@@ -53,9 +53,10 @@ export class ServerEndpoint extends PingingEndpoint<Request, Response, Notificat
         this.processPlayStateData(notification.data, ping.diff);
         return;
       }
-      default:
+      default: {
         const n: never = notification.type;
         console.error('unknown notification type:', n);
+      }
     }
   }
 

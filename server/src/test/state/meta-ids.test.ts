@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { expect } from 'chai';
 
 import {MetaIDs} from '../../main/state/meta-ids';

@@ -7,7 +7,7 @@ function emptyState<T>() {
   };
 }
 
-export function hashObject(obj: any) {
+export function hashObject(obj: unknown) {
   return createHash('sha1').update(JSON.stringify(obj), 'utf8').digest('hex');
 }
 
@@ -28,7 +28,7 @@ export function hashObject(obj: any) {
 export class ObjectHashLookup<T> {
 
   private state = emptyState<T>();
-  private readonly hashObject: (obj: any) => string;
+  private readonly hashObject: (obj: unknown) => string;
 
   /**
    * @param hash optional parameter to use a different hash function than the default

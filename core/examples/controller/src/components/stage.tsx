@@ -6,7 +6,13 @@ import { DEFAULT_SYNESTHESIA_PORT } from '@synesthesia-project/core/lib/constant
 
 import PreciseAudio from '@synesthesia-project/precise-audio';
 
-export class Stage extends React.Component<{}, {}> {
+declare global {
+  interface Window {
+    a: PreciseAudio;
+  }
+}
+
+export class Stage extends React.Component<Record<string, never>, Record<string, never>> {
 
   private endpoint: Promise<ControllerEndpoint> | null = null;
   private readonly audio = new PreciseAudio();
@@ -14,7 +20,7 @@ export class Stage extends React.Component<{}, {}> {
     title: string, artist?: string, album?: string;
   } | null = null;
 
-  public constructor(props: {}) {
+  public constructor(props: Record<string, never>) {
     super(props);
     this.state = {};
 
@@ -32,7 +38,7 @@ export class Stage extends React.Component<{}, {}> {
 
     this.audio.adjustPitchWithPlaybackRate = false;
 
-    (window as any).a = this.audio;
+    window.a = this.audio;
 
     setInterval(this.updatePlayState, 1000);
   }
@@ -66,7 +72,7 @@ export class Stage extends React.Component<{}, {}> {
           if (endpointPromise === this.endpoint) this.endpoint = null;
           reject(err);
         });
-        ws.addEventListener('close', err => {
+        ws.addEventListener('close', () => {
           if (endpointPromise === this.endpoint) this.endpoint = null;
         });
         ws.addEventListener('message', msg => {
@@ -117,7 +123,7 @@ export class Stage extends React.Component<{}, {}> {
       endpoint.sendState({layers: [{
         // TODO: optionally send file path instead of meta
         file: {
-          type: 'meta' as 'meta',
+          type: 'meta' as const,
           title: this.meta.title,
           artist: this.meta.artist,
           album: this.meta.album,

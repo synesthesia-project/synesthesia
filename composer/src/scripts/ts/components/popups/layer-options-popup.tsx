@@ -1,11 +1,7 @@
 import * as React from 'react';
 import {Popup} from './popup';
 
-interface LayerOptionsPopupProps {
-  // TODO
-}
-
-export class LayerOptionsPopup extends React.Component<LayerOptionsPopupProps, {}> {
+export class LayerOptionsPopup extends React.Component<Record<string, never>, Record<string, never>> {
   public render() {
     return (
       <Popup title="Layer Options">

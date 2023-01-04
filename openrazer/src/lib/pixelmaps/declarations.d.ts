@@ -4,7 +4,12 @@ declare module 'svgson' {
     name: string;
     type: string;
     value: string;
-    attributes: any;
+    attributes: {
+      x: string;
+      y: string;
+      width: string;
+      height: string;
+    };
     children: Node[];
   }
 

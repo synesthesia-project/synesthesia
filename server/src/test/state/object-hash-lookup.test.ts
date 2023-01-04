@@ -1,8 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { expect } from 'chai';
 
 import { ObjectHashLookup, hashObject } from '../../main/state/object-hash-lookup';
-
-// tslint:disable:no-unused-expression
 
 describe('ObjectHashLookup', () => {
 

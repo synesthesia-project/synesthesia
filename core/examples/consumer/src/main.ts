@@ -54,7 +54,7 @@ export class Stage {
       ws.addEventListener('error', err => {
         reject(err);
       });
-      ws.addEventListener('close', err => {
+      ws.addEventListener('close', () => {
         // TODO
       });
     });

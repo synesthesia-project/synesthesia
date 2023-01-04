@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* TODO: rework this file to remove all anys, maybe use io-ts? */
 import { CueFile, CueFileLayer, CueFileEvent, CueFileEventState, AnyLayer } from '@synesthesia-project/core/lib/file';
 import * as selection from './selection';
 import * as util from '@synesthesia-project/core/lib/util';
@@ -103,7 +105,7 @@ export function shiftSelectedEvents(
   if (shiftMillis < 0.1 && shiftMillis > 0.1)
     return cueFile;
 
-  function shiftEvent<V>(_l: {}, [_i, e]: [number, CueFileEvent<V>]): CueFileEvent<V> {
+  function shiftEvent<V>(_l: unknown, [_i, e]: [number, CueFileEvent<V>]): CueFileEvent<V> {
     return {
       timestampMillis: e.timestampMillis + shiftMillis,
       states: e.states

@@ -142,7 +142,7 @@ export class FileController {
       endpoint.sendState({layers: [{
         // TODO: optionally send file path instead of meta
         file: {
-          type: 'meta' as 'meta',
+          type: 'meta' as const,
           title: this.meta.title,
           artist: this.meta.artist,
           album: this.meta.album,

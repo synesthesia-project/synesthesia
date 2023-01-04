@@ -114,7 +114,7 @@ class LayerItems extends React.Component<LayerItemsProps, LayerItemsState> {
   }
 
   private onSelectedEventMouseDown(
-      e: React.MouseEvent<{}>,
+      e: React.MouseEvent<unknown>,
       clickOnlyCallback: (modifiers: ActiveModifierKeys) => void) {
     if (!this.timelineSelector) return;
     const initX = e.pageX;
@@ -192,11 +192,11 @@ class LayerItems extends React.Component<LayerItemsProps, LayerItemsState> {
       const handleItemSelectionChange = (m: ActiveModifierKeys) =>
         this.props.updateSelection(s =>
           selection.handleItemSelectionChange(s, m, this.props.layerKey, [i]));
-      const onClick = (e: React.MouseEvent<{}>) => {
+      const onClick = (e: React.MouseEvent<unknown>) => {
         if (!selected)
           handleItemSelectionChange(e);
       };
-      const onMouseDown = (e: React.MouseEvent<{}>) => {
+      const onMouseDown = (e: React.MouseEvent<unknown>) => {
         if (selected)
           this.onSelectedEventMouseDown(
             e,
@@ -235,7 +235,7 @@ class LayerItems extends React.Component<LayerItemsProps, LayerItemsState> {
               <div className="side left" />
             </div>
           );
-        case 'dragging':
+        case 'dragging': {
           const style = {
             left: selectorState.start * 100 + '%',
             right: (1 - selectorState.end) * 100 + '%',
@@ -246,6 +246,7 @@ class LayerItems extends React.Component<LayerItemsProps, LayerItemsState> {
               <div className="side right" />
             </div>
           );
+        }
         case 'nothing':
         default:
           return null;

@@ -35,7 +35,7 @@ interface PlayerProps {
 
 class Player extends React.Component<PlayerProps, PlayerState> {
 
-  private updateInterval: any;
+  private updateInterval: ReturnType<typeof setInterval> | null = null;
 
   constructor(props: PlayerProps) {
     super(props);
@@ -120,7 +120,8 @@ class Player extends React.Component<PlayerProps, PlayerState> {
   }
 
   private updateFromPlayState(playState: PlayState) {
-    clearInterval(this.updateInterval);
+    if (this.updateInterval !== null)
+      clearInterval(this.updateInterval);
     if (playState) {
       if (playState.state.type === 'paused') {
         this.updateElapsedText(playState, playState.state.positionMillis);

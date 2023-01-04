@@ -1,10 +1,16 @@
 export type SpotifySdk = typeof Spotify;
 
+declare global {
+  interface Window {
+    onSpotifyWebPlaybackSDKReady: () => void;
+  }
+}
+
 /**
  * A Promise that resolves the Spotify.Player class when the SDK is ready
  */
 export const spotifyWebPlaybackSDKReady = new Promise<SpotifySdk>(resolve => {
-  (window as any).onSpotifyWebPlaybackSDKReady = () => resolve(Spotify);
+  window .onSpotifyWebPlaybackSDKReady = () => resolve(Spotify);
 });
 
 /**

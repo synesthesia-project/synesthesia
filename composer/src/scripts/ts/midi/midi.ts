@@ -72,7 +72,6 @@ export class Midi {
       const data = msg.data,
             // cmd = data[0] >> 4,
             // channel = data[0] & 0xf,
-            // tslint:disable-next-line:no-bitwise
             type = data[0] & 0xf0, // channel agnostic message type. Thanks, Phil Burk.
             note = data[1],
             velocity = data[2];

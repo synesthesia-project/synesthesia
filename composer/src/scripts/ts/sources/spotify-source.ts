@@ -25,9 +25,9 @@ interface ExtendedSpotifyApi {
       }[];
     }
   }>;
-  play(options: {}): Promise<{}>;
-  pause(options: {}): Promise<{}>;
-  seek(positionMs: number, options: {}): Promise<{}>;
+  play(options: Record<string, never>): Promise<unknown>;
+  pause(options: Record<string, never>): Promise<unknown>;
+  seek(positionMs: number, options: Record<string, never>): Promise<unknown>;
 }
 type SpotifyApi = typeof s & ExtendedSpotifyApi;
 
@@ -56,11 +56,11 @@ export class SpotifySource extends Source {
           durationMillis: state.item.duration_ms,
           state: !state.is_playing ?
             {
-              type: 'paused' as 'paused',
+              type: 'paused' as const,
               positionMillis: state.progress_ms
             } :
             {
-              type: 'playing' as 'playing',
+              type: 'playing' as const,
               playSpeed: 1,
               effectiveStartTimeMillis: performance.now() - state.progress_ms
             },

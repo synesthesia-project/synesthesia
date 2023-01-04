@@ -43,7 +43,7 @@ export function prepareUpcomingTracks(state: State) {
      * https://github.com/microsoft/TypeScript/issues/33191
      */
     const playingUntil: number | undefined = i === 0 ? now :
-      (previousTrackExpectedPlayingState as any)?.stopTime;
+      (previousTrackExpectedPlayingState as ExpectedPlayingState)?.stopTime;
 
     // If we don't know when the previous song will be playing until,
     // there's nothing more we can do for this track.

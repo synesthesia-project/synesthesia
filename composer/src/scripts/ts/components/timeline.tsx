@@ -10,8 +10,7 @@ import * as util from '@synesthesia-project/core/lib/util';
 
 import {MdAdd, MdLock, MdLockOpen} from 'react-icons/md';
 
-export interface TimelineState {
-}
+export type TimelineState = Record<string, never>;
 
 export interface TimelineProps {
   // Properties
@@ -84,7 +83,7 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
   /**
    * Get the position of the mouse within the file (0-1);
    */
-  private getMousePosition(e: React.MouseEvent<{}>) {
+  private getMousePosition(e: React.MouseEvent<unknown>) {
     const $timelineZoom = jQuery(e.currentTarget);
     const pos = (e.pageX - $timelineZoom.offset().left) / $timelineZoom.width();
     return util.restrict(pos, 0, 1);
@@ -93,17 +92,17 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
   /*
    * Jump to this position
    */
-  private mouseDown(e: React.MouseEvent<{}>) {
+  private mouseDown(e: React.MouseEvent<unknown>) {
     const pos = this.getMousePosition(e);
     if (this.props.playState)
       this.props.playState.controls.goToTime(this.props.playState.durationMillis * pos);
   }
 
-  private mouseEnterOrMove(e: React.MouseEvent<{}>) {
+  private mouseEnterOrMove(e: React.MouseEvent<unknown>) {
     this.props.updateMouseHover(this.getMousePosition(e));
   }
 
-  private mouseLeave(_e: React.MouseEvent<{}>) {
+  private mouseLeave(_e: React.MouseEvent<unknown>) {
     this.props.updateMouseHover(null);
   }
 
