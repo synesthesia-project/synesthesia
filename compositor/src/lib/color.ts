@@ -83,7 +83,7 @@ export const hslToRgb = (
     Math.round(b * 255),
     alpha,
   );
-}
+};
 
 export const rainbow = () => {
   return [
@@ -93,7 +93,7 @@ export const rainbow = () => {
     hslToRgb(0.6, 1, 0.5),
     hslToRgb(0.8, 1, 0.5)
   ];
-}
+};
 
 export const randomRGBColorPallete = (): RGBAColor[] => {
   const kind = Math.random();
@@ -131,5 +131,5 @@ export const randomRGBColorPallete = (): RGBAColor[] => {
   } else {
     return [RGBA_PURPLE, RGBA_BLUE, new RGBAColor(200, 100, 0, 1)];
   }
-}
+};
 

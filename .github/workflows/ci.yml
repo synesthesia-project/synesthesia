@@ -20,9 +20,9 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: install alsa prereqs for midi module
+    - name: install prereqs for midi module
       run:
-        sudo apt-get install -y libasound2-dev
+        sudo apt-get install -y libasound2-dev python2
     - name: install rush
       run: |
         npm install -g @microsoft/rush
