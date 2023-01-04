@@ -17,7 +17,8 @@
   "scripts": {
     "clean": "gulp clean",
     "build": "gulp",
-    "tslint": "gulp tslint",
+    "lint": "gulp lint",
+    "lint:fix": "gulp lint:fix",
     "test": "nyc --reporter=text-summary mocha tests/**/*.js"
   },
   "files": [

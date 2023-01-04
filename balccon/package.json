@@ -11,7 +11,8 @@
     "clean": "gulp clean",
     "build": "gulp",
     "run": "node build",
-    "tslint": "gulp tslint"
+    "lint": "gulp lint",
+    "lint:fix": "gulp lint:fix"
   },
   "dependencies": {
     "@synesthesia-project/compositor": "^0.0.1",

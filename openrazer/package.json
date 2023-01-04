@@ -19,7 +19,8 @@
     "clean": "gulp clean;",
     "build": "gulp;",
     "test": "mocha test/**/*.js",
-    "tslint": "gulp tslint"
+    "lint": "gulp lint",
+    "lint:fix": "gulp lint:fix"
   },
   "files": [
     "index.js",

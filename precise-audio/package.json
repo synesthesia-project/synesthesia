@@ -17,7 +17,8 @@
   "scripts": {
     "clean": "gulp clean",
     "build": "node --no-deprecation node_modules/gulp/bin/gulp.js",
-    "tslint": "gulp tslint",
+    "lint": "gulp lint",
+    "lint:fix": "gulp lint:fix",
     "typedoc": "typedoc --json api.json src/index.ts --module commonjs --includeDeclarations --ignoreCompilerErrors --excludeExternals && type2docfx api.json ../site/api/precise-audio"
   },
   "files": [

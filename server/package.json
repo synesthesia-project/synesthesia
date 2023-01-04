@@ -16,7 +16,8 @@
     "clean": "gulp clean",
     "build": "gulp",
     "test": "rm -rf build/data; mocha --require source-map-support/register build/test/**/*.js",
-    "tslint": "gulp tslint"
+    "lint": "gulp lint",
+    "lint:fix": "gulp lint:fix"
   },
   "dependencies": {
     "lodash": "^4.17.13",

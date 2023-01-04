@@ -2,15 +2,12 @@ var log         = require('fancy-log');
 var gulp        = require('gulp');
 var clean       = require('gulp-clean');
 var sourcemaps  = require('gulp-sourcemaps');
-var gulpTslint  = require('gulp-tslint');
+var gulpEslint  = require('gulp-eslint-new');
 var ts          = require('gulp-typescript');
-var path        = require('path');
-var tslint      = require('tslint');
 var PluginError = require('plugin-error');
 var webpack     = require('webpack');
 
-var package     = require('./package.json');
-const PACKAGE_NAME = package.name;
+const PACKAGE_NAME = require('./package.json').name;
 
 exports.typescriptTasks = function (opts) {
 
@@ -18,13 +15,12 @@ exports.typescriptTasks = function (opts) {
     throw new Error('Invalid option: tsconfig');
   if (typeof opts.outputDir !== 'string')
     throw new Error('Invalid option: outputDir');
-  if (!(opts.tslintSrc instanceof Array))
-    throw new Error('Invalid option: tslintSrc');
+  if (!(opts.lintSrc instanceof Array))
+    throw new Error('Invalid option: lintSrc');
 
   var prefix = opts.prefix || '';
   var sourcemap = opts.sourcemap || false;
   var sourceRoot = opts.sourcemapSourceRoot || 'src';
-  var tslintConfig = opts.tslintConfig || path.join(path.dirname(__dirname), 'tslint.json');
 
   var tsProject = ts.createProject(opts.tsconfig);
 
@@ -52,18 +48,18 @@ exports.typescriptTasks = function (opts) {
     return task;
   });
 
-  gulp.task(prefix + 'tslint', function () {
-    var program = tslint.Linter.createProgram(opts.tsconfig);
+  gulp.task(prefix + 'lint', () => gulp.src(opts.lintSrc)
+      .pipe(gulpEslint())
+      .pipe(gulpEslint.format('visualstudio', process.stderr))
+      .pipe(gulpEslint.failAfterError())
+  );
 
-    return gulp.src(opts.tslintSrc)
-      .pipe(gulpTslint({
-        formatter: 'verbose',
-        configuration: tslintConfig,
-        program
-      }))
-      .on('error', handleError)
-      .pipe(gulpTslint.report());
-  });
+  gulp.task(prefix + 'lint:fix', () => gulp.src(opts.lintSrc)
+      .pipe(gulpEslint({ fix: true }))
+      .pipe(gulpEslint.fix())
+      .pipe(gulpEslint.format('visualstudio', process.stderr))
+      .pipe(gulpEslint.failAfterError())
+  );
 }
 
 exports.cleanTask = function (paths) {
@@ -84,7 +80,7 @@ exports.setupBasicTypescriptProject = function (opts) {
     throw new Error('Invalid option: outputDir');
 
   var tsconfig = opts.tsconfig || 'src/tsconfig.json';
-  var tslintSrc = ['src/**/*.ts', 'src/**/*.tsx'];
+  var lintSrc = ['src/**/*.ts', 'src/**/*.tsx'];
 
   exports.cleanTask(opts.clean);
 
@@ -93,7 +89,7 @@ exports.setupBasicTypescriptProject = function (opts) {
     outputDir: opts.outputDir,
     sourcemap: opts.sourcemap,
     sourcemapSourceRoot: opts.sourcemapSourceRoot,
-    tslintSrc
+    lintSrc
   });
 }
 
@@ -111,14 +107,14 @@ exports.webpackTask = function(name, options) {
       const info = stats.toJson();
 
       if (stats.hasErrors()) {
-        for (var err of info.errors)
-          log(PACKAGE_NAME, err);
+        for (const e of info.errors)
+          log(PACKAGE_NAME, e);
         throw new PluginError("webpack", "has errors");
       }
 
       if (stats.hasWarnings()) {
-        for (var err of info.errors)
-          log(PACKAGE_NAME, err);
+        for (const e of info.errors)
+          log(PACKAGE_NAME, e);
       }
       callback();
     });
