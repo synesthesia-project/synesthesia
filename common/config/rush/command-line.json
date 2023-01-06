@@ -139,13 +139,15 @@
       "commandKind": "bulk",
       "summary": "Run lint",
       "name": "lint",
-      "enableParallelism": true
+      "enableParallelism": true,
+      "allowWarningsInSuccessfulBuild": true
     },
     {
       "commandKind": "bulk",
       "summary": "Run lint:fix",
       "name": "lint:fix",
-      "enableParallelism": true
+      "enableParallelism": true,
+      "allowWarningsInSuccessfulBuild": true
     },
     {
       "commandKind": "bulk",
