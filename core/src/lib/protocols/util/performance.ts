@@ -1,3 +1,3 @@
-/* tslint:disable:no-var-requires */
+/* eslint-disable @typescript-eslint/no-var-requires  */
 export default (typeof window === 'undefined') ?
   require('perf_hooks').performance : performance;

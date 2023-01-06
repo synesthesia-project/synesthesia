@@ -6,7 +6,7 @@ interface PopupProps {
   title: string;
 }
 
-class Popup extends React.Component<PopupProps, {}> {
+class Popup extends React.Component<PopupProps, Record<string, never>> {
 
   public render() {
     return (

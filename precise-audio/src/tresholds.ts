@@ -53,7 +53,7 @@ export class Thresholds {
       throw new Error(`Invalid value for basicModeThresholdSeconds: ${threshold}`);
     }
   }
-  private _downloadThresholdSeconds: number = 10;
+  private _downloadThresholdSeconds = 10;
 
   public get downloadThresholdSeconds() {
     return this._downloadThresholdSeconds;
@@ -75,7 +75,7 @@ export class Thresholds {
     }
   }
 
-  private _decodeThresholdSeconds: number = 2;
+  private _decodeThresholdSeconds = 2;
   public get decodeThresholdSeconds() {
     return this._decodeThresholdSeconds;
   }

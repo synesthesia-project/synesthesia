@@ -2,8 +2,7 @@ var log = require('fancy-log');
 var gulp = require('gulp');
 var clean = require('gulp-clean');
 var ts = require('gulp-typescript');
-var tslint = require('tslint');
-var gulpTslint = require('gulp-tslint');
+var gulpEslint  = require('gulp-eslint-new');
 
 var tsProject = ts.createProject('src/tsconfig.json');
 
@@ -26,17 +25,19 @@ gulp.task('ts', function () {
       .pipe(gulp.dest('build/'));
 });
 
-gulp.task('tslint', function() {
-  var program = tslint.Linter.createProgram("src/tsconfig.json");
+gulp.task('lint', () =>
+  gulp.src(['src/**/*.ts', 'src/**/*.tsx'])
+    .pipe(gulpEslint())
+    .pipe(gulpEslint.format())
+    .pipe(gulpEslint.failAfterError())
+);
 
-  return gulp.src(['src/**/*.ts'])
-  .pipe(gulpTslint({
-    formatter: 'verbose',
-    configuration: '../../tslint.json',
-    program
-  }))
-  .on('error', handleError)
-  .pipe(gulpTslint.report());
-});
+gulp.task('lint:fix', () =>
+  gulp.src(['src/**/*.ts', 'src/**/*.tsx'])
+    .pipe(gulpEslint({ fix: true }))
+    .pipe(gulpEslint.fix())
+    .pipe(gulpEslint.format())
+    .pipe(gulpEslint.failAfterError())
+);
 
 gulp.task('default', gulp.series('clean', 'ts'));

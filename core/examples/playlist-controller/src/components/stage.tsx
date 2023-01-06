@@ -19,12 +19,18 @@ interface State {
   now: number;
 }
 
-export class Stage extends React.Component<{}, State> {
+declare global {
+  interface Window {
+    a: PreciseAudio;
+  }
+}
+
+export class Stage extends React.Component<Record<string, never>, State> {
 
   private endpoint: Promise<ControllerEndpoint> | null = null;
   private readonly audio = new PreciseAudio();
 
-  public constructor(props: {}) {
+  public constructor(props: Record<string, never>) {
     super(props);
     this.state = {
       tracks: [],
@@ -53,7 +59,6 @@ export class Stage extends React.Component<{}, State> {
       this.updatePlayState();
     });
     this.audio.addEventListener('next', () => {
-      const tracks = this.audio.tracks();
       // remove track from list
       this.setState(state => ({
         tracks: state.tracks.slice(1)
@@ -67,7 +72,7 @@ export class Stage extends React.Component<{}, State> {
 
     this.audio.adjustPitchWithPlaybackRate = false;
 
-    (window as any).a = this.audio;
+    window.a = this.audio;
 
     setInterval(this.updatePlayState, 1000);
     requestAnimationFrame(this.updateNow);
@@ -102,7 +107,7 @@ export class Stage extends React.Component<{}, State> {
           if (endpointPromise === this.endpoint) this.endpoint = null;
           reject(err);
         });
-        ws.addEventListener('close', err => {
+        ws.addEventListener('close', () => {
           if (endpointPromise === this.endpoint) this.endpoint = null;
         });
         ws.addEventListener('message', msg => {
@@ -178,7 +183,7 @@ export class Stage extends React.Component<{}, State> {
       endpoint.sendState({layers: [{
         // TODO: optionally send file path instead of meta
         file: {
-          type: 'meta' as 'meta',
+          type: 'meta' as const,
           title: meta?.title || track.name,
           artist: meta?.artist,
           album: meta?.album,

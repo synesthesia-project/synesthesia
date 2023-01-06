@@ -137,9 +137,10 @@ export class ServerState {
           type: 'pong',
           timestampMillis: performance.now()
         };
-      default:
+      default: {
         const n: never = request;
         throw new Error('Unrecognized request: ' + n);
+      }
     }
   }
 

@@ -33,15 +33,17 @@ export interface BasicEventStateValues {
  */
 export type AnyLayer = PercussionLayer | TonesLayer;
 
-export interface PercussionLayer extends CueFileLayer<
+export type PercussionLayer = CueFileLayer<
   'percussion',
   {
     /** Default length for a percussion event */
     defaultLengthMillis: number,
   },
-  BasicEventStateValues> {}
+  BasicEventStateValues>
 
-export interface TonesLayer extends CueFileLayer<'tones', {}, BasicEventStateValues> {}
+// TODO: fix this when switching to io-ts
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type TonesLayer = CueFileLayer<'tones', {}, BasicEventStateValues>
 
 export function isPercussionLayer(layer: AnyLayer): layer is PercussionLayer {
   return layer.kind === 'percussion';

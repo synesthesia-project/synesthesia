@@ -4,11 +4,10 @@ import * as React from 'react';
  * Embedded spotify logo
  * Source: spotify-original.svg
  */
-export class SpotifyIcon extends React.Component<{}, {}> {
+export class SpotifyIcon extends React.Component<Record<string, never>, Record<string, never>> {
   public render() {
     const size = 22;
     const margin = `-${size / 2}px 6px -${size / 2}px 0`;
-    /* tslint:disable:max-line-length */
     return (
       <svg
           viewBox="0 0 226.73334 226.73334"

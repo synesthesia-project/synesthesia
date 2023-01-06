@@ -30,8 +30,6 @@ type MouseMat = {
   buffer: openrazer.RGB[];
 };
 
-let frame = 0;
-
 export class Display {
 
   private state: SynesthesiaPlayState = {
@@ -62,12 +60,12 @@ export class Display {
       console.log(`New server started on port ${port}`);
       const endpoint = this.connectToServer(port);
       endpoint
-        .catch(err => console.error(`Could not connect to server on port: ${port}`))
+        .catch(err => console.error(`Could not connect to server on port: ${port}`, err))
         .then(() => console.log(`Connected to server on port: ${port}`));
     });
 
     const endpoint = this.connectToServer(DEFAULT_SYNESTHESIA_PORT);
-    endpoint.catch(err => console.error(`Could not connect to server on port: ${DEFAULT_SYNESTHESIA_PORT}`));
+    endpoint.catch(err => console.error(`Could not connect to server on port: ${DEFAULT_SYNESTHESIA_PORT}`, err));
   }
 
   private connectToServer(port: number): Promise<DownstreamEndpoint> {
@@ -101,7 +99,7 @@ export class Display {
       ws.addEventListener('error', err => {
         reject(err);
       });
-      ws.addEventListener('close', err => {
+      ws.addEventListener('close', () => {
         // TODO
       });
     });
@@ -218,8 +216,6 @@ export class Display {
   }
 
   private async frame() {
-
-    const f = frame++;
 
     if (this.writingFrame) {
       // Skip Frame

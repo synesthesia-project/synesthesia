@@ -9,6 +9,7 @@ const wait = (millis: number) => new Promise(resolve => setTimeout(resolve, mill
   const kbd = kbds[0];
 
   let b = 255;
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     kbd.setMatrixBrightness(b);
     await wait(20);

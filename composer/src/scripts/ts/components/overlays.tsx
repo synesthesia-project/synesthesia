@@ -8,7 +8,7 @@ interface OverlaysProps {
   popup: {element: JSX.Element, dismiss: () => void} | null;
 }
 
-class Overlays extends React.Component<OverlaysProps, {}> implements OverlaysManager {
+class Overlays extends React.Component<OverlaysProps, Record<string, never>> implements OverlaysManager {
 
   public constructor(props: OverlaysProps) {
     super(props);

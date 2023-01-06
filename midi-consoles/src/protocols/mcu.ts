@@ -1,5 +1,3 @@
-/* tslint:disable:no-bitwise */
-
 import { Base } from '../base';
 
 export type Channel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;

@@ -9,7 +9,7 @@ import * as stageState from '../data/stage-state';
 
 import {MdKeyboard, MdSettings} from 'react-icons/md';
 
-export interface LayerState { }
+export type LayerState = Record<string, never>
 
 export interface LayerProps {
   // Properties

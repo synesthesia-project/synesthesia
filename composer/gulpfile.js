@@ -15,17 +15,19 @@ util.typescriptTasks({
   sourcemap: true,
   sourcemapSourceRoot: 'src/scripts/ts',
   outputDir: '.tmp/scripts',
-  tslintSrc: ['src/scripts/ts/**/*.ts', 'src/scripts/ts/**/*.tsx']
+  lintSrc: ['src/scripts/ts/**/*.ts', 'src/scripts/ts/**/*.tsx']
 });
 
 util.typescriptTasks({
   prefix: 'integration-',
   tsconfig: 'src/integration/tsconfig.json',
   outputDir: 'dist/integration',
-  tslintSrc: ['src/integration/**/*.ts']
+  lintSrc: ['src/integration/**/*.ts']
 });
 
-gulp.task('tslint', gulp.parallel('main-tslint', 'integration-tslint'));
+gulp.task('lint', gulp.parallel('main-lint', 'integration-lint'));
+
+gulp.task('lint:fix', gulp.parallel('main-lint:fix', 'integration-lint:fix'));
 
 util.webpackTask('webpack', {
   entry: {

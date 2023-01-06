@@ -18,7 +18,7 @@ interface EventPropertiesProps {
   updateCueFileAndSelection: util.Mutator<[file.CueFile, selection.Selection]>;
 }
 
-class EventProperties extends React.Component<EventPropertiesProps, {}> {
+class EventProperties extends React.Component<EventPropertiesProps, Record<string, never>> {
 
   public constructor(props: EventPropertiesProps) {
     super(props);

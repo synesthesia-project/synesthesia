@@ -1,4 +1,3 @@
-/* tslint:disable:object-literal-key-quotes */
 type MPEGAudioVersion = '1' | '2' | '2.5';
 
 const MPEGAudioVersionMapping: {[id: number]: MPEGAudioVersion} = {
@@ -284,7 +283,6 @@ export function getMetadata(buffer: ArrayBuffer) {
   const bytes = new Uint8Array(buffer);
   let offset = 0;
   let tagSize = 0;
-  // tslint:disable-next-line: no-conditional-assignment
   while ((tagSize = extractTagSize(bytes, offset)) !== 0)
     offset += tagSize;
   console.log('offset:', offset);

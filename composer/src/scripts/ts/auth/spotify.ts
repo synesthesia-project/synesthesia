@@ -61,8 +61,9 @@ export function authSpotify(): Promise<string> {
   });
 }
 
-export function isValidAuth(auth: any): auth is AuthData {
-  return !!auth.access_token && !!auth.expires_in && !!auth.state;
+export function isValidAuth(auth: unknown): auth is AuthData {
+  // TODO use io-ts instead?
+  return !!(auth as AuthData).access_token && !!(auth as AuthData).expires_in && !!(auth as AuthData).state;
 }
 
 /**

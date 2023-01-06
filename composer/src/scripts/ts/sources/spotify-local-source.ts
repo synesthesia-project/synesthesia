@@ -33,11 +33,11 @@ export class SpotifyLocalSource extends Source {
           durationMillis: state.duration,
           state: state.paused ?
             {
-              type: 'paused' as 'paused',
+              type: 'paused' as const,
               positionMillis: state.position
             } :
             {
-              type: 'playing' as 'playing',
+              type: 'playing' as const,
               playSpeed: 1,
               effectiveStartTimeMillis: performance.now() - state.position
             },

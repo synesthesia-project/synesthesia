@@ -35,9 +35,9 @@ jobs:
     - name: rush test
       run: |
         rush test
-    - name: rush tslint
+    - name: rush lint
       run: |
-        rush tslint
+        rush lint
     - name: rush clean
       run: |
         rush clean

@@ -4,8 +4,6 @@ import * as playback from './playback';
 import * as scheduling from './scheduling';
 import { State } from './state';
 
-/* tslint:disable:unified-signatures */
-
 export { TrackState };
 
 /**
@@ -629,11 +627,11 @@ export default class PreciseAudio extends EventTarget {
   public addEventListener(event: 'trackstateupdate', listener: Listener): void;
 
   public addEventListener(event: EventTypes, listener: Listener | ErrorListener) {
-    super.addEventListener(event, listener as any);
+    super.addEventListener(event, listener as unknown as EventListenerOrEventListenerObject);
   }
 
   public removeEventListener(event: EventTypes, listener: Listener | ErrorListener) {
-    super.removeEventListener(event, listener as any);
+    super.removeEventListener(event, listener as unknown as EventListenerOrEventListenerObject);
   }
 
 }

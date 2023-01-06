@@ -12,7 +12,7 @@ interface PropertyInputProperties {
  * An input that only propigates its changes upwards when the user hits enter
  * or unfocuses the element
  */
-export class DelayedPropigationInput extends React.Component<PropertyInputProperties, {}> {
+export class DelayedPropigationInput extends React.Component<PropertyInputProperties, Record<string, never>> {
 
   /* True when propigating the result of a user-triggered event upwards */
   private changing = false;

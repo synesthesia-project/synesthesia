@@ -2,8 +2,6 @@ var gulp = require('gulp');
 var clean = require('gulp-clean');
 var gutil = require("gulp-util");
 var ts = require('gulp-typescript');
-var tslint = require('tslint');
-var gulpTslint = require('gulp-tslint');
 var runSequence = require('run-sequence');
 var webpack = require('webpack');
 
@@ -33,18 +31,12 @@ gulp.task('ts', function () {
       .pipe(gulp.dest('.tmp'));
 });
 
-gulp.task('tslint', function () {
-  var program = tslint.Linter.createProgram("src/tsconfig.json");
-
-  return gulp.src(['src/**/*.ts', 'src/**/*.tsx'])
-    .pipe(gulpTslint({
-      formatter: 'verbose',
-      configuration: '../../tslint.json',
-      program
-    }))
-    .on('error', handleError)
-    .pipe(gulpTslint.report());
-});
+gulp.task('lint', () =>
+  gulp.src(['src/**/*.ts', 'src/**/*.tsx'])
+    .pipe(gulpEslint())
+    .pipe(gulpEslint.format())
+    .pipe(gulpEslint.failAfterError())
+);
 
 gulp.task("webpack", ['ts'], function(callback) {
     // run webpack
@@ -67,6 +59,6 @@ gulp.task('default', function(callback) {
   runSequence(
     'clean',
     ['webpack', 'copy-html'],
-    'tslint',
+    'lint',
     callback);
 });

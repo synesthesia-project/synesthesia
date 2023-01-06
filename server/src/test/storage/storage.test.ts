@@ -9,7 +9,7 @@ import { TEST_DATA } from '../util/consts';
  * @param promise the promise that should fail
  * @param errorMsg the error message that should be given in the rejection
  */
-function promiseError(promise: Promise<{}>, errorMsg: (msg: Error) => Chai.Assertion): Promise<void> {
+function promiseError(promise: Promise<unknown>, errorMsg: (msg: Error) => Chai.Assertion): Promise<void> {
   const succeedError = new Error('Not supposed to succeed');
   return promise
         .then(() => { throw succeedError; })
@@ -21,7 +21,7 @@ function promiseError(promise: Promise<{}>, errorMsg: (msg: Error) => Chai.Asser
         });
 }
 
-const FNF_REGEX = /file not found\:/;
+const FNF_REGEX = /file not found:/;
 
 const fileNotFound = (err: Error) => {
   if (!FNF_REGEX.exec(err.message)) {

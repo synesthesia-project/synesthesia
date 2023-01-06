@@ -1,3 +1,9 @@
 import PreciseAudio from '.';
 
-(window as any).PreciseAudio = PreciseAudio;
+declare global {
+  interface Window {
+    PreciseAudio: typeof PreciseAudio;
+  }
+}
+
+window.PreciseAudio = PreciseAudio;

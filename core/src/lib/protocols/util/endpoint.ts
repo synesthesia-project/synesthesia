@@ -114,8 +114,8 @@ interface PingResp {
  */
 export abstract class PingingEndpoint<Req, Res, Notif> extends Endpoint<Req, Res, Notif> {
 
-  private pingInterval: number | NodeJS.Timeout;
-  private pingTimeout: number | NodeJS.Timeout | null = null;
+  private pingInterval: ReturnType<typeof setInterval>;
+  private pingTimeout: ReturnType<typeof setInterval> | null = null;
   private pingBackoff = 10;
   private latestGoodPing: { ping: number, requestTime: number, diff: number } | null = null;
 
@@ -149,7 +149,7 @@ export abstract class PingingEndpoint<Req, Res, Notif> extends Endpoint<Req, Res
     }).catch(err => {
       console.log(`Unable to send ping, will try again in ${this.pingBackoff}ms`, err);
       if (this.pingTimeout)
-        clearInterval(this.pingTimeout as any);
+        clearInterval(this.pingTimeout);
       this.pingTimeout = setTimeout(() => this.updateTimeDifference(), this.pingBackoff);
       this.pingBackoff *= 2;
     });
@@ -157,9 +157,9 @@ export abstract class PingingEndpoint<Req, Res, Notif> extends Endpoint<Req, Res
 
   protected handleClosed() {
     console.log('connection closed');
-    clearInterval(this.pingInterval as any);
+    clearInterval(this.pingInterval);
     if (this.pingTimeout)
-      clearInterval(this.pingTimeout as any);
+      clearInterval(this.pingTimeout);
   }
 
   protected getLatestGoodPing() {

@@ -26,7 +26,8 @@
     "clean": "gulp clean",
     "build": "gulp",
     "build-examples": "tsc --project examples/tsconfig.json",
-    "tslint": "gulp tslint"
+    "lint": "gulp lint",
+    "lint:fix": "gulp lint:fix"
   },
   "files": [
     "lib/**/*"
