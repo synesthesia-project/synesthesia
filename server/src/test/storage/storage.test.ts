@@ -9,16 +9,20 @@ import { TEST_DATA } from '../util/consts';
  * @param promise the promise that should fail
  * @param errorMsg the error message that should be given in the rejection
  */
-function promiseError(promise: Promise<unknown>, errorMsg: (msg: Error) => Chai.Assertion): Promise<void> {
+function promiseError(
+  promise: Promise<unknown>,
+  errorMsg: (msg: Error) => Chai.Assertion
+): Promise<void> {
   const succeedError = new Error('Not supposed to succeed');
   return promise
-        .then(() => { throw succeedError; })
-        .catch((err: Error) => {
-          expect(err).to.be.an.instanceOf(Error);
-          if (err.message === 'Not supposed to succeed')
-            throw err;
-          errorMsg(err);
-        });
+    .then(() => {
+      throw succeedError;
+    })
+    .catch((err: Error) => {
+      expect(err).to.be.an.instanceOf(Error);
+      if (err.message === 'Not supposed to succeed') throw err;
+      errorMsg(err);
+    });
 }
 
 const FNF_REGEX = /file not found:/;
@@ -31,9 +35,7 @@ const fileNotFound = (err: Error) => {
 };
 
 describe('Storage', () => {
-
   describe('Basic storage + fetching', () => {
-
     it('Non-Existant', async () => {
       const s = new Storage(TEST_DATA);
 
@@ -45,7 +47,7 @@ describe('Storage', () => {
       const s = new Storage(TEST_DATA);
       const f: CueFile = {
         lengthMillis: 12345,
-        layers: []
+        layers: [],
       };
 
       // Check file does not yet exist
@@ -57,11 +59,9 @@ describe('Storage', () => {
       // Check file is correctly returned
       expect(await s.getFile(id)).to.deep.equal(f);
     });
-
   });
 
   describe('multiple revisions', () => {
-
     it('Non-Existant', async () => {
       const s = new Storage(TEST_DATA);
 
@@ -73,7 +73,7 @@ describe('Storage', () => {
       const s = new Storage(TEST_DATA);
       const f: CueFile = {
         lengthMillis: 12345,
-        layers: []
+        layers: [],
       };
 
       // Check file does not yet exist
@@ -93,11 +93,11 @@ describe('Storage', () => {
       const s = new Storage(TEST_DATA);
       const f1: CueFile = {
         lengthMillis: 12345,
-        layers: []
+        layers: [],
       };
       const f2: CueFile = {
         lengthMillis: 54321,
-        layers: []
+        layers: [],
       };
 
       // Check file does not yet exist
@@ -120,6 +120,5 @@ describe('Storage', () => {
       // Check old file is correctly returned
       expect(await s.getRevision(id, revisions[0])).to.deep.equal(f1);
     });
-
   });
 });

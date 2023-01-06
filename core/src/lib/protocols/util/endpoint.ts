@@ -6,11 +6,12 @@ import performance from './performance';
  * of endpoints that handle request/response type messages.
  */
 export abstract class Endpoint<Req, Res, Notif> {
-
   protected readonly sendMessage: (msg: Message<Req, Res, Notif>) => void;
 
-  private readonly pendingRequests =
-    new Map<number, { resolve: (resp: Res) => void, reject: (error: Error) => void }>();
+  private readonly pendingRequests = new Map<
+    number,
+    { resolve: (resp: Res) => void; reject: (error: Error) => void }
+  >();
 
   private nextRequestId = 0;
 
@@ -26,13 +27,20 @@ export abstract class Endpoint<Req, Res, Notif> {
     switch (msg.type) {
       case 'request': {
         this.handleRequest(msg.request)
-          .then(response => this.sendMessage({
-            type: 'response',
-            requestId: msg.requestId,
-            response,
-          }))
-          .catch(err => {
-            console.error('Unable to process request', msg.request, 'sending error: ', err);
+          .then((response) =>
+            this.sendMessage({
+              type: 'response',
+              requestId: msg.requestId,
+              response,
+            })
+          )
+          .catch((err) => {
+            console.error(
+              'Unable to process request',
+              msg.request,
+              'sending error: ',
+              err
+            );
             this.sendMessage({
               type: 'error_response',
               requestId: msg.requestId,
@@ -47,7 +55,10 @@ export abstract class Endpoint<Req, Res, Notif> {
           r.resolve(msg.response);
           this.pendingRequests.delete(msg.requestId);
         } else {
-          console.error('Got response for unrecognized request:', msg.requestId);
+          console.error(
+            'Got response for unrecognized request:',
+            msg.requestId
+          );
         }
         break;
       }
@@ -57,7 +68,10 @@ export abstract class Endpoint<Req, Res, Notif> {
           r.reject(new Error('Received error for request: ' + msg.message));
           this.pendingRequests.delete(msg.requestId);
         } else {
-          console.error('Got response for unrecognized request:', msg.requestId);
+          console.error(
+            'Got response for unrecognized request:',
+            msg.requestId
+          );
         }
         break;
       }
@@ -101,7 +115,6 @@ export abstract class Endpoint<Req, Res, Notif> {
       notification,
     });
   }
-
 }
 
 interface PingResp {
@@ -112,12 +125,19 @@ interface PingResp {
  * An endpoint that periodically pings the thing it's connected to to
  * calculate the difference between its clocks
  */
-export abstract class PingingEndpoint<Req, Res, Notif> extends Endpoint<Req, Res, Notif> {
-
+export abstract class PingingEndpoint<Req, Res, Notif> extends Endpoint<
+  Req,
+  Res,
+  Notif
+> {
   private pingInterval: ReturnType<typeof setInterval>;
   private pingTimeout: ReturnType<typeof setInterval> | null = null;
   private pingBackoff = 10;
-  private latestGoodPing: { ping: number, requestTime: number, diff: number } | null = null;
+  private latestGoodPing: {
+    ping: number;
+    requestTime: number;
+    diff: number;
+  } | null = null;
 
   protected constructor(sendMessage: (msg: Message<Req, Res, Notif>) => void) {
     super(sendMessage);
@@ -131,35 +151,43 @@ export abstract class PingingEndpoint<Req, Res, Notif> extends Endpoint<Req, Res
    */
   private updateTimeDifference() {
     const requestTime = performance.now();
-    this.sendRequest(this.pingReq()).then(r => {
-      const resp = this.getPingResp(r);
-      const responseTime = performance.now();
-      const ping = responseTime - requestTime;
-      if (!this.latestGoodPing || this.latestGoodPing.ping > ping) {
-        // Update difference
-        const thisTimestamp = Math.round(requestTime + ping / 2);
-        const diff = thisTimestamp - resp.timestampMillis;
-        this.latestGoodPing = {
-          ping, requestTime, diff,
-        };
-        this.newPing();
-        console.log('ping diff:', diff);
-      }
-      console.log('ping:', ping);
-    }).catch(err => {
-      console.log(`Unable to send ping, will try again in ${this.pingBackoff}ms`, err);
-      if (this.pingTimeout)
-        clearInterval(this.pingTimeout);
-      this.pingTimeout = setTimeout(() => this.updateTimeDifference(), this.pingBackoff);
-      this.pingBackoff *= 2;
-    });
+    this.sendRequest(this.pingReq())
+      .then((r) => {
+        const resp = this.getPingResp(r);
+        const responseTime = performance.now();
+        const ping = responseTime - requestTime;
+        if (!this.latestGoodPing || this.latestGoodPing.ping > ping) {
+          // Update difference
+          const thisTimestamp = Math.round(requestTime + ping / 2);
+          const diff = thisTimestamp - resp.timestampMillis;
+          this.latestGoodPing = {
+            ping,
+            requestTime,
+            diff,
+          };
+          this.newPing();
+          console.log('ping diff:', diff);
+        }
+        console.log('ping:', ping);
+      })
+      .catch((err) => {
+        console.log(
+          `Unable to send ping, will try again in ${this.pingBackoff}ms`,
+          err
+        );
+        if (this.pingTimeout) clearInterval(this.pingTimeout);
+        this.pingTimeout = setTimeout(
+          () => this.updateTimeDifference(),
+          this.pingBackoff
+        );
+        this.pingBackoff *= 2;
+      });
   }
 
   protected handleClosed() {
     console.log('connection closed');
     clearInterval(this.pingInterval);
-    if (this.pingTimeout)
-      clearInterval(this.pingTimeout);
+    if (this.pingTimeout) clearInterval(this.pingTimeout);
   }
 
   protected getLatestGoodPing() {
@@ -173,5 +201,7 @@ export abstract class PingingEndpoint<Req, Res, Notif> extends Endpoint<Req, Res
   /**
    * Overwritable function called when the ping is calculated
    */
-  protected newPing(): void { /* no-op */ }
+  protected newPing(): void {
+    /* no-op */
+  }
 }

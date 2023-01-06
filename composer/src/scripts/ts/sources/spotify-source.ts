@@ -1,6 +1,6 @@
 import * as Spotify from 'spotify-web-api-js';
 
-import {Source} from './source';
+import { Source } from './source';
 
 const UPDATE_INTERVAL_MS = 2000;
 
@@ -23,7 +23,7 @@ interface ExtendedSpotifyApi {
       artists: {
         name: string;
       }[];
-    }
+    };
   }>;
   play(options: Record<string, never>): Promise<unknown>;
   pause(options: Record<string, never>): Promise<unknown>;
@@ -32,7 +32,6 @@ interface ExtendedSpotifyApi {
 type SpotifyApi = typeof s & ExtendedSpotifyApi;
 
 export class SpotifySource extends Source {
-
   private api: SpotifyApi;
 
   private interval: number;
@@ -49,29 +48,32 @@ export class SpotifySource extends Source {
   }
 
   private update() {
-    this.api.getMyCurrentPlaybackState().then(state => {
+    this.api.getMyCurrentPlaybackState().then((state) => {
       console.log('Spotify State', state);
       this.playStateUpdated(
-        state.item ? {
-          durationMillis: state.item.duration_ms,
-          state: !state.is_playing ?
-            {
-              type: 'paused' as const,
-              positionMillis: state.progress_ms
-            } :
-            {
-              type: 'playing' as const,
-              playSpeed: 1,
-              effectiveStartTimeMillis: performance.now() - state.progress_ms
-            },
-          meta: {
-            id: state.item.id,
-            info: {
-              artist: state.item.artists.map(a => a.name).join(' & '),
-              title: state.item.name
+        state.item
+          ? {
+              durationMillis: state.item.duration_ms,
+              state: !state.is_playing
+                ? {
+                    type: 'paused' as const,
+                    positionMillis: state.progress_ms,
+                  }
+                : {
+                    type: 'playing' as const,
+                    playSpeed: 1,
+                    effectiveStartTimeMillis:
+                      performance.now() - state.progress_ms,
+                  },
+              meta: {
+                id: state.item.id,
+                info: {
+                  artist: state.item.artists.map((a) => a.name).join(' & '),
+                  title: state.item.name,
+                },
+              },
             }
-          }
-        } : null
+          : null
       );
     });
   }
@@ -91,12 +93,12 @@ export class SpotifySource extends Source {
       pause: () => this.api.pause({}).then(this.update),
       goToTime: (positionMs: number) =>
         this.api.seek(Math.round(positionMs), {}).then(this.update),
-      setPlaySpeed: () => console.log('play speed not supported in spotify-source')
+      setPlaySpeed: () =>
+        console.log('play speed not supported in spotify-source'),
     };
   }
 
   protected disconnect() {
     clearInterval(this.interval);
   }
-
 }

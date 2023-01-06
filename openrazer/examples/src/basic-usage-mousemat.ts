@@ -1,6 +1,7 @@
 import * as openrazer from 'openrazer';
 
-const wait = (millis: number) => new Promise(resolve => setTimeout(resolve, millis));
+const wait = (millis: number) =>
+  new Promise((resolve) => setTimeout(resolve, millis));
 
 (async () => {
   const devices = await openrazer.getMousemats();
@@ -15,11 +16,21 @@ const wait = (millis: number) => new Promise(resolve => setTimeout(resolve, mill
 
   console.log('Setting to spectrum');
   device.writeCustomFrame(0, [
-    [255, 0, 0], [0, 255, 0], [0, 0, 255],
-    [255, 0, 0], [0, 255, 0], [0, 0, 255],
-    [255, 0, 0], [0, 255, 0], [0, 0, 255],
-    [255, 0, 0], [0, 255, 0], [0, 0, 255],
-    [255, 0, 0], [0, 255, 0], [0, 0, 255],
+    [255, 0, 0],
+    [0, 255, 0],
+    [0, 0, 255],
+    [255, 0, 0],
+    [0, 255, 0],
+    [0, 0, 255],
+    [255, 0, 0],
+    [0, 255, 0],
+    [0, 0, 255],
+    [255, 0, 0],
+    [0, 255, 0],
+    [0, 0, 255],
+    [255, 0, 0],
+    [0, 255, 0],
+    [0, 0, 255],
   ]);
 
   await wait(5000);
@@ -51,5 +62,4 @@ const wait = (millis: number) => new Promise(resolve => setTimeout(resolve, mill
 
   console.log('brightening');
   device.setMatrixBrightness(255);
-
 })();

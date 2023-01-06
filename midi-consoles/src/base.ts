@@ -3,7 +3,6 @@ import * as midi from 'midi';
 type Listener = (data: number[]) => void;
 
 export class Base {
-
   private readonly input: midi.Input;
   private readonly output: midi.Output;
 
@@ -50,12 +49,14 @@ export class Base {
   }
 
   private handleMidi(message: number[]) {
-    this.listeners.forEach(l => l(message));
+    this.listeners.forEach((l) => l(message));
   }
 
   public sendMidi(message: number[]) {
-    console.log('sending', message.map(n => n.toString(16)));
+    console.log(
+      'sending',
+      message.map((n) => n.toString(16))
+    );
     this.output.sendMessage(message);
   }
-
 }

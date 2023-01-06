@@ -1,14 +1,23 @@
 import PitchShift = require('soundbank-pitch-shift');
 
-import { Track, PlayStatePlaying, TrackDataReady, PlayStateBasic, TrackDataModeBasic } from './data';
+import {
+  Track,
+  PlayStatePlaying,
+  TrackDataReady,
+  PlayStateBasic,
+  TrackDataModeBasic,
+} from './data';
 import { prepareUpcomingTracks } from './scheduling';
 import { State } from './state';
 
-export function getPlayState(state: State, data: TrackDataReady): PlayStateBasic & { mode: 'full' | 'basic' } {
+export function getPlayState(
+  state: State,
+  data: TrackDataReady
+): PlayStateBasic & { mode: 'full' | 'basic' } {
   if (data.mode === 'full') {
     return {
       mode: 'full',
-      ...data.playState
+      ...data.playState,
     };
   } else {
     if (data.audio.paused) {
@@ -17,25 +26,25 @@ export function getPlayState(state: State, data: TrackDataReady): PlayStateBasic
           mode: 'basic',
           state: 'playing',
           effectiveStartTimeMillis: data.scheduled.startTime * 1000,
-          stopTime: data.scheduled.startTime + data.audio.duration
+          stopTime: data.scheduled.startTime + data.audio.duration,
         };
       } else {
         return {
           mode: 'basic',
           state: 'paused',
-          positionMillis: data.audio.currentTime * 1000
+          positionMillis: data.audio.currentTime * 1000,
         };
       }
     } else {
       const effectiveStartTimeMillis =
         (state.context.currentTime -
-          data.audio.currentTime / data.audio.playbackRate)
-        * 1000;
+          data.audio.currentTime / data.audio.playbackRate) *
+        1000;
       return {
         mode: 'basic',
         state: 'playing',
         effectiveStartTimeMillis,
-        stopTime: effectiveStartTimeMillis / 1000 + data.audio.duration
+        stopTime: effectiveStartTimeMillis / 1000 + data.audio.duration,
       };
     }
   }
@@ -49,7 +58,10 @@ export function getPlayState(state: State, data: TrackDataReady): PlayStateBasic
  * `this.prepareUpcomingTracks()`, to avoid calling the callee uneccesarily.
  */
 export function playCurrentTrackFrom(
-    state: State, positionMillis: number, dontPrepareUpcomingTracks ?: true) {
+  state: State,
+  positionMillis: number,
+  dontPrepareUpcomingTracks?: true
+) {
   // Stop / Deschedule all currently playing tracks
   stopAllTracksWithoutEnding(state.tracks);
   // Play with a little delay
@@ -76,7 +88,12 @@ export function playCurrentTrackFrom(
  *                       begin from, in milliseconds.
  *                       `0` is the start of the track.
  */
-export function playTrack(state: State, startTime: number, trackData: TrackDataReady, positionMillis: number) {
+export function playTrack(
+  state: State,
+  startTime: number,
+  trackData: TrackDataReady,
+  positionMillis: number
+) {
   if (trackData.mode === 'full') {
     const source = state.context.createBufferSource();
     source.playbackRate.value = state.playbackRate;
@@ -93,20 +110,20 @@ export function playTrack(state: State, startTime: number, trackData: TrackDataR
     source.buffer = trackData.buffer;
     const gaps = {
       paddingStartSeconds: 0,
-      paddingEndSeconds: 0
+      paddingEndSeconds: 0,
     };
     // Get gapless information if available
     if (trackData.meta?.vbrInfo?.numberOfFrames && trackData.meta.lameInfo) {
-      const samples = trackData.meta.samplesPerFrame *
-        trackData.meta.vbrInfo.numberOfFrames;
+      const samples =
+        trackData.meta.samplesPerFrame * trackData.meta.vbrInfo.numberOfFrames;
       const realSamples =
         samples -
         trackData.meta.lameInfo.paddingStart -
         trackData.meta.lameInfo.paddingEnd;
       const paddingStartSeconds =
-        1 / trackData.meta.sampleRate * trackData.meta.lameInfo.paddingStart;
+        (1 / trackData.meta.sampleRate) * trackData.meta.lameInfo.paddingStart;
       const paddingEndSeconds =
-        1 / trackData.meta.sampleRate * trackData.meta.lameInfo.paddingEnd;
+        (1 / trackData.meta.sampleRate) * trackData.meta.lameInfo.paddingEnd;
       if (trackData.buffer.length === realSamples) {
         console.log('Loaded track already gapless');
       } else if (trackData.buffer.length === samples) {
@@ -117,10 +134,12 @@ export function playTrack(state: State, startTime: number, trackData: TrackDataR
         // For some reason, firefox seems to add an additional 1152 samples of
         // padding to the encoded track.
         gaps.paddingStartSeconds =
-          paddingStartSeconds + 1 / trackData.meta.sampleRate * 576;
+          paddingStartSeconds + (1 / trackData.meta.sampleRate) * 576;
         gaps.paddingEndSeconds =
-          paddingEndSeconds + 1 / trackData.meta.sampleRate * 576;
-        console.log('Adjusting for gapless playback, with additional 1152 samples');
+          paddingEndSeconds + (1 / trackData.meta.sampleRate) * 576;
+        console.log(
+          'Adjusting for gapless playback, with additional 1152 samples'
+        );
       } else {
         console.log(
           'Mismatch between gapless metadata and loaded audio, full:',
@@ -137,9 +156,10 @@ export function playTrack(state: State, startTime: number, trackData: TrackDataR
     const stopTime =
       startTime +
       (trackData.buffer.duration -
-      gaps.paddingStartSeconds -
-      gaps.paddingEndSeconds -
-      positionMillis / 1000) / state.playbackRate;
+        gaps.paddingStartSeconds -
+        gaps.paddingEndSeconds -
+        positionMillis / 1000) /
+        state.playbackRate;
     source.start(startTime, positionMillis / 1000 + gaps.paddingStartSeconds);
     trackData.playState = {
       state: 'playing',
@@ -147,10 +167,12 @@ export function playTrack(state: State, startTime: number, trackData: TrackDataR
       source,
       effectiveStartTimeMillis:
         startTime * 1000 - positionMillis / state.playbackRate,
-      stopTime
+      stopTime,
     };
-    source.addEventListener('ended',
-      createTrackEndedListenerFull(state, trackData.playState));
+    source.addEventListener(
+      'ended',
+      createTrackEndedListenerFull(state, trackData.playState)
+    );
   } else {
     // TODO: begin playback for basic audio
     const effectiveStartTimeSeconds = startTime - positionMillis / 1000;
@@ -160,8 +182,11 @@ export function playTrack(state: State, startTime: number, trackData: TrackDataR
       const now = state.context.currentTime;
       trackData.suppressEndedEvent = undefined;
       trackData.audio.playbackRate = state.playbackRate;
-      trackData.audio.currentTime = Math.max(0, now - effectiveStartTimeSeconds),
-      trackData.audio.play();
+      (trackData.audio.currentTime = Math.max(
+        0,
+        now - effectiveStartTimeSeconds
+      )),
+        trackData.audio.play();
     };
     if (effectiveStartTimeSeconds <= now) {
       play();
@@ -169,7 +194,7 @@ export function playTrack(state: State, startTime: number, trackData: TrackDataR
       const timeoutMillis = (effectiveStartTimeSeconds - now) * 1000;
       trackData.scheduled = {
         timeout: setTimeout(play, timeoutMillis),
-        startTime: effectiveStartTimeSeconds
+        startTime: effectiveStartTimeSeconds,
       };
     }
     /*
@@ -180,20 +205,24 @@ export function playTrack(state: State, startTime: number, trackData: TrackDataR
   }
 }
 
-
 /**
  * Create a listener that should get called when the currently playing track
  * has ended (used only for tracks in "full" mode)
  *
  * @param track - the track that should be playing
  */
-function createTrackEndedListenerFull(state: State, playState: PlayStatePlaying) {
+function createTrackEndedListenerFull(
+  state: State,
+  playState: PlayStatePlaying
+) {
   return () => {
     const track = state.currentTrack();
     // Check if current track is loaded and expected track
-    if (track?.data?.state !== 'ready' ||
-        track.data.mode !== 'full' ||
-        track.data.playState !== playState)
+    if (
+      track?.data?.state !== 'ready' ||
+      track.data.mode !== 'full' ||
+      track.data.playState !== playState
+    )
       return;
     if (playState.state === 'playing' && !playState.suppressEndedEvent) {
       if (state.tracks.length === 1) {
@@ -201,7 +230,7 @@ function createTrackEndedListenerFull(state: State, playState: PlayStatePlaying)
         // keep the last track, and move the cursor to the beginning
         track.data.playState = {
           state: 'paused',
-          positionMillis: 0
+          positionMillis: 0,
         };
         state.sendEvent('ended');
       } else {
@@ -216,8 +245,7 @@ function createTrackEndedListenerBasic(state: State, data: TrackDataModeBasic) {
   return () => {
     const track = state.currentTrack();
     // Check if current track is loaded and expected track
-    if (track?.data?.state !== 'ready' || track.data !== data)
-      return;
+    if (track?.data?.state !== 'ready' || track.data !== data) return;
     if (!data.suppressEndedEvent) {
       if (state.tracks.length === 1) {
         // If there are no following tracks,
@@ -237,15 +265,16 @@ function createTrackEndedListenerBasic(state: State, data: TrackDataModeBasic) {
  * Skip a certain number of tracks ahead.
  */
 export function skip(state: State, count: number) {
-  if (count < 1)
-    throw new Error('Invalid number of tracks to skip: ' + count);
+  if (count < 1) throw new Error('Invalid number of tracks to skip: ' + count);
   const track = state.currentTrack();
   let ended = false;
   if (track) {
     /** Begin playback of next track automatically? */
     const beginPlayback = !!(
-      track.data?.state === 'ready' && getPlayState(state, track.data).state === 'playing'
-      || track.data?.state !== 'ready' && track?.playOnLoad);
+      (track.data?.state === 'ready' &&
+        getPlayState(state, track.data).state === 'playing') ||
+      (track.data?.state !== 'ready' && track?.playOnLoad)
+    );
     stopAllTracksWithoutEnding(state.tracks);
     count = Math.min(count, state.tracks.length);
     state.tracks = state.tracks.slice(count);
@@ -264,10 +293,8 @@ export function skip(state: State, count: number) {
     }
   }
   // Send Events
-  for (let i = 0; i < count ; i++)
-    state.sendEvent('next');
-  if (ended)
-    state.sendEvent('ended');
+  for (let i = 0; i < count; i++) state.sendEvent('next');
+  if (ended) state.sendEvent('ended');
 }
 
 export function playTrackWhenLoaded(track: Track) {
@@ -275,12 +302,13 @@ export function playTrackWhenLoaded(track: Track) {
     return track.playOnLoad.promise;
   } else {
     let callback: (() => void) | null = null;
-    const promise = new Promise<void>(resolve => {
+    const promise = new Promise<void>((resolve) => {
       callback = resolve;
     });
     if (callback) {
       track.playOnLoad = {
-        callback, promise
+        callback,
+        promise,
       };
     }
     return promise;
@@ -297,25 +325,30 @@ export function playTrackWhenLoaded(track: Track) {
  * @param positionMillis the value to set for the positionMillis of the first
  *                       track in the array once paused.
  */
-export function stopAllTracksWithoutEnding(tracks: Track[], positionMillis = 0) {
+export function stopAllTracksWithoutEnding(
+  tracks: Track[],
+  positionMillis = 0
+) {
   for (let i = 0; i < tracks.length; i++) {
     const track = tracks[i];
     console.log(track.data?.state);
     if (track.data?.state === 'ready') {
       console.log('ready!!!');
-      if (track.data.mode === 'full' &&
-          track.data.playState.state === 'playing') {
+      if (
+        track.data.mode === 'full' &&
+        track.data.playState.state === 'playing'
+      ) {
         track.data.playState.suppressEndedEvent = true;
         track.data.playState.source.stop();
         track.data.playState = {
           state: 'paused',
-          positionMillis: i === 0 ? positionMillis : 0
+          positionMillis: i === 0 ? positionMillis : 0,
         };
       } else if (track.data.mode === 'basic') {
         if (!track.data.audio.paused) {
           track.data.suppressEndedEvent = true;
           track.data.audio.pause();
-          track.data.audio.currentTime = i === 0 ? (positionMillis / 1000) : 0;
+          track.data.audio.currentTime = i === 0 ? positionMillis / 1000 : 0;
         } else if (track.data.scheduled) {
           clearTimeout(track.data.scheduled.timeout);
           track.data.scheduled = undefined;
@@ -331,8 +364,10 @@ export function stopAllTracksWithoutEnding(tracks: Track[], positionMillis = 0) 
 function timeUpdated(state: State) {
   state.sendEvent('timeupdate');
   const track = state.currentTrack();
-  if (track?.data?.state === 'ready' &&
-      getPlayState(state, track.data).state === 'playing') {
+  if (
+    track?.data?.state === 'ready' &&
+    getPlayState(state, track.data).state === 'playing'
+  ) {
     scheduleTimeUpdated(state);
   }
 }

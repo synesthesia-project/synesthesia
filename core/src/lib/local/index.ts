@@ -11,24 +11,27 @@ import { promisify } from 'util';
 
 import * as messages from './messages';
 
-const RUN_DIR = process.env.SYNESTHESIA_RUN || path.join(os.tmpdir(), 'synesthesia');
+const RUN_DIR =
+  process.env.SYNESTHESIA_RUN || path.join(os.tmpdir(), 'synesthesia');
 
 const mkdir = promisify(fs.mkdir);
 const unlink = promisify(fs.unlink);
 const readdir = promisify(fs.readdir);
 
-const mkIfNotExists = (dir: string) => mkdir(dir).catch(err => {
-  if (err.code !== 'EEXIST') throw(err);
-});
+const mkIfNotExists = (dir: string) =>
+  mkdir(dir).catch((err) => {
+    if (err.code !== 'EEXIST') throw err;
+  });
 
-const mkdirParents = (dir: string) => mkIfNotExists(dir).catch(async err => {
-  if (err.code === 'ENOENT') {
-    await mkdirParents(path.dirname(dir));
-    await mkIfNotExists(dir);
-    return;
-  }
-  throw err;
-});
+const mkdirParents = (dir: string) =>
+  mkIfNotExists(dir).catch(async (err) => {
+    if (err.code === 'ENOENT') {
+      await mkdirParents(path.dirname(dir));
+      await mkIfNotExists(dir);
+      return;
+    }
+    throw err;
+  });
 
 type ProcType = 'consumer' | 'server';
 
@@ -36,7 +39,6 @@ const SERVER: ProcType = 'server';
 const CONSUMER: ProcType = 'consumer';
 
 abstract class LocalCommunications {
-
   private readonly socketPath: string;
 
   protected abstract getProcType(): ProcType;
@@ -50,7 +52,7 @@ abstract class LocalCommunications {
       const server = new net.Server();
 
       server.listen(this.socketPath);
-      server.on('connection', socket => {
+      server.on('connection', (socket) => {
         this.onConnection(new JsonSocket(socket));
       });
     });
@@ -64,11 +66,9 @@ abstract class LocalCommunications {
   private cleanup() {
     unlink(this.socketPath);
   }
-
 }
 
 export class LocalCommunicationsServer extends LocalCommunications {
-
   protected getProcType() {
     return SERVER;
   }
@@ -83,22 +83,23 @@ export class LocalCommunicationsServer extends LocalCommunications {
   public notifyConsumers(port: number) {
     const consumers = path.join(RUN_DIR, CONSUMER);
     const message: messages.IncomingConsumerMessage = {
-      type: 'new-server', port,
+      type: 'new-server',
+      port,
     };
-    readdir(consumers).then(dirs => {
+    readdir(consumers).then((dirs) => {
       for (const pid of dirs) {
         const socket = new JsonSocket(net.connect(path.join(consumers, pid)));
-        socket.sendEndMessage(message, () => {/* TODO */});
+        socket.sendEndMessage(message, () => {
+          /* TODO */
+        });
       }
     });
   }
-
 }
 
 type NewServerListener = (port: number) => void;
 
 export class LocalCommunicationsConsumer extends LocalCommunications {
-
   private readonly newServerListeners = new Set<NewServerListener>();
 
   protected getProcType() {
@@ -111,7 +112,7 @@ export class LocalCommunicationsConsumer extends LocalCommunications {
       console.log('message', message);
       // TODO: verify type of message
       if (message.type === 'new-server') {
-        this.newServerListeners.forEach(l => l(message.port));
+        this.newServerListeners.forEach((l) => l(message.port));
       }
     });
   }
@@ -124,5 +125,4 @@ export class LocalCommunicationsConsumer extends LocalCommunications {
       throw new Error('Unrecognized Event: ' + event);
     }
   }
-
 }

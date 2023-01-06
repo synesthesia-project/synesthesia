@@ -1,6 +1,9 @@
-import {isEqual} from 'lodash';
+import { isEqual } from 'lodash';
 
-import { PlayStateTrackMeta, PlayStateData as PlayStateDataOnly } from '../../../integration/shared';
+import {
+  PlayStateTrackMeta,
+  PlayStateData as PlayStateDataOnly,
+} from '../../../integration/shared';
 
 export { PlayStateTrackMeta, PlayStateDataOnly };
 
@@ -20,12 +23,17 @@ export interface PlayStateData extends PlayStateDataOnly {
 
 export type PlayState = PlayStateData | null;
 
-export function playStateDataEquals(a: PlayStateDataOnly | null, b: PlayStateDataOnly | null) {
+export function playStateDataEquals(
+  a: PlayStateDataOnly | null,
+  b: PlayStateDataOnly | null
+) {
   return isEqual(a, b);
 }
 
 /** TODO: remove */
-export function fromIntegrationData(data: PlayStateDataOnly | null): PlayStateDataOnly | null {
+export function fromIntegrationData(
+  data: PlayStateDataOnly | null
+): PlayStateDataOnly | null {
   return data;
 }
 
@@ -34,8 +42,9 @@ export function fromIntegrationData(data: PlayStateDataOnly | null): PlayStateDa
  * @returns a value between `0` and `1`
  */
 export function currentPosition(state: PlayStateData) {
-  const positionMillis = state.state.type === 'paused' ?
-    state.state.positionMillis :
-    performance.now() - state.state.effectiveStartTimeMillis;
+  const positionMillis =
+    state.state.type === 'paused'
+      ? state.state.positionMillis
+      : performance.now() - state.state.effectiveStartTimeMillis;
   return positionMillis / state.durationMillis;
 }

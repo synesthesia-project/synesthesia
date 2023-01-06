@@ -1,5 +1,5 @@
 import { TrackState } from './data';
-import { ErrorListener, EventTypes, Listener} from './events';
+import { ErrorListener, EventTypes, Listener } from './events';
 import * as playback from './playback';
 import * as scheduling from './scheduling';
 import { State } from './state';
@@ -11,7 +11,6 @@ export { TrackState };
  * {@link @synesthesia-project/precise-audio.PreciseAudio} object.
  */
 export class PreciseAudioEvent extends Event {
-
   private readonly _target: PreciseAudio;
 
   public constructor(eventType: EventTypes, target: PreciseAudio) {
@@ -73,7 +72,6 @@ export interface AudioNodes {
  * [in the project GitHub repository](https://github.com/synesthesia-project/synesthesia/tree/master/precise-audio)
  */
 export default class PreciseAudio extends EventTarget {
-
   private readonly state = new State(
     (eventType: EventTypes) => {
       const event = new PreciseAudioEvent(eventType, this);
@@ -81,10 +79,11 @@ export default class PreciseAudio extends EventTarget {
     },
     (error: Error) => {
       const event = new ErrorEvent('error', {
-        error
+        error,
       });
       this.dispatchEvent(event);
-    });
+    }
+  );
 
   /**
    * Retreive the
@@ -99,7 +98,7 @@ export default class PreciseAudio extends EventTarget {
     return {
       context: this.state.context,
       input: this.state.gainNode,
-      output: this.state.context.destination
+      output: this.state.context.destination,
     };
   }
 
@@ -117,7 +116,7 @@ export default class PreciseAudio extends EventTarget {
       this.state.tracks = [];
       if (firstTrack)
         this.state.tracks.push({
-          source: firstTrack
+          source: firstTrack,
         });
     }
     this.updateUpcomingTracks(...remaining);
@@ -135,15 +134,18 @@ export default class PreciseAudio extends EventTarget {
      * At the end of the loop, it will be equal to the number of tracks in
      */
     let m: number;
-    for (m = 0; m < followingSongs.length && m < this.state.tracks.length - 1; m++) {
-      if (this.state.tracks[m + 1].source !== followingSongs[m])
-        break;
+    for (
+      m = 0;
+      m < followingSongs.length && m < this.state.tracks.length - 1;
+      m++
+    ) {
+      if (this.state.tracks[m + 1].source !== followingSongs[m]) break;
     }
     const removed = this.state.tracks.splice(
       m + 1,
       this.state.tracks.length - m - 1,
-      ...followingSongs.slice(m).map(source => ({ source }))
-      );
+      ...followingSongs.slice(m).map((source) => ({ source }))
+    );
     playback.stopAllTracksWithoutEnding(removed);
     scheduling.prepareUpcomingTracks(this.state);
   }
@@ -153,7 +155,7 @@ export default class PreciseAudio extends EventTarget {
    * and all tracks that are queued up to play afterward.
    */
   public tracks(): Array<File | Blob | string> {
-    return this.state.tracks.map(t => t.source);
+    return this.state.tracks.map((t) => t.source);
   }
 
   /**
@@ -161,42 +163,44 @@ export default class PreciseAudio extends EventTarget {
    * including the current one.
    */
   public trackStates() {
-    return this.state.tracks.map<TrackState>(track => {
+    return this.state.tracks.map<TrackState>((track) => {
       const src = track.source;
       if (!track.data) {
         if (track.timeouts?.downloadScheduledAt) {
           return {
             src,
             state: 'download-scheduled',
-            downloadingAt: track.timeouts.downloadScheduledAt
+            downloadingAt: track.timeouts.downloadScheduledAt,
           };
         } else {
           return { src, state: 'none' };
         }
       } else {
-        if (track.data.state === 'downloaded' &&
-            track.timeouts?.decodeScheduledAt) {
+        if (
+          track.data.state === 'downloaded' &&
+          track.timeouts?.decodeScheduledAt
+        ) {
           return {
             src,
             state: 'decoding-scheduled',
-            decodingAt: track.timeouts.decodeScheduledAt
+            decodingAt: track.timeouts.decodeScheduledAt,
           };
         } else if (track.data.state === 'ready') {
           return {
             src,
             state: 'ready',
-            mode: track.data.mode
+            mode: track.data.mode,
           };
         } else if (track.data.state === 'error') {
           return {
             src,
             state: 'error',
-            error: track.data.error
+            error: track.data.error,
           };
         } else {
           return {
             src,
-            state: track.data.state
+            state: track.data.state,
           };
         }
       }
@@ -215,8 +219,9 @@ export default class PreciseAudio extends EventTarget {
   }
 
   private updateGain() {
-    this.state.gainNode.gain.value =
-      this.state.volume.muted ? 0 : this.state.volume.volume;
+    this.state.gainNode.gain.value = this.state.volume.muted
+      ? 0
+      : this.state.volume.volume;
   }
 
   /**
@@ -257,7 +262,7 @@ export default class PreciseAudio extends EventTarget {
    */
   public get src(): string {
     const track = this.state.currentTrack();
-    return typeof track?.source === 'string' && track.source || '';
+    return (typeof track?.source === 'string' && track.source) || '';
   }
 
   public set src(source: string) {
@@ -268,17 +273,14 @@ export default class PreciseAudio extends EventTarget {
    * Begin playback of the audio.
    */
   public async play(suppressEvent?: boolean) {
-    if (this.state.context.state === 'suspended')
-      this.state.context.resume();
+    if (this.state.context.state === 'suspended') this.state.context.resume();
     const track = this.state.currentTrack();
     if (track) {
       if (track.data?.state === 'ready') {
         const playState = playback.getPlayState(this.state, track.data);
         if (playState.state === 'paused') {
-          playback.playCurrentTrackFrom(
-            this.state, playState.positionMillis);
-          if (!suppressEvent)
-            this.state.sendEvent('play');
+          playback.playCurrentTrackFrom(this.state, playState.positionMillis);
+          if (!suppressEvent) this.state.sendEvent('play');
         }
       } else {
         // Track hasn't loaded yet
@@ -292,8 +294,7 @@ export default class PreciseAudio extends EventTarget {
    * Pauses the audio playback.
    */
   public pause(suppressEvent?: boolean) {
-    if (this.state.context.state === 'suspended')
-      this.state.context.resume();
+    if (this.state.context.state === 'suspended') this.state.context.resume();
     const track = this.state.currentTrack();
     if (track?.data?.state === 'ready') {
       const playState = playback.getPlayState(this.state, track.data);
@@ -303,8 +304,7 @@ export default class PreciseAudio extends EventTarget {
           (nowMillis - playState.effectiveStartTimeMillis) *
           this.state.playbackRate;
         playback.stopAllTracksWithoutEnding(this.state.tracks, positionMillis);
-        if (!suppressEvent)
-          this.state.sendEvent('pause');
+        if (!suppressEvent) this.state.sendEvent('pause');
       }
     }
     scheduling.prepareUpcomingTracks(this.state);
@@ -341,8 +341,10 @@ export default class PreciseAudio extends EventTarget {
         return playState.positionMillis;
       } else {
         const nowMillis = this.state.context.currentTime * 1000;
-        return (nowMillis - playState.effectiveStartTimeMillis) *
-          this.state.playbackRate;
+        return (
+          (nowMillis - playState.effectiveStartTimeMillis) *
+          this.state.playbackRate
+        );
       }
     }
     return 0;
@@ -373,7 +375,8 @@ export default class PreciseAudio extends EventTarget {
           track.data.audio.currentTime = positionMillis / 1000;
         } else {
           track.data.playState = {
-            state: 'paused', positionMillis
+            state: 'paused',
+            positionMillis,
           };
         }
         this.state.sendEvent('timeupdate');
@@ -626,12 +629,23 @@ export default class PreciseAudio extends EventTarget {
    */
   public addEventListener(event: 'trackstateupdate', listener: Listener): void;
 
-  public addEventListener(event: EventTypes, listener: Listener | ErrorListener) {
-    super.addEventListener(event, listener as unknown as EventListenerOrEventListenerObject);
+  public addEventListener(
+    event: EventTypes,
+    listener: Listener | ErrorListener
+  ) {
+    super.addEventListener(
+      event,
+      listener as unknown as EventListenerOrEventListenerObject
+    );
   }
 
-  public removeEventListener(event: EventTypes, listener: Listener | ErrorListener) {
-    super.removeEventListener(event, listener as unknown as EventListenerOrEventListenerObject);
+  public removeEventListener(
+    event: EventTypes,
+    listener: Listener | ErrorListener
+  ) {
+    super.removeEventListener(
+      event,
+      listener as unknown as EventListenerOrEventListenerObject
+    );
   }
-
 }

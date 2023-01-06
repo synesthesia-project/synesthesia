@@ -4,7 +4,7 @@ const {
   default: styled,
   css,
   keyframes,
-  ThemeProvider
+  ThemeProvider,
 } = styledComponents as styledComponents.ThemedStyledComponentsModule<ThemeVariables>;
 
 /** The type of the parameter passed to functions in the tagged template literal */
@@ -56,7 +56,7 @@ export const defaultTheme: ThemeVariables = {
 
   spacingPx: 5,
   layerSideColumnWidthPx: 130,
-  visualizationWidthPx: 100
+  visualizationWidthPx: 100,
 };
 
 export { styled, css, keyframes, ThemeProvider };
@@ -64,8 +64,8 @@ export { styled, css, keyframes, ThemeProvider };
 // Mixins and helper functions
 
 export const textInput = css`
-  border: 1px solid ${p => p.theme.borderLight};
-  background: ${p => p.theme.bgDark1};
+  border: 1px solid ${(p) => p.theme.borderLight};
+  background: ${(p) => p.theme.bgDark1};
   border-radius: 3px;
   color: rgba(255, 255, 255, 0.7);
   outline: none;
@@ -75,32 +75,35 @@ export const textInput = css`
     border-color: #505050;
   }
 
-  &::-webkit-outer-spin-button, &::-webkit-inner-spin-button {
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
 `;
 
 const buttonStateNormal = css`
-  color: ${p => p.theme.buttonTextNormal};
+  color: ${(p) => p.theme.buttonTextNormal};
   background: linear-gradient(to bottom, #4f5053, #343436);
   text-shadow: 0 -1px rgba(0, 0, 0, 0.7);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 1px 0 0 rgba(0,0,0,0.25);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    0 1px 0 0 rgba(0, 0, 0, 0.25);
 `;
 
 const buttonStateNormalHover = css`
-  color: ${p => p.theme.buttonTextNormal};
+  color: ${(p) => p.theme.buttonTextNormal};
   outline-color: rgba(243, 243, 245, 0.3);
-  background: linear-gradient(to bottom, #5e6064, #393A3B);
+  background: linear-gradient(to bottom, #5e6064, #393a3b);
   text-shadow: 0 -1px rgba(0, 0, 0, 0.7);
 `;
 
 const buttonStateNormalActive = css`
   color: #ffffff;
   outline-color: rgba(255, 255, 255, 0.3);
-  background: linear-gradient(to bottom, #242525, #37383A);
+  background: linear-gradient(to bottom, #242525, #37383a);
   text-shadow: 0 -1px rgba(0, 0, 0, 0.4);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), 0 1px 0 0 rgba(255,255,255,0.15);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2),
+    0 1px 0 0 rgba(255, 255, 255, 0.15);
   transition-duration: 50ms;
 `;
 
@@ -121,8 +124,8 @@ const buttonStateDisabled = css`
   ${buttonStateNormal}
 
   cursor: default;
-  background: ${p => p.theme.bg} !important;
-  color: rgba(${p => p.theme.buttonTextNormal}, 0.4);
+  background: ${(p) => p.theme.bg} !important;
+  color: rgba(${(p) => p.theme.buttonTextNormal}, 0.4);
 `;
 
 const button = css`
@@ -132,7 +135,7 @@ const button = css`
   transition: all 200ms;
   padding: 6px 8px;
   border-radius: 3px;
-  border: 1px solid ${p => p.theme.borderDark};
+  border: 1px solid ${(p) => p.theme.borderDark};
   overflow: hidden;
   font-size: 15px;
   display: flex;

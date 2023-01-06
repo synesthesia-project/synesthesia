@@ -1,6 +1,7 @@
 import * as openrazer from 'openrazer';
 
-const wait = (millis: number) => new Promise(resolve => setTimeout(resolve, millis));
+const wait = (millis: number) =>
+  new Promise((resolve) => setTimeout(resolve, millis));
 
 (async () => {
   const kbds = await openrazer.getKeyboards();
@@ -60,5 +61,4 @@ const wait = (millis: number) => new Promise(resolve => setTimeout(resolve, mill
   kbd.setMatrixEffectReactive(3, [255, 155, 0]);
 
   await wait(5000);
-
 })();

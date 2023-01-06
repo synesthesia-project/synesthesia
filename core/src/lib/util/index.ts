@@ -10,9 +10,10 @@ export function deepFreeze<T>(o: T): T {
 
   Object.getOwnPropertyNames(o).forEach((prop) => {
     if (
-        o[prop] !== null
-        && (typeof o[prop] === 'object' || typeof o[prop] === 'function')
-        && !Object.isFrozen(o[prop])) {
+      o[prop] !== null &&
+      (typeof o[prop] === 'object' || typeof o[prop] === 'function') &&
+      !Object.isFrozen(o[prop])
+    ) {
       deepFreeze(o[prop]);
     }
   });

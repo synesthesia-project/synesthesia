@@ -19,7 +19,7 @@ export class State {
   public adjustPitchWithPlaybackRate = true;
   public readonly volume = {
     volume: 1,
-    muted: false
+    muted: false,
   };
   public tracks: Track[] = [];
   public readonly thresholds = new Thresholds();
@@ -30,8 +30,9 @@ export class State {
   public readonly dispatchError: (error: Error) => void;
 
   public constructor(
-      sendEvent: (event: EventTypes) => void,
-      dispatchError: (error: Error) => void) {
+    sendEvent: (event: EventTypes) => void,
+    dispatchError: (error: Error) => void
+  ) {
     this.context = new AudioContext();
     this.gainNode = this.context.createGain();
     this.gainNode.connect(this.context.destination);
@@ -45,7 +46,9 @@ export class State {
 
   public paused() {
     const track = this.currentTrack();
-    return track?.data?.state !== 'ready' ||
-      getPlayState(this, track.data).state === 'paused';
+    return (
+      track?.data?.state !== 'ready' ||
+      getPlayState(this, track.data).state === 'paused'
+    );
   }
 }

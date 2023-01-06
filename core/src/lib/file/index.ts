@@ -37,13 +37,14 @@ export type PercussionLayer = CueFileLayer<
   'percussion',
   {
     /** Default length for a percussion event */
-    defaultLengthMillis: number,
+    defaultLengthMillis: number;
   },
-  BasicEventStateValues>
+  BasicEventStateValues
+>;
 
 // TODO: fix this when switching to io-ts
 // eslint-disable-next-line @typescript-eslint/ban-types
-export type TonesLayer = CueFileLayer<'tones', {}, BasicEventStateValues>
+export type TonesLayer = CueFileLayer<'tones', {}, BasicEventStateValues>;
 
 export function isPercussionLayer(layer: AnyLayer): layer is PercussionLayer {
   return layer.kind === 'percussion';
@@ -54,15 +55,14 @@ export function isTonesLayer(layer: AnyLayer): layer is TonesLayer {
 }
 
 export function switchLayer<O>(
-    layer: AnyLayer,
-    cases: {
-      percussion: (layer: PercussionLayer) => O,
-      tones: (layer: TonesLayer) => O,
-    }): O {
-  if (isPercussionLayer(layer))
-    return cases.percussion(layer);
-  if (isTonesLayer(layer))
-    return cases.tones(layer);
+  layer: AnyLayer,
+  cases: {
+    percussion: (layer: PercussionLayer) => O;
+    tones: (layer: TonesLayer) => O;
+  }
+): O {
+  if (isPercussionLayer(layer)) return cases.percussion(layer);
+  if (isTonesLayer(layer)) return cases.tones(layer);
   throw new Error('Unrecognized Layer');
 }
 

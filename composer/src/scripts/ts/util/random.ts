@@ -12,7 +12,6 @@ function getRandomHexBytes() {
  */
 export function getRandomHex(bytes: number) {
   let str = '';
-  for (let i = 0; i < bytes; i += 4)
-    str += getRandomHexBytes();
+  for (let i = 0; i < bytes; i += 4) str += getRandomHexBytes();
   return str;
 }

@@ -9,9 +9,4 @@ export function tee<T>(f: (v: T) => void, v: T) {
   return v;
 }
 
-export {
-  color,
-  PixelInfo,
-  RGBAColor,
-  Compositor
-};
+export { color, PixelInfo, RGBAColor, Compositor };

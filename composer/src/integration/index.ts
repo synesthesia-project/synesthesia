@@ -11,14 +11,30 @@ const DIST = path.dirname(__dirname);
 
 console.log(DIST);
 
-export const STATIC_FILES: { url: string, path: string, contentType: string }[] = [
-  { url: '/bundle.js', path: path.join(DIST, 'bundle.js'), contentType: 'text/javascript' },
-  { url: '/bundle.js.map', path: path.join(DIST, 'bundle.js.map'), contentType: 'application/octet-stream' },
-  { url: '/styles/main.css', path: path.join(DIST, 'styles/main.css'), contentType: 'text/css' }
- ];
+export const STATIC_FILES: {
+  url: string;
+  path: string;
+  contentType: string;
+}[] = [
+  {
+    url: '/bundle.js',
+    path: path.join(DIST, 'bundle.js'),
+    contentType: 'text/javascript',
+  },
+  {
+    url: '/bundle.js.map',
+    path: path.join(DIST, 'bundle.js.map'),
+    contentType: 'application/octet-stream',
+  },
+  {
+    url: '/styles/main.css',
+    path: path.join(DIST, 'styles/main.css'),
+    contentType: 'text/css',
+  },
+];
 
 export function getIndexHtml(settings: IntegrationSettings) {
-     return `
+  return `
      <!DOCTYPE html>
     <html>
     <head>

@@ -86,26 +86,31 @@
 
 export abstract class Either<L, R> {
   public abstract caseOf<Output>(cases: {
-    left: (left: L) => Output,
-    right: (right: R) => Output
+    left: (left: L) => Output;
+    right: (right: R) => Output;
   }): Output;
 
-  public equals(b: Either<L, R>, leftEquals: (a: L, b: L) => boolean, rightEquals: (a: R, b: R) => boolean) {
+  public equals(
+    b: Either<L, R>,
+    leftEquals: (a: L, b: L) => boolean,
+    rightEquals: (a: R, b: R) => boolean
+  ) {
     return this.caseOf({
-      left: a => b.caseOf({
-        left: b => leftEquals(a, b),
-        right: () => false
-      }),
-      right: a => b.caseOf({
-        left: () => false,
-        right: b => rightEquals(a, b)
-      })
+      left: (a) =>
+        b.caseOf({
+          left: (b) => leftEquals(a, b),
+          right: () => false,
+        }),
+      right: (a) =>
+        b.caseOf({
+          left: () => false,
+          right: (b) => rightEquals(a, b),
+        }),
     });
   }
 }
 
 class Left<L, R> extends Either<L, R> {
-
   private value: L;
 
   constructor(value: L) {
@@ -114,15 +119,14 @@ class Left<L, R> extends Either<L, R> {
   }
 
   public caseOf<Output>(cases: {
-    left: (left: L) => Output,
-    right: (right: R) => Output
+    left: (left: L) => Output;
+    right: (right: R) => Output;
   }): Output {
     return cases.left(this.value);
   }
 }
 
 class Right<L, R> extends Either<L, R> {
-
   private value: R;
 
   constructor(value: R) {
@@ -131,8 +135,8 @@ class Right<L, R> extends Either<L, R> {
   }
 
   public caseOf<Output>(cases: {
-    left: (left: L) => Output,
-    right: (right: R) => Output
+    left: (left: L) => Output;
+    right: (right: R) => Output;
   }): Output {
     return cases.right(this.value);
   }

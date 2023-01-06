@@ -15,4 +15,4 @@ export function getMIDIDevices(): string[] {
   return result;
 }
 
-export {XTouchExtenderMCU} from './devices/behringer-x-touch-extender-mcu';
+export { XTouchExtenderMCU } from './devices/behringer-x-touch-extender-mcu';

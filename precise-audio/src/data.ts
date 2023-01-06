@@ -76,7 +76,7 @@ export type TrackDataModeBasic = {
      * will approximately execute, and playback begin.
      */
     startTime: number;
-  }
+  };
 };
 
 export type TrackDataReady = {
@@ -97,7 +97,7 @@ export type Track = {
     downloadScheduledAt?: number;
     decode?: number;
     decodeScheduledAt?: number;
-  }
+  };
   /**
    * If set, we need to start playing as soon as the track has loaded,
    * and call the given callback.
@@ -105,66 +105,66 @@ export type Track = {
   playOnLoad?: {
     callback: () => void;
     promise: Promise<void>;
-  }
+  };
   data?:
-  {
-    /**
-     * We are determining the playtime of the track using an Audio element
-     * before fully downloading / loading all bytes into memory.
-     */
-    state: 'preparing-download';
-  } |
-  {
-    /**
-     * The file is downloading / being loaded
-     */
-    state: 'downloading';
-    /**
-     * Total duration of the track in seconds
-     */
-    duration: number;
-  } |
-  {
-    /**
-     * The file has been downloaded, and metadata parsed,
-     * but not decoded
-     */
-    state: 'downloaded';
-    /**
-     * Total duration of the track in seconds
-     */
-    duration: number;
-    /**
-     * The raw contents of the audio file
-     */
-    bytes: ArrayBuffer;
-    /**
-     * The metadata of the file, parsed by `@synesthesia-project/gapless-meta`
-     */
-    meta: Metadata | null;
-  } |
-  {
-    /**
-     * The audio file is in the process of having it's audio decoded.
-     */
-    state: 'decoding';
-    /**
-     * Total duration of the track in seconds
-     */
-    duration: number;
-    /**
-     * The metadata of the file, parsed by `@synesthesia-project/gapless-meta`
-     */
-    meta: Metadata | null;
-  } |
-  TrackDataReady |
-  {
-    /**
-     * An error ocurred with downloading or decoding the track.
-     */
-    state: 'error';
-    error: Error;
-  }
+    | {
+        /**
+         * We are determining the playtime of the track using an Audio element
+         * before fully downloading / loading all bytes into memory.
+         */
+        state: 'preparing-download';
+      }
+    | {
+        /**
+         * The file is downloading / being loaded
+         */
+        state: 'downloading';
+        /**
+         * Total duration of the track in seconds
+         */
+        duration: number;
+      }
+    | {
+        /**
+         * The file has been downloaded, and metadata parsed,
+         * but not decoded
+         */
+        state: 'downloaded';
+        /**
+         * Total duration of the track in seconds
+         */
+        duration: number;
+        /**
+         * The raw contents of the audio file
+         */
+        bytes: ArrayBuffer;
+        /**
+         * The metadata of the file, parsed by `@synesthesia-project/gapless-meta`
+         */
+        meta: Metadata | null;
+      }
+    | {
+        /**
+         * The audio file is in the process of having it's audio decoded.
+         */
+        state: 'decoding';
+        /**
+         * Total duration of the track in seconds
+         */
+        duration: number;
+        /**
+         * The metadata of the file, parsed by `@synesthesia-project/gapless-meta`
+         */
+        meta: Metadata | null;
+      }
+    | TrackDataReady
+    | {
+        /**
+         * An error ocurred with downloading or decoding the track.
+         */
+        state: 'error';
+        error: Error;
+      };
 };
 
 /**
@@ -173,36 +173,46 @@ export type Track = {
 export type TrackState = {
   src: string | File | Blob;
 } & (
-  {
-    state: 'none' | 'idle' | 'preparing-download' | 'downloading' | 'downloaded' | 'decoding'
-  } | {
-    state: 'download-scheduled';
-    /**
-     * The timestamp (in the same time coordinate system as `performance.now()`)
-     * at which downloading will begin for this file
-     */
-    downloadingAt: number;
-  } | {
-    state: 'decoding-scheduled';
-    /**
-     * The timestamp (in the same time coordinate system as `performance.now()`)
-     * at which this file will be decoded
-     */
-    decodingAt: number;
-  } | {
-    state: 'ready';
-    /**
-     * Property detailing whether the track has been fully decoded and loaded
-     * into memory (`"full"` mode),
-     * or if an HTMLAudioElement is being used instead (`"basic"` mode).
-     * Precise scrubbing, and gapless playback is only available for tracks
-     * that have been loaded in `full` mode.
-     * Tracks that are longer than the `basicModeThresholdSeconds` threshold
-     * will be loaded in `basic` mode.
-     */
-    mode: 'basic' | 'full';
-  } | {
-    state: 'error';
-    error: Error;
-  }
+  | {
+      state:
+        | 'none'
+        | 'idle'
+        | 'preparing-download'
+        | 'downloading'
+        | 'downloaded'
+        | 'decoding';
+    }
+  | {
+      state: 'download-scheduled';
+      /**
+       * The timestamp (in the same time coordinate system as `performance.now()`)
+       * at which downloading will begin for this file
+       */
+      downloadingAt: number;
+    }
+  | {
+      state: 'decoding-scheduled';
+      /**
+       * The timestamp (in the same time coordinate system as `performance.now()`)
+       * at which this file will be decoded
+       */
+      decodingAt: number;
+    }
+  | {
+      state: 'ready';
+      /**
+       * Property detailing whether the track has been fully decoded and loaded
+       * into memory (`"full"` mode),
+       * or if an HTMLAudioElement is being used instead (`"basic"` mode).
+       * Precise scrubbing, and gapless playback is only available for tracks
+       * that have been loaded in `full` mode.
+       * Tracks that are longer than the `basicModeThresholdSeconds` threshold
+       * will be loaded in `basic` mode.
+       */
+      mode: 'basic' | 'full';
+    }
+  | {
+      state: 'error';
+      error: Error;
+    }
 );

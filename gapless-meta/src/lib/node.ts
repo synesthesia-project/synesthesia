@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import {promisify} from 'util';
+import { promisify } from 'util';
 
 import getMetadata from '..';
 

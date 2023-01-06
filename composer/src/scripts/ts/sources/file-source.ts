@@ -1,11 +1,10 @@
 import universalParse from 'id3-parser/lib/universal';
 
-import {Source} from './source';
+import { Source } from './source';
 
-import {PlayStateDataOnly, PlayStateTrackMeta} from '../data/play-state';
+import { PlayStateDataOnly, PlayStateTrackMeta } from '../data/play-state';
 
 export class FileSource extends Source {
-
   private readonly audio: HTMLAudioElement;
   private meta: PlayStateTrackMeta;
 
@@ -13,7 +12,7 @@ export class FileSource extends Source {
     super();
     this.audio = document.createElement('audio');
     this.meta = {
-      id: file.value
+      id: file.value,
     };
 
     this.updatePlayState = this.updatePlayState.bind(this);
@@ -29,11 +28,11 @@ export class FileSource extends Source {
       const file = files[0];
       this.audio.src = URL.createObjectURL(file);
       this.audio.playbackRate = 1;
-      universalParse(this.audio.src).then(tag => {
+      universalParse(this.audio.src).then((tag) => {
         if (tag.artist && tag.title) {
           this.meta.info = {
             artist: tag.artist,
-            title: tag.title
+            title: tag.title,
           };
           this.updatePlayState();
         }
@@ -50,19 +49,18 @@ export class FileSource extends Source {
     if (!this.audio) throw new Error('refs not set');
     const state: PlayStateDataOnly = {
       durationMillis: this.audio.duration * 1000,
-      state: (
-        this.audio.paused ?
-        {
-          type: 'paused',
-          positionMillis: this.audio.currentTime * 1000
-        } :
-        {
-          type: 'playing',
-          playSpeed: this.audio.playbackRate,
-          effectiveStartTimeMillis: performance.now() - this.audio.currentTime * 1000
-        }
-      ),
-      meta: this.meta
+      state: this.audio.paused
+        ? {
+            type: 'paused',
+            positionMillis: this.audio.currentTime * 1000,
+          }
+        : {
+            type: 'playing',
+            playSpeed: this.audio.playbackRate,
+            effectiveStartTimeMillis:
+              performance.now() - this.audio.currentTime * 1000,
+          },
+      meta: this.meta,
     };
     this.playStateUpdated(state);
   }
@@ -81,21 +79,17 @@ export class FileSource extends Source {
   protected controls() {
     return {
       toggle: () => {
-        if (this.audio.paused)
-          this.audio.play();
-        else
-          this.audio.pause();
+        if (this.audio.paused) this.audio.play();
+        else this.audio.pause();
       },
-      pause: () =>
-        this.audio.pause()
-      ,
+      pause: () => this.audio.pause(),
       goToTime: (timeMillis: number) => {
         this.audio.currentTime = timeMillis / 1000;
       },
       setPlaySpeed: (playSpeed: number) => {
         this.audio.playbackRate = playSpeed;
         this.updatePlayState();
-      }
+      },
     };
   }
 }

@@ -1,5 +1,5 @@
 import * as jQuery from 'jquery';
-import {styled, rectIconButton, P, buttonPressed} from './styling';
+import { styled, rectIconButton, P, buttonPressed } from './styling';
 import * as React from 'react';
 
 import * as playState from '../data/play-state';
@@ -8,7 +8,7 @@ import * as file from '@synesthesia-project/core/lib/file';
 import * as fileManipulation from '../data/file-manipulation';
 import * as util from '@synesthesia-project/core/lib/util';
 
-import {MdAdd, MdLock, MdLockOpen} from 'react-icons/md';
+import { MdAdd, MdLock, MdLockOpen } from 'react-icons/md';
 
 export type TimelineState = Record<string, never>;
 
@@ -28,7 +28,6 @@ export interface TimelineProps {
 }
 
 class Timeline extends React.Component<TimelineProps, TimelineState> {
-
   constructor(props: TimelineProps) {
     super(props);
 
@@ -40,36 +39,53 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
   }
 
   public render() {
-    const playerPosition = this.props.positionMillis / this.props.file.lengthMillis;
+    const playerPosition =
+      this.props.positionMillis / this.props.file.lengthMillis;
 
-    const zoomMargin = stageState.relativeZoomMargins(this.props.zoom, playerPosition);
+    const zoomMargin = stageState.relativeZoomMargins(
+      this.props.zoom,
+      playerPosition
+    );
 
     return (
       <div className={this.props.className}>
         <div className="side left">
-          <span className="button" onClick={this.addLayerClicked}><MdAdd /></span>
+          <span className="button" onClick={this.addLayerClicked}>
+            <MdAdd />
+          </span>
           <span
-            className={`button ${this.props.zoom.type === 'locked' ? 'pressed' : ''}`}
+            className={`button ${
+              this.props.zoom.type === 'locked' ? 'pressed' : ''
+            }`}
             onClick={this.props.toggleZoomPanLock}
-            title="Lock scrolling to cursor">
-            {this.props.zoom.type === 'locked' ? <MdLock /> : <MdLockOpen/>}
+            title="Lock scrolling to cursor"
+          >
+            {this.props.zoom.type === 'locked' ? <MdLock /> : <MdLockOpen />}
           </span>
         </div>
         <div className="side right" />
-        <div className="timeline" ref={t => this.props.timelineRef(t)}>
-          <div className="timeline-zoom" style={{
-              left: (- zoomMargin.left * 100) + '%',
-              right: (- zoomMargin.right * 100) + '%'
+        <div className="timeline" ref={(t) => this.props.timelineRef(t)}>
+          <div
+            className="timeline-zoom"
+            style={{
+              left: -zoomMargin.left * 100 + '%',
+              right: -zoomMargin.right * 100 + '%',
             }}
             onMouseDown={this.mouseDown}
             onMouseEnter={this.mouseEnterOrMove}
             onMouseMove={this.mouseEnterOrMove}
             onMouseLeave={this.mouseLeave}
-            >
-            <div className="marker player-position" style={{left: playerPosition * 100 + '%'}}/>
-            {this.props.mousePosition !== null &&
-              <div className="marker mouse" style={{ left: this.props.mousePosition * 100 + '%'}}/>
-            }
+          >
+            <div
+              className="marker player-position"
+              style={{ left: playerPosition * 100 + '%' }}
+            />
+            {this.props.mousePosition !== null && (
+              <div
+                className="marker mouse"
+                style={{ left: this.props.mousePosition * 100 + '%' }}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -77,7 +93,7 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
   }
 
   private addLayerClicked() {
-    this.props.updateCueFile(cueFile => fileManipulation.addLayer(cueFile));
+    this.props.updateCueFile((cueFile) => fileManipulation.addLayer(cueFile));
   }
 
   /**
@@ -95,7 +111,9 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
   private mouseDown(e: React.MouseEvent<unknown>) {
     const pos = this.getMousePosition(e);
     if (this.props.playState)
-      this.props.playState.controls.goToTime(this.props.playState.durationMillis * pos);
+      this.props.playState.controls.goToTime(
+        this.props.playState.durationMillis * pos
+      );
   }
 
   private mouseEnterOrMove(e: React.MouseEvent<unknown>) {
@@ -105,7 +123,6 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
   private mouseLeave(_e: React.MouseEvent<unknown>) {
     this.props.updateMouseHover(null);
   }
-
 }
 
 const timelineHeightPx = 40;
@@ -114,32 +131,32 @@ const buttonHeightPx = (p: P) => timelineHeightPx - 2 * p.theme.spacingPx;
 const StyledTimeline = styled(Timeline)`
   display: block;
   position: relative;
-  background: ${p => p.theme.layerSideBg};
+  background: ${(p) => p.theme.layerSideBg};
   height: ${timelineHeightPx}px;
-  border-top: 1px solid ${p => p.theme.borderLight};
-  box-shadow: 0px -1px 8px 0px rgba(0,0,0,0.3);
+  border-top: 1px solid ${(p) => p.theme.borderLight};
+  box-shadow: 0px -1px 8px 0px rgba(0, 0, 0, 0.3);
 
   > .side {
     display: flex;
     align-items: center;
     box-sizing: border-box;
-    padding: 0 ${p => p.theme.spacingPx}px;
-    background: ${p => p.theme.layerSideBg};
+    padding: 0 ${(p) => p.theme.spacingPx}px;
+    background: ${(p) => p.theme.layerSideBg};
     position: absolute;
     height: 100%;
     top: 0;
 
     &.left {
       left: 0;
-      width: ${p => p.theme.layerSideColumnWidthPx}px;
-      border-right: 1px solid ${p => p.theme.borderLight};
+      width: ${(p) => p.theme.layerSideColumnWidthPx}px;
+      border-right: 1px solid ${(p) => p.theme.borderLight};
 
       > .button {
         display: block;
         height: ${buttonHeightPx}px;
         width: ${buttonHeightPx}px;
         ${rectIconButton}
-        margin-right: ${p => p.theme.spacingPx}px;
+        margin-right: ${(p) => p.theme.spacingPx}px;
 
         &.pressed {
           ${buttonPressed}
@@ -149,15 +166,15 @@ const StyledTimeline = styled(Timeline)`
 
     &.right {
       right: 0;
-      width: ${p => p.theme.visualizationWidthPx}px;
-      border-left: 1px solid ${p => p.theme.borderLight};
+      width: ${(p) => p.theme.visualizationWidthPx}px;
+      border-left: 1px solid ${(p) => p.theme.borderLight};
     }
   }
 
   > .timeline {
     display: block;
-    margin-left: ${p => p.theme.layerSideColumnWidthPx}px;
-    margin-right: ${p => p.theme.visualizationWidthPx}px;
+    margin-left: ${(p) => p.theme.layerSideColumnWidthPx}px;
+    margin-right: ${(p) => p.theme.visualizationWidthPx}px;
     height: 100%;
     position: relative;
     overflow: hidden;
@@ -186,4 +203,4 @@ const StyledTimeline = styled(Timeline)`
   }
 `;
 
-export {StyledTimeline as Timeline};
+export { StyledTimeline as Timeline };

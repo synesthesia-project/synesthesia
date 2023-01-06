@@ -3,7 +3,7 @@ export type Listener = EventListener | EventListenerObject | null;
 export type ErrorListener = (err: ErrorEvent) => void;
 
 export type EventTypes =
-  'canplay'
+  | 'canplay'
   | 'canplaythrough'
   | 'ended'
   | 'error'

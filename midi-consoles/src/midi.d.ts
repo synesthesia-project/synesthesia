@@ -3,7 +3,10 @@ declare module 'midi' {
   class Input {
     public getPortCount(): number;
     public getPortName(port: number): string;
-    public on(event: 'message', callback: (deltaTime: number, message: number[]) => void): void;
+    public on(
+      event: 'message',
+      callback: (deltaTime: number, message: number[]) => void
+    ): void;
     public openPort(port: number): void;
     public openVirtualPort(name: string): void;
     /**
@@ -16,7 +19,11 @@ declare module 'midi' {
      *
      * @example input.ignoreTypes(true, false, true)
      */
-    public ignoreTypes(sysex: boolean, timing: boolean, activeSensing: boolean): void;
+    public ignoreTypes(
+      sysex: boolean,
+      timing: boolean,
+      activeSensing: boolean
+    ): void;
     public closePort(): void;
   }
 

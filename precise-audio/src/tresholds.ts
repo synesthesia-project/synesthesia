@@ -1,8 +1,6 @@
-
 type BasicModeThreshold = 'never' | 'always' | number;
 
 export class Thresholds {
-
   private _basicModeThresholdSeconds: BasicModeThreshold = 'never';
 
   public get basicModeThresholdSeconds() {
@@ -50,7 +48,9 @@ export class Thresholds {
     } else if (typeof threshold === 'number') {
       this._basicModeThresholdSeconds = threshold <= 0 ? 'never' : threshold;
     } else {
-      throw new Error(`Invalid value for basicModeThresholdSeconds: ${threshold}`);
+      throw new Error(
+        `Invalid value for basicModeThresholdSeconds: ${threshold}`
+      );
     }
   }
   private _downloadThresholdSeconds = 10;
@@ -71,7 +71,9 @@ export class Thresholds {
     if (typeof threshold === 'number') {
       this._downloadThresholdSeconds = Math.max(0, threshold);
     } else {
-      throw new Error(`Invalid value for downloadThresholdSeconds: ${threshold}`);
+      throw new Error(
+        `Invalid value for downloadThresholdSeconds: ${threshold}`
+      );
     }
   }
 

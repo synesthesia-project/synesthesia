@@ -1,9 +1,9 @@
 type MPEGAudioVersion = '1' | '2' | '2.5';
 
-const MPEGAudioVersionMapping: {[id: number]: MPEGAudioVersion} = {
+const MPEGAudioVersionMapping: { [id: number]: MPEGAudioVersion } = {
   0: '2.5',
   2: '2',
-  3: '1'
+  3: '1',
 };
 
 type MPEGLayer = '1' | '2' | '3';
@@ -11,29 +11,39 @@ type MPEGLayer = '1' | '2' | '3';
 const MPEGLayerMapping: { [id: number]: MPEGLayer } = {
   1: '3',
   2: '2',
-  3: '1'
+  3: '1',
 };
 
 const MODES = ['stereo', 'joint_stereo', 'dual_channel', 'mono'] as const;
 
-type Mode = (typeof MODES)[number];
+type Mode = typeof MODES[number];
 
 /**
  * Sample rate index mapping in Hz, for each audio version
  * From: https://www.codeproject.com/Articles/8295/MPEG-Audio-Frame-Header#SamplingRate
  */
 const SAMPLE_RATES = {
-  '1':   [44100, 48000, 32000],
-  '2':   [22050, 24000, 16000],
-  '2.5': [11025, 12000,  8000]
+  '1': [44100, 48000, 32000],
+  '2': [22050, 24000, 16000],
+  '2.5': [11025, 12000, 8000],
 };
 
 const BITRATES_RAW = {
-  'MPEG-1-Layer-1': [0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448],
-  'MPEG-1-Layer-2': [0, 32, 48, 56,  64,  80,  96, 112, 128, 160, 192, 224, 256, 320, 384],
-  'MPEG-1-Layer-3': [0, 32, 40, 48,  56,  64,  80,  96, 112, 128, 160, 192, 224, 256, 320],
-  'MPEG-2-Layer-1': [0, 32, 48, 56,  64,  80,  96, 112, 128, 144, 160, 176, 192, 224, 256],
-  'MPEG-2-Layer-O': [0,  8, 16, 24,  32,  40,  48,  56,  64,  80,  96, 112, 128, 144, 160],
+  'MPEG-1-Layer-1': [
+    0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448,
+  ],
+  'MPEG-1-Layer-2': [
+    0, 32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384,
+  ],
+  'MPEG-1-Layer-3': [
+    0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320,
+  ],
+  'MPEG-2-Layer-1': [
+    0, 32, 48, 56, 64, 80, 96, 112, 128, 144, 160, 176, 192, 224, 256,
+  ],
+  'MPEG-2-Layer-O': [
+    0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160,
+  ],
 };
 
 /**
@@ -45,18 +55,18 @@ const BITRATES = {
   '1': {
     '1': BITRATES_RAW['MPEG-1-Layer-1'],
     '2': BITRATES_RAW['MPEG-1-Layer-2'],
-    '3': BITRATES_RAW['MPEG-1-Layer-3']
+    '3': BITRATES_RAW['MPEG-1-Layer-3'],
   },
   '2': {
     '1': BITRATES_RAW['MPEG-2-Layer-1'],
     '2': BITRATES_RAW['MPEG-2-Layer-O'],
-    '3': BITRATES_RAW['MPEG-2-Layer-O']
+    '3': BITRATES_RAW['MPEG-2-Layer-O'],
   },
   '2.5': {
     '1': BITRATES_RAW['MPEG-2-Layer-1'],
     '2': BITRATES_RAW['MPEG-2-Layer-O'],
-    '3': BITRATES_RAW['MPEG-2-Layer-O']
-  }
+    '3': BITRATES_RAW['MPEG-2-Layer-O'],
+  },
 };
 
 /**
@@ -68,18 +78,18 @@ const SAMPLES_PER_FRAME = {
   '1': {
     '1': 384,
     '2': 1152,
-    '3': 1152
+    '3': 1152,
   },
   '2': {
     '1': 384,
     '2': 1152,
-    '3': 576
+    '3': 576,
   },
   '2.5': {
     '1': 384,
     '2': 1152,
-    '3': 576
-  }
+    '3': 576,
+  },
 };
 
 /**
@@ -89,17 +99,17 @@ const SAMPLES_PER_FRAME = {
  */
 const LAYER_3_SIDE_INFORMATION_BYTES = {
   '1': {
-    'dual': 32,
-    'mono': 17
+    dual: 32,
+    mono: 17,
   },
   '2': {
-    'dual': 17,
-    'mono': 9
+    dual: 17,
+    mono: 9,
   },
   '2.5': {
-    'dual': 17,
-    'mono': 9
-  }
+    dual: 17,
+    mono: 9,
+  },
 };
 
 export interface Metadata {
@@ -136,8 +146,7 @@ function extractAsciiString(bytes: Uint8Array, index: number, length: number) {
   let str = '';
   for (let i = 0; i < length; i++) {
     const char = bytes[index + i];
-    if (char > 31 && char < 127)
-      str += String.fromCharCode(char);
+    if (char > 31 && char < 127) str += String.fromCharCode(char);
   }
   return str;
 }
@@ -146,13 +155,16 @@ function extractAsciiString(bytes: Uint8Array, index: number, length: number) {
  * See information of frame layout here:
  * https://www.codeproject.com/Articles/8295/MPEG-Audio-Frame-Header
  */
-function parseAudioFrameHeader(bytes: Uint8Array, offset: number): Metadata | null {
+function parseAudioFrameHeader(
+  bytes: Uint8Array,
+  offset: number
+): Metadata | null {
   // Frame header consists of 4 bytes
   const frameHeader = [
     bytes[offset],
     bytes[offset + 1],
     bytes[offset + 2],
-    bytes[offset + 3]
+    bytes[offset + 3],
   ];
   // Extract Information
   const frameSync = (frameHeader[0] << 3) | (frameHeader[1] >> 5);
@@ -185,7 +197,7 @@ function parseAudioFrameHeader(bytes: Uint8Array, offset: number): Metadata | nu
     bitrate,
     sampleRate,
     samplesPerFrame,
-    mode
+    mode,
   };
 
   // Calculate the start of the data for the frame
@@ -194,7 +206,8 @@ function parseAudioFrameHeader(bytes: Uint8Array, offset: number): Metadata | nu
   // Extract VBR Information
   if (layer === '3') {
     const sideMode = mode === 'mono' ? mode : 'dual';
-    const sideInformationBytes = LAYER_3_SIDE_INFORMATION_BYTES[version][sideMode];
+    const sideInformationBytes =
+      LAYER_3_SIDE_INFORMATION_BYTES[version][sideMode];
     dataStart =
       // Header
       4 +
@@ -224,11 +237,12 @@ function parseAudioFrameHeader(bytes: Uint8Array, offset: number): Metadata | nu
       }
       metadata.vbrInfo = {
         isCBR: vbrHeaderID === 'Info',
-        numberOfFrames
+        numberOfFrames,
       };
       const lameExtensionStart =
         // VBR Header
-        vbrStart + 8 +
+        vbrStart +
+        8 +
         (hasFrames ? 4 : 0) +
         (hasBytes ? 4 : 0) +
         (hasTOC ? 100 : 0) +
@@ -249,7 +263,7 @@ function parseAudioFrameHeader(bytes: Uint8Array, offset: number): Metadata | nu
         metadata.lameInfo = {
           encoder,
           paddingStart,
-          paddingEnd
+          paddingEnd,
         };
       }
     }
@@ -266,25 +280,22 @@ function extractTagSize(bytes: Uint8Array, offset: number) {
   if (extractAsciiString(bytes, offset, 3) === 'ID3') {
     const flags = bytes[offset + 5];
     const hasFooter = (flags & 0x10) === 0x10;
-    const size = (
+    const size =
       // 32-bit Syncsafe integer (https://en.wikipedia.org/wiki/Synchsafe)
       (bytes[offset + 6] << 21) |
       (bytes[offset + 7] << 14) |
       (bytes[offset + 8] << 7) |
-      (bytes[offset + 9])
-    );
+      bytes[offset + 9];
     return 10 + size + (hasFooter ? 10 : 0);
   }
   return 0;
 }
 
-
 export function getMetadata(buffer: ArrayBuffer) {
   const bytes = new Uint8Array(buffer);
   let offset = 0;
   let tagSize = 0;
-  while ((tagSize = extractTagSize(bytes, offset)) !== 0)
-    offset += tagSize;
+  while ((tagSize = extractTagSize(bytes, offset)) !== 0) offset += tagSize;
   console.log('offset:', offset);
   return parseAudioFrameHeader(bytes, offset);
 }

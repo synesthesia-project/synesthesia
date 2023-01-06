@@ -1,12 +1,11 @@
-import {Source} from './source';
-import {PlayStateTrackMeta} from '../data/play-state';
+import { Source } from './source';
+import { PlayStateTrackMeta } from '../data/play-state';
 
-import {SpotifySdk} from '../external/spotify-sdk';
+import { SpotifySdk } from '../external/spotify-sdk';
 
 const SPOTIFY_PLAYER_NAME = 'Synesthesia Local Player';
 
 export class SpotifyLocalSource extends Source {
-
   private player: Spotify.SpotifyPlayer;
 
   constructor(Spotify: SpotifySdk, token: string) {
@@ -14,35 +13,48 @@ export class SpotifyLocalSource extends Source {
 
     this.player = new Spotify.Player({
       name: SPOTIFY_PLAYER_NAME,
-      getOAuthToken: (cb: (token: string) => void) => { cb(token); }
+      getOAuthToken: (cb: (token: string) => void) => {
+        cb(token);
+      },
     });
 
     // Error handling
-    this.player.addListener('initialization_error', ({ message }) => { console.error(message); });
-    this.player.addListener('authentication_error', ({ message }) => { console.error(message); });
-    this.player.addListener('account_error', ({ message }) => { console.error(message); });
-    this.player.addListener('playback_error', ({ message }) => { console.error(message); });
+    this.player.addListener('initialization_error', ({ message }) => {
+      console.error(message);
+    });
+    this.player.addListener('authentication_error', ({ message }) => {
+      console.error(message);
+    });
+    this.player.addListener('account_error', ({ message }) => {
+      console.error(message);
+    });
+    this.player.addListener('playback_error', ({ message }) => {
+      console.error(message);
+    });
 
     // Playback status updates
-    this.player.addListener('player_state_changed', state => {
+    this.player.addListener('player_state_changed', (state) => {
       const time = performance.now();
       if (state)
         console.log('orig', time - state.position, time, state.position);
       this.playStateUpdated(
-        (state && state.track_window.current_track) ? {
-          durationMillis: state.duration,
-          state: state.paused ?
-            {
-              type: 'paused' as const,
-              positionMillis: state.position
-            } :
-            {
-              type: 'playing' as const,
-              playSpeed: 1,
-              effectiveStartTimeMillis: performance.now() - state.position
-            },
-          meta: this.metaFromState(state.track_window.current_track)
-        } : null
+        state && state.track_window.current_track
+          ? {
+              durationMillis: state.duration,
+              state: state.paused
+                ? {
+                    type: 'paused' as const,
+                    positionMillis: state.position,
+                  }
+                : {
+                    type: 'playing' as const,
+                    playSpeed: 1,
+                    effectiveStartTimeMillis:
+                      performance.now() - state.position,
+                  },
+              meta: this.metaFromState(state.track_window.current_track),
+            }
+          : null
       );
       this.updateTimestamp();
     });
@@ -58,12 +70,12 @@ export class SpotifyLocalSource extends Source {
 
   private metaFromState(track: Spotify.Track): PlayStateTrackMeta {
     const info = {
-      artist: track.artists.map(a => a.name).join(' & '),
-      title: track.name
+      artist: track.artists.map((a) => a.name).join(' & '),
+      title: track.name,
     };
     return {
-      id: track.id ? track.id : (info.artist + ' - ' + info.title),
-      info
+      id: track.id ? track.id : info.artist + ' - ' + info.title,
+      info,
     };
   }
 
@@ -72,7 +84,7 @@ export class SpotifyLocalSource extends Source {
     let min = Infinity;
     let max = -Infinity;
     const update = () => {
-      this.player.getCurrentState().then(state => {
+      this.player.getCurrentState().then((state) => {
         const time = performance.now();
         if (state) {
           const effectiveStartTimeMillis = time - state.position;
@@ -82,14 +94,14 @@ export class SpotifyLocalSource extends Source {
         }
       });
       if (count-- > 0) {
-       setTimeout(update, 100);
-     } else {
-       console.group('Summary');
-       console.log('Min:', min);
-       console.log('Max:', max);
-       console.log('Diff:', max - min);
-       console.groupEnd();
-     }
+        setTimeout(update, 100);
+      } else {
+        console.group('Summary');
+        console.log('Min:', min);
+        console.log('Max:', max);
+        console.log('Diff:', max - min);
+        console.groupEnd();
+      }
     };
     update();
   }
@@ -112,7 +124,8 @@ export class SpotifyLocalSource extends Source {
       pause: () => this.player.pause(),
       goToTime: (positionMs: number) =>
         this.player.seek(Math.round(positionMs)),
-      setPlaySpeed: () => console.log('play speed not supported in spotify-local-source')
+      setPlaySpeed: () =>
+        console.log('play speed not supported in spotify-local-source'),
     };
   }
 }

@@ -22,16 +22,28 @@ export class RGBAColor {
     return [
       Math.round(this.r * this.alpha),
       Math.round(this.g * this.alpha),
-      Math.round(this.b * this.alpha)
+      Math.round(this.b * this.alpha),
     ];
   }
 
   public transition(other: RGBAColor, ratio: number): RGBAColor {
     ratio = restrictNumber(ratio, 0, 1);
-    const r = Math.max(0, Math.min(255, Math.round(other.r * ratio + this.r * (1 - ratio))));
-    const g = Math.max(0, Math.min(255, Math.round(other.g * ratio + this.g * (1 - ratio))));
-    const b = Math.max(0, Math.min(255, Math.round(other.b * ratio + this.b * (1 - ratio))));
-    const a = Math.max(0, Math.min(1, other.alpha * ratio + this.alpha * (1 - ratio)));
+    const r = Math.max(
+      0,
+      Math.min(255, Math.round(other.r * ratio + this.r * (1 - ratio)))
+    );
+    const g = Math.max(
+      0,
+      Math.min(255, Math.round(other.g * ratio + this.g * (1 - ratio)))
+    );
+    const b = Math.max(
+      0,
+      Math.min(255, Math.round(other.b * ratio + this.b * (1 - ratio)))
+    );
+    const a = Math.max(
+      0,
+      Math.min(1, other.alpha * ratio + this.alpha * (1 - ratio))
+    );
     return new RGBAColor(r, g, b, a);
   }
 }
@@ -49,7 +61,7 @@ export const hslToRgb = (
   hue: number,
   saturation: number,
   lightness: number,
-  alpha = 1,
+  alpha = 1
 ): RGBAColor => {
   if (hue > 1) hue--;
   if (hue < 0) hue++;
@@ -81,7 +93,7 @@ export const hslToRgb = (
     Math.round(r * 255),
     Math.round(g * 255),
     Math.round(b * 255),
-    alpha,
+    alpha
   );
 };
 
@@ -91,7 +103,7 @@ export const rainbow = () => {
     hslToRgb(0.2, 1, 0.5),
     hslToRgb(0.4, 1, 0.5),
     hslToRgb(0.6, 1, 0.5),
-    hslToRgb(0.8, 1, 0.5)
+    hslToRgb(0.8, 1, 0.5),
   ];
 };
 
@@ -132,4 +144,3 @@ export const randomRGBColorPallete = (): RGBAColor[] => {
     return [RGBA_PURPLE, RGBA_BLUE, new RGBAColor(200, 100, 0, 1)];
   }
 };
-

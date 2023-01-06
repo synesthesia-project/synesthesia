@@ -1,5 +1,4 @@
 declare module 'svgson' {
-
   interface Node {
     name: string;
     type: string;
