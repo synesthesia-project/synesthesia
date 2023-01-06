@@ -4,5 +4,9 @@ module.exports = {
       node: true,
       es2021: true
   },
-  extends: "eslint:recommended",
+  extends: 'eslint:recommended',
+  plugins: ['prettier'],
+  rules: {
+    'prettier/prettier': 'error',
+  }
 }

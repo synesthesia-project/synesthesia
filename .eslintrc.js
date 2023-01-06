@@ -10,13 +10,14 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
   ],
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint'],
+  plugins: ['@typescript-eslint', 'prettier'],
   rules: {
     '@typescript-eslint/no-unused-vars': [
       'error', {
         varsIgnorePattern: '^_',
         argsIgnorePattern: '^_'
       }
-    ]
+    ],
+    'prettier/prettier': 'error',
   }
 }
