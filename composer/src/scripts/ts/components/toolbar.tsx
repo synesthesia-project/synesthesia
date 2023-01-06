@@ -1,6 +1,6 @@
 import * as React from 'react';
-import {isEqual} from 'lodash';
-import {styled, buttonDisabled, rectButton, buttonPressed} from './styling';
+import { isEqual } from 'lodash';
+import { styled, buttonDisabled, rectButton, buttonPressed } from './styling';
 
 import * as file from '@synesthesia-project/core/lib/file';
 import { validateFile } from '@synesthesia-project/core/lib/file/file-validation';
@@ -8,18 +8,29 @@ import { validateFile } from '@synesthesia-project/core/lib/file/file-validation
 import { IntegrationSettings, FileState } from '../../../integration/shared';
 
 import * as spotifyAuth from '../auth/spotify';
-import {SpotifySdk, spotifyWebPlaybackSDKReady} from '../external/spotify-sdk';
+import {
+  SpotifySdk,
+  spotifyWebPlaybackSDKReady,
+} from '../external/spotify-sdk';
 import * as storage from '../util/storage';
-import {PlayState} from '../data/play-state';
-import {Source} from '../sources/source';
-import {FileSource} from '../sources/file-source';
+import { PlayState } from '../data/play-state';
+import { Source } from '../sources/source';
+import { FileSource } from '../sources/file-source';
 import { IntegrationSource } from '../sources/integration-source';
-import {SpotifySource} from '../sources/spotify-source';
-import {SpotifyLocalSource} from '../sources/spotify-local-source';
-import {SpotifyIcon} from './icons/spotify';
+import { SpotifySource } from '../sources/spotify-source';
+import { SpotifyLocalSource } from '../sources/spotify-local-source';
+import { SpotifyIcon } from './icons/spotify';
 import { FileController, FileControllerState } from './util/file-controller';
 
-import {MdSave, MdFolderOpen, MdUndo, MdRedo, MdCloudDownload, MdCloudUpload, MdClose} from 'react-icons/md';
+import {
+  MdSave,
+  MdFolderOpen,
+  MdUndo,
+  MdRedo,
+  MdCloudDownload,
+  MdCloudUpload,
+  MdClose,
+} from 'react-icons/md';
 
 import { IntegrationButton } from './integration-button';
 
@@ -49,13 +60,12 @@ interface FileSourceState {
 }
 
 class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
-
   private readonly undo: () => void;
   private readonly redo: () => void;
   private readonly save: () => void;
 
   private readonly localFileController: FileController = new FileController(
-    fileControllerState => this.setState({fileControllerState})
+    (fileControllerState) => this.setState({ fileControllerState })
   );
 
   constructor(props: FileSourceProps) {
@@ -69,23 +79,25 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
         fileState: {
           canRedo: false,
           canSave: false,
-          canUndo: false
-        }
+          canUndo: false,
+        },
       };
       integration.source.addListener('new-cue-file', (id, file, fileState) => {
-        const currentId = this.props.playState ? this.props.playState.meta.id : null;
+        const currentId = this.props.playState
+          ? this.props.playState.meta.id
+          : null;
         if (currentId === id) {
           this.props.fileLoaded(id, file);
           console.log(fileState);
-          this.setState(state => {
+          this.setState((state) => {
             let integration: Integration = null;
             if (state.integration) {
-              integration =  {
+              integration = {
                 source: state.integration.source,
                 fileState,
               };
             }
-            return {integration};
+            return { integration };
           });
         } else {
           console.log('Got cue file for unknown song: ', id);
@@ -99,7 +111,7 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
       integration,
       source: null,
       spotifyWebPlaybackSDK: null,
-      fileControllerState: {state: 'inactive'}
+      fileControllerState: { state: 'inactive' },
     };
 
     // Bind callbacks & event listeners
@@ -117,7 +129,9 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
 
   public componentDidMount() {
     // Check if Spotify SDK is ready and enables
-    spotifyWebPlaybackSDKReady.then(spotifyWebPlaybackSDK => this.setState({spotifyWebPlaybackSDK}));
+    spotifyWebPlaybackSDKReady.then((spotifyWebPlaybackSDK) =>
+      this.setState({ spotifyWebPlaybackSDK })
+    );
     // Set source to integration if it's set
     if (this.state.integration) {
       this.setNewSource(this.state.integration.source);
@@ -126,9 +140,10 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
 
   public saveFile() {
     const state = this.props.playState;
-    const filename = state && state.meta.info ?
-      `${state.meta.info.artist} - ${state.meta.info.title}.scue` :
-      'song.scue';
+    const filename =
+      state && state.meta.info
+        ? `${state.meta.info.artist} - ${state.meta.info.title}.scue`
+        : 'song.scue';
     if (this.props.file) {
       const file: file.CueFile = this.props.file.file;
       storage.saveStringAsFile(JSON.stringify(file), filename);
@@ -136,7 +151,7 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
   }
 
   public openFile() {
-    storage.loadFileAsString().then(fileString => {
+    storage.loadFileAsString().then((fileString) => {
       if (!this.props.playState) return;
       const obj = JSON.parse(fileString);
       const validatedFile = validateFile(obj);
@@ -145,9 +160,11 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
   }
 
   public componentWillReceiveProps(nextProps: FileSourceProps): void {
-    if (nextProps.file !== this.props.file &&
-        this.state.integration &&
-        !isEqual(this.props.file, nextProps.file)) {
+    if (
+      nextProps.file !== this.props.file &&
+      this.state.integration &&
+      !isEqual(this.props.file, nextProps.file)
+    ) {
       // Time to send new song info to the server, as it's changed
       const nextFile = nextProps.file;
       const integration = this.state.integration;
@@ -162,48 +179,114 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
     if (this.state.integration) {
       return (
         <div className={this.props.className}>
-          <IntegrationButton integration={this.state.integration.source} settings={this.state.integration.source.getSettings()} />
-          <input id="file_picker" type="file" onChange={this.loadAudioFileAsController} />
+          <IntegrationButton
+            integration={this.state.integration.source}
+            settings={this.state.integration.source.getSettings()}
+          />
+          <input
+            id="file_picker"
+            type="file"
+            onChange={this.loadAudioFileAsController}
+          />
           <label
             htmlFor="file_picker"
             title="Open Audio File"
-            className={this.state.fileControllerState.state === 'active' ? 'active' : ''}>
-            <MdFolderOpen/>
+            className={
+              this.state.fileControllerState.state === 'active' ? 'active' : ''
+            }
+          >
+            <MdFolderOpen />
           </label>
           {this.state.fileControllerState.state === 'active' ? (
-            <button onClick={this.unloadLocalFileController} title="Close"><MdClose/></button>
+            <button onClick={this.unloadLocalFileController} title="Close">
+              <MdClose />
+            </button>
           ) : null}
           <span className="description">{this.getTrackDescription()}</span>
-          <span className="grow"/>
-          <button className={this.props.file ? '' : 'disabled'} onClick={this.openFile} title="Upload"><MdCloudUpload/></button>
-          <button className={this.props.file ? '' : 'disabled'} onClick={this.saveFile} title="Download"><MdCloudDownload/></button>
-          <button className={this.state.integration.fileState.canUndo ? '' : 'disabled'} onClick={this.undo} title="Undo"><MdUndo/></button>
-          <button className={this.state.integration.fileState.canRedo ? '' : 'disabled'} onClick={this.redo} title="Redo"><MdRedo/></button>
-          <button className={this.state.integration.fileState.canSave ? '' : 'disabled'} onClick={this.save} title="Save"><MdSave/></button>
+          <span className="grow" />
+          <button
+            className={this.props.file ? '' : 'disabled'}
+            onClick={this.openFile}
+            title="Upload"
+          >
+            <MdCloudUpload />
+          </button>
+          <button
+            className={this.props.file ? '' : 'disabled'}
+            onClick={this.saveFile}
+            title="Download"
+          >
+            <MdCloudDownload />
+          </button>
+          <button
+            className={
+              this.state.integration.fileState.canUndo ? '' : 'disabled'
+            }
+            onClick={this.undo}
+            title="Undo"
+          >
+            <MdUndo />
+          </button>
+          <button
+            className={
+              this.state.integration.fileState.canRedo ? '' : 'disabled'
+            }
+            onClick={this.redo}
+            title="Redo"
+          >
+            <MdRedo />
+          </button>
+          <button
+            className={
+              this.state.integration.fileState.canSave ? '' : 'disabled'
+            }
+            onClick={this.save}
+            title="Save"
+          >
+            <MdSave />
+          </button>
         </div>
       );
     } else {
       return (
         <div className={this.props.className}>
           <input id="file_picker" type="file" onChange={this.loadAudioFile} />
-          <label htmlFor="file_picker"><MdFolderOpen/><span>Open Audio File</span></label>
-          <button className={source === 'spotify' ? ' pressed' : ''} onClick={this.toggleSpotify}>
+          <label htmlFor="file_picker">
+            <MdFolderOpen />
+            <span>Open Audio File</span>
+          </label>
+          <button
+            className={source === 'spotify' ? ' pressed' : ''}
+            onClick={this.toggleSpotify}
+          >
             <SpotifyIcon /> Connect To Remote
           </button>
           <button
             className={
               (source === 'spotify-local' ? ' pressed' : '') +
-              (this.state.spotifyWebPlaybackSDK !== null ? '' : ' disabled')}
+              (this.state.spotifyWebPlaybackSDK !== null ? '' : ' disabled')
+            }
             onClick={this.toggleSpotifyLocal}
             title={
-              this.state.spotifyWebPlaybackSDK === null ?
-              'Spotify Local Play is not possible when Synesthesia is run as an extension' : undefined}>
+              this.state.spotifyWebPlaybackSDK === null
+                ? 'Spotify Local Play is not possible when Synesthesia is run as an extension'
+                : undefined
+            }
+          >
             <SpotifyIcon /> Play Locally
           </button>
           <span className="description">{this.getTrackDescription()}</span>
-          <span className="grow"/>
-          <button onClick={this.openFile} title="Open"><MdFolderOpen/></button>
-          <button className={this.props.file ? '' : 'disabled'} onClick={this.saveFile} title="Save"><MdSave/></button>
+          <span className="grow" />
+          <button onClick={this.openFile} title="Open">
+            <MdFolderOpen />
+          </button>
+          <button
+            className={this.props.file ? '' : 'disabled'}
+            onClick={this.saveFile}
+            title="Save"
+          >
+            <MdSave />
+          </button>
         </div>
       );
     }
@@ -212,11 +295,11 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
   private getTrackDescription() {
     const state = this.props.playState;
     if (state) {
-      return state.meta.info ? (
-        state.meta.info.artist ?
-          `${state.meta.info.artist} - ${state.meta.info.title}` :
-          state.meta.info.title
-      ) : 'Unknown Track';
+      return state.meta.info
+        ? state.meta.info.artist
+          ? `${state.meta.info.artist} - ${state.meta.info.title}`
+          : state.meta.info.title
+        : 'Unknown Track';
     }
     return null;
   }
@@ -225,10 +308,10 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
     if (this.state.source) {
       this.state.source.dispose();
     }
-    this.setState({source});
+    this.setState({ source });
     source.addStateListener(this.props.playStateUpdated);
     source.addDisconnectedListener(() => {
-      this.setState({source: null});
+      this.setState({ source: null });
       this.props.playStateUpdated(null);
     });
   }
@@ -253,10 +336,10 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
       this.state.source.dispose();
     } else {
       spotifyAuth.authSpotify().then(
-        token => {
+        (token) => {
           this.setNewSource(new SpotifySource(token));
         },
-        err => {
+        (err) => {
           alert(err);
         }
       );
@@ -265,15 +348,20 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
 
   private toggleSpotifyLocal() {
     if (this.state.spotifyWebPlaybackSDK === null) return;
-    if (this.state.source && this.state.source.sourceKind() === 'spotify-local') {
+    if (
+      this.state.source &&
+      this.state.source.sourceKind() === 'spotify-local'
+    ) {
       this.state.source.dispose();
     } else {
       spotifyAuth.authSpotify().then(
-        token => {
+        (token) => {
           if (this.state.spotifyWebPlaybackSDK === null) return;
-          this.setNewSource(new SpotifyLocalSource(this.state.spotifyWebPlaybackSDK, token));
+          this.setNewSource(
+            new SpotifyLocalSource(this.state.spotifyWebPlaybackSDK, token)
+          );
         },
-        err => {
+        (err) => {
           alert(err);
         }
       );
@@ -287,7 +375,7 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
           this.state.integration.source.sendRequest({
             request: 'file-action',
             id: this.props.playState.meta.id,
-            action
+            action,
           });
       }
     };
@@ -296,26 +384,26 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
 
 const StyledToolbar = styled(Toolbar)`
   display: block;
-  background-color: ${p => p.theme.bgLight1};
-  border-bottom: 1px solid ${p => p.theme.borderDark};
-  box-shadow: 0px 1px 8px 0px rgba(0,0,0,0.3);
-  z-index:100;
+  background-color: ${(p) => p.theme.bgLight1};
+  border-bottom: 1px solid ${(p) => p.theme.borderDark};
+  box-shadow: 0px 1px 8px 0px rgba(0, 0, 0, 0.3);
+  z-index: 100;
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: ${p => p.theme.spacingPx / 2}px;
+  padding: ${(p) => p.theme.spacingPx / 2}px;
 
   input {
-  	width: 0.1px;
-  	height: 0.1px;
-  	opacity: 0;
-  	overflow: hidden;
-  	position: absolute;
-  	z-index: -1;
-    margin: ${p => p.theme.spacingPx / 2}px;
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+    margin: ${(p) => p.theme.spacingPx / 2}px;
 
     & + label {
-      margin: ${p => p.theme.spacingPx / 2}px;
+      margin: ${(p) => p.theme.spacingPx / 2}px;
       ${rectButton}
 
       > span {
@@ -324,7 +412,7 @@ const StyledToolbar = styled(Toolbar)`
 
       &.active {
         > svg {
-          color: ${p => p.theme.hint};
+          color: ${(p) => p.theme.hint};
         }
       }
     }
@@ -332,7 +420,7 @@ const StyledToolbar = styled(Toolbar)`
 
   button {
     ${rectButton}
-    margin: ${p => p.theme.spacingPx / 2}px;
+    margin: ${(p) => p.theme.spacingPx / 2}px;
     outline: none;
 
     &.pressed {
@@ -358,13 +446,13 @@ const StyledToolbar = styled(Toolbar)`
     flex-grow: 1;
   }
 
-  > span, > .flex > span {
-    margin: ${p => p.theme.spacingPx / 2}px;
+  > span,
+  > .flex > span {
+    margin: ${(p) => p.theme.spacingPx / 2}px;
     font-size: 14px;
     padding: 0 6px;
     opacity: 0.8;
   }
 `;
 
-export {StyledToolbar as Toolbar};
-
+export { StyledToolbar as Toolbar };

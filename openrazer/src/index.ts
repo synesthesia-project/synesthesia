@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import {promisify} from 'util';
+import { promisify } from 'util';
 
 import { getPixelMap, PixelMap } from './lib/pixelmaps';
 
@@ -30,19 +30,17 @@ const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
 
 function filterNonNull<T>(values: Array<T | null>): T[] {
-  return values.filter(v => v !== null) as T[];
+  return values.filter((v) => v !== null) as T[];
 }
 
 function validateByte(byte: number, name: string) {
-  if (byte < 0 || byte > 255)
-    throw new Error(`invalid ${name}`);
+  if (byte < 0 || byte > 255) throw new Error(`invalid ${name}`);
 }
 
 function validateRGB(value: RGB) {
   if (value.length !== 3) throw new Error('invalid RGB Value');
   for (let i = 0; i <= 3; i++) {
-    if (value[i] < 0 || value[i] > 255)
-      throw new Error('invalid RGB Value');
+    if (value[i] < 0 || value[i] > 255) throw new Error('invalid RGB Value');
   }
 }
 
@@ -55,20 +53,28 @@ export function getMousemats() {
 }
 
 export function getDevices<T extends Device>(
-    devicesFolder: string, cls: new(devicePath: string, deviceType: string) => T): Promise<T[]> {
-  const keyboards = readdir(devicesFolder).then(devices => Promise.all(
-    devices.map(async deviceId => {
-      // Get Device Type
-      const devicePath = path.join(devicesFolder, deviceId);
-      const deviceType = await readFile(path.join(devicePath, device_type), ENCODING).catch(() => null);
-      return deviceType ? new cls(devicePath, deviceType.trim()) : null;
-    }),
-  )).catch(() => []);
+  devicesFolder: string,
+  cls: new (devicePath: string, deviceType: string) => T
+): Promise<T[]> {
+  const keyboards = readdir(devicesFolder)
+    .then((devices) =>
+      Promise.all(
+        devices.map(async (deviceId) => {
+          // Get Device Type
+          const devicePath = path.join(devicesFolder, deviceId);
+          const deviceType = await readFile(
+            path.join(devicePath, device_type),
+            ENCODING
+          ).catch(() => null);
+          return deviceType ? new cls(devicePath, deviceType.trim()) : null;
+        })
+      )
+    )
+    .catch(() => []);
   return keyboards.then(filterNonNull);
 }
 
 class Device {
-
   /**
    * The path to the device
    */
@@ -100,7 +106,10 @@ class Device {
       validateRGB(firstColor);
       if (secondColor) {
         validateRGB(secondColor);
-        return this.writeBytes(matrix_effect_breath, [...firstColor, ...secondColor]);
+        return this.writeBytes(matrix_effect_breath, [
+          ...firstColor,
+          ...secondColor,
+        ]);
       } else {
         return this.writeBytes(matrix_effect_breath, [...firstColor]);
       }
@@ -137,7 +146,10 @@ class Device {
 
   public setMatrixBrightness(brightness: number) {
     validateByte(brightness, 'brightness');
-    return writeFile(path.join(this.devicePath, matrix_brightness), brightness.toString());
+    return writeFile(
+      path.join(this.devicePath, matrix_brightness),
+      brightness.toString()
+    );
   }
 
   protected writeBytes(file: string, bytes: number[]) {
@@ -145,28 +157,40 @@ class Device {
   }
 
   public getSerialNumber() {
-    return readFile(path.join(this.devicePath, device_serial), ENCODING).then(s => s.trim());
+    return readFile(path.join(this.devicePath, device_serial), ENCODING).then(
+      (s) => s.trim()
+    );
   }
 
   public getFirmwareVersion() {
-    return readFile(path.join(this.devicePath, firmware_version), ENCODING).then(s => s.trim());
+    return readFile(
+      path.join(this.devicePath, firmware_version),
+      ENCODING
+    ).then((s) => s.trim());
   }
 }
 
 export class Keyboard extends Device {
-
   /**
    * @param speed between 0 and 255, 0 = slow, 255 = fast
    * @param firstColor if set, use this colour in single-color mode
    * @param secondColor if set, use this colour in dual-color mode
    */
-  public setMatrixEffectStarlight(speed: number, firstColor?: RGB, secondColor?: RGB) {
+  public setMatrixEffectStarlight(
+    speed: number,
+    firstColor?: RGB,
+    secondColor?: RGB
+  ) {
     validateByte(speed, 'speed');
     if (firstColor) {
       validateRGB(firstColor);
       if (secondColor) {
         validateRGB(secondColor);
-        return this.writeBytes(matrix_effect_starlight, [speed, ...firstColor, ...secondColor]);
+        return this.writeBytes(matrix_effect_starlight, [
+          speed,
+          ...firstColor,
+          ...secondColor,
+        ]);
       } else {
         return this.writeBytes(matrix_effect_starlight, [speed, ...firstColor]);
       }
@@ -183,11 +207,15 @@ export class Keyboard extends Device {
    * @param start between 0-21, the first column you want to write a color to
    * @param colors the colors you wish to write, providing no more than (22-start) values
    */
-  public async writeCustomFrame(rows: Array<{ index: number, start: number, colors: RGB[] }>) {
+  public async writeCustomFrame(
+    rows: Array<{ index: number; start: number; colors: RGB[] }>
+  ) {
     const bytes: number[] = [];
     rows.map(({ index, start, colors }) => {
-      if (index < 0 || index > 5) throw new Error(`invalid row index: ${index}`);
-      if (start < 0 || start > 21) throw new Error(`invalid start index: ${start}`);
+      if (index < 0 || index > 5)
+        throw new Error(`invalid row index: ${index}`);
+      if (start < 0 || start > 21)
+        throw new Error(`invalid start index: ${start}`);
       const end = start + colors.length - 1;
       if (end > 21) throw new Error('too many colors provided');
       bytes.push(index, start, end);
@@ -205,11 +233,9 @@ export class Keyboard extends Device {
   public setMatrixEffectPulsate() {
     return this.writeBytes(matrix_effect_pulsate, [0x1]);
   }
-
 }
 
 export class MouseMat extends Device {
-
   /**
    * Display a custom frame on the mousemat
    *
@@ -217,7 +243,8 @@ export class MouseMat extends Device {
    * @param colors the colors you wish to write, providing no more than (15-start) values
    */
   public async writeCustomFrame(start: number, colors: RGB[]) {
-    if (start < 0 || start > 14) throw new Error(`invalid start index: ${start}`);
+    if (start < 0 || start > 14)
+      throw new Error(`invalid start index: ${start}`);
     const bytes: number[] = [];
     const end = start + colors.length - 1;
     if (end > 14) throw new Error('too many colors provided');
@@ -226,9 +253,6 @@ export class MouseMat extends Device {
     await this.writeBytes(matrix_custom_frame, bytes);
     await this.writeBytes(matrix_effect_custom, [0x1]);
   }
-
 }
 
-export {
-  PixelMap,
-};
+export { PixelMap };

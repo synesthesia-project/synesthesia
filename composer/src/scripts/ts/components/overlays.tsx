@@ -1,36 +1,45 @@
 import * as React from 'react';
-import {styled} from './styling';
+import { styled } from './styling';
 
-import {OverlaysManager, setOverlaysManager} from './util/overlays';
+import { OverlaysManager, setOverlaysManager } from './util/overlays';
 
 interface OverlaysProps {
   className?: string;
-  popup: {element: JSX.Element, dismiss: () => void} | null;
+  popup: { element: JSX.Element; dismiss: () => void } | null;
 }
 
-class Overlays extends React.Component<OverlaysProps, Record<string, never>> implements OverlaysManager {
-
+class Overlays
+  extends React.Component<OverlaysProps, Record<string, never>>
+  implements OverlaysManager
+{
   public constructor(props: OverlaysProps) {
     super(props);
     setOverlaysManager(this);
   }
 
-  public requestInput(_title: string, message: string, _label: string, defaultValue: string) {
-    return new Promise<string> ((resolve, reject) => {
+  public requestInput(
+    _title: string,
+    message: string,
+    _label: string,
+    defaultValue: string
+  ) {
+    return new Promise<string>((resolve, reject) => {
       const result = prompt(message, defaultValue);
-      if (result)
-        resolve(result);
-      else
-        reject(new Error('cancelled by user'));
+      if (result) resolve(result);
+      else reject(new Error('cancelled by user'));
     });
   }
 
   public render() {
     const showingOverlay = !!this.props.popup;
-    const className = this.props.className + (showingOverlay ? ' showing-overlay' : '');
+    const className =
+      this.props.className + (showingOverlay ? ' showing-overlay' : '');
     return (
       <div className={className}>
-        <div className="shadow" onClick={this.props.popup ? this.props.popup.dismiss : undefined} />
+        <div
+          className="shadow"
+          onClick={this.props.popup ? this.props.popup.dismiss : undefined}
+        />
         <div className="inner">
           {this.props.popup ? this.props.popup.element : null}
         </div>
@@ -72,4 +81,4 @@ const StyledOverlays = styled(Overlays)`
   }
 `;
 
-export {StyledOverlays as Overlays};
+export { StyledOverlays as Overlays };

@@ -8,21 +8,27 @@ import { LocalCommunicationsConsumer } from '@synesthesia-project/core/lib/local
 import * as WebSocket from 'ws';
 import * as openrazer from 'openrazer';
 
-import { RGBAColor, Compositor, PixelInfo } from '@synesthesia-project/compositor';
+import {
+  RGBAColor,
+  Compositor,
+  PixelInfo,
+} from '@synesthesia-project/compositor';
 import { SynesthesiaPlayState } from '@synesthesia-project/compositor/lib/modules';
 import FillModule from '@synesthesia-project/compositor/lib/modules/fill';
 import AddModule from '@synesthesia-project/compositor/lib/modules/add';
 import ScanModule from '@synesthesia-project/compositor/lib/modules/scan';
 import SynesthesiaModulateModule from '@synesthesia-project/compositor/lib/modules/modulate';
 
-type PixelData = {
-  type: 'keyboard',
-  row: number,
-  col: number
-} | {
-  type: 'mousemat',
-  i: number
-};
+type PixelData =
+  | {
+      type: 'keyboard';
+      row: number;
+      col: number;
+    }
+  | {
+      type: 'mousemat';
+      i: number;
+    };
 
 type MouseMat = {
   dev: openrazer.MouseMat;
@@ -31,17 +37,16 @@ type MouseMat = {
 };
 
 export class Display {
-
   private state: SynesthesiaPlayState = {
     playState: { layers: [] },
-    files: new Map()
+    files: new Map(),
   };
 
   private devices: {
     keyboard: {
       dev: openrazer.Keyboard;
       map: openrazer.PixelMap;
-      buffer: { index: number, start: number, colors: openrazer.RGB[] }[];
+      buffer: { index: number; start: number; colors: openrazer.RGB[] }[];
     };
     mousemat: MouseMat | null;
     compositor: Compositor<PixelData, { synesthesia: SynesthesiaPlayState }>;
@@ -56,16 +61,23 @@ export class Display {
 
     const local = new LocalCommunicationsConsumer();
 
-    local.on('new-server', port => {
+    local.on('new-server', (port) => {
       console.log(`New server started on port ${port}`);
       const endpoint = this.connectToServer(port);
       endpoint
-        .catch(err => console.error(`Could not connect to server on port: ${port}`, err))
+        .catch((err) =>
+          console.error(`Could not connect to server on port: ${port}`, err)
+        )
         .then(() => console.log(`Connected to server on port: ${port}`));
     });
 
     const endpoint = this.connectToServer(DEFAULT_SYNESTHESIA_PORT);
-    endpoint.catch(err => console.error(`Could not connect to server on port: ${DEFAULT_SYNESTHESIA_PORT}`, err));
+    endpoint.catch((err) =>
+      console.error(
+        `Could not connect to server on port: ${DEFAULT_SYNESTHESIA_PORT}`,
+        err
+      )
+    );
   }
 
   private connectToServer(port: number): Promise<DownstreamEndpoint> {
@@ -73,30 +85,37 @@ export class Display {
       const ws = new WebSocket(`ws://localhost:${port}/listen`);
       ws.addEventListener('open', () => {
         const endpoint = new DownstreamEndpoint(
-          msg => ws.send(JSON.stringify(msg)),
-          async playState => {
+          (msg) => ws.send(JSON.stringify(msg)),
+          async (playState) => {
             if (playState) {
               const nextFiles = new Map<string, CueFile>();
-              await Promise.all(playState.layers.map(async l => {
-                const existing = this.state.files.get(l.fileHash);
-                if (existing) {
-                  nextFiles.set(l.fileHash, existing);
-                } else {
-                  return endpoint.getFile(l.fileHash).then(f => { nextFiles.set(l.fileHash, usage.prepareFile(f)); });
-                }
-              }));
-              this.state = {playState, files: nextFiles};
+              await Promise.all(
+                playState.layers.map(async (l) => {
+                  const existing = this.state.files.get(l.fileHash);
+                  if (existing) {
+                    nextFiles.set(l.fileHash, existing);
+                  } else {
+                    return endpoint.getFile(l.fileHash).then((f) => {
+                      nextFiles.set(l.fileHash, usage.prepareFile(f));
+                    });
+                  }
+                })
+              );
+              this.state = { playState, files: nextFiles };
               // Update the state of any compositors
-              if (this.devices) this.devices.compositor.updateState({ synesthesia: this.state });
+              if (this.devices)
+                this.devices.compositor.updateState({
+                  synesthesia: this.state,
+                });
             }
           }
         );
-        ws.addEventListener('message', msg => {
+        ws.addEventListener('message', (msg) => {
           endpoint.recvMessage(JSON.parse(msg.data));
         });
         resolve(endpoint);
       });
-      ws.addEventListener('error', err => {
+      ws.addEventListener('error', (err) => {
         reject(err);
       });
       ws.addEventListener('close', () => {
@@ -112,8 +131,7 @@ export class Display {
   }
 
   private async initializeInterval() {
-    if (!this.devices)
-      await this.init();
+    if (!this.devices) await this.init();
   }
 
   private async init() {
@@ -133,13 +151,17 @@ export class Display {
       // keyboard
 
       const pixels: PixelInfo<PixelData>[] = [];
-      const buffer: { index: number, start: number, colors: openrazer.RGB[] }[] = [];
+      const buffer: {
+        index: number;
+        start: number;
+        colors: openrazer.RGB[];
+      }[] = [];
       for (let r = 0; r < map.rows.length; r++) {
         const row = map.rows[r];
         buffer[r] = {
           index: r,
           start: 0,
-          colors: []
+          colors: [],
         };
         let maxKeyIndex = 0;
         for (const key of row.keys) {
@@ -151,8 +173,8 @@ export class Display {
             data: {
               type: 'keyboard',
               row: r,
-              col: key.i
-            }
+              col: key.i,
+            },
           });
         }
         for (let k = 0; k <= maxKeyIndex; k++) buffer[r].colors[k] = [0, 0, 0];
@@ -181,42 +203,59 @@ export class Display {
             y: key.centreY,
             data: {
               type: 'mousemat',
-              i: key.i
-            }
+              i: key.i,
+            },
           });
         }
-        for (let i = 0; i <= maxIndex; i++)
-          buffer[i] = [0, 0, 0];
+        for (let i = 0; i <= maxIndex; i++) buffer[i] = [0, 0, 0];
         mousemat = { dev, map, buffer };
       }
 
-      const compositor = new Compositor<PixelData, { synesthesia: SynesthesiaPlayState }>(
+      const compositor = new Compositor<
+        PixelData,
+        { synesthesia: SynesthesiaPlayState }
+      >(
         {
           root: new SynesthesiaModulateModule(
             new AddModule([
               new FillModule(new RGBAColor(96, 0, 160, 1)),
-              new ScanModule(new RGBAColor(160, 0, 104, 1), { delay: 0, speed: -0.1 }),
+              new ScanModule(new RGBAColor(160, 0, 104, 1), {
+                delay: 0,
+                speed: -0.1,
+              }),
               new ScanModule(new RGBAColor(160, 0, 104, 1), { speed: 0.5 }),
-              new ScanModule(new RGBAColor(160, 0, 104, 1), { delay: 0, speed: 0.2 }),
-              new ScanModule(new RGBAColor(247, 69, 185, 1), { delay: 0, speed: -0.3 }),
-              new ScanModule(new RGBAColor(247, 69, 185, 1), { delay: 1, speed: 0.3 })
+              new ScanModule(new RGBAColor(160, 0, 104, 1), {
+                delay: 0,
+                speed: 0.2,
+              }),
+              new ScanModule(new RGBAColor(247, 69, 185, 1), {
+                delay: 0,
+                speed: -0.3,
+              }),
+              new ScanModule(new RGBAColor(247, 69, 185, 1), {
+                delay: 1,
+                speed: 0.3,
+              }),
             ])
           ),
-          pixels
+          pixels,
         },
         { synesthesia: this.state }
       );
-      this.devices = { keyboard: { dev: keyboard, map, buffer }, mousemat, compositor };
+      this.devices = {
+        keyboard: { dev: keyboard, map, buffer },
+        mousemat,
+        compositor,
+      };
     }
   }
 
   private resetFrame = () => {
     this.writingFrame = false;
     console.log('frame failed to write');
-  }
+  };
 
   private async frame() {
-
     if (this.writingFrame) {
       // Skip Frame
       return;
@@ -231,17 +270,24 @@ export class Display {
         const frame = this.devices.compositor.renderFrame();
         for (const p of frame) {
           if (p.pixel.data.type === 'keyboard') {
-            this.devices.keyboard.buffer[p.pixel.data.row].colors[p.pixel.data.col] = p.output.toRGB();
+            this.devices.keyboard.buffer[p.pixel.data.row].colors[
+              p.pixel.data.col
+            ] = p.output.toRGB();
           }
         }
-        await this.devices.keyboard.dev.writeCustomFrame(this.devices.keyboard.buffer);
+        await this.devices.keyboard.dev.writeCustomFrame(
+          this.devices.keyboard.buffer
+        );
         if (this.devices.mousemat) {
           for (const p of frame) {
             if (p.pixel.data.type === 'mousemat') {
               this.devices.mousemat.buffer[p.pixel.data.i] = p.output.toRGB();
             }
           }
-          await this.devices.mousemat.dev.writeCustomFrame(0, this.devices.mousemat.buffer);
+          await this.devices.mousemat.dev.writeCustomFrame(
+            0,
+            this.devices.mousemat.buffer
+          );
         }
         clearTimeout(resetFrameTimeout);
         this.writingFrame = false;

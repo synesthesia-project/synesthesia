@@ -26,7 +26,6 @@ interface Origin {
  * Module that fills all pixels with a given color
  */
 export default class ScanModule<State> implements CompositorModule<State> {
-
   private readonly color: ((state: State) => RGBAColor) | RGBAColor;
 
   private readonly beamWidth: number;
@@ -54,10 +53,14 @@ export default class ScanModule<State> implements CompositorModule<State> {
    */
   private origin: Origin;
 
-  public constructor(color: ((state: State) => RGBAColor) | RGBAColor, options: Partial<ScanOptions> = {}) {
+  public constructor(
+    color: ((state: State) => RGBAColor) | RGBAColor,
+    options: Partial<ScanOptions> = {}
+  ) {
     this.color = color;
     // Configuration Options
-    this.beamWidth = options && options.beamWidth !== undefined ? options.beamWidth : 0.2;
+    this.beamWidth =
+      options && options.beamWidth !== undefined ? options.beamWidth : 0.2;
     this.delay = options && options.delay !== undefined ? options.delay : 0.5;
     this.speed = options && options.speed !== undefined ? options.speed : 0.5;
 
@@ -68,16 +71,19 @@ export default class ScanModule<State> implements CompositorModule<State> {
     this.beamFadeWidth = this.beamWidth / 2;
     this.origin = {
       time: new Date().getTime(),
-      xRatio: this.xRatioMin
+      xRatio: this.xRatioMin,
     };
   }
 
-  public render(map: PixelMap, pixels: PixelInfo<unknown>[], state: State): RGBAColor[] {
-
+  public render(
+    map: PixelMap,
+    pixels: PixelInfo<unknown>[],
+    state: State
+  ): RGBAColor[] {
     const now = new Date().getTime();
     const diff = now - this.origin.time;
     /** 0 = start of map, 1 = end of map */
-    let xRatio = this.origin.xRatio + (diff * this.speed / 1000);
+    let xRatio = this.origin.xRatio + (diff * this.speed) / 1000;
     while (xRatio > this.xRatioMax) {
       this.origin.time = now;
       this.origin.xRatio = xRatio = xRatio - this.xRatioShift;
@@ -87,13 +93,15 @@ export default class ScanModule<State> implements CompositorModule<State> {
       this.origin.xRatio = xRatio = xRatio + this.xRatioShift;
     }
     const mapWidth = map.xMax - map.xMin;
-    const color = typeof this.color === 'function' ? this.color(state) : this.color;
-    return pixels.map(pixel => {
+    const color =
+      typeof this.color === 'function' ? this.color(state) : this.color;
+    return pixels.map((pixel) => {
       const pixelXRatio = (pixel.x - map.xMin) / mapWidth;
       const distance = Math.abs(pixelXRatio - xRatio);
       const brightness = Math.max(0, 1 - distance / this.beamFadeWidth);
-      return brightness === 0 ? RGBA_TRANSPARENT : new RGBAColor(color.r, color.g, color.b, color.alpha * brightness);
+      return brightness === 0
+        ? RGBA_TRANSPARENT
+        : new RGBAColor(color.r, color.g, color.b, color.alpha * brightness);
     });
   }
-
 }

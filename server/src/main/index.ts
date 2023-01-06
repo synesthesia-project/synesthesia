@@ -13,4 +13,3 @@ console.log('Data Dir:', dataDir);
 
 const server = new Server(DEFAULT_SYNESTHESIA_PORT, dataDir);
 server.start();
-

@@ -1,12 +1,21 @@
 import { PingingEndpoint } from '../util/endpoint';
-import { ControlMessage, Notification, PlayStateData, Request, Response } from './messages';
+import {
+  ControlMessage,
+  Notification,
+  PlayStateData,
+  Request,
+  Response,
+} from './messages';
 
 /**
  * The ServerEndpoint is the side of the control protocol that should
  * be used by the synesthesia server
  */
-export class ServerEndpoint extends PingingEndpoint<Request, Response, Notification> {
-
+export class ServerEndpoint extends PingingEndpoint<
+  Request,
+  Response,
+  Notification
+> {
   private readonly playStateUpdated: (state: PlayStateData) => void;
   /**
    * Set when we're unable to process a play state due to missing ping data.
@@ -15,7 +24,8 @@ export class ServerEndpoint extends PingingEndpoint<Request, Response, Notificat
 
   public constructor(
     sendMessage: (msg: ControlMessage) => void,
-    playStateUpdated: (state: PlayStateData) => void) {
+    playStateUpdated: (state: PlayStateData) => void
+  ) {
     super(sendMessage);
     this.playStateUpdated = playStateUpdated;
   }
@@ -28,14 +38,18 @@ export class ServerEndpoint extends PingingEndpoint<Request, Response, Notificat
 
   private processPlayStateData(data: PlayStateData, diff: number) {
     const state: PlayStateData = {
-      layers: data.layers.map(l => ({
+      layers: data.layers.map((l) => ({
         file: l.file,
-        state: l.state.type === 'paused' ? l.state : {
-          type: 'playing',
-          effectiveStartTimeMillis: l.state.effectiveStartTimeMillis + diff,
-          playSpeed: l.state.playSpeed
-        }
-      }))
+        state:
+          l.state.type === 'paused'
+            ? l.state
+            : {
+                type: 'playing',
+                effectiveStartTimeMillis:
+                  l.state.effectiveStartTimeMillis + diff,
+                playSpeed: l.state.playSpeed,
+              },
+      })),
     };
     this.playStateUpdated(state);
   }
@@ -76,5 +90,4 @@ export class ServerEndpoint extends PingingEndpoint<Request, Response, Notificat
       this.unprocessedPlayState = null;
     }
   }
-
 }

@@ -1,13 +1,16 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import svgson from 'svgson';
-import {promisify} from 'util';
+import { promisify } from 'util';
 
 import { HARDCODED_MAPS, KEYBOARD_PIXEL_MAPS } from './data';
 
 const readFile = promisify(fs.readFile);
 
-const PIXELMAP_FOLDER = path.join(path.dirname(path.dirname(__dirname)), 'pixelmaps');
+const PIXELMAP_FOLDER = path.join(
+  path.dirname(path.dirname(__dirname)),
+  'pixelmaps'
+);
 
 export interface SVGKey {
   x: number;
@@ -60,17 +63,17 @@ export async function getPixelMap(deviceType: string) {
       };
       let row = unmappedKeys.get(key.y);
       if (!row) {
-        unmappedKeys.set(key.y, row = []);
+        unmappedKeys.set(key.y, (row = []));
       }
       row.push(key);
     }
   }
 
   // Order each key on each row by x position
-  unmappedKeys.forEach(keys => keys.sort((a, b) => a.x - b.x));
+  unmappedKeys.forEach((keys) => keys.sort((a, b) => a.x - b.x));
 
   // Map each key in KEYBOARD_PIXEL_MAPS to it's svg counterpart
-  const rows = data.rows.map(row => {
+  const rows = data.rows.map((row) => {
     const r: PixelMapRow = {
       keys: [],
     };
@@ -81,7 +84,8 @@ export async function getPixelMap(deviceType: string) {
       // TODO: allow specifying override Y or X values for keys
       // with abnormal positions
       const svg = unmappedRow.shift();
-      if (!svg) throw new Error(`ran out of keys for row: ${row.svgY} at key ${key.i}`);
+      if (!svg)
+        throw new Error(`ran out of keys for row: ${row.svgY} at key ${key.i}`);
       r.keys.push({
         i: key.i,
         centreX: svg.x + svg.width / 2,

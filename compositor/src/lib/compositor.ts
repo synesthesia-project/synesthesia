@@ -6,10 +6,12 @@ export interface Config<PixelData, State> {
   pixels: PixelInfo<PixelData>[];
 }
 
-type RenderResult<PixelData> = { pixel: PixelInfo<PixelData>, output: RGBAColor }[];
+type RenderResult<PixelData> = {
+  pixel: PixelInfo<PixelData>;
+  output: RGBAColor;
+}[];
 
 export class Compositor<PixelData, State> {
-
   private readonly config: Config<PixelData, State>;
   private readonly map: PixelMap;
 
@@ -20,21 +22,27 @@ export class Compositor<PixelData, State> {
     this.state = initialState;
 
     // Calculate Map
-    const xs = config.pixels.map(p => p.x);
-    const ys = config.pixels.map(p => p.y);
+    const xs = config.pixels.map((p) => p.x);
+    const ys = config.pixels.map((p) => p.y);
     this.map = {
       xMax: Math.max(...xs),
       xMin: Math.min(...xs),
       yMax: Math.max(...ys),
-      yMin: Math.min(...ys)
+      yMin: Math.min(...ys),
     };
   }
 
   public renderFrame(): RenderResult<PixelData> {
-    const result = this.config.root.render(this.map, this.config.pixels, this.state);
-    if (result.length !== this.config.pixels.length) throw new Error('Unexpected number of pixels returned');
+    const result = this.config.root.render(
+      this.map,
+      this.config.pixels,
+      this.state
+    );
+    if (result.length !== this.config.pixels.length)
+      throw new Error('Unexpected number of pixels returned');
     return this.config.pixels.map((pixel, i) => ({
-      pixel, output: result[i]
+      pixel,
+      output: result[i],
     }));
   }
 
@@ -42,5 +50,4 @@ export class Compositor<PixelData, State> {
     // TODO: transition
     this.state = state;
   }
-
 }

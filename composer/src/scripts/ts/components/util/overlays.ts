@@ -1,5 +1,10 @@
 export interface OverlaysManager {
-  requestInput(title: string, message: string, label: string, defaultValue: string): Promise<string>;
+  requestInput(
+    title: string,
+    message: string,
+    label: string,
+    defaultValue: string
+  ): Promise<string>;
 }
 
 let overlaysManager: OverlaysManager | null = null;

@@ -1,6 +1,6 @@
-import {styled} from './styling';
-import {Layer} from './layer';
-import {Timeline} from './timeline';
+import { styled } from './styling';
+import { Layer } from './layer';
+import { Timeline } from './timeline';
 import * as React from 'react';
 import * as file from '@synesthesia-project/core/lib/file';
 import * as selection from '../data/selection';
@@ -16,7 +16,7 @@ export interface LayersAndTimelineProps {
   state: stageState.StageState;
   playState: playState.PlayState;
   bindingLayer: number | null;
-  midiLayerBindings: {input: string, note: number, layer: number}[];
+  midiLayerBindings: { input: string; note: number; layer: number }[];
   // Callbacks
   timelineRef: (ref: HTMLDivElement | null) => void;
   layersRef: (ref: HTMLDivElement | null) => void;
@@ -38,8 +38,10 @@ export interface LayersAndTimelineState {
   selectionDraggingDiff: number | null;
 }
 
-class LayersAndTimeline extends React.Component<LayersAndTimelineProps, LayersAndTimelineState> {
-
+class LayersAndTimeline extends React.Component<
+  LayersAndTimelineProps,
+  LayersAndTimelineState
+> {
   private updateInterval = -1;
 
   constructor(props: LayersAndTimelineProps) {
@@ -47,10 +49,11 @@ class LayersAndTimeline extends React.Component<LayersAndTimelineProps, LayersAn
     this.state = {
       positionMillis: 0,
       mousePosition: null,
-      selectionDraggingDiff: null
+      selectionDraggingDiff: null,
     };
     this.updateMouseHover = this.updateMouseHover.bind(this);
-    this.updateSelectionDraggingDiff = this.updateSelectionDraggingDiff.bind(this);
+    this.updateSelectionDraggingDiff =
+      this.updateSelectionDraggingDiff.bind(this);
   }
 
   public componentDidMount() {
@@ -78,27 +81,34 @@ class LayersAndTimeline extends React.Component<LayersAndTimelineProps, LayersAn
   }
 
   private updatePosition(playState: playState.PlayStateData) {
-    const time = playState.state.type === 'paused' ?
-      playState.state.positionMillis :
-      (performance.now() - playState.state.effectiveStartTimeMillis) * playState.state.playSpeed;
-        // Update positionMillis with time if different enough
-    if (time < this.state.positionMillis - 10 || time > this.state.positionMillis + 10)
+    const time =
+      playState.state.type === 'paused'
+        ? playState.state.positionMillis
+        : (performance.now() - playState.state.effectiveStartTimeMillis) *
+          playState.state.playSpeed;
+    // Update positionMillis with time if different enough
+    if (
+      time < this.state.positionMillis - 10 ||
+      time > this.state.positionMillis + 10
+    )
       this.setState({ positionMillis: time });
   }
 
   private updateMouseHover(mousePosition: number | null) {
-    this.setState({mousePosition});
+    this.setState({ mousePosition });
   }
 
-  private updateSelectionDraggingDiff(selectionDraggingDiff: number | null): void {
-    this.setState({selectionDraggingDiff});
+  private updateSelectionDraggingDiff(
+    selectionDraggingDiff: number | null
+  ): void {
+    this.setState({ selectionDraggingDiff });
   }
 
   public render() {
     let layers: JSX.Element[] | null = null;
     if (this.props.file) {
       const file = this.props.file;
-      layers = this.props.file.layers.map((layer, i) =>
+      layers = this.props.file.layers.map((layer, i) => (
         <Layer
           key={i}
           file={file}
@@ -115,36 +125,47 @@ class LayersAndTimeline extends React.Component<LayersAndTimelineProps, LayersAn
           requestBindingForLayer={this.props.requestBindingForLayer}
           updateSelectionDraggingDiff={this.updateSelectionDraggingDiff}
           openLayerOptions={this.props.openLayerOptions}
-          />
-      );
+        />
+      ));
     }
 
-    const playerPosition = this.props.file ?
-      this.state.positionMillis / this.props.file.lengthMillis : null;
+    const playerPosition = this.props.file
+      ? this.state.positionMillis / this.props.file.lengthMillis
+      : null;
 
-    const zoomMargin = stageState.relativeZoomMargins(this.props.state.zoomPan, playerPosition || 0);
+    const zoomMargin = stageState.relativeZoomMargins(
+      this.props.state.zoomPan,
+      playerPosition || 0
+    );
 
     return (
       <div className={this.props.className}>
-        <div
-          className="layers"
-          ref={layers => this.props.layersRef(layers)}>
+        <div className="layers" ref={(layers) => this.props.layersRef(layers)}>
           {layers}
           <div className="overlay">
-            <div className="zoom" style={{
-                left: (- zoomMargin.left * 100) + '%',
-                right: (- zoomMargin.right * 100) + '%'
-              }}>
-              {playerPosition !== null &&
-                <div className="marker player-position" style={{ left: playerPosition * 100 + '%'}}/>
-              }
-              {this.state.mousePosition !== null &&
-                <div className="marker mouse" style={{ left: this.state.mousePosition * 100 + '%'}}/>
-              }
+            <div
+              className="zoom"
+              style={{
+                left: -zoomMargin.left * 100 + '%',
+                right: -zoomMargin.right * 100 + '%',
+              }}
+            >
+              {playerPosition !== null && (
+                <div
+                  className="marker player-position"
+                  style={{ left: playerPosition * 100 + '%' }}
+                />
+              )}
+              {this.state.mousePosition !== null && (
+                <div
+                  className="marker mouse"
+                  style={{ left: this.state.mousePosition * 100 + '%' }}
+                />
+              )}
             </div>
           </div>
         </div>
-        {this.props.file &&
+        {this.props.file && (
           <Timeline
             timelineRef={this.props.timelineRef}
             updateCueFile={this.props.updateCueFile}
@@ -155,12 +176,11 @@ class LayersAndTimeline extends React.Component<LayersAndTimelineProps, LayersAn
             updateMouseHover={this.updateMouseHover}
             mousePosition={this.state.mousePosition}
             toggleZoomPanLock={this.props.toggleZoomPanLock}
-            />
-        }
+          />
+        )}
       </div>
     );
   }
-
 }
 
 const StyledLayersAndTimeline = styled(LayersAndTimeline)`
@@ -173,29 +193,30 @@ const StyledLayersAndTimeline = styled(LayersAndTimeline)`
     position: relative;
     overflow-y: hidden;
 
-    &::before, &::after {
+    &::before,
+    &::after {
       box-sizing: border-box;
-      content: "";
+      content: '';
       display: block;
-      background: ${p => p.theme.layerSideBg};
+      background: ${(p) => p.theme.layerSideBg};
       position: absolute;
       height: 100%;
       top: 0;
       z-index: -100;
       opacity: 0.6;
-      box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.3);
+      box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.3);
     }
 
     &::before {
-      width: ${p => p.theme.layerSideColumnWidthPx}px;
+      width: ${(p) => p.theme.layerSideColumnWidthPx}px;
       left: 0;
-      border-right: 1px solid ${p => p.theme.borderLight};
+      border-right: 1px solid ${(p) => p.theme.borderLight};
     }
 
     &::after {
-      width: ${p => p.theme.visualizationWidthPx}px;
+      width: ${(p) => p.theme.visualizationWidthPx}px;
       right: 0;
-      border-left: 1px solid ${p => p.theme.borderLight};
+      border-left: 1px solid ${(p) => p.theme.borderLight};
     }
 
     > .overlay {
@@ -203,8 +224,8 @@ const StyledLayersAndTimeline = styled(LayersAndTimeline)`
       pointer-events: none;
       top: 0;
       bottom: 0;
-      left: ${p => p.theme.layerSideColumnWidthPx}px;
-      right: ${p => p.theme.visualizationWidthPx}px;
+      left: ${(p) => p.theme.layerSideColumnWidthPx}px;
+      right: ${(p) => p.theme.visualizationWidthPx}px;
       overflow: hidden;
 
       > .zoom {
@@ -232,4 +253,4 @@ const StyledLayersAndTimeline = styled(LayersAndTimeline)`
   }
 `;
 
-export {StyledLayersAndTimeline as LayersAndTimeline};
+export { StyledLayersAndTimeline as LayersAndTimeline };

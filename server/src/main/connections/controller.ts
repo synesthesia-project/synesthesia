@@ -9,21 +9,20 @@ interface ControllerConnectionListener {
 }
 
 export class ControllerConnection extends ServerEndpoint {
-
   private readonly listeners = new Set<ControllerConnectionListener>();
 
   public constructor(ws: WebSocket) {
     super(
-      msg => ws.send(JSON.stringify(msg)),
-      state => this.listeners.forEach(l => l.playStateUpdated(state))
+      (msg) => ws.send(JSON.stringify(msg)),
+      (state) => this.listeners.forEach((l) => l.playStateUpdated(state))
     );
 
-    ws.on('message', msg => this.recvMessage(JSON.parse(msg.toString())));
+    ws.on('message', (msg) => this.recvMessage(JSON.parse(msg.toString())));
     ws.on('close', () => this.closed());
   }
 
   protected handleClosed() {
-    this.listeners.forEach(l => l.closed());
+    this.listeners.forEach((l) => l.closed());
   }
 
   public addListener(listener: ControllerConnectionListener) {
@@ -33,5 +32,4 @@ export class ControllerConnection extends ServerEndpoint {
   public removeListener(listener: ControllerConnectionListener) {
     this.listeners.delete(listener);
   }
-
 }

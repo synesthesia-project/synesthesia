@@ -9,8 +9,8 @@ declare global {
 /**
  * A Promise that resolves the Spotify.Player class when the SDK is ready
  */
-export const spotifyWebPlaybackSDKReady = new Promise<SpotifySdk>(resolve => {
-  window .onSpotifyWebPlaybackSDKReady = () => resolve(Spotify);
+export const spotifyWebPlaybackSDKReady = new Promise<SpotifySdk>((resolve) => {
+  window.onSpotifyWebPlaybackSDKReady = () => resolve(Spotify);
 });
 
 /**

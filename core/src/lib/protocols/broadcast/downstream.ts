@@ -1,21 +1,30 @@
-
 import { CueFile } from '../../file';
 import { PingingEndpoint } from '../util/endpoint';
-import { BroadcastMessage, LayerState, Notification, PlayStateData, Request, Response } from './messages';
+import {
+  BroadcastMessage,
+  LayerState,
+  Notification,
+  PlayStateData,
+  Request,
+  Response,
+} from './messages';
 
 /**
  * The DownstreamEndpoint is the side of the protocol that receives synesthesia
  * information. (e.g. a consumer)
  */
-export class DownstreamEndpoint extends PingingEndpoint<Request, Response, Notification> {
-
+export class DownstreamEndpoint extends PingingEndpoint<
+  Request,
+  Response,
+  Notification
+> {
   private readonly playStateUpdated: (state: PlayStateData | null) => void;
 
   private lastPlayState: PlayStateData | null = null;
 
   public constructor(
     sendMessage: (msg: BroadcastMessage) => void,
-    playStateUpdated: (state: PlayStateData | null) => void,
+    playStateUpdated: (state: PlayStateData | null) => void
   ) {
     super(sendMessage);
     this.playStateUpdated = playStateUpdated;
@@ -44,7 +53,7 @@ export class DownstreamEndpoint extends PingingEndpoint<Request, Response, Notif
     if (this.lastPlayState && ping) {
       const pingDiff = ping.diff;
       this.playStateUpdated({
-        layers: this.lastPlayState.layers.map<LayerState>(layer => ({
+        layers: this.lastPlayState.layers.map<LayerState>((layer) => ({
           fileHash: layer.fileHash,
           amplitude: layer.amplitude,
           playSpeed: layer.playSpeed,
@@ -55,7 +64,7 @@ export class DownstreamEndpoint extends PingingEndpoint<Request, Response, Notif
   }
 
   public getFile(fileHash: string): Promise<CueFile> {
-    return this.sendRequest({type: 'file', fileHash }).then(response => {
+    return this.sendRequest({ type: 'file', fileHash }).then((response) => {
       if (response.type === 'file') return response.file;
       throw new Error('unexpected response');
     });
@@ -69,5 +78,4 @@ export class DownstreamEndpoint extends PingingEndpoint<Request, Response, Notif
     if (resp.type === 'pong') return resp;
     throw new Error('unexpected response');
   }
-
 }

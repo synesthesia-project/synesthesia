@@ -3,7 +3,7 @@ import { createHash } from 'crypto';
 function emptyState<T>() {
   return {
     objToHash: new Map<T, string>(),
-    hashToObj: new Map<string, T>()
+    hashToObj: new Map<string, T>(),
   };
 }
 
@@ -26,7 +26,6 @@ export function hashObject(obj: unknown) {
  * (This is primarily used for calculating the hashes and allowing for hash lookups of CueFiles).
  */
 export class ObjectHashLookup<T> {
-
   private state = emptyState<T>();
   private readonly hashObject: (obj: unknown) => string;
 
@@ -41,8 +40,7 @@ export class ObjectHashLookup<T> {
     const newState = emptyState<T>();
     for (const obj of objects) {
       let hash = this.state.objToHash.get(obj);
-      if (!hash)
-        hash = this.hashObject(obj);
+      if (!hash) hash = this.hashObject(obj);
       newState.hashToObj.set(hash, obj);
       newState.objToHash.set(obj, hash);
     }
@@ -58,5 +56,4 @@ export class ObjectHashLookup<T> {
     const r = this.state.hashToObj.get(hash);
     return r ? r : null;
   }
-
 }

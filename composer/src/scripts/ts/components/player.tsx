@@ -1,15 +1,21 @@
 import * as React from 'react';
-import {styled, buttonDisabled, rectIconButton, rectButtonSmall, textInput} from './styling';
+import {
+  styled,
+  buttonDisabled,
+  rectIconButton,
+  rectButtonSmall,
+  textInput,
+} from './styling';
 
 import * as stageState from '../data/stage-state';
-import {PlayState, PlayStateData} from '../data/play-state';
-import {displayMillis} from '../display/timing';
+import { PlayState, PlayStateData } from '../data/play-state';
+import { displayMillis } from '../display/timing';
 
-import {PlayerBar} from './player-bar';
-import {DropDownButton} from './util/drop-down-button';
-import {DelayedPropigationInput} from './util/input';
+import { PlayerBar } from './player-bar';
+import { DropDownButton } from './util/drop-down-button';
+import { DelayedPropigationInput } from './util/input';
 
-import {MdPlayArrow, MdPause, MdSlowMotionVideo} from 'react-icons/md';
+import { MdPlayArrow, MdPause, MdSlowMotionVideo } from 'react-icons/md';
 
 const NO_TIME_STRING = '---';
 const CONTROL_HEIGHT_PX = 30;
@@ -34,14 +40,13 @@ interface PlayerProps {
 }
 
 class Player extends React.Component<PlayerProps, PlayerState> {
-
   private updateInterval: ReturnType<typeof setInterval> | null = null;
 
   constructor(props: PlayerProps) {
     super(props);
     this.state = {
       scrubbingPosition: null,
-      elapsedTimeText: null
+      elapsedTimeText: null,
     };
 
     // Bind callbacks & event listeners
@@ -77,32 +82,42 @@ class Player extends React.Component<PlayerProps, PlayerState> {
     const state = this.props.playState;
     const playing = !!state && state.state.type === 'playing';
     const disabled = !state;
-    const durationText = state && state.state.type === 'playing' ?
-      displayMillis(state.durationMillis) :
-      NO_TIME_STRING;
+    const durationText =
+      state && state.state.type === 'playing'
+        ? displayMillis(state.durationMillis)
+        : NO_TIME_STRING;
     const className = this.props.className + (disabled ? ' disabled' : '');
-    const playSpeed = state && state.state.type === 'playing' ? state.state.playSpeed : 1;
+    const playSpeed =
+      state && state.state.type === 'playing' ? state.state.playSpeed : 1;
     return (
-      <div className={className} ref={div => this.props.playerRef(div)}>
+      <div className={className} ref={(div) => this.props.playerRef(div)}>
         <span className="play-pause" onClick={this.playPauseClicked}>
-          { playing ? <MdPause /> : <MdPlayArrow /> }
+          {playing ? <MdPause /> : <MdPlayArrow />}
         </span>
         <DropDownButton
           icon={MdSlowMotionVideo}
           buttonSizePx={CONTROL_HEIGHT_PX}
           title="Play speed"
-          buttonText = {playSpeed === 1 ? '' : (playSpeed + 'x')}
+          buttonText={playSpeed === 1 ? '' : playSpeed + 'x'}
           active={playSpeed !== 1}
           disabled={disabled}
-          >
+        >
           <div className="speed-controls">
             <span>Play Speed:</span>
             <button onClick={this.setPlaySpeed1}>1x</button>
             <button onClick={this.setPlaySpeedHalf}>0.5x</button>
-            <DelayedPropigationInput type="number" value={playSpeed.toString()} onChange={this.setPlaySpeed } />
+            <DelayedPropigationInput
+              type="number"
+              value={playSpeed.toString()}
+              onChange={this.setPlaySpeed}
+            />
           </div>
         </DropDownButton>
-        <span className="elapsed-time">{this.state.elapsedTimeText ? this.state.elapsedTimeText : NO_TIME_STRING}</span>
+        <span className="elapsed-time">
+          {this.state.elapsedTimeText
+            ? this.state.elapsedTimeText
+            : NO_TIME_STRING}
+        </span>
         <PlayerBar
           playState={this.props.playState}
           scrubbingPosition={this.state.scrubbingPosition}
@@ -115,13 +130,11 @@ class Player extends React.Component<PlayerProps, PlayerState> {
   }
 
   private playPauseClicked() {
-    if (this.props.playState)
-      this.props.playState.controls.toggle();
+    if (this.props.playState) this.props.playState.controls.toggle();
   }
 
   private updateFromPlayState(playState: PlayState) {
-    if (this.updateInterval !== null)
-      clearInterval(this.updateInterval);
+    if (this.updateInterval !== null) clearInterval(this.updateInterval);
     if (playState) {
       if (playState.state.type === 'paused') {
         this.updateElapsedText(playState, playState.state.positionMillis);
@@ -139,9 +152,10 @@ class Player extends React.Component<PlayerProps, PlayerState> {
       const effectiveStartTimeMillis = playState.state.effectiveStartTimeMillis;
       const playSpeed = playState.state.playSpeed;
       // Check if scrubbing
-      const elapsed = this.state.scrubbingPosition !== null ?
-        playState.durationMillis * this.state.scrubbingPosition :
-        (performance.now() - effectiveStartTimeMillis) * playSpeed;
+      const elapsed =
+        this.state.scrubbingPosition !== null
+          ? playState.durationMillis * this.state.scrubbingPosition
+          : (performance.now() - effectiveStartTimeMillis) * playSpeed;
       this.updateElapsedText(playState, elapsed);
     };
     // Pick a nice interval that will show the milliseconds updating
@@ -153,34 +167,35 @@ class Player extends React.Component<PlayerProps, PlayerState> {
    * Update elapsed text, but if scrubbing display that time instead
    */
   private updateElapsedText(playState: PlayStateData, elapsed: number) {
-    elapsed = this.state.scrubbingPosition !== null ?
-      playState.durationMillis * this.state.scrubbingPosition : elapsed;
-    this.setState({elapsedTimeText: displayMillis(elapsed)});
+    elapsed =
+      this.state.scrubbingPosition !== null
+        ? playState.durationMillis * this.state.scrubbingPosition
+        : elapsed;
+    this.setState({ elapsedTimeText: displayMillis(elapsed) });
   }
 
   private updateScrubbingPosition(position: number | null) {
     this.setState({
-      scrubbingPosition: position
+      scrubbingPosition: position,
     });
   }
-
 }
 
 const StyledPlayer = styled(Player)`
-  background-color: ${p => p.theme.bgLight1};
-  border-top: 1px solid ${p => p.theme.borderDark};
+  background-color: ${(p) => p.theme.bgLight1};
+  border-top: 1px solid ${(p) => p.theme.borderDark};
   z-index: 100;
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: ${p => p.theme.spacingPx}px;
+  padding: ${(p) => p.theme.spacingPx}px;
 
   > .play-pause {
     display: block;
     height: ${CONTROL_HEIGHT};
     width: ${CONTROL_HEIGHT};
     ${rectIconButton}
-    margin-right: ${p => p.theme.spacingPx}px;
+    margin-right: ${(p) => p.theme.spacingPx}px;
   }
 
   .speed-controls {
@@ -188,7 +203,7 @@ const StyledPlayer = styled(Player)`
     align-items: center;
 
     > * {
-      margin: ${p => p.theme.spacingPx / 2}px;
+      margin: ${(p) => p.theme.spacingPx / 2}px;
     }
 
     > span {
@@ -208,25 +223,26 @@ const StyledPlayer = styled(Player)`
     }
   }
 
-  > .elapsed-time, > .duration {
+  > .elapsed-time,
+  > .duration {
     display: inline-block;
-    padding: 0 ${p => p.theme.spacingPx}px;
+    padding: 0 ${(p) => p.theme.spacingPx}px;
     width: 75px;
     font-size: 15px;
     text-align: center;
   }
 
   &.disabled {
-
     > .play-pause {
       opacity: 0.5;
       ${buttonDisabled}
     }
 
-    > .elapsed-time, > .duration {
-        opacity: 0.5;
+    > .elapsed-time,
+    > .duration {
+      opacity: 0.5;
     }
   }
 `;
 
-export {StyledPlayer as Player};
+export { StyledPlayer as Player };

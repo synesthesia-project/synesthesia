@@ -1,22 +1,31 @@
-
 import { CueFile } from '../../file';
 import { Endpoint } from '../util/endpoint';
-import { BroadcastMessage, Notification, PlayStateData, Request, Response } from './messages';
+import {
+  BroadcastMessage,
+  Notification,
+  PlayStateData,
+  Request,
+  Response,
+} from './messages';
 import performance from '../util/performance';
 
 /**
  * The UpstreamEndpoint is the side of the protocol that shares synesthesia
  * information (e.g. a server).
  */
-export class UpstreamEndpoint extends Endpoint<Request, Response, Notification> {
-
+export class UpstreamEndpoint extends Endpoint<
+  Request,
+  Response,
+  Notification
+> {
   private readonly recvPingData: (ping: number, diff: number) => void;
   private readonly getFile: (hash: string) => Promise<CueFile>;
 
   public constructor(
-      sendMessage: (msg: BroadcastMessage) => void,
-      recvPingData: (ping: number, diff: number) => void,
-      getFile: (hash: string) => Promise<CueFile>) {
+    sendMessage: (msg: BroadcastMessage) => void,
+    recvPingData: (ping: number, diff: number) => void,
+    getFile: (hash: string) => Promise<CueFile>
+  ) {
     super(sendMessage);
     this.recvPingData = recvPingData;
     this.getFile = getFile;
@@ -35,8 +44,9 @@ export class UpstreamEndpoint extends Endpoint<Request, Response, Notification> 
         }
         case 'file': {
           resolve(
-            this.getFile(request.fileHash)
-            .then(file => ({ type: 'file', file } as Response)),
+            this.getFile(request.fileHash).then(
+              (file) => ({ type: 'file', file } as Response)
+            )
           );
           return;
         }
@@ -69,5 +79,4 @@ export class UpstreamEndpoint extends Endpoint<Request, Response, Notification> 
       },
     });
   }
-
 }

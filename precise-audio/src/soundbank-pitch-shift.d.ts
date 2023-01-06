@@ -1,5 +1,4 @@
 declare module 'soundbank-pitch-shift' {
-
   class PitchShift extends AudioNode {
     public transpose: number;
     public readonly wet: AudioParam;

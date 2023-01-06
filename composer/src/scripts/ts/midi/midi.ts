@@ -1,4 +1,3 @@
-
 // Type Check Functions
 
 function isMidiInput(port: WebMidi.MIDIPort): port is WebMidi.MIDIInput {
@@ -12,12 +11,10 @@ interface MidiListener {
 }
 
 export class Midi {
-
   private initialised = false;
   private readonly listeners = new Set<MidiListener>();
 
   public constructor() {
-
     // Bind Listeners
     this.onMidiAccessReady = this.onMidiAccessReady.bind(this);
     this.onMidiStateChange = this.onMidiStateChange.bind(this);
@@ -26,12 +23,9 @@ export class Midi {
   public init() {
     if (this.initialised) return;
     if (navigator.requestMIDIAccess) {
-      navigator.requestMIDIAccess().then(
-        this.onMidiAccessReady,
-        error => {
-          console.error(error);
-        }
-      );
+      navigator.requestMIDIAccess().then(this.onMidiAccessReady, (error) => {
+        console.error(error);
+      });
       this.initialised = true;
     }
   }
@@ -45,7 +39,7 @@ export class Midi {
   }
 
   private onMidiAccessReady(midiAccess: WebMidi.MIDIAccess) {
-    midiAccess.inputs.forEach(input => {
+    midiAccess.inputs.forEach((input) => {
       this.setupOrTeardownMidiInput(input);
     });
     midiAccess.onstatechange = this.onMidiStateChange;
@@ -63,28 +57,28 @@ export class Midi {
       input.onmidimessage = this.onMidiMessageClosure(input);
     } else {
       console.log('tearing down midi input', input.id);
-      this.listeners.forEach(l => l.inputRemoved(input.id));
+      this.listeners.forEach((l) => l.inputRemoved(input.id));
     }
   }
 
   private onMidiMessageClosure(input: WebMidi.MIDIInput) {
     return (msg: WebMidi.MIDIMessageEvent) => {
       const data = msg.data,
-            // cmd = data[0] >> 4,
-            // channel = data[0] & 0xf,
-            type = data[0] & 0xf0, // channel agnostic message type. Thanks, Phil Burk.
-            note = data[1],
-            velocity = data[2];
+        // cmd = data[0] >> 4,
+        // channel = data[0] & 0xf,
+        type = data[0] & 0xf0, // channel agnostic message type. Thanks, Phil Burk.
+        note = data[1],
+        velocity = data[2];
       switch (type) {
         case 144: // noteOn message
-           if (velocity > 0) {
-             this.listeners.forEach(l => l.noteOn(input.id, note, velocity));
-           } else {
-             this.listeners.forEach(l => l.noteOff(input.id, note));
-           }
-           break;
+          if (velocity > 0) {
+            this.listeners.forEach((l) => l.noteOn(input.id, note, velocity));
+          } else {
+            this.listeners.forEach((l) => l.noteOff(input.id, note));
+          }
+          break;
         case 128: // noteOff message
-          this.listeners.forEach(l => l.noteOff(input.id, note));
+          this.listeners.forEach((l) => l.noteOff(input.id, note));
           break;
       }
     };

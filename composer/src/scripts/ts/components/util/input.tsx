@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {KEYCODES} from '../../util/input';
+import { KEYCODES } from '../../util/input';
 
 interface PropertyInputProperties {
   id?: string;
@@ -12,8 +12,10 @@ interface PropertyInputProperties {
  * An input that only propigates its changes upwards when the user hits enter
  * or unfocuses the element
  */
-export class DelayedPropigationInput extends React.Component<PropertyInputProperties, Record<string, never>> {
-
+export class DelayedPropigationInput extends React.Component<
+  PropertyInputProperties,
+  Record<string, never>
+> {
   /* True when propigating the result of a user-triggered event upwards */
   private changing = false;
 
@@ -38,26 +40,26 @@ export class DelayedPropigationInput extends React.Component<PropertyInputProper
       e.stopPropagation();
       this.changing = true;
       this.props.onChange(e.currentTarget.value);
-      setTimeout(() => this.changing = false, 0);
+      setTimeout(() => (this.changing = false), 0);
     }
   }
 
   private onBlur(e: React.FocusEvent<HTMLInputElement>) {
     this.changing = true;
     this.props.onChange(e.currentTarget.value);
-    setTimeout(() => this.changing = false, 0);
+    setTimeout(() => (this.changing = false), 0);
   }
 
   public render() {
     return (
       <input
-        ref={i => this.ref = i}
+        ref={(i) => (this.ref = i)}
         id={this.props.id}
         type={this.props.type}
         defaultValue={this.props.value}
         onKeyDown={this.onKeyDown}
-        onBlur={this.onBlur} />
+        onBlur={this.onBlur}
+      />
     );
   }
-
 }

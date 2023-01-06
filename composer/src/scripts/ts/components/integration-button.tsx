@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import {styled} from './styling';
+import { styled } from './styling';
 
 import { IntegrationSource } from '../sources/integration-source';
 import { IntegrationSettings } from '../../../integration/shared';
@@ -18,19 +18,18 @@ interface State {
 }
 
 class IntegrationButton extends React.Component<Props, State> {
-
   public constructor(props: Props) {
     super(props);
     this.state = {
-      state: 'not_connected'
+      state: 'not_connected',
     };
 
     this.onClick = this.onClick.bind(this);
   }
 
   public componentDidMount() {
-    this.props.integration.addListener('state', state => {
-      this.setState({state});
+    this.props.integration.addListener('state', (state) => {
+      this.setState({ state });
     });
   }
 
@@ -55,13 +54,16 @@ class IntegrationButton extends React.Component<Props, State> {
   }
 
   public render() {
-
     const buttonText = (() => {
       switch (this.state.state) {
-        case 'not_connected': return `Connect to ${this.props.settings.name}`;
-        case 'connecting': return 'Connecting...';
-        case 'connected': return `Connected to ${this.props.settings.name}`;
-        case 'error': return 'An error ocurred';
+        case 'not_connected':
+          return `Connect to ${this.props.settings.name}`;
+        case 'connecting':
+          return 'Connecting...';
+        case 'connected':
+          return `Connected to ${this.props.settings.name}`;
+        case 'error':
+          return 'An error ocurred';
       }
     })();
 
@@ -89,24 +91,24 @@ const StyledIntegrationButton = styled(IntegrationButton)`
       border-radius: 10px;
 
       &.not_connected {
-        border:1px solid #999;
+        border: 1px solid #999;
         width: 4px;
         height: 4px;
       }
 
       &.connecting {
-        background-color: ${p => p.theme.colorAmber};
+        background-color: ${(p) => p.theme.colorAmber};
       }
 
       &.connected {
-        background-color: ${p => p.theme.colorGreen};
+        background-color: ${(p) => p.theme.colorGreen};
       }
 
       &.error {
-        background-color: ${p => p.theme.colorRed};
+        background-color: ${(p) => p.theme.colorRed};
       }
     }
   }
 `;
 
-export { StyledIntegrationButton as IntegrationButton};
+export { StyledIntegrationButton as IntegrationButton };

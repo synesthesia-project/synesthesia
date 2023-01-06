@@ -17,7 +17,7 @@ const MACKIE = [0x00, 0x00, 0x66];
 const LCD_CHAR_COUNT = 0x70;
 
 export type FaderEvent = {
-  type: 'fader',
+  type: 'fader';
   /** value between 0-8 */
   channel: Channel | Master;
   /**
@@ -51,14 +51,11 @@ export type VPotEvent = {
 
 export type VPotLEDMode = 'single' | 'boost-cut' | 'wrap' | 'spread';
 
-export type Event =
-    FaderEvent
-  | ChannelButtonEvent
-  | VPotEvent;
+export type Event = FaderEvent | ChannelButtonEvent | VPotEvent;
 
 type PropType<TObj, TProp extends keyof TObj> = TObj[TProp];
 export type EventType = PropType<Event, 'type'>;
-export type SpecificEvent<E extends EventType> = Extract<Event, {type: E}>;
+export type SpecificEvent<E extends EventType> = Extract<Event, { type: E }>;
 export type Listener<E extends Event> = (message: E) => void;
 
 export function isChannel(channel: number): channel is Channel {
@@ -69,7 +66,9 @@ export function checkChannel(channel: Channel) {
   if (!isChannel(channel)) throw new Error('Invalid channel value');
 }
 
-export function isChannelOrMaster(channel: number): channel is Channel | Master {
+export function isChannelOrMaster(
+  channel: number
+): channel is Channel | Master {
   return isChannel(channel) || channel === 8;
 }
 
@@ -85,12 +84,11 @@ export function checkFaderValue(value: number) {
  * Mackie Control Universal Protocol Implementation
  */
 export default class MCUProtocol extends Base {
-
   private readonly deviceId: number;
 
   private readonly eventListeners = {
     'channel-button': new Set<Listener<ChannelButtonEvent>>(),
-    'fader': new Set<Listener<FaderEvent>>(),
+    fader: new Set<Listener<FaderEvent>>(),
     'v-pot': new Set<Listener<VPotEvent>>(),
   };
 
@@ -122,24 +120,26 @@ export default class MCUProtocol extends Base {
   }
 
   private handleMidiMCU(message: number[]) {
-    console.log(message.map(n => n.toString(16)));
+    console.log(message.map((n) => n.toString(16)));
     if (message.length < 3) return;
     const k = message[0];
 
     // Fader
     if (k >= 0xe0 && k <= 0xe8) {
       const value = (message[2] << 7) + message[1];
-      const channel = (k & 0xf);
+      const channel = k & 0xf;
       if (!isChannelOrMaster(channel)) return;
       this.handleEvent({
-        type: 'fader', channel, value,
+        type: 'fader',
+        channel,
+        value,
       });
       if (this.faderEchoDelay >= 0) {
         const timeout = this.faderEchoTimeouts[channel];
         if (timeout) clearTimeout(timeout);
         this.faderEchoTimeouts[channel] = setTimeout(
           () => this.setFader(channel, value),
-          this.faderEchoDelay,
+          this.faderEchoDelay
         );
       }
     }
@@ -150,31 +150,41 @@ export default class MCUProtocol extends Base {
       const b = message[1];
       if (b >= 0 && b < 0x28) {
         // Channel Button
-        const [channel, button]: [number, ChannelButton] = (
-          b < 0x08 ? [b, 'rec'] :
-          b < 0x10 ? [b - 0x08, 'solo'] :
-          b < 0x18 ? [b - 0x10, 'mute'] :
-          b < 0x20 ? [b - 0x18, 'select'] : [b - 0x20, 'v-select']
-        );
-        if (!isChannel(channel)) throw new Error('internal error: invalid channel produced!');
+        const [channel, button]: [number, ChannelButton] =
+          b < 0x08
+            ? [b, 'rec']
+            : b < 0x10
+            ? [b - 0x08, 'solo']
+            : b < 0x18
+            ? [b - 0x10, 'mute']
+            : b < 0x20
+            ? [b - 0x18, 'select']
+            : [b - 0x20, 'v-select'];
+        if (!isChannel(channel))
+          throw new Error('internal error: invalid channel produced!');
         this.handleEvent({
-          type: 'channel-button', state, button, channel,
+          type: 'channel-button',
+          state,
+          button,
+          channel,
         });
       } else {
         // TODO: implement
         console.error('Other buttons not yet supported');
       }
-
     }
 
     // V-Pots
     if (k === 0xb0) {
       const channel = message[1] - 0x10;
       if (!isChannel(channel)) return;
-      const direction = (0x40 & message[2]) ? 'ccw' : 'cw';
+      const direction = 0x40 & message[2] ? 'ccw' : 'cw';
       const ticks = 0x3f & message[2];
       this.handleEvent({
-        type: 'v-pot', channel, direction, ticks,
+        type: 'v-pot',
+        channel,
+        direction,
+        ticks,
       });
     }
   }
@@ -213,29 +223,35 @@ export default class MCUProtocol extends Base {
 
   public setChannelLED(channel: Channel, button: ChannelButton, on: boolean) {
     checkChannel(channel);
-    const i = (
-      button === 'rec' ? 0x00 :
-      button === 'solo' ? 0x08 :
-      button === 'mute' ? 0x10 :
-      button === 'select' ? 0x18 : 0x20
-    ) + channel;
+    const i =
+      (button === 'rec'
+        ? 0x00
+        : button === 'solo'
+        ? 0x08
+        : button === 'mute'
+        ? 0x10
+        : button === 'select'
+        ? 0x18
+        : 0x20) + channel;
     this.sendMidi([0x90, i, on ? 0x7f : 0]);
   }
 
   public setLCDText(offset: number, text: string) {
     const chars: number[] = [];
-    for (let i = 0; i < text.length && (i + offset) < LCD_CHAR_COUNT; i++) {
+    for (let i = 0; i < text.length && i + offset < LCD_CHAR_COUNT; i++) {
       chars.push(text.charCodeAt(i));
     }
     this.setLCDChars(offset, chars);
   }
 
   public setLCDChars(offset: number, chars: number[]) {
-    if (offset < 0 || offset >= LCD_CHAR_COUNT) throw new Error('Invalid LCD Offset');
+    if (offset < 0 || offset >= LCD_CHAR_COUNT)
+      throw new Error('Invalid LCD Offset');
     chars = chars.slice(0, LCD_CHAR_COUNT - offset);
     this.sendMidi([
       0xf0,
-      ...MACKIE, this.deviceId,
+      ...MACKIE,
+      this.deviceId,
       0x12,
       offset,
       ...chars,
@@ -243,14 +259,23 @@ export default class MCUProtocol extends Base {
     ]);
   }
 
-  public setVPotRing(channel: Channel, center: 'on' | 'off', mode: VPotLEDMode, value: number) {
+  public setVPotRing(
+    channel: Channel,
+    center: 'on' | 'off',
+    mode: VPotLEDMode,
+    value: number
+  ) {
     checkChannel(channel);
-    if (value < 0 || value > 0x0b) throw new Error('Value must be between 0 and 11');
-    const modeBits = (
-      mode === 'single' ? 0x00 :
-      mode === 'boost-cut' ? 0x10 :
-      mode === 'wrap' ? 0x20 : 0x30
-    );
+    if (value < 0 || value > 0x0b)
+      throw new Error('Value must be between 0 and 11');
+    const modeBits =
+      mode === 'single'
+        ? 0x00
+        : mode === 'boost-cut'
+        ? 0x10
+        : mode === 'wrap'
+        ? 0x20
+        : 0x30;
     if (mode === 'spread' && value > 6) value = 6;
     const data = (center === 'on' ? 0x40 : 0x00) | modeBits | value;
     this.sendMidi([0xb0, 0x30 | channel, data]);
@@ -269,21 +294,33 @@ export default class MCUProtocol extends Base {
    */
   public setVUMeterLevel(channel: Channel, level: number) {
     checkChannel(channel);
-    if (level < 0 || level > 0xf) throw new Error('Invalid level, must be between 0 and 15');
+    if (level < 0 || level > 0xf)
+      throw new Error('Invalid level, must be between 0 and 15');
     this.sendMidi([0xd0, (channel << 4) | level]);
   }
 
-  public addEventListener<E extends EventType>(event: E, listener: Listener<SpecificEvent<E>>) {
-    (this.eventListeners[event] as Set<Listener<SpecificEvent<E>>>).add(listener);
+  public addEventListener<E extends EventType>(
+    event: E,
+    listener: Listener<SpecificEvent<E>>
+  ) {
+    (this.eventListeners[event] as Set<Listener<SpecificEvent<E>>>).add(
+      listener
+    );
   }
 
-  public removeEventListener<E extends EventType>(event: E, listener: Listener<SpecificEvent<E>>) {
-    (this.eventListeners[event] as Set<Listener<SpecificEvent<E>>>).delete(listener);
+  public removeEventListener<E extends EventType>(
+    event: E,
+    listener: Listener<SpecificEvent<E>>
+  ) {
+    (this.eventListeners[event] as Set<Listener<SpecificEvent<E>>>).delete(
+      listener
+    );
   }
 
   private handleEvent<E extends EventType>(event: SpecificEvent<E>) {
     console.log(event);
-    (this.eventListeners[event.type] as Set<Listener<SpecificEvent<E>>>).forEach(l => l(event));
+    (
+      this.eventListeners[event.type] as Set<Listener<SpecificEvent<E>>>
+    ).forEach((l) => l(event));
   }
-
 }

@@ -13,7 +13,6 @@ interface TrackState {
 }
 
 export class UnsavedChanges {
-
   /** Mapping from track ID to its state */
   private readonly map = new Map<string, TrackState>();
 
@@ -22,7 +21,7 @@ export class UnsavedChanges {
     if (!state) {
       state = {
         revisions: [],
-        undone: []
+        undone: [],
       };
       this.map.set(id, state);
     }
@@ -33,17 +32,22 @@ export class UnsavedChanges {
     state.undone = [];
   }
 
-  public getCurrentRevision(id: string): {state: CueFile | null, fileState: FileState} | null {
+  public getCurrentRevision(
+    id: string
+  ): { state: CueFile | null; fileState: FileState } | null {
     console.log('getCurrentRevision', id);
     const state = this.map.get(id);
     if (state)
       return {
-        state: state.revisions.length > 0 ? state.revisions[state.revisions.length - 1] : null,
+        state:
+          state.revisions.length > 0
+            ? state.revisions[state.revisions.length - 1]
+            : null,
         fileState: {
           canRedo: state.undone.length > 0,
           canUndo: state.revisions.length > 0,
-          canSave: state.revisions.length > 0
-        }
+          canSave: state.revisions.length > 0,
+        },
       };
     return null;
   }
@@ -88,5 +92,4 @@ export class UnsavedChanges {
     }
     return false;
   }
-
 }

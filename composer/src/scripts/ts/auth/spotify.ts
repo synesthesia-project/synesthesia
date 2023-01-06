@@ -1,4 +1,4 @@
-import {getRandomHex} from '../util/random';
+import { getRandomHex } from '../util/random';
 
 interface AuthData {
   access_token: string;
@@ -15,7 +15,7 @@ const SCOPES = [
   'streaming',
   'user-read-birthdate',
   'user-read-email',
-  'user-read-private'
+  'user-read-private',
 ];
 let randomToken: string | null = null;
 
@@ -63,7 +63,11 @@ export function authSpotify(): Promise<string> {
 
 export function isValidAuth(auth: unknown): auth is AuthData {
   // TODO use io-ts instead?
-  return !!(auth as AuthData).access_token && !!(auth as AuthData).expires_in && !!(auth as AuthData).state;
+  return (
+    !!(auth as AuthData).access_token &&
+    !!(auth as AuthData).expires_in &&
+    !!(auth as AuthData).state
+  );
 }
 
 /**

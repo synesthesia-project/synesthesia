@@ -12,12 +12,16 @@ declare global {
   }
 }
 
-export class Stage extends React.Component<Record<string, never>, Record<string, never>> {
-
+export class Stage extends React.Component<
+  Record<string, never>,
+  Record<string, never>
+> {
   private endpoint: Promise<ControllerEndpoint> | null = null;
   private readonly audio = new PreciseAudio();
   private meta: {
-    title: string, artist?: string, album?: string;
+    title: string;
+    artist?: string;
+    album?: string;
   } | null = null;
 
   public constructor(props: Record<string, never>) {
@@ -32,7 +36,7 @@ export class Stage extends React.Component<Record<string, never>, Record<string,
     this.audio.addEventListener('pause', this.updatePlayState);
     this.audio.addEventListener('ended', this.updatePlayState);
     this.audio.addEventListener('seeked', this.updatePlayState);
-    this.audio.addEventListener('error', event => {
+    this.audio.addEventListener('error', (event) => {
       console.log('LOADING ERROR!', event.error);
     });
 
@@ -45,42 +49,48 @@ export class Stage extends React.Component<Record<string, never>, Record<string,
 
   private getEndpoint(): Promise<ControllerEndpoint> {
     if (!this.endpoint) {
-      const endpointPromise = this.endpoint = new Promise((resolve, reject) => {
-        const ws = new WebSocket(`ws://localhost:${DEFAULT_SYNESTHESIA_PORT}/control`);
-        const endpoint = new ControllerEndpoint(msg => ws.send(JSON.stringify(msg)));
-        ws.addEventListener('open', () => {
-          endpoint.setRequestHandler(async req => {
-            switch (req.request) {
-              case 'pause':
-                this.audio.pause();
-                return {success: true};
-              case 'toggle':
-                this.audio.paused ? this.audio.play() : this.audio.pause();
-                return { success: true };
-              case 'go-to-time':
-                this.audio.currentTime = req.positionMillis / 1000;
-                return { success: true };
-              case 'play-speed':
-                this.audio.playbackRate = req.playSpeed;
-                this.updatePlayState();
-                return { success: true };
-            }
+      const endpointPromise = (this.endpoint = new Promise(
+        (resolve, reject) => {
+          const ws = new WebSocket(
+            `ws://localhost:${DEFAULT_SYNESTHESIA_PORT}/control`
+          );
+          const endpoint = new ControllerEndpoint((msg) =>
+            ws.send(JSON.stringify(msg))
+          );
+          ws.addEventListener('open', () => {
+            endpoint.setRequestHandler(async (req) => {
+              switch (req.request) {
+                case 'pause':
+                  this.audio.pause();
+                  return { success: true };
+                case 'toggle':
+                  this.audio.paused ? this.audio.play() : this.audio.pause();
+                  return { success: true };
+                case 'go-to-time':
+                  this.audio.currentTime = req.positionMillis / 1000;
+                  return { success: true };
+                case 'play-speed':
+                  this.audio.playbackRate = req.playSpeed;
+                  this.updatePlayState();
+                  return { success: true };
+              }
+            });
+            resolve(endpoint);
           });
-          resolve(endpoint);
-        });
-        ws.addEventListener('error', err => {
-          if (endpointPromise === this.endpoint) this.endpoint = null;
-          reject(err);
-        });
-        ws.addEventListener('close', () => {
-          if (endpointPromise === this.endpoint) this.endpoint = null;
-        });
-        ws.addEventListener('message', msg => {
-          endpoint.recvMessage(JSON.parse(msg.data));
-        });
-      });
+          ws.addEventListener('error', (err) => {
+            if (endpointPromise === this.endpoint) this.endpoint = null;
+            reject(err);
+          });
+          ws.addEventListener('close', () => {
+            if (endpointPromise === this.endpoint) this.endpoint = null;
+          });
+          ws.addEventListener('message', (msg) => {
+            endpoint.recvMessage(JSON.parse(msg.data));
+          });
+        }
+      ));
 
-      this.endpoint.catch(err => {
+      this.endpoint.catch((err) => {
         console.error(err);
         if (this.endpoint === endpointPromise) {
           // Remove the endpoint so an attempt will be tried again
@@ -97,12 +107,12 @@ export class Stage extends React.Component<Record<string, never>, Record<string,
     if (files) {
       const file = files[0];
       const parseID3 = () => {
-        universalParse(file).then(tag => {
+        universalParse(file).then((tag) => {
           if (tag.title) {
             this.meta = {
               title: tag.title,
               artist: tag.artist,
-              album: tag.album
+              album: tag.album,
             };
             this.updatePlayState();
           }
@@ -118,27 +128,34 @@ export class Stage extends React.Component<Record<string, never>, Record<string,
 
   private updatePlayState() {
     console.log(this.meta);
-    this.getEndpoint().then(endpoint => {
+    this.getEndpoint().then((endpoint) => {
       if (!this.meta) return;
-      endpoint.sendState({layers: [{
-        // TODO: optionally send file path instead of meta
-        file: {
-          type: 'meta' as const,
-          title: this.meta.title,
-          artist: this.meta.artist,
-          album: this.meta.album,
-          lengthMillis: this.audio.duration * 1000
-        },
-        state: this.audio.paused ? {
-          type: 'paused',
-          positionMillis: this.audio.currentTimeMillis
-        } : {
-          type: 'playing',
-            effectiveStartTimeMillis: performance.now() -
-            this.audio.currentTimeMillis / this.audio.playbackRate,
-          playSpeed: this.audio.playbackRate
-        }
-      }]});
+      endpoint.sendState({
+        layers: [
+          {
+            // TODO: optionally send file path instead of meta
+            file: {
+              type: 'meta' as const,
+              title: this.meta.title,
+              artist: this.meta.artist,
+              album: this.meta.album,
+              lengthMillis: this.audio.duration * 1000,
+            },
+            state: this.audio.paused
+              ? {
+                  type: 'paused',
+                  positionMillis: this.audio.currentTimeMillis,
+                }
+              : {
+                  type: 'playing',
+                  effectiveStartTimeMillis:
+                    performance.now() -
+                    this.audio.currentTimeMillis / this.audio.playbackRate,
+                  playSpeed: this.audio.playbackRate,
+                },
+          },
+        ],
+      });
     });
   }
 
