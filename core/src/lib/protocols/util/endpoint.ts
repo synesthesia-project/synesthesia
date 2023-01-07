@@ -1,11 +1,25 @@
-import { Message } from './messages';
+import {
+  Message,
+  TypedMessage,
+  isConnectionMetadataNotification,
+} from './messages';
 import performance from './performance';
+import type { ConnectionMetadataManager } from './connection-metadata';
+
+export type MetadataOptions = {
+  connectionType: string;
+  connectionMetadata: ConnectionMetadataManager;
+};
 
 /**
  * A generic abstract class that uses Promises to simplyfy implementation
  * of endpoints that handle request/response type messages.
  */
-export abstract class Endpoint<Req, Res, Notif> {
+export abstract class Endpoint<
+  Req extends TypedMessage,
+  Res extends TypedMessage,
+  Notif extends TypedMessage
+> {
   protected readonly sendMessage: (msg: Message<Req, Res, Notif>) => void;
 
   private readonly pendingRequests = new Map<
@@ -13,10 +27,21 @@ export abstract class Endpoint<Req, Res, Notif> {
     { resolve: (resp: Res) => void; reject: (error: Error) => void }
   >();
 
+  public readonly connectionMetadata: ConnectionMetadataManager | null;
+
   private nextRequestId = 0;
 
-  protected constructor(sendMessage: (msg: Message<Req, Res, Notif>) => void) {
+  protected constructor(
+    sendMessage: (msg: Message<Req, Res, Notif>) => void,
+    metadata: MetadataOptions
+  ) {
     this.sendMessage = sendMessage;
+    if (metadata) {
+      this.connectionMetadata = metadata.connectionMetadata;
+      this.connectionMetadata.registerEndpoint(metadata.connectionType, this);
+    } else {
+      this.connectionMetadata = null;
+    }
   }
 
   /**
@@ -76,7 +101,11 @@ export abstract class Endpoint<Req, Res, Notif> {
         break;
       }
       case 'notification': {
-        this.handleNotification(msg.notification);
+        if (isConnectionMetadataNotification(msg.notification)) {
+          this.connectionMetadata?.acceptNotification(this, msg.notification);
+        } else {
+          this.handleNotification(msg.notification);
+        }
         break;
       }
       default:
@@ -89,6 +118,7 @@ export abstract class Endpoint<Req, Res, Notif> {
    */
   public closed(): void {
     this.handleClosed();
+    this.connectionMetadata?.removeEndpoint(this);
   }
 
   protected abstract handleRequest(request: Req): Promise<Res>;
@@ -125,11 +155,11 @@ interface PingResp {
  * An endpoint that periodically pings the thing it's connected to to
  * calculate the difference between its clocks
  */
-export abstract class PingingEndpoint<Req, Res, Notif> extends Endpoint<
-  Req,
-  Res,
-  Notif
-> {
+export abstract class PingingEndpoint<
+  Req extends TypedMessage,
+  Res extends TypedMessage,
+  Notif extends TypedMessage
+> extends Endpoint<Req, Res, Notif> {
   private pingInterval: ReturnType<typeof setInterval>;
   private pingTimeout: ReturnType<typeof setInterval> | null = null;
   private pingBackoff = 10;
@@ -139,8 +169,11 @@ export abstract class PingingEndpoint<Req, Res, Notif> extends Endpoint<
     diff: number;
   } | null = null;
 
-  protected constructor(sendMessage: (msg: Message<Req, Res, Notif>) => void) {
-    super(sendMessage);
+  protected constructor(
+    sendMessage: (msg: Message<Req, Res, Notif>) => void,
+    metadata: MetadataOptions
+  ) {
+    super(sendMessage, metadata);
     this.pingInterval = setInterval(() => this.updateTimeDifference(), 10000);
     this.updateTimeDifference();
   }
@@ -169,6 +202,7 @@ export abstract class PingingEndpoint<Req, Res, Notif> extends Endpoint<
           console.log('ping diff:', diff);
         }
         console.log('ping:', ping);
+        this.connectionMetadata?.updateEndpointPing(this, ping);
       })
       .catch((err) => {
         console.log(

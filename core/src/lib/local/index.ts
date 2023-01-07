@@ -18,21 +18,6 @@ const mkdir = promisify(fs.mkdir);
 const unlink = promisify(fs.unlink);
 const readdir = promisify(fs.readdir);
 
-const mkIfNotExists = (dir: string) =>
-  mkdir(dir).catch((err) => {
-    if (err.code !== 'EEXIST') throw err;
-  });
-
-const mkdirParents = (dir: string) =>
-  mkIfNotExists(dir).catch(async (err) => {
-    if (err.code === 'ENOENT') {
-      await mkdirParents(path.dirname(dir));
-      await mkIfNotExists(dir);
-      return;
-    }
-    throw err;
-  });
-
 type ProcType = 'consumer' | 'server';
 
 const SERVER: ProcType = 'server';
@@ -48,14 +33,20 @@ abstract class LocalCommunications {
   public constructor() {
     const dir = path.join(RUN_DIR, this.getProcType());
     this.socketPath = path.join(dir, process.pid.toString());
-    mkdirParents(dir).then(() => {
-      const server = new net.Server();
+    console.log(`:: Creating directory: ${dir}`);
+    mkdir(dir, { recursive: true })
+      .then(() => {
+        console.log(`:: Directory Created: ${dir}`);
+        const server = new net.Server();
 
-      server.listen(this.socketPath);
-      server.on('connection', (socket) => {
-        this.onConnection(new JsonSocket(socket));
+        server.listen(this.socketPath);
+        server.on('connection', (socket) => {
+          this.onConnection(new JsonSocket(socket));
+        });
+      })
+      .catch((err) => {
+        console.error(`:: Error when creating directory: ${dir}`, err);
       });
-    });
 
     process.on('SIGINT', () => process.exit());
     process.on('SIGUSR1', () => process.exit());
@@ -86,14 +77,18 @@ export class LocalCommunicationsServer extends LocalCommunications {
       type: 'new-server',
       port,
     };
-    readdir(consumers).then((dirs) => {
-      for (const pid of dirs) {
-        const socket = new JsonSocket(net.connect(path.join(consumers, pid)));
-        socket.sendEndMessage(message, () => {
-          /* TODO */
-        });
-      }
-    });
+    readdir(consumers)
+      .then((dirs) => {
+        for (const pid of dirs) {
+          const socket = new JsonSocket(net.connect(path.join(consumers, pid)));
+          socket.sendEndMessage(message, (err) => {
+            console.error(`:: Error sending notification: `, err);
+          });
+        }
+      })
+      .catch((err) => {
+        console.error(`:: Error sending notification: `, err);
+      });
   }
 }
 

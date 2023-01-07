@@ -1,5 +1,5 @@
 import { CueFile } from '../../file';
-import { PingingEndpoint } from '../util/endpoint';
+import { MetadataOptions, PingingEndpoint } from '../util/endpoint';
 import {
   BroadcastMessage,
   LayerState,
@@ -24,9 +24,10 @@ export class DownstreamEndpoint extends PingingEndpoint<
 
   public constructor(
     sendMessage: (msg: BroadcastMessage) => void,
-    playStateUpdated: (state: PlayStateData | null) => void
+    playStateUpdated: (state: PlayStateData | null) => void,
+    metadata: MetadataOptions
   ) {
-    super(sendMessage);
+    super(sendMessage, metadata);
     this.playStateUpdated = playStateUpdated;
   }
 

@@ -3,6 +3,7 @@ import { PlayStateData } from '@synesthesia-project/core/lib/protocols/broadcast
 import { CueFile } from '@synesthesia-project/core/lib/file';
 import * as usage from '@synesthesia-project/core/lib/file/file-usage';
 import { DEFAULT_SYNESTHESIA_PORT } from '@synesthesia-project/core/lib/constants';
+import { ConnectionMetadataManager } from '../../../lib/protocols/util/connection-metadata';
 
 const logo = document.getElementById('logo');
 
@@ -49,6 +50,12 @@ export class Stage {
               );
               this.state = { playState, files: nextFiles };
             }
+          },
+          {
+            connectionType: 'upstream',
+            connectionMetadata: new ConnectionMetadataManager(
+              'core-example-consumer'
+            ),
           }
         );
         ws.addEventListener('message', (msg) => {

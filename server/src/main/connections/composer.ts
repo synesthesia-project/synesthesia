@@ -9,6 +9,7 @@ import {
   Notification,
   PlayStateData,
 } from '@synesthesia-project/composer/dist/integration/shared';
+import { ConnectionMetadataManager } from '@synesthesia-project/core/lib/protocols/util/connection-metadata';
 
 /**
  * Server side of the connection to the composer
@@ -23,8 +24,14 @@ export class ComposerConnection extends Endpoint<
 
   private requestHandler: ((req: Request) => Promise<Response>) | null = null;
 
-  public constructor(ws: WebSocket) {
-    super((msg) => ws.send(JSON.stringify(msg)));
+  public constructor(
+    ws: WebSocket,
+    connectionMetadata: ConnectionMetadataManager
+  ) {
+    super((msg) => ws.send(JSON.stringify(msg)), {
+      connectionMetadata,
+      connectionType: 'composer:downstream',
+    });
 
     ws.on('message', (msg) => this.recvMessage(JSON.parse(msg.toString())));
     ws.on('close', () => this.closed());
@@ -40,7 +47,7 @@ export class ComposerConnection extends Endpoint<
 
   protected async handleRequest(request: Request): Promise<Response> {
     console.log('got a request', request);
-    if (request.request === 'ping') {
+    if (request.type === 'ping') {
       return {
         type: 'pong',
         timestampMillis: performance.now(),

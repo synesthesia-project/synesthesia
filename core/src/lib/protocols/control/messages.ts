@@ -1,21 +1,21 @@
 import { Message } from '../util/messages';
 
 export interface ToggleRequest {
-  request: 'toggle';
+  type: 'toggle';
 }
 
 // TODO: investigate if this is used in composer over toggle(), and remove if needed
 export interface PauseRequest {
-  request: 'pause';
+  type: 'pause';
 }
 
 export interface GoToTimeRequest {
-  request: 'go-to-time';
+  type: 'go-to-time';
   positionMillis: number;
 }
 
 export interface PlaySpeedRequest {
-  request: 'play-speed';
+  type: 'play-speed';
   /**
    * How fast should the song play compared to it's natural speed,
    * where 1 = normal, 2 = double speed, 0.5 = half speed
@@ -24,7 +24,7 @@ export interface PlaySpeedRequest {
 }
 
 export type PingRequest = {
-  request: 'ping';
+  type: 'ping';
 };
 
 /** Response for [[ToggleRequest]], [[PauseRequest]] or [[GoToTimeRequest]] */
