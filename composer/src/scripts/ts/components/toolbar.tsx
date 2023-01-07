@@ -5,7 +5,10 @@ import { styled, buttonDisabled, rectButton, buttonPressed } from './styling';
 import * as file from '@synesthesia-project/core/lib/file';
 import { validateFile } from '@synesthesia-project/core/lib/file/file-validation';
 
-import { IntegrationSettings, FileState } from '../../../integration/shared';
+import {
+  IntegrationSettings,
+  FileState,
+} from '../../../../dist/integration/shared';
 
 import * as spotifyAuth from '../auth/spotify';
 import {

@@ -10,6 +10,7 @@ interface Props {
   disabled?: boolean;
   buttonSizePx: number;
   title?: string;
+  children?: JSX.Element;
 }
 
 class DropDownButton extends React.Component<Props> {
