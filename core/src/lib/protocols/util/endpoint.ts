@@ -202,6 +202,7 @@ export abstract class PingingEndpoint<
           console.log('ping diff:', diff);
         }
         console.log('ping:', ping);
+        this.connectionMetadata?.updateEndpointPing(this, ping);
       })
       .catch((err) => {
         console.log(

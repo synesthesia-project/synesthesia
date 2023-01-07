@@ -10,13 +10,8 @@ import { omit, isEqual } from 'lodash';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyEndpoint = Endpoint<any, any, any>;
 
-export type ConnectionMetadataListenerData = {
-  uuid: string;
-  nodes: ConnectionMetadataNode[];
-};
-
 export type ConnectionMetadataListener = (
-  data: ConnectionMetadataListenerData
+  data: ConnectionMetadataNotification
 ) => void;
 
 export class ConnectionMetadataManager {
@@ -54,68 +49,83 @@ export class ConnectionMetadataManager {
     notification: ConnectionMetadataNotification
   ) => {
     const wantUpdatesBefore = this.nodesWantUpdates();
-
-    let updateMade = false;
-
-    const matchingEndpoint = this.endpoints.get(endpoint);
-    if (matchingEndpoint && !matchingEndpoint.uuid) {
-      matchingEndpoint.uuid = notification.ownUuid;
-      this.updateSelf();
-      updateMade = true;
-    }
-
-    for (const node of notification.nodes) {
-      const nodeUpdated = this.handleNodeInfo({
-        ...node,
-        distance: node.distance + 1,
-      });
-      updateMade ||= nodeUpdated;
-    }
-
-    const wantUpdatesAfter = this.nodesWantUpdates();
-
-    if (updateMade) {
-      this.sendDataToListeners();
-      if (wantUpdatesBefore || wantUpdatesAfter) {
-        this.sendUpdate();
+    this.runFunctionAndShareAnyChanges(() => {
+      const matchingEndpoint = this.endpoints.get(endpoint);
+      if (matchingEndpoint && matchingEndpoint.uuid !== notification.ownUuid) {
+        matchingEndpoint.uuid = notification.ownUuid;
+        this.updateSelf();
       }
-    }
+
+      for (const node of Object.values(notification.nodes)) {
+        this.handleNodeInfo({
+          ...node,
+          distance: node.distance + 1,
+        });
+      }
+
+      this.clearUnreachableNodes();
+    }, wantUpdatesBefore);
   };
 
   public registerEndpoint = (type: string, endpoint: AnyEndpoint) => {
-    this.endpoints.set(endpoint, { type });
-    this.updateSelf();
-    this.sendDataToListeners();
-    if (this.nodesWantUpdates()) {
-      this.sendUpdate();
-    }
+    this.runFunctionAndShareAnyChanges(() => {
+      this.endpoints.set(endpoint, { type });
+      this.updateSelf();
+    });
+  };
+
+  public updateEndpointPing = (endpoint: AnyEndpoint, ping: number) => {
+    const roundedPing = Math.ceil(ping);
+    this.runFunctionAndShareAnyChanges(() => {
+      const matchingEndpoint = this.endpoints.get(endpoint);
+      if (matchingEndpoint && matchingEndpoint.lastPing !== roundedPing) {
+        matchingEndpoint.lastPing = roundedPing;
+        this.updateSelf();
+      }
+    });
   };
 
   public removeEndpoint = (endpoint: AnyEndpoint) => {
-    this.endpoints.delete(endpoint);
-    this.updateSelf();
-    this.sendDataToListeners();
-    if (this.nodesWantUpdates()) {
-      this.sendUpdate();
-    }
+    this.runFunctionAndShareAnyChanges(() => {
+      this.endpoints.delete(endpoint);
+      this.updateSelf();
+      this.clearUnreachableNodes();
+    });
   };
 
   public addListener = (listener: ConnectionMetadataListener) => {
-    this.listeners.add(listener);
-    if (!this.self.wantsMetadata) {
-      this.self.wantsMetadata = true;
-      this.updateSelf();
-      this.sendUpdate();
-    }
-    listener(this.generateListenerData());
+    listener(this.generateNotificationMessage());
+    this.runFunctionAndShareAnyChanges(() => {
+      this.listeners.add(listener);
+      if (!this.self.wantsMetadata) {
+        this.self.wantsMetadata = true;
+        this.updateSelf();
+      }
+    }, true);
   };
 
   public removeListener = (listener: ConnectionMetadataListener) => {
-    this.listeners.delete(listener);
-    if (this.listeners.size === 0) {
-      this.self.wantsMetadata = false;
-      this.updateSelf();
-      this.sendUpdate();
+    this.runFunctionAndShareAnyChanges(() => {
+      this.listeners.delete(listener);
+      if (this.self.wantsMetadata && this.listeners.size === 0) {
+        this.self.wantsMetadata = false;
+        this.updateSelf();
+      }
+    }, true);
+  };
+
+  private runFunctionAndShareAnyChanges = (
+    f: () => void,
+    forceSendToNodes = false
+  ) => {
+    const dataBefore = this.generateNotificationMessage();
+    f();
+    const dataAfter = this.generateNotificationMessage();
+    if (!isEqual(dataBefore, dataAfter)) {
+      this.sendDataToListeners(dataAfter);
+      if (forceSendToNodes || this.nodesWantUpdates()) {
+        this.sendDataToNodes(dataAfter);
+      }
     }
   };
 
@@ -127,8 +137,15 @@ export class ConnectionMetadataManager {
   private updateSelf = () => {
     const connections: ConnectionMetadataNode['connections'] = {};
     for (const { type, lastPing, uuid } of this.endpoints.values()) {
-      connections[type] = connections[type] || [];
-      connections[type].push({ uuid, lastPing });
+      connections[type] = connections[type] || {
+        known: {},
+        unknown: 0,
+      };
+      if (uuid) {
+        connections[type].known[uuid] = { lastPing };
+      } else {
+        connections[type].unknown++;
+      }
     }
     this.self = {
       ...this.self,
@@ -136,6 +153,12 @@ export class ConnectionMetadataManager {
       connections,
     };
     this.handleNodeInfo(this.self);
+  };
+
+  private clearUnreachableNodes = () => {
+    // TODO: do a reachability test to see which nodes can be reached
+    // from the current node, and delete everything else
+    // (e.g. network partitioned)
   };
 
   private nodesWantUpdates = (): boolean => {
@@ -152,32 +175,32 @@ export class ConnectionMetadataManager {
     return wantsUpdate;
   };
 
-  private generateListenerData = (): ConnectionMetadataListenerData => ({
-    uuid: this.self.uuid,
-    nodes: [...this.nodes.values()],
+  private generateNotificationMessage = (): ConnectionMetadataNotification => ({
+    type: 'connection-metadata',
+    ownUuid: this.self.uuid,
+    nodes: [...this.nodes.values()].reduce<
+      Record<string, ConnectionMetadataNode>
+    >((prev, node) => ({ ...prev, [node.uuid]: node }), {}),
   });
 
-  private sendDataToListeners = () => {
-    const data = this.generateListenerData();
+  private sendDataToListeners = (data: ConnectionMetadataNotification) => {
     this.listeners.forEach((l) => l(data));
   };
 
-  private sendUpdate = () => {
-    const update: ConnectionMetadataNotification = {
-      type: 'connection-metadata',
-      ownUuid: this.self.uuid,
-      nodes: [...this.nodes.values()],
-    };
+  private sendDataToNodes = (data: ConnectionMetadataNotification) => {
     for (const endpoint of this.endpoints.keys()) {
-      endpoint.sendNotification(update);
+      endpoint.sendNotification(data);
     }
   };
 
-  private handleNodeInfo = (node: ConnectionMetadataNode): boolean => {
+  private handleNodeInfo = (node: ConnectionMetadataNode) => {
     const existing = this.nodes.get(node.uuid);
     if (
       !existing ||
-      !isEqual(omit(existing, 'distance'), omit(node, 'distance'))
+      // The given data is not older
+      (node.lastUpdateMillis >= existing.lastUpdateMillis &&
+        // There is some change
+        !isEqual(omit(existing, 'distance'), omit(node, 'distance')))
     ) {
       const newData: ConnectionMetadataNode = {
         ...node,
@@ -189,9 +212,6 @@ export class ConnectionMetadataManager {
       };
       deepFreeze(newData);
       this.nodes.set(node.uuid, newData);
-      return true;
-    } else {
-      return false;
     }
   };
 }

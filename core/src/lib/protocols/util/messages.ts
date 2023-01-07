@@ -35,13 +35,10 @@ export type ConnectionMetadataNode = {
   distance: number;
   connections: Record<
     string,
-    Array<{
-      lastPing?: number;
-      /**
-       * Only set if the node in question is aware of the ID of the node at the other end of the connection.
-       */
-      uuid?: string;
-    }>
+    {
+      known: Record<string, { lastPing?: number }>;
+      unknown: number;
+    }
   >;
 };
 
@@ -54,7 +51,7 @@ export type ConnectionMetadataNotification = {
   /**
    * Must at least include the information of the node in `ownUuid`.
    */
-  nodes: ConnectionMetadataNode[];
+  nodes: Record<string, ConnectionMetadataNode>;
 };
 
 export const isConnectionMetadataNotification = (
