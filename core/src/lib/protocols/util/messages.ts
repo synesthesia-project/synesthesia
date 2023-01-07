@@ -32,10 +32,11 @@ export type ConnectionMetadataNode = {
    * the given node is interested in receiving updates on connection metadata.
    */
   wantsMetadata: boolean;
+  distance: number;
   connections: Record<
     string,
     Array<{
-      lastPing: number;
+      lastPing?: number;
       /**
        * Only set if the node in question is aware of the ID of the node at the other end of the connection.
        */

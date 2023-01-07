@@ -4,7 +4,12 @@ import {
   isConnectionMetadataNotification,
 } from './messages';
 import performance from './performance';
-import { ConnectionMetadataManager } from './connection-metadata';
+import type { ConnectionMetadataManager } from './connection-metadata';
+
+export type MetadataOptions = {
+  connectionType: string;
+  connectionMetadata: ConnectionMetadataManager;
+};
 
 /**
  * A generic abstract class that uses Promises to simplyfy implementation
@@ -28,10 +33,15 @@ export abstract class Endpoint<
 
   protected constructor(
     sendMessage: (msg: Message<Req, Res, Notif>) => void,
-    connectionMetadata: ConnectionMetadataManager | null = null
+    metadata?: MetadataOptions
   ) {
     this.sendMessage = sendMessage;
-    this.connectionMetadata = connectionMetadata;
+    if (metadata) {
+      this.connectionMetadata = metadata.connectionMetadata;
+      this.connectionMetadata.registerEndpoint(metadata.connectionType, this);
+    } else {
+      this.connectionMetadata = null;
+    }
   }
 
   /**
@@ -92,7 +102,7 @@ export abstract class Endpoint<
       }
       case 'notification': {
         if (isConnectionMetadataNotification(msg.notification)) {
-          this.connectionMetadata?.acceptNotification(msg.notification);
+          this.connectionMetadata?.acceptNotification(this, msg.notification);
         } else {
           this.handleNotification(msg.notification);
         }
@@ -108,6 +118,7 @@ export abstract class Endpoint<
    */
   public closed(): void {
     this.handleClosed();
+    this.connectionMetadata?.removeEndpoint(this);
   }
 
   protected abstract handleRequest(request: Req): Promise<Res>;
@@ -158,8 +169,11 @@ export abstract class PingingEndpoint<
     diff: number;
   } | null = null;
 
-  protected constructor(sendMessage: (msg: Message<Req, Res, Notif>) => void) {
-    super(sendMessage);
+  protected constructor(
+    sendMessage: (msg: Message<Req, Res, Notif>) => void,
+    metadata?: MetadataOptions
+  ) {
+    super(sendMessage, metadata);
     this.pingInterval = setInterval(() => this.updateTimeDifference(), 10000);
     this.updateTimeDifference();
   }
