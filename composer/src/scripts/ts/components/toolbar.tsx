@@ -36,6 +36,7 @@ import {
 } from 'react-icons/md';
 
 import { IntegrationButton } from './integration-button';
+import { ConnectionMetadataManager } from '@synesthesia-project/core/lib/protocols/util/connection-metadata';
 
 interface Window {
   integrationSettings?: IntegrationSettings;
@@ -67,8 +68,13 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
   private readonly redo: () => void;
   private readonly save: () => void;
 
+  private readonly connectionMetadata = new ConnectionMetadataManager(
+    'composer'
+  );
+
   private readonly localFileController: FileController = new FileController(
-    (fileControllerState) => this.setState({ fileControllerState })
+    (fileControllerState) => this.setState({ fileControllerState }),
+    this.connectionMetadata
   );
 
   constructor(props: FileSourceProps) {
@@ -78,7 +84,10 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
     const w = window as Window;
     if (w.integrationSettings) {
       integration = {
-        source: new IntegrationSource(w.integrationSettings),
+        source: new IntegrationSource(
+          w.integrationSettings,
+          this.connectionMetadata
+        ),
         fileState: {
           canRedo: false,
           canSave: false,
@@ -128,6 +137,10 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
     this.undo = this.fileAction('undo');
     this.redo = this.fileAction('redo');
     this.save = this.fileAction('save');
+
+    this.connectionMetadata.addListener((data) => {
+      console.log('connectionMetadata', data);
+    });
   }
 
   public componentDidMount() {

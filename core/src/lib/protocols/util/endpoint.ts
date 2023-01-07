@@ -33,7 +33,7 @@ export abstract class Endpoint<
 
   protected constructor(
     sendMessage: (msg: Message<Req, Res, Notif>) => void,
-    metadata?: MetadataOptions
+    metadata: MetadataOptions
   ) {
     this.sendMessage = sendMessage;
     if (metadata) {
@@ -171,7 +171,7 @@ export abstract class PingingEndpoint<
 
   protected constructor(
     sendMessage: (msg: Message<Req, Res, Notif>) => void,
-    metadata?: MetadataOptions
+    metadata: MetadataOptions
   ) {
     super(sendMessage, metadata);
     this.pingInterval = setInterval(() => this.updateTimeDifference(), 10000);

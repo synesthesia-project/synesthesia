@@ -1,4 +1,4 @@
-import { Endpoint } from '../util/endpoint';
+import { Endpoint, MetadataOptions } from '../util/endpoint';
 import {
   ControlRequest,
   ControlMessage,
@@ -26,8 +26,11 @@ export class ControllerEndpoint extends Endpoint<
     | ((req: ControlRequest) => Promise<SimpleControlResponse>)
     | null = null;
 
-  public constructor(sendMessage: (msg: ControlMessage) => void) {
-    super(sendMessage);
+  public constructor(
+    sendMessage: (msg: ControlMessage) => void,
+    metadata: MetadataOptions
+  ) {
+    super(sendMessage, metadata);
   }
 
   protected handleNotification(notification: Notification) {

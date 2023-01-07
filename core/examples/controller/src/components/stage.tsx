@@ -5,6 +5,7 @@ import { ControllerEndpoint } from '@synesthesia-project/core/lib/protocols/cont
 import { DEFAULT_SYNESTHESIA_PORT } from '@synesthesia-project/core/lib/constants';
 
 import PreciseAudio from '@synesthesia-project/precise-audio';
+import { ConnectionMetadataManager } from '../../../../lib/protocols/util/connection-metadata';
 
 declare global {
   interface Window {
@@ -54,8 +55,14 @@ export class Stage extends React.Component<
           const ws = new WebSocket(
             `ws://localhost:${DEFAULT_SYNESTHESIA_PORT}/control`
           );
-          const endpoint = new ControllerEndpoint((msg) =>
-            ws.send(JSON.stringify(msg))
+          const endpoint = new ControllerEndpoint(
+            (msg) => ws.send(JSON.stringify(msg)),
+            {
+              connectionType: 'controller:upstream',
+              connectionMetadata: new ConnectionMetadataManager(
+                'core-example-controller'
+              ),
+            }
           );
           ws.addEventListener('open', () => {
             endpoint.setRequestHandler(async (req) => {

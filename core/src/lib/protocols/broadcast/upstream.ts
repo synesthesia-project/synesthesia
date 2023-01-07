@@ -1,5 +1,5 @@
 import { CueFile } from '../../file';
-import { Endpoint } from '../util/endpoint';
+import { Endpoint, MetadataOptions } from '../util/endpoint';
 import {
   BroadcastMessage,
   Notification,
@@ -24,9 +24,10 @@ export class UpstreamEndpoint extends Endpoint<
   public constructor(
     sendMessage: (msg: BroadcastMessage) => void,
     recvPingData: (ping: number, diff: number) => void,
-    getFile: (hash: string) => Promise<CueFile>
+    getFile: (hash: string) => Promise<CueFile>,
+    metadata: MetadataOptions
   ) {
-    super(sendMessage);
+    super(sendMessage, metadata);
     this.recvPingData = recvPingData;
     this.getFile = getFile;
   }

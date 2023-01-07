@@ -1,7 +1,8 @@
 import universalParse from 'id3-parser/lib/universal';
 
-import { ControllerEndpoint } from '@synesthesia-project/core/lib/protocols/control';
 import { DEFAULT_SYNESTHESIA_PORT } from '@synesthesia-project/core/lib/constants';
+import { ControllerEndpoint } from '@synesthesia-project/core/lib/protocols/control';
+import { ConnectionMetadataManager } from '@synesthesia-project/core/lib/protocols/util/connection-metadata';
 
 export type FileControllerState =
   | {
@@ -26,6 +27,7 @@ function loadAudioFile(audio: HTMLAudioElement, url: string): Promise<void> {
 
 export class FileController {
   private readonly listener: (state: FileControllerState) => void;
+  private readonly connectionMetadata: ConnectionMetadataManager;
   private readonly audio: HTMLAudioElement = document.createElement('audio');
 
   private endpoint: Promise<ControllerEndpoint> | null = null;
@@ -35,8 +37,12 @@ export class FileController {
     album?: string;
   } | null = null;
 
-  constructor(listener: (state: FileControllerState) => void) {
+  constructor(
+    listener: (state: FileControllerState) => void,
+    connectionMetadata: ConnectionMetadataManager
+  ) {
     this.listener = listener;
+    this.connectionMetadata = connectionMetadata;
     this.audio = document.createElement('audio');
 
     this.updatePlayState = this.updatePlayState.bind(this);
@@ -87,10 +93,15 @@ export class FileController {
           const ws = new WebSocket(
             `ws://localhost:${DEFAULT_SYNESTHESIA_PORT}/control`
           );
-          const endpoint = new ControllerEndpoint((msg) =>
-            ws.send(JSON.stringify(msg))
-          );
+          let endpoint: ControllerEndpoint | null = null;
           ws.addEventListener('open', () => {
+            endpoint = new ControllerEndpoint(
+              (msg) => ws.send(JSON.stringify(msg)),
+              {
+                connectionType: 'controller:upstream',
+                connectionMetadata: this.connectionMetadata,
+              }
+            );
             endpoint.setRequestHandler(async (req) => {
               if (!this.audio) return { success: false };
               switch (req.type) {
@@ -114,12 +125,14 @@ export class FileController {
           ws.addEventListener('error', (err) => {
             if (endpointPromise === this.endpoint) this.endpoint = null;
             reject(err);
+            endpoint?.closed();
           });
           ws.addEventListener('close', (_err) => {
             if (endpointPromise === this.endpoint) this.endpoint = null;
+            endpoint?.closed();
           });
           ws.addEventListener('message', (msg) => {
-            endpoint.recvMessage(JSON.parse(msg.data));
+            endpoint?.recvMessage(JSON.parse(msg.data));
           });
         }
       ));

@@ -22,6 +22,7 @@ import SynesthesiaModulateModule, {
 
 import * as fs from 'fs';
 import * as WebSocket from 'ws';
+import { ConnectionMetadataManager } from '@synesthesia-project/core/lib/protocols/util/connection-metadata';
 
 const LEDS = 90;
 
@@ -141,6 +142,10 @@ export class Display {
 
               this.compositor.updateState({ synesthesia: this.state });
             }
+          },
+          {
+            connectionType: 'upstream',
+            connectionMetadata: new ConnectionMetadataManager('balccon'),
           }
         );
         ws.addEventListener('message', (msg) => {

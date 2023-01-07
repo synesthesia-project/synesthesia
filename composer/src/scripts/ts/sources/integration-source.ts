@@ -1,4 +1,5 @@
 import { CueFile } from '@synesthesia-project/core/lib/file';
+import { ConnectionMetadataManager } from '@synesthesia-project/core/lib/protocols/util/connection-metadata';
 import { PingingEndpoint } from '@synesthesia-project/core/lib/protocols/util/endpoint';
 
 import {
@@ -29,9 +30,13 @@ export class ComposerEndpoint extends PingingEndpoint<
   public constructor(
     sendMessage: (msg: IntegrationMessage) => void,
     playStateUpdated: (state: PlayStateData | null) => void,
-    cueFileUpdated: (id: string, file: CueFile, fileState: FileState) => void
+    cueFileUpdated: (id: string, file: CueFile, fileState: FileState) => void,
+    connectionMetadata: ConnectionMetadataManager
   ) {
-    super(sendMessage);
+    super(sendMessage, {
+      connectionType: 'composer:upstream',
+      connectionMetadata,
+    });
     this.playStateUpdated = playStateUpdated;
     this.cueFileUpdated = cueFileUpdated;
   }
@@ -119,18 +124,23 @@ export type CueFileListener = (
 
 export class IntegrationSource extends Source {
   private readonly settings: IntegrationSettings;
+  private readonly connectionMetadata: ConnectionMetadataManager;
 
   private readonly stateListeners: StateListener[] = [];
   private readonly cueFileListeners: CueFileListener[] = [];
 
   private connection: {
     socket: WebSocket;
-    endpoint: ComposerEndpoint;
+    endpoint: ComposerEndpoint | null;
   } | null = null;
 
-  public constructor(settings: IntegrationSettings) {
+  public constructor(
+    settings: IntegrationSettings,
+    connectionMetadata: ConnectionMetadataManager
+  ) {
     super();
     this.settings = settings;
+    this.connectionMetadata = connectionMetadata;
     this.connect();
   }
 
@@ -145,31 +155,35 @@ export class IntegrationSource extends Source {
   public connect() {
     if (this.connection) this.connection.socket.close();
     const socket = new WebSocket(this.settings.websocketURL);
-    const endpoint = new ComposerEndpoint(
-      (msg) => socket.send(JSON.stringify(msg)),
-      (playState) => this.playStateUpdated(playState),
-      (id, cueFile, fileState) =>
-        this.cueFileListeners.forEach((l) => l(id, cueFile, fileState))
-    );
-    const connection = (this.connection = { socket, endpoint });
+    const connection: typeof this.connection = (this.connection = {
+      socket,
+      endpoint: null,
+    });
     for (const l of this.stateListeners) l('connecting');
     socket.addEventListener('message', (msg) => {
-      endpoint.recvMessage(JSON.parse(msg.data));
+      connection.endpoint?.recvMessage(JSON.parse(msg.data));
     });
     socket.addEventListener('close', () => {
       if (this.connection !== connection) return;
       for (const l of this.stateListeners) l('not_connected');
-      endpoint.closed();
+      connection.endpoint?.closed();
       this.connection = null;
     });
     socket.addEventListener('error', () => {
       if (this.connection !== connection) return;
       for (const l of this.stateListeners) l('error');
-      endpoint.closed();
+      connection.endpoint?.closed();
       this.connection = null;
     });
     socket.addEventListener('open', () => {
       if (this.connection !== connection) return;
+      connection.endpoint = new ComposerEndpoint(
+        (msg) => socket.send(JSON.stringify(msg)),
+        (playState) => this.playStateUpdated(playState),
+        (id, cueFile, fileState) =>
+          this.cueFileListeners.forEach((l) => l(id, cueFile, fileState)),
+        this.connectionMetadata
+      );
       for (const l of this.stateListeners) l('connected');
     });
   }
@@ -187,7 +201,7 @@ export class IntegrationSource extends Source {
   }
 
   public sendRequest(request: Request) {
-    if (this.connection) return this.connection.endpoint.request(request);
+    if (this.connection) return this.connection.endpoint?.request(request);
     return Promise.reject(new Error('connection not active'));
   }
 
@@ -228,7 +242,7 @@ export class IntegrationSource extends Source {
     // Only send cue files if not blank (i.e. not initialized from timestamp only)
     // TODO: implement a request that will handle "clearing" the current file
     if (this.connection && cueFile && cueFile.layers.length > 0)
-      this.connection.endpoint.sendNotification({
+      this.connection.endpoint?.sendNotification({
         id,
         type: 'cue-file-modified',
         file: cueFile,

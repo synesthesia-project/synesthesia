@@ -18,6 +18,7 @@ import FillModule from '@synesthesia-project/compositor/lib/modules/fill';
 import AddModule from '@synesthesia-project/compositor/lib/modules/add';
 import ScanModule from '@synesthesia-project/compositor/lib/modules/scan';
 import SynesthesiaModulateModule from '@synesthesia-project/compositor/lib/modules/modulate';
+import { ConnectionMetadataManager } from '@synesthesia-project/core/lib/protocols/util/connection-metadata';
 
 type PixelData =
   | {
@@ -108,6 +109,12 @@ export class Display {
                   synesthesia: this.state,
                 });
             }
+          },
+          {
+            connectionType: 'upstream',
+            connectionMetadata: new ConnectionMetadataManager(
+              'synesthezia-razer'
+            ),
           }
         );
         ws.addEventListener('message', (msg) => {

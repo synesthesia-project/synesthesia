@@ -15,9 +15,11 @@ import { ControllerConnection } from './connections/controller';
 import { DownstreamConnection } from './connections/downstream';
 
 import { ServerState } from './state/state';
+import { ConnectionMetadataManager } from '@synesthesia-project/core/lib/protocols/util/connection-metadata';
 
 export class Server {
   private readonly state: ServerState;
+  private readonly connectionMetadata = new ConnectionMetadataManager('server');
 
   private readonly port: number;
   private readonly local: LocalCommunicationsServer;
@@ -105,13 +107,17 @@ export class Server {
 
     if (url === COMPOSER_PATH) {
       // Initiate a new connection to composer
-      this.state.addComposer(new ComposerConnection(ws));
+      this.state.addComposer(
+        new ComposerConnection(ws, this.connectionMetadata)
+      );
       return;
     }
 
     if (url === CONTROLLER_WEBSOCKET_PATH) {
       // Initiate a new connection to composer
-      this.state.addController(new ControllerConnection(ws));
+      this.state.addController(
+        new ControllerConnection(ws, this.connectionMetadata)
+      );
       return;
     }
 
@@ -119,8 +125,10 @@ export class Server {
       // We are the upstream endpoint:
       // Initiate a new connection to the downstream endpoint
       this.state.addDownstreamConnection(
-        new DownstreamConnection(ws, (hash) =>
-          this.state.getActiveFileByHash(hash)
+        new DownstreamConnection(
+          ws,
+          (hash) => this.state.getActiveFileByHash(hash),
+          this.connectionMetadata
         )
       );
       return;

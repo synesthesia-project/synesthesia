@@ -1,4 +1,4 @@
-import { PingingEndpoint } from '../util/endpoint';
+import { MetadataOptions, PingingEndpoint } from '../util/endpoint';
 import {
   ControlMessage,
   Notification,
@@ -24,9 +24,10 @@ export class ServerEndpoint extends PingingEndpoint<
 
   public constructor(
     sendMessage: (msg: ControlMessage) => void,
-    playStateUpdated: (state: PlayStateData) => void
+    playStateUpdated: (state: PlayStateData) => void,
+    metadata: MetadataOptions
   ) {
-    super(sendMessage);
+    super(sendMessage, metadata);
     this.playStateUpdated = playStateUpdated;
   }
 
