@@ -50,7 +50,7 @@ export class ControllerEndpoint extends Endpoint<
 
   protected handleRequest(request: Request): Promise<Response> {
     return new Promise((resolve, reject) => {
-      switch (request.request) {
+      switch (request.type) {
         case 'ping': {
           const response: Response = {
             type: 'pong',

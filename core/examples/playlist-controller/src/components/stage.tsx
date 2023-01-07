@@ -89,7 +89,7 @@ export class Stage extends React.Component<Record<string, never>, State> {
           );
           ws.addEventListener('open', () => {
             endpoint.setRequestHandler(async (req) => {
-              switch (req.request) {
+              switch (req.type) {
                 case 'pause':
                   this.audio.pause();
                   return { success: true };

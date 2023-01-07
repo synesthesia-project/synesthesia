@@ -40,7 +40,7 @@ export class ComposerConnection extends Endpoint<
 
   protected async handleRequest(request: Request): Promise<Response> {
     console.log('got a request', request);
-    if (request.request === 'ping') {
+    if (request.type === 'ping') {
       return {
         type: 'pong',
         timestampMillis: performance.now(),

@@ -75,7 +75,7 @@ export class ServerEndpoint extends PingingEndpoint<
   }
 
   protected pingReq(): Request {
-    return { request: 'ping' };
+    return { type: 'ping' };
   }
 
   protected getPingResp(resp: Response) {

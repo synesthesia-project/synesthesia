@@ -137,7 +137,7 @@ export class ServerState {
       console.log('no active controllers');
       return { type: 'result', success: false };
     }
-    switch (request.request) {
+    switch (request.type) {
       case 'toggle':
       case 'pause':
       case 'go-to-time':

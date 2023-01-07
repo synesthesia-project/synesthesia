@@ -376,7 +376,7 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
       if (this.props.playState) {
         if (this.state.integration)
           this.state.integration.source.sendRequest({
-            request: 'file-action',
+            type: 'file-action',
             id: this.props.playState.meta.id,
             action,
           });

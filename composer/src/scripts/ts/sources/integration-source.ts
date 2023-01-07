@@ -98,7 +98,7 @@ export class ComposerEndpoint extends PingingEndpoint<
   }
 
   protected pingReq(): Request {
-    return { request: 'ping' };
+    return { type: 'ping' };
   }
 
   protected getPingResp(resp: Response) {
@@ -177,12 +177,12 @@ export class IntegrationSource extends Source {
   protected controls(): PlayStateControls {
     // TODO: notify the user when a request has failed
     return {
-      toggle: () => this.sendRequest({ request: 'toggle' }),
-      pause: () => this.sendRequest({ request: 'pause' }),
+      toggle: () => this.sendRequest({ type: 'toggle' }),
+      pause: () => this.sendRequest({ type: 'pause' }),
       goToTime: (positionMillis: number) =>
-        this.sendRequest({ request: 'go-to-time', positionMillis }),
+        this.sendRequest({ type: 'go-to-time', positionMillis }),
       setPlaySpeed: (playSpeed: number) =>
-        this.sendRequest({ request: 'play-speed', playSpeed }),
+        this.sendRequest({ type: 'play-speed', playSpeed }),
     };
   }
 

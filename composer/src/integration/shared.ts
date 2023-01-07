@@ -17,7 +17,7 @@ export interface IntegrationSettings {
 }
 
 export interface FileActionRequest {
-  request: 'file-action';
+  type: 'file-action';
   id: string;
   action: 'undo' | 'redo' | 'save';
 }

@@ -93,7 +93,7 @@ export class FileController {
           ws.addEventListener('open', () => {
             endpoint.setRequestHandler(async (req) => {
               if (!this.audio) return { success: false };
-              switch (req.request) {
+              switch (req.type) {
                 case 'pause':
                   this.audio.pause();
                   return { success: true };
