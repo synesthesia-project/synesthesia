@@ -18,6 +18,6 @@
     "gulp-clean": "^0.3.2",
     "gulp-sourcemaps": "1.6.0",
     "gulp-typescript": "^5.0.0",
-    "typescript": "~3.7.2"
+    "typescript": "~4.9.4"
   }
 }

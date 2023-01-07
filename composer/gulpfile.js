@@ -60,9 +60,11 @@ gulp.task('css', function () {
 
 gulp.task("dist", gulp.series(
   gulp.parallel(
-    gulp.series(gulp.parallel('main-ts', 'copy-js'), 'webpack'),
-    'css',
-    'integration-ts'),
+    gulp.series(
+      'integration-ts',
+      gulp.parallel('main-ts', 'copy-js'), 'webpack'),
+      'css',
+    ),
   function(){
     return gulp.src([
         './src/index.html',

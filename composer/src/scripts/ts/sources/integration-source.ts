@@ -9,7 +9,7 @@ import {
   Response,
   Notification,
   IntegrationMessage,
-} from '../../../integration/shared';
+} from '../../../../dist/integration/shared';
 import { PlayStateControls } from '../data/play-state';
 
 import { Source } from './source';

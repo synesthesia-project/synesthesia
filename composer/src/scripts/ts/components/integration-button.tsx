@@ -3,7 +3,7 @@ import * as React from 'react';
 import { styled } from './styling';
 
 import { IntegrationSource } from '../sources/integration-source';
-import { IntegrationSettings } from '../../../integration/shared';
+import { IntegrationSettings } from '../../../../dist/integration/shared';
 
 type ConnectionState = 'not_connected' | 'connecting' | 'connected' | 'error';
 

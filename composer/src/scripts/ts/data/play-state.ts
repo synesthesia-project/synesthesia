@@ -3,7 +3,7 @@ import { isEqual } from 'lodash';
 import {
   PlayStateTrackMeta,
   PlayStateData as PlayStateDataOnly,
-} from '../../../integration/shared';
+} from '../../../../dist/integration/shared';
 
 export { PlayStateTrackMeta, PlayStateDataOnly };
 
