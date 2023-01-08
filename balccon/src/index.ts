@@ -45,7 +45,7 @@ export class Display {
   private stream: fs.WriteStream;
 
   public constructor() {
-    this.frame = this.frame.bind(this);
+    this.frame = ()=>this.frame;
 
     this.buffer = Buffer.alloc(LEDS * 3);
     const pixels: PixelInfo<number>[] = [];
