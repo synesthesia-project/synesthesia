@@ -45,7 +45,6 @@ export class Display {
   private stream: fs.WriteStream;
 
   public constructor() {
-    this.frame = ()=>this.frame;
 
     this.buffer = Buffer.alloc(LEDS * 3);
     const pixels: PixelInfo<number>[] = [];
@@ -167,7 +166,7 @@ export class Display {
     setInterval(this.frame, 20);
   }
 
-  private frame() {
+  private frame=()=> {
     // Update modulation
     if (this.pulse) {
       if (this.pulse.up) {
