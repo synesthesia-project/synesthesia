@@ -31,9 +31,9 @@ export class Display {
     playState: PlayStateData;
     files: Map<string, CueFile>;
   } = {
-    playState: { layers: [] },
-    files: new Map(),
-  };
+      playState: { layers: [] },
+      files: new Map(),
+    };
 
   private buffer: Buffer;
   private pulse?: {
@@ -162,11 +162,11 @@ export class Display {
     });
   }
 
-  public async start() {
+  public start = async () => {
     setInterval(this.frame, 20);
   }
 
-  private frame=()=> {
+  private frame = () => {
     // Update modulation
     if (this.pulse) {
       if (this.pulse.up) {
