@@ -23,8 +23,6 @@ class IntegrationButton extends React.Component<Props, State> {
     this.state = {
       state: 'not_connected',
     };
-
-    this.onClick = this.onClick.bind(this);
   }
 
   public componentDidMount() {
@@ -33,7 +31,7 @@ class IntegrationButton extends React.Component<Props, State> {
     });
   }
 
-  private onClick() {
+  private onClick = () => {
     switch (this.state.state) {
       case 'not_connected':
       case 'error':
@@ -43,7 +41,7 @@ class IntegrationButton extends React.Component<Props, State> {
         this.disconnect();
         break;
     }
-  }
+  };
 
   private connect() {
     this.props.integration.connect();
