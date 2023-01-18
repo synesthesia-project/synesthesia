@@ -89,19 +89,19 @@ class EventProperties extends React.Component<
     ]);
   };
 
-  private onDelete() {
+  private onDelete = () => {
     this.props.updateCueFileAndSelection(([f, s]) => [
       fileManipulation.deleteSelectedEvents(f, s),
       selection.clearSelectedEvents(s),
     ]);
-  }
+  };
 
-  private onSpread() {
+  private onSpread = () => {
     this.props.updateCueFileAndSelection(([f, s]) => [
       fileManipulation.distributeSelectedEvents(f, s),
       s,
     ]);
-  }
+  };
 
   public render() {
     const selectedEvents = this.props.selection.events.length;
