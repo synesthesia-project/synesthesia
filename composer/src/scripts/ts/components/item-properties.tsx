@@ -24,26 +24,20 @@ class EventProperties extends React.Component<
 > {
   public constructor(props: EventPropertiesProps) {
     super(props);
-
-    // Bind callbacks & event listeners
-    this.onStartTimeChange = this.onStartTimeChange.bind(this);
-    this.onDurationChange = this.onDurationChange.bind(this);
-    this.onDelete = this.onDelete.bind(this);
-    this.onSpread = this.onSpread.bind(this);
   }
 
-  private getEvent(e: { layer: number; index: number }) {
+  private getEvent = (e: { layer: number; index: number }) => {
     return this.props.file.layers[e.layer].events[e.index];
-  }
+  };
 
-  private getEarliestStartTime() {
+  private getEarliestStartTime = () => {
     const startTimes = this.props.selection.events.map(
       (e) => this.getEvent(e).timestampMillis
     );
     return Math.round(Math.min.apply(null, startTimes));
-  }
+  };
 
-  private getCommonDuration() {
+  private getCommonDuration = () => {
     let commonDuration: number | null = null;
     for (const e of this.props.selection.events) {
       const eventDuration = (() => {
@@ -71,9 +65,9 @@ class EventProperties extends React.Component<
       }
     }
     return commonDuration;
-  }
+  };
 
-  private onStartTimeChange(value: string) {
+  private onStartTimeChange = (value: string) => {
     this.props.updateCueFileAndSelection(([f, s]) => [
       fileManipulation.updateStartTimeForSelectedEvents(
         f,
@@ -82,9 +76,9 @@ class EventProperties extends React.Component<
       ),
       s,
     ]);
-  }
+  };
 
-  private onDurationChange(value: string) {
+  private onDurationChange = (value: string) => {
     this.props.updateCueFileAndSelection(([f, s]) => [
       fileManipulation.updateDurationForSelectedEvents(
         f,
@@ -93,21 +87,21 @@ class EventProperties extends React.Component<
       ),
       s,
     ]);
-  }
+  };
 
-  private onDelete() {
+  private onDelete = () => {
     this.props.updateCueFileAndSelection(([f, s]) => [
       fileManipulation.deleteSelectedEvents(f, s),
       selection.clearSelectedEvents(s),
     ]);
-  }
+  };
 
-  private onSpread() {
+  private onSpread = () => {
     this.props.updateCueFileAndSelection(([f, s]) => [
       fileManipulation.distributeSelectedEvents(f, s),
       s,
     ]);
-  }
+  };
 
   public render() {
     const selectedEvents = this.props.selection.events.length;
