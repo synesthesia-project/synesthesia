@@ -211,7 +211,7 @@ class LayerItems extends React.Component<LayerItemsProps, LayerItemsState> {
       if (item.states.length !== 0) {
         // Get length of item by last state
         length = item.states[item.states.length - 1].millisDelta;
-      } else if (file.isPercussionLayer(this.props.layer)) {
+      } else if (file.PERCUSSION_LAYER.is(this.props.layer)) {
         // Get default length of items
         length = this.props.layer.settings.defaultLengthMillis;
       }

@@ -2,20 +2,11 @@
 /* TODO: rework this file to remove all anys, maybe use io-ts? */
 import {
   CueFile,
-  CueFileLayer,
   CueFileEvent,
-  CueFileEventState,
   AnyLayer,
 } from '@synesthesia-project/core/lib/file';
 import * as selection from './selection';
 import * as util from '@synesthesia-project/core/lib/util';
-
-function convertLayer<L, K, V>(
-  l: CueFileLayer<L, K, V>,
-  f: (l: CueFileLayer<L, K, V>) => CueFileLayer<L, K, V>
-): AnyLayer {
-  return f(l as any as CueFileLayer<L, K, V>) as any as AnyLayer;
-}
 
 /*
  * Build up a data structure for quick lookup of selected events
@@ -35,22 +26,21 @@ function modifyEvents(
   cueFile: CueFile,
   selection: selection.Selection,
   f: {
-    f<K, S, V>(
-      layer: [number, CueFileLayer<K, S, V>],
-      e: [number, CueFileEvent<V>]
-    ): CueFileEvent<V>;
+    f<Layer extends AnyLayer>(
+      layer: [number, AnyLayer],
+      e: [number, Layer['events'][number]]
+    ): Layer['events'][number];
   }
 ): CueFile {
   const selectedEvents = buildUpSelectionSet(selection);
 
-  function doConvertLayer<K, S, V>(
+  function convertLayer<Layer extends AnyLayer>(
     selectedEvents: Set<number>,
     layerIndex: number,
-    layer: CueFileLayer<K, S, V>
-  ): CueFileLayer<K, S, V> {
+    layer: Layer
+  ): Layer {
     return {
-      kind: layer.kind,
-      settings: layer.settings,
+      ...layer,
       events: layer.events.map((e, i) => {
         if (selectedEvents.has(i)) {
           return f.f([layerIndex, layer], [i, e]);
@@ -66,7 +56,7 @@ function modifyEvents(
     if (!layerSet)
       // Layer unchanged
       return layer;
-    return convertLayer(layer, (l) => doConvertLayer(layerSet, i, l));
+    return convertLayer(layerSet, i, layer);
   });
 
   return util.deepFreeze({
@@ -115,23 +105,20 @@ export function shiftSelectedEvents(
   // Don't change the file if shifting less than 0.1 ms
   if (shiftMillis < 0.1 && shiftMillis > 0.1) return cueFile;
 
-  function shiftEvent<V>(
-    _l: unknown,
-    [_i, e]: [number, CueFileEvent<V>]
-  ): CueFileEvent<V> {
+  function shiftEvent<Event extends CueFileEvent<unknown>>(
+    _layer: [number, AnyLayer],
+    [_i, e]: [number, Event]
+  ): Event {
     return {
+      ...e,
       timestampMillis: e.timestampMillis + shiftMillis,
-      states: e.states,
     };
   }
 
   return modifyEvents(cueFile, selection, { f: shiftEvent });
 }
 
-export function getEventDuration<K, S, V>(
-  layer: CueFileLayer<K, S, V>,
-  e: CueFileEvent<V>
-) {
+export function getEventDuration(layer: AnyLayer, e: CueFileEvent<unknown>) {
   const states = e.states.length > 0 ? e.states : defaultEventStates(layer);
   return Math.max.apply(
     null,
@@ -147,10 +134,10 @@ export function updateDurationForSelectedEvents(
   // Ignore empty selections
   if (selection.events.length === 0) return cueFile;
 
-  function setEventDuration<K, S, V>(
-    [_layerIndex, layer]: [number, CueFileLayer<K, S, V>],
-    [_eventIndex, e]: [number, CueFileEvent<V>]
-  ): CueFileEvent<V> {
+  function setEventDuration<Layer extends AnyLayer>(
+    [_layerIndex, layer]: [number, Layer],
+    [_eventIndex, e]: [number, Layer['events'][number]]
+  ): Layer['events'][number] {
     const states = e.states.length > 0 ? e.states : defaultEventStates(layer);
     const currentDuration = Math.max.apply(
       null,
@@ -158,7 +145,7 @@ export function updateDurationForSelectedEvents(
     );
     const stretch = newDuration / currentDuration;
     return {
-      timestampMillis: e.timestampMillis,
+      ...e,
       states: states.map((s) => ({
         // TODO: ensure that s.millisDelta * (newDuration / currentDuration) === newDuration
         // for the maximum s.millisDelta (i.e. s.millisDelta === currentDuration)
@@ -185,11 +172,10 @@ export function deleteSelectedEvents(
     if (!layerSet)
       // Layer unchanged
       return layer;
-    return convertLayer(layer, () => ({
-      kind: layer.kind,
-      settings: layer.settings,
+    return {
+      ...layer,
       events: layer.events.filter((_, i) => !layerSet.has(i)),
-    }));
+    };
   });
 
   return util.deepFreeze({
@@ -229,17 +215,17 @@ export function distributeSelectedEvents(
     timestamp += step;
   }
 
-  function setEventStartTime<K, S, V>(
-    [layerIndex]: [number, CueFileLayer<K, S, V>],
-    [eventIndex, e]: [number, CueFileEvent<V>]
-  ): CueFileEvent<V> {
+  function setEventStartTime<Event extends CueFileEvent<unknown>>(
+    [layerIndex]: [number, AnyLayer],
+    [eventIndex, e]: [number, Event]
+  ): Event {
     const layerMap = newTimestamps.get(layerIndex);
     if (layerMap) {
       const timestampMillis = layerMap.get(eventIndex);
       if (timestampMillis)
         return {
+          ...e,
           timestampMillis,
-          states: e.states,
         };
     }
     // Event unchanged
@@ -269,17 +255,17 @@ export function addLayer(file: CueFile): CueFile {
   });
 }
 
-function defaultEventStates<K, S, V>(
-  layer: CueFileLayer<K, S, V>
-): CueFileEventState<V>[] {
+function defaultEventStates<Layer extends AnyLayer>(
+  layer: Layer
+): Layer['events'][number]['states'] {
   // Type HACK
   const l = layer as any as AnyLayer;
   if (l.kind === 'percussion') {
     return [
-      { millisDelta: 0, values: { amplitude: 1 } as any as V },
+      { millisDelta: 0, values: { amplitude: 1 } },
       {
         millisDelta: l.settings.defaultLengthMillis,
-        values: { amplitude: 0 } as any as V,
+        values: { amplitude: 0 },
       },
     ];
   } else {

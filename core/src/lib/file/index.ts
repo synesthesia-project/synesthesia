@@ -1,58 +1,90 @@
+import * as t from 'io-ts';
 import * as util from '../util';
 
-export interface CueFile {
-  lengthMillis: number;
-  layers: AnyLayer[];
-}
+const layer = <Kind extends string, Settings, EventStateProps>({
+  kind,
+  settings,
+  eventStateProps,
+}: {
+  kind: t.LiteralC<Kind>;
+  settings: t.Type<Settings>;
+  eventStateProps: t.Type<EventStateProps>;
+}) =>
+  t.type({
+    kind,
+    settings,
+    events: t.array(cueFileEvent(eventStateProps)),
+  });
 
-export interface CueFileLayer<LayerKind, LayerSettings, EventStateValues> {
-  kind: LayerKind;
-  settings: LayerSettings;
-  events: Array<CueFileEvent<EventStateValues>>;
-}
+const cueFileEvent = <EventStateProps>(
+  eventStateProps: t.Type<EventStateProps>
+) =>
+  t.type({
+    timestampMillis: t.number,
+    states: t.array(cueFileEventState(eventStateProps)),
+  });
 
-export interface CueFileEvent<EventStateValues> {
-  timestampMillis: number;
-  states: Array<CueFileEventState<EventStateValues>>;
-}
+export type CueFileEvent<EventStateProps> = t.TypeOf<
+  ReturnType<typeof cueFileEvent<EventStateProps>>
+>;
 
-export interface CueFileEventState<EventStateValues> {
-  millisDelta: number;
-  values: EventStateValues;
-}
+const cueFileEventState = <EventStateProps>(
+  eventStateProps: t.Type<EventStateProps>
+) =>
+  t.type({
+    millisDelta: t.number,
+    values: eventStateProps,
+  });
+
+export type CueFileEventState<EventStateProps> = t.TypeOf<
+  ReturnType<typeof cueFileEventState<EventStateProps>>
+>;
 
 // Different Layer Types
 
-export interface BasicEventStateValues {
-  amplitude: number;
-  pitch?: number;
-}
+export const BASIC_EVENT_STATE_VALUES = t.intersection([
+  t.type({
+    amplitude: t.number,
+  }),
+  t.partial({
+    pitch: t.number,
+  }),
+]);
+
+export type BasicEventStateValues = t.TypeOf<typeof BASIC_EVENT_STATE_VALUES>;
+
+export const PERCUSSION_LAYER = layer({
+  kind: t.literal('percussion'),
+  settings: t.type({
+    /** Default length for a percussion event */
+    defaultLengthMillis: t.number,
+  }),
+  eventStateProps: BASIC_EVENT_STATE_VALUES,
+});
+
+export type PercussionLayer = t.TypeOf<typeof PERCUSSION_LAYER>;
+
+export const TONES_LAYER = layer({
+  kind: t.literal('tones'),
+  settings: t.null,
+  eventStateProps: BASIC_EVENT_STATE_VALUES,
+});
+
+export type TonesLayer = t.TypeOf<typeof TONES_LAYER>;
+
+export const ANY_LAYER = t.union([PERCUSSION_LAYER, TONES_LAYER]);
 
 /**
  * Any of the possible layers
  */
-export type AnyLayer = PercussionLayer | TonesLayer;
+export type AnyLayer = t.TypeOf<typeof ANY_LAYER>;
 
-export type PercussionLayer = CueFileLayer<
-  'percussion',
-  {
-    /** Default length for a percussion event */
-    defaultLengthMillis: number;
-  },
-  BasicEventStateValues
->;
+export const CUE_FILE = t.type({
+  lengthMillis: t.number,
+  layers: t.array(ANY_LAYER),
+});
 
-// TODO: fix this when switching to io-ts
-// eslint-disable-next-line @typescript-eslint/ban-types
-export type TonesLayer = CueFileLayer<'tones', {}, BasicEventStateValues>;
-
-export function isPercussionLayer(layer: AnyLayer): layer is PercussionLayer {
-  return layer.kind === 'percussion';
-}
-
-export function isTonesLayer(layer: AnyLayer): layer is TonesLayer {
-  return layer.kind === 'tones';
-}
+export type CueFile = t.TypeOf<typeof CUE_FILE>;
 
 export function switchLayer<O>(
   layer: AnyLayer,
@@ -61,8 +93,8 @@ export function switchLayer<O>(
     tones: (layer: TonesLayer) => O;
   }
 ): O {
-  if (isPercussionLayer(layer)) return cases.percussion(layer);
-  if (isTonesLayer(layer)) return cases.tones(layer);
+  if (PERCUSSION_LAYER.is(layer)) return cases.percussion(layer);
+  if (TONES_LAYER.is(layer)) return cases.tones(layer);
   throw new Error('Unrecognized Layer');
 }
 
