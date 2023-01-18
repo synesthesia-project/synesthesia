@@ -34,6 +34,7 @@ dependencies:
   eslint: 8.31.0_eslint@8.31.0
   eslint-plugin-prettier: 4.2.1_eslint@8.31.0+prettier@2.8.1
   fancy-log: 1.3.3
+  fp-ts: 2.13.1
   gulp: 4.0.2
   gulp-clean: 0.3.2
   gulp-eslint-new: 1.7.1
@@ -41,6 +42,7 @@ dependencies:
   gulp-sourcemaps: 1.6.0
   gulp-typescript: 5.0.1_typescript@4.9.4
   id3-parser: 2.0.0
+  io-ts: 2.2.20_fp-ts@2.13.1
   jquery: 3.5.1
   json-socket: 0.3.0
   lodash: 4.17.15
@@ -2744,6 +2746,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-Pqq5NnT78ehvUnAk/We/Jr22vSvanRlFTpAmQ88xBY/M1TlHe+P0ILuEyXS595ysdGfaj22634LBkGMA2GTcpA==
+  /fp-ts/2.13.1:
+    dev: false
+    resolution:
+      integrity: sha512-0eu5ULPS2c/jsa1lGFneEFFEdTbembJv8e4QKXeVJ3lm/5hyve06dlKZrpxmMwJt6rYen7sxmHHK2CLaXvWuWQ==
   /fragment-cache/0.2.1:
     dependencies:
       map-cache: 0.2.2
@@ -3419,6 +3425,14 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-EEqOSqym09jNFXqO+L+rLXo//bY=
+  /io-ts/2.2.20_fp-ts@2.13.1:
+    dependencies:
+      fp-ts: 2.13.1
+    dev: false
+    peerDependencies:
+      fp-ts: ^2.5.0
+    resolution:
+      integrity: sha512-Rq2BsYmtwS5vVttie4rqrOCIfHCS9TgpRLFpKQCM1wZBBRY9nWVGmEvm2FnDbSE2un1UE39DvFpTR5UL47YDcA==
   /is-absolute/1.0.0:
     dependencies:
       is-relative: 1.0.0
@@ -7344,14 +7358,18 @@ packages:
   'file:projects/core.tgz':
     dependencies:
       '@types/json-socket': 0.1.17
+      '@types/lodash': 4.14.149
       '@types/uuid': 9.0.0
+      fp-ts: 2.13.1
       gulp: 4.0.2
+      io-ts: 2.2.20_fp-ts@2.13.1
       json-socket: 0.3.0
+      lodash: 4.17.15
       uuid: 9.0.0
     dev: false
     name: '@rush-temp/core'
     resolution:
-      integrity: sha512-vTN6xLgfc3c+59mjMyd1YI3EKitv+Dfg7KxtF2+2ag+YAXPUZAEuJW9/hbM7neYM61VdwONr81Rv8HIB9lTEUw==
+      integrity: sha512-nZQ+OmzpXo0DJVf/EeSGWTiYkxKq/7DsIgjUqJX/r9/d/9/Fluj6YJQlaa84oqsvI7uRzznXXAS2G/yi0cF/8w==
       tarball: 'file:projects/core.tgz'
     version: 0.0.0
   'file:projects/gapless-meta.tgz':
@@ -7520,6 +7538,7 @@ specifiers:
   eslint: ~8.31.0
   eslint-plugin-prettier: ~4.2.1
   fancy-log: ~1.3.3
+  fp-ts: ~2.13.1
   gulp: ~4.0.2
   gulp-clean: ^0.3.2
   gulp-eslint-new: ~1.7.1
@@ -7527,6 +7546,7 @@ specifiers:
   gulp-sourcemaps: 1.6.0
   gulp-typescript: ^5.0.0
   id3-parser: ^2.0.0
+  io-ts: ~2.2.20
   jquery: ~3.5.0
   json-socket: ^0.3.0
   lodash: ^4.17.13
