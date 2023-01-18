@@ -47,11 +47,13 @@ function preparePercussionLayerEvent(
   };
 }
 
-export function getActiveEvents<T>(
-  events: Array<file.CueFileEvent<T>>,
-  positionMillis: number
-): Array<file.CueFileEvent<T>> {
-  const active: Array<file.CueFileEvent<T>> = [];
+export type EventStatePropsOfEvent<E extends file.CueFileEvent<unknown>> =
+  E['states'][number]['values'];
+
+export function getActiveEvents<
+  Events extends Array<file.CueFileEvent<unknown>>
+>(events: Events, positionMillis: number): Events {
+  const active = [] as unknown[] as Events;
   for (const event of events) {
     if (event.timestampMillis > positionMillis) break;
     const lastTimestamp =
@@ -67,10 +69,10 @@ export function getActiveEvents<T>(
  *
  * TODO: Change this to a sample period rather than the current point in time
  */
-export function getCurrentEventStateValue<T>(
-  event: file.CueFileEvent<T>,
+export function getCurrentEventStateValue<Event extends file.CueFileEvent<any>>(
+  event: Event,
   positionMillis: number,
-  extract: (state: T) => number
+  extract: (state: EventStatePropsOfEvent<Event>) => number
 ): number {
   // Find the segment we are currently in
   for (let j = 1; j < event.states.length; j++) {
