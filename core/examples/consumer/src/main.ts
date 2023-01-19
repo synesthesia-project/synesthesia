@@ -17,8 +17,6 @@ export class Stage {
   };
 
   public constructor() {
-    this.frame = this.frame.bind(this);
-
     const endpoint = this.connect();
     endpoint.then((e) => {
       console.log('endpoint ready', e);
@@ -76,7 +74,7 @@ export class Stage {
     requestAnimationFrame(this.frame);
   }
 
-  private frame() {
+  private frame = () => {
     const timestampMillis = performance.now();
 
     if (logo) {
@@ -104,7 +102,7 @@ export class Stage {
     }
 
     requestAnimationFrame(this.frame);
-  }
+  };
 }
 
 const stage = new Stage();
