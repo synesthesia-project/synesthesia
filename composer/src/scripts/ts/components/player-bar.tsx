@@ -37,11 +37,6 @@ class PlayerBar extends React.Component<PlayerBarProps, PlayerBarState> {
       dragging: false,
       trackPosition: 0,
     };
-
-    // Bind callbacks & event listeners
-    this.onMouseDown = this.onMouseDown.bind(this);
-    this.onMouseMove = this.onMouseMove.bind(this);
-    this.onMouseUp = this.onMouseUp.bind(this);
   }
 
   public componentDidMount() {
@@ -100,7 +95,7 @@ class PlayerBar extends React.Component<PlayerBarProps, PlayerBarState> {
     return util.restrict(position, 0, 1);
   }
 
-  private onMouseDown(e: React.MouseEvent<HTMLDivElement>) {
+  private onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     // Only allow dragging if playing
     if (!this.props.playState) return;
     e.preventDefault();
@@ -108,15 +103,15 @@ class PlayerBar extends React.Component<PlayerBarProps, PlayerBarState> {
       dragging: true,
     });
     this.props.updateScrubbingPosition(this.calculateBarPosition(e));
-  }
+  };
 
-  private onMouseMove(e: React.MouseEvent<HTMLDivElement>) {
+  private onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!this.state.dragging) return;
     e.preventDefault();
     this.props.updateScrubbingPosition(this.calculateBarPosition(e));
-  }
+  };
 
-  private onMouseUp(e: React.MouseEvent<HTMLDivElement>) {
+  private onMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!this.state.dragging) return;
     e.preventDefault();
     const position = this.calculateBarPosition(e);
@@ -129,9 +124,9 @@ class PlayerBar extends React.Component<PlayerBarProps, PlayerBarState> {
       dragging: false,
     });
     this.props.updateScrubbingPosition(null);
-  }
+  };
 
-  private updateFromPlayState(playState: PlayState) {
+  private updateFromPlayState = (playState: PlayState) => {
     cancelAnimationFrame(this.updateInterval);
     this.updateInterval = -1;
     if (playState) {
@@ -145,9 +140,9 @@ class PlayerBar extends React.Component<PlayerBarProps, PlayerBarState> {
     } else {
       this.updateBarPosition(0);
     }
-  }
+  };
 
-  private initUpdateInterval(playState: PlayStateData) {
+  private initUpdateInterval = (playState: PlayStateData) => {
     let nextFrame: number;
     const updater = () => {
       if (playState.state.type !== 'playing') return;
@@ -161,11 +156,11 @@ class PlayerBar extends React.Component<PlayerBarProps, PlayerBarState> {
       nextFrame = this.updateInterval = requestAnimationFrame(updater);
     };
     nextFrame = this.updateInterval = requestAnimationFrame(updater);
-  }
+  };
 
-  private updateBarPosition(trackPosition: number) {
+  private updateBarPosition = (trackPosition: number) => {
     this.setState({ trackPosition });
-  }
+  };
 }
 
 const buttonHeightPx = 16;

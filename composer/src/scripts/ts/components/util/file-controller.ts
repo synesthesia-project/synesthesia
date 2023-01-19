@@ -45,9 +45,6 @@ export class FileController {
     this.connectionMetadata = connectionMetadata;
     this.audio = document.createElement('audio');
 
-    this.updatePlayState = this.updatePlayState.bind(this);
-    this.updateListener = this.updateListener.bind(this);
-
     this.audio.addEventListener('playing', this.updatePlayState);
     this.audio.addEventListener('pause', this.updatePlayState);
     this.audio.addEventListener('seeked', this.updatePlayState);
@@ -149,16 +146,16 @@ export class FileController {
     return this.endpoint;
   }
 
-  private updateListener() {
+  private updateListener = () => {
     if (this.audio.src) {
       console.log(this.audio.src);
       this.listener({ state: 'active', volume: this.audio.volume });
     } else {
       this.listener({ state: 'inactive' });
     }
-  }
+  };
 
-  private updatePlayState() {
+  private updatePlayState = () => {
     this.getEndpoint().then((endpoint) => {
       if (!this.meta || !this.audio) return;
       endpoint.sendState({
@@ -188,5 +185,5 @@ export class FileController {
         ],
       });
     });
-  }
+  };
 }

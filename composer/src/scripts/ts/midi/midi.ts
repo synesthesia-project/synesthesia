@@ -14,12 +14,6 @@ export class Midi {
   private initialised = false;
   private readonly listeners = new Set<MidiListener>();
 
-  public constructor() {
-    // Bind Listeners
-    this.onMidiAccessReady = this.onMidiAccessReady.bind(this);
-    this.onMidiStateChange = this.onMidiStateChange.bind(this);
-  }
-
   public init() {
     if (this.initialised) return;
     if (navigator.requestMIDIAccess) {
@@ -38,18 +32,18 @@ export class Midi {
     this.listeners.delete(listener);
   }
 
-  private onMidiAccessReady(midiAccess: WebMidi.MIDIAccess) {
+  private onMidiAccessReady = (midiAccess: WebMidi.MIDIAccess) => {
     midiAccess.inputs.forEach((input) => {
       this.setupOrTeardownMidiInput(input);
     });
     midiAccess.onstatechange = this.onMidiStateChange;
-  }
+  };
 
-  private onMidiStateChange(change: WebMidi.MIDIConnectionEvent) {
+  private onMidiStateChange = (change: WebMidi.MIDIConnectionEvent) => {
     if (isMidiInput(change.port)) {
       this.setupOrTeardownMidiInput(change.port);
     }
-  }
+  };
 
   private setupOrTeardownMidiInput(input: WebMidi.MIDIInput) {
     if (input.state === 'connected') {

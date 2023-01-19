@@ -48,13 +48,6 @@ class Player extends React.Component<PlayerProps, PlayerState> {
       scrubbingPosition: null,
       elapsedTimeText: null,
     };
-
-    // Bind callbacks & event listeners
-    this.playPauseClicked = this.playPauseClicked.bind(this);
-    this.updateScrubbingPosition = this.updateScrubbingPosition.bind(this);
-    this.setPlaySpeed = this.setPlaySpeed.bind(this);
-    this.setPlaySpeed1 = this.setPlaySpeed1.bind(this);
-    this.setPlaySpeedHalf = this.setPlaySpeedHalf.bind(this);
   }
 
   public componentWillReceiveProps(nextProps: PlayerProps) {
@@ -63,20 +56,20 @@ class Player extends React.Component<PlayerProps, PlayerState> {
       this.updateFromPlayState(nextProps.playState);
   }
 
-  private setPlaySpeed(value: string) {
+  private setPlaySpeed = (value: string) => {
     console.log('setPlaySpeed', value);
     const playSpeed = parseFloat(value);
     if (isNaN(playSpeed) || !this.props.playState) return;
     this.props.playState.controls.setPlaySpeed(playSpeed);
-  }
+  };
 
-  private setPlaySpeed1() {
+  private setPlaySpeed1 = () => {
     this.setPlaySpeed('1');
-  }
+  };
 
-  private setPlaySpeedHalf() {
+  private setPlaySpeedHalf = () => {
     this.setPlaySpeed('0.5');
-  }
+  };
 
   public render() {
     const state = this.props.playState;
@@ -129,9 +122,9 @@ class Player extends React.Component<PlayerProps, PlayerState> {
     );
   }
 
-  private playPauseClicked() {
+  private playPauseClicked = () => {
     if (this.props.playState) this.props.playState.controls.toggle();
-  }
+  };
 
   private updateFromPlayState(playState: PlayState) {
     if (this.updateInterval !== null) clearInterval(this.updateInterval);
@@ -174,11 +167,11 @@ class Player extends React.Component<PlayerProps, PlayerState> {
     this.setState({ elapsedTimeText: displayMillis(elapsed) });
   }
 
-  private updateScrubbingPosition(position: number | null) {
+  private updateScrubbingPosition = (position: number | null) => {
     this.setState({
       scrubbingPosition: position,
     });
-  }
+  };
 }
 
 const StyledPlayer = styled(Player)`
