@@ -58,7 +58,6 @@ export class Stage extends React.Component<StageProps, StageState> {
       layerOptionsOpen: null,
     };
 
-    // Bind callbacks & event listeners
     this.playStateUpdated = this.playStateUpdated.bind(this);
     this.fileLoaded = this.fileLoaded.bind(this);
     this.updateCueFile = this.updateCueFile.bind(this);
