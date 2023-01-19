@@ -53,25 +53,19 @@ class LayerItems extends React.Component<LayerItemsProps, LayerItemsState> {
     return this.getTimelineSelectorPosition(timelineSelector, e.pageX);
   }
 
-  private onTimelineSelectorMouseOver = (
-    e: React.MouseEvent<HTMLDivElement>
-  ) => {
+  private onTimelineSelectorMouseOver(e: React.MouseEvent<HTMLDivElement>) {
     this.updateHoverState(e);
   };
 
-  private onTimelineSelectorMouseOut = () => {
+  private onTimelineSelectorMouseOut() {
     this.setState({ selector: { state: 'nothing' } });
   };
 
-  private onTimelineSelectorMouseMove = (
-    e: React.MouseEvent<HTMLDivElement>
-  ) => {
+  private onTimelineSelectorMouseMove(e: React.MouseEvent<HTMLDivElement>) {
     this.updateHoverState(e);
   };
 
-  private onTimelineSelectorMouseDown = (
-    e: React.MouseEvent<HTMLDivElement>
-  ) => {
+  private onTimelineSelectorMouseDown(e: React.MouseEvent<HTMLDivElement>) {
     if (!this.timelineSelector) return;
     e.preventDefault();
     const start = this.getTimelineSelectorMousePosition(
@@ -133,7 +127,7 @@ class LayerItems extends React.Component<LayerItemsProps, LayerItemsState> {
     );
   };
 
-  private updateHoverState = (e: React.MouseEvent<HTMLDivElement>) => {
+  private updateHoverState(e: React.MouseEvent<HTMLDivElement>) {
     if (!this.timelineSelector) return;
     const position = this.getTimelineSelectorMousePosition(
       this.timelineSelector,
@@ -142,10 +136,10 @@ class LayerItems extends React.Component<LayerItemsProps, LayerItemsState> {
     this.setState({ selector: { state: 'hover', position } });
   };
 
-  private onSelectedEventMouseDown = (
+  private onSelectedEventMouseDown(
     e: React.MouseEvent<unknown>,
     clickOnlyCallback: (modifiers: ActiveModifierKeys) => void
-  ) => {
+  ) {
     if (!this.timelineSelector) return;
     const initX = e.pageX;
     const initPosition = this.getTimelineSelectorPosition(
