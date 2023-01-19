@@ -53,41 +53,19 @@ class LayerItems extends React.Component<LayerItemsProps, LayerItemsState> {
     return this.getTimelineSelectorPosition(timelineSelector, e.pageX);
   }
 
-<<<<<<< HEAD
-  private onTimelineSelectorMouseOver = (
-    e: React.MouseEvent<HTMLDivElement>
-  ) => {
-=======
   private onTimelineSelectorMouseOver=(e: React.MouseEvent<HTMLDivElement>)=> {
->>>>>>> 4f135d0 (replace bind with arrow function)
     this.updateHoverState(e);
   };
 
-<<<<<<< HEAD
-  private onTimelineSelectorMouseOut = () => {
-=======
   private onTimelineSelectorMouseOut=()=> {
->>>>>>> 4f135d0 (replace bind with arrow function)
     this.setState({ selector: { state: 'nothing' } });
   };
 
-<<<<<<< HEAD
-  private onTimelineSelectorMouseMove = (
-    e: React.MouseEvent<HTMLDivElement>
-  ) => {
-=======
   private onTimelineSelectorMouseMove=(e: React.MouseEvent<HTMLDivElement>)=> {
->>>>>>> 4f135d0 (replace bind with arrow function)
     this.updateHoverState(e);
   };
 
-<<<<<<< HEAD
-  private onTimelineSelectorMouseDown = (
-    e: React.MouseEvent<HTMLDivElement>
-  ) => {
-=======
   private onTimelineSelectorMouseDown=(e: React.MouseEvent<HTMLDivElement>)=> {
->>>>>>> 4f135d0 (replace bind with arrow function)
     if (!this.timelineSelector) return;
     e.preventDefault();
     const start = this.getTimelineSelectorMousePosition(
@@ -149,11 +127,7 @@ class LayerItems extends React.Component<LayerItemsProps, LayerItemsState> {
     );
   };
 
-<<<<<<< HEAD
-  private updateHoverState = (e: React.MouseEvent<HTMLDivElement>) => {
-=======
   private updateHoverState=(e: React.MouseEvent<HTMLDivElement>)=> {
->>>>>>> 4f135d0 (replace bind with arrow function)
     if (!this.timelineSelector) return;
     const position = this.getTimelineSelectorMousePosition(
       this.timelineSelector,
@@ -162,17 +136,10 @@ class LayerItems extends React.Component<LayerItemsProps, LayerItemsState> {
     this.setState({ selector: { state: 'hover', position } });
   };
 
-<<<<<<< HEAD
-  private onSelectedEventMouseDown = (
-    e: React.MouseEvent<unknown>,
-    clickOnlyCallback: (modifiers: ActiveModifierKeys) => void
-  ) => {
-=======
   private onSelectedEventMouseDown=(
     e: React.MouseEvent<unknown>,
     clickOnlyCallback: (modifiers: ActiveModifierKeys) => void
   )=> {
->>>>>>> 4f135d0 (replace bind with arrow function)
     if (!this.timelineSelector) return;
     const initX = e.pageX;
     const initPosition = this.getTimelineSelectorPosition(
