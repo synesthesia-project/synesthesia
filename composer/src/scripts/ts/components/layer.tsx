@@ -34,11 +34,6 @@ export interface LayerProps {
 class Layer extends React.Component<LayerProps, LayerState> {
   constructor(props: LayerProps) {
     super(props);
-
-    // Bind callbacks & event listeners
-    this.toggleSelect = this.toggleSelect.bind(this);
-    this.toggleRequestBind = this.toggleRequestBind.bind(this);
-    this.openLayerOptions = this.openLayerOptions.bind(this);
   }
 
   private isSelected() {
@@ -118,23 +113,23 @@ class Layer extends React.Component<LayerProps, LayerState> {
     );
   }
 
-  private toggleSelect() {
+  private toggleSelect = () => {
     this.props.updateSelection((s) =>
       selection.toggleLayer(s, this.props.layerKey)
     );
-  }
+  };
 
-  private toggleRequestBind() {
+  private toggleRequestBind = () => {
     if (this.props.bindingLayer === this.props.layerKey) {
       this.props.requestBindingForLayer(null);
     } else {
       this.props.requestBindingForLayer(this.props.layerKey);
     }
-  }
+  };
 
-  private openLayerOptions() {
+  private openLayerOptions = () => {
     this.props.openLayerOptions(this.props.layerKey);
-  }
+  };
 }
 
 const layerBarHeightPx = 60;
