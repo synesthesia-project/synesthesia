@@ -15,8 +15,6 @@ export class FileSource extends Source {
       id: file.value,
     };
 
-    this.updatePlayState = this.updatePlayState.bind(this);
-
     // Initiate listeners
     this.audio.addEventListener('canplay', this.updatePlayState);
     this.audio.addEventListener('playing', this.updatePlayState);
@@ -45,7 +43,7 @@ export class FileSource extends Source {
   /**
    * Update the play state from the audio element, and send it up.
    */
-  private updatePlayState() {
+  private updatePlayState = () => {
     if (!this.audio) throw new Error('refs not set');
     const state: PlayStateDataOnly = {
       durationMillis: this.audio.duration * 1000,
@@ -63,7 +61,7 @@ export class FileSource extends Source {
       meta: this.meta,
     };
     this.playStateUpdated(state);
-  }
+  };
 
   public sourceKind(): 'file' {
     return 'file';

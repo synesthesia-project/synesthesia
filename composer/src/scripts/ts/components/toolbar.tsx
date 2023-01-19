@@ -126,14 +126,6 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
       fileControllerState: { state: 'inactive' },
     };
 
-    // Bind callbacks & event listeners
-    this.loadAudioFile = this.loadAudioFile.bind(this);
-    this.loadAudioFileAsController = this.loadAudioFileAsController.bind(this);
-    this.unloadLocalFileController = this.unloadLocalFileController.bind(this);
-    this.toggleSpotify = this.toggleSpotify.bind(this);
-    this.toggleSpotifyLocal = this.toggleSpotifyLocal.bind(this);
-    this.saveFile = this.saveFile.bind(this);
-    this.openFile = this.openFile.bind(this);
     this.undo = this.fileAction('undo');
     this.redo = this.fileAction('redo');
     this.save = this.fileAction('save');
@@ -154,7 +146,7 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
     }
   }
 
-  public saveFile() {
+  public saveFile = () => {
     const state = this.props.playState;
     const filename =
       state && state.meta.info
@@ -164,16 +156,16 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
       const file: file.CueFile = this.props.file.file;
       storage.saveStringAsFile(JSON.stringify(file), filename);
     }
-  }
+  };
 
-  public openFile() {
+  public openFile = () => {
     storage.loadFileAsString().then((fileString) => {
       if (!this.props.playState) return;
       const obj = JSON.parse(fileString);
       const validatedFile = validateFile(obj);
       this.props.fileLoaded(this.props.playState.meta.id, validatedFile);
     });
-  }
+  };
 
   public componentWillReceiveProps(nextProps: FileSourceProps): void {
     if (
@@ -332,22 +324,24 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
     });
   }
 
-  private loadAudioFileAsController(ev: React.ChangeEvent<HTMLInputElement>) {
+  private loadAudioFileAsController = (
+    ev: React.ChangeEvent<HTMLInputElement>
+  ) => {
     this.localFileController.loadFile(ev.target);
     ev.target.value = '';
-  }
+  };
 
-  private unloadLocalFileController() {
+  private unloadLocalFileController = () => {
     this.localFileController.unload();
-  }
+  };
 
-  private loadAudioFile(ev: React.ChangeEvent<HTMLInputElement>) {
+  private loadAudioFile = (ev: React.ChangeEvent<HTMLInputElement>) => {
     const source = new FileSource(ev.target);
     this.setNewSource(source);
     ev.target.value = '';
-  }
+  };
 
-  private toggleSpotify() {
+  private toggleSpotify = () => {
     if (this.state.source && this.state.source.sourceKind() === 'spotify') {
       this.state.source.dispose();
     } else {
@@ -360,9 +354,9 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
         }
       );
     }
-  }
+  };
 
-  private toggleSpotifyLocal() {
+  private toggleSpotifyLocal = () => {
     if (this.state.spotifyWebPlaybackSDK === null) return;
     if (
       this.state.source &&
@@ -382,7 +376,7 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
         }
       );
     }
-  }
+  };
 
   private fileAction(action: 'undo' | 'redo' | 'save') {
     return () => {
