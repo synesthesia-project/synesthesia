@@ -57,6 +57,17 @@ export class Stage extends React.Component<StageProps, StageState> {
       midiLayerBindings: [],
       layerOptionsOpen: null,
     };
+
+    // Bind callbacks & event listeners
+    this.playStateUpdated = this.playStateUpdated.bind(this);
+    this.fileLoaded = this.fileLoaded.bind(this);
+    this.updateCueFile = this.updateCueFile.bind(this);
+    this.updateSelection = this.updateSelection.bind(this);
+    this.updateCueFileAndSelection = this.updateCueFileAndSelection.bind(this);
+    this.requestBindingForLayer = this.requestBindingForLayer.bind(this);
+    this.openLayerOptions = this.openLayerOptions.bind(this);
+    this.closeLayerOptions = this.closeLayerOptions.bind(this);
+    this.toggleZoomPanLock = this.toggleZoomPanLock.bind(this);
   }
 
   public componentDidMount() {
