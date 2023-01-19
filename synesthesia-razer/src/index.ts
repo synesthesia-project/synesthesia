@@ -57,9 +57,6 @@ export class Display {
   private writingFrame = false;
 
   public constructor() {
-    this.frame = this.frame.bind(this);
-    this.initializeInterval = this.initializeInterval.bind(this);
-
     const local = new LocalCommunicationsConsumer();
 
     local.on('new-server', (port) => {
@@ -137,9 +134,9 @@ export class Display {
     await this.init();
   }
 
-  private async initializeInterval() {
+  private initializeInterval = async () => {
     if (!this.devices) await this.init();
-  }
+  };
 
   private async init() {
     const keyboards = await openrazer.getKeyboards();
@@ -262,7 +259,7 @@ export class Display {
     console.log('frame failed to write');
   };
 
-  private async frame() {
+  private frame = async () => {
     if (this.writingFrame) {
       // Skip Frame
       return;
@@ -304,7 +301,7 @@ export class Display {
       console.log('Failed to write frame, resetting devices');
       this.devices = null;
     }
-  }
+  };
 }
 
 const display = new Display();

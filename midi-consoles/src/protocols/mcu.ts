@@ -113,13 +113,10 @@ export default class MCUProtocol extends Base {
   public constructor(deviceName: string, deviceId: number) {
     super(deviceName);
     this.deviceId = deviceId;
-
-    this.handleMidiMCU = this.handleMidiMCU.bind(this);
-
     this.addListener(this.handleMidiMCU);
   }
 
-  private handleMidiMCU(message: number[]) {
+  private handleMidiMCU = (message: number[]) => {
     console.log(message.map((n) => n.toString(16)));
     if (message.length < 3) return;
     const k = message[0];
@@ -187,7 +184,7 @@ export default class MCUProtocol extends Base {
         ticks,
       });
     }
-  }
+  };
 
   /**
    * By default, on some consoles a motorized fader will move back to it's last

@@ -63,9 +63,6 @@ export class ServerState {
 
   public constructor(dataDir: string) {
     this.storage = new Storage(dataDir);
-    this.handleComposerRequest = this.handleComposerRequest.bind(this);
-    this.handleComposerNotification =
-      this.handleComposerNotification.bind(this);
   }
 
   public addComposer(composer: ComposerConnection) {
@@ -129,9 +126,9 @@ export class ServerState {
     connection.sendState(this.lastState);
   }
 
-  private async handleComposerRequest(
+  private handleComposerRequest = async (
     request: composerProtocol.Request
-  ): Promise<composerProtocol.Response> {
+  ): Promise<composerProtocol.Response> => {
     const mainSongAndController = this.calculateMainSongAndController();
     if (!mainSongAndController) {
       console.log('no active controllers');
@@ -161,7 +158,7 @@ export class ServerState {
         throw new Error('Unrecognized request: ' + n);
       }
     }
-  }
+  };
 
   private async handleFileAction(
     request: composerProtocol.FileActionRequest
@@ -190,7 +187,7 @@ export class ServerState {
     return Promise.resolve({ type: 'result', success });
   }
 
-  private handleComposerNotification(_composer: ComposerConnection) {
+  private handleComposerNotification = (_composer: ComposerConnection) => {
     return (notification: composerProtocol.Notification) => {
       switch (notification.type) {
         case 'cue-file-modified': {
@@ -208,7 +205,7 @@ export class ServerState {
       }
       console.log('got notif', notification);
     };
-  }
+  };
 
   private async sendStateToComposers() {
     const mainSongAndController = this.calculateMainSongAndController();
