@@ -51,12 +51,12 @@ abstract class LocalCommunications {
     process.on('SIGINT', () => process.exit());
     process.on('SIGUSR1', () => process.exit());
     process.on('SIGUSR2', () => process.exit());
-    process.on('exit', this.cleanup.bind(this));
+    process.on('exit', this.cleanup);
   }
 
-  private cleanup() {
+  private cleanup = () => {
     unlink(this.socketPath);
-  }
+  };
 }
 
 export class LocalCommunicationsServer extends LocalCommunications {

@@ -69,7 +69,7 @@ export class Server {
       server: this.server,
     });
 
-    this.wss.on('connection', this.handleConnection.bind(this));
+    this.wss.on('connection', this.handleConnection);
   }
 
   public start() {
@@ -101,7 +101,7 @@ export class Server {
     });
   }
 
-  private handleConnection(ws: WebSocket, req: http.IncomingMessage) {
+  private handleConnection = (ws: WebSocket, req: http.IncomingMessage) => {
     const url = ws.url || req.url;
     console.log('new connection', url);
 
@@ -133,5 +133,5 @@ export class Server {
       );
       return;
     }
-  }
+  };
 }
