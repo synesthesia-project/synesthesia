@@ -30,12 +30,6 @@ export interface TimelineProps {
 class Timeline extends React.Component<TimelineProps, TimelineState> {
   constructor(props: TimelineProps) {
     super(props);
-
-    // Bind callbacks & event listeners
-    this.addLayerClicked = this.addLayerClicked.bind(this);
-    this.mouseDown = this.mouseDown.bind(this);
-    this.mouseEnterOrMove = this.mouseEnterOrMove.bind(this);
-    this.mouseLeave = this.mouseLeave.bind(this);
   }
 
   public render() {
@@ -92,9 +86,9 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
     );
   }
 
-  private addLayerClicked() {
+  private addLayerClicked = () => {
     this.props.updateCueFile((cueFile) => fileManipulation.addLayer(cueFile));
-  }
+  };
 
   /**
    * Get the position of the mouse within the file (0-1);
@@ -108,21 +102,21 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
   /*
    * Jump to this position
    */
-  private mouseDown(e: React.MouseEvent<unknown>) {
+  private mouseDown = (e: React.MouseEvent<unknown>) => {
     const pos = this.getMousePosition(e);
     if (this.props.playState)
       this.props.playState.controls.goToTime(
         this.props.playState.durationMillis * pos
       );
-  }
+  };
 
-  private mouseEnterOrMove(e: React.MouseEvent<unknown>) {
+  private mouseEnterOrMove = (e: React.MouseEvent<unknown>) => {
     this.props.updateMouseHover(this.getMousePosition(e));
-  }
+  };
 
-  private mouseLeave(_e: React.MouseEvent<unknown>) {
+  private mouseLeave = (_e: React.MouseEvent<unknown>) => {
     this.props.updateMouseHover(null);
-  }
+  };
 }
 
 const timelineHeightPx = 40;

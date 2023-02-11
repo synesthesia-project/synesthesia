@@ -41,10 +41,6 @@ export class Stage extends React.Component<Record<string, never>, State> {
 
     this.audio.thresholds.basicModeThresholdSeconds = 10;
 
-    this.loadAudioFile = this.loadAudioFile.bind(this);
-    this.updatePlayState = this.updatePlayState.bind(this);
-    this.playPause = this.playPause.bind(this);
-
     this.audio.addEventListener('play', this.updatePlayState);
     this.audio.addEventListener('pause', this.updatePlayState);
     this.audio.addEventListener('trackstateupdate', () => {
@@ -140,7 +136,7 @@ export class Stage extends React.Component<Record<string, never>, State> {
     return this.endpoint;
   }
 
-  private loadAudioFile(ev: React.ChangeEvent<HTMLInputElement>) {
+  private loadAudioFile = (ev: React.ChangeEvent<HTMLInputElement>) => {
     const files = ev.target.files;
     if (files) {
       for (const file of files) {
@@ -175,7 +171,7 @@ export class Stage extends React.Component<Record<string, never>, State> {
       console.error('no files');
     }
     ev.target.value = '';
-  }
+  };
 
   /**
    * Called when a user action has triggered the list of tracks to change
@@ -188,7 +184,7 @@ export class Stage extends React.Component<Record<string, never>, State> {
     console.log('tracks', this.audio.tracks());
   }
 
-  private updatePlayState() {
+  private updatePlayState = () => {
     this.getEndpoint().then((endpoint) => {
       const track = this.audio.tracks()[0] as File | undefined;
       if (!track) return;
@@ -220,11 +216,11 @@ export class Stage extends React.Component<Record<string, never>, State> {
         ],
       });
     });
-  }
+  };
 
-  private playPause() {
+  private playPause = () => {
     this.audio.paused ? this.audio.play() : this.audio.pause();
-  }
+  };
 
   private skip = () => {
     this.audio.skip();

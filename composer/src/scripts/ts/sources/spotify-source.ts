@@ -39,15 +39,13 @@ export class SpotifySource extends Source {
   constructor(token: string) {
     super();
 
-    this.update = this.update.bind(this);
-
     this.api = new Spotify() as SpotifyApi;
     this.api.setAccessToken(token);
     this.interval = window.setInterval(this.update, UPDATE_INTERVAL_MS);
     this.update();
   }
 
-  private update() {
+  private update = () => {
     this.api.getMyCurrentPlaybackState().then((state) => {
       console.log('Spotify State', state);
       this.playStateUpdated(
@@ -76,7 +74,7 @@ export class SpotifySource extends Source {
           : null
       );
     });
-  }
+  };
 
   public sourceKind(): 'spotify' {
     return 'spotify';

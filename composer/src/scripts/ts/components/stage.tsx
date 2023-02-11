@@ -58,7 +58,6 @@ export class Stage extends React.Component<StageProps, StageState> {
       layerOptionsOpen: null,
     };
 
-    // Bind callbacks & event listeners
     this.playStateUpdated = this.playStateUpdated.bind(this);
     this.fileLoaded = this.fileLoaded.bind(this);
     this.updateCueFile = this.updateCueFile.bind(this);
@@ -252,15 +251,17 @@ export class Stage extends React.Component<StageProps, StageState> {
           state.state.playSpeed;
   }
 
-  private playStateUpdated(playState: PlayState) {
+  private playStateUpdated = (playState: PlayState) => {
     this.setState({ playState });
-  }
+  };
 
-  private fileLoaded(id: string, file: file.CueFile): void {
+  private fileLoaded = (id: string, file: file.CueFile) => {
     this.setState({ cueFile: { id, file } });
-  }
+  };
 
-  private updateCueFile(mutator: (cueFile: file.CueFile) => file.CueFile) {
+  private updateCueFile = (
+    mutator: (cueFile: file.CueFile) => file.CueFile
+  ) => {
     this.setState((prevState) => {
       const state = { cueFile: prevState.cueFile };
       if (state.cueFile) {
@@ -271,19 +272,19 @@ export class Stage extends React.Component<StageProps, StageState> {
       }
       return state;
     });
-  }
+  };
 
-  private updateSelection(
+  private updateSelection = (
     mutator: (selection: selection.Selection) => selection.Selection
-  ) {
+  ) => {
     this.setState((prevState) => ({ selection: mutator(prevState.selection) }));
-  }
+  };
 
-  private updateCueFileAndSelection(
+  private updateCueFileAndSelection = (
     mutator: (
       current: [file.CueFile, selection.Selection]
     ) => [file.CueFile, selection.Selection]
-  ) {
+  ) => {
     this.setState((prevState) => {
       const state = {
         cueFile: prevState.cueFile,
@@ -296,21 +297,21 @@ export class Stage extends React.Component<StageProps, StageState> {
       }
       return state;
     });
-  }
+  };
 
-  private requestBindingForLayer(layerKey: number | null) {
+  private requestBindingForLayer = (layerKey: number | null) => {
     this.setState({ bindingLayer: layerKey });
-  }
+  };
 
-  private openLayerOptions(layerKey: number) {
+  private openLayerOptions = (layerKey: number) => {
     this.setState({ layerOptionsOpen: layerKey });
-  }
+  };
 
-  private closeLayerOptions() {
+  private closeLayerOptions = () => {
     this.setState({ layerOptionsOpen: null });
-  }
+  };
 
-  private toggleZoomPanLock() {
+  private toggleZoomPanLock = () => {
     this.setState((state) => ({
       state: {
         zoomPan:
@@ -322,7 +323,7 @@ export class Stage extends React.Component<StageProps, StageState> {
             : stageState.lockZoomAndPan(state.state.zoomPan),
       },
     }));
-  }
+  };
 
   public render() {
     const popup =

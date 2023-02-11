@@ -51,9 +51,6 @@ class LayersAndTimeline extends React.Component<
       mousePosition: null,
       selectionDraggingDiff: null,
     };
-    this.updateMouseHover = this.updateMouseHover.bind(this);
-    this.updateSelectionDraggingDiff =
-      this.updateSelectionDraggingDiff.bind(this);
   }
 
   public componentDidMount() {
@@ -64,7 +61,7 @@ class LayersAndTimeline extends React.Component<
     this.updatePositionInterval(newProps);
   }
 
-  private updatePositionInterval(newProps: LayersAndTimelineProps) {
+  private updatePositionInterval = (newProps: LayersAndTimelineProps) => {
     cancelAnimationFrame(this.updateInterval);
     const playState = newProps.playState;
     if (playState) {
@@ -78,9 +75,9 @@ class LayersAndTimeline extends React.Component<
       }
       this.updatePosition(playState);
     }
-  }
+  };
 
-  private updatePosition(playState: playState.PlayStateData) {
+  private updatePosition = (playState: playState.PlayStateData) => {
     const time =
       playState.state.type === 'paused'
         ? playState.state.positionMillis
@@ -92,17 +89,17 @@ class LayersAndTimeline extends React.Component<
       time > this.state.positionMillis + 10
     )
       this.setState({ positionMillis: time });
-  }
+  };
 
-  private updateMouseHover(mousePosition: number | null) {
+  private updateMouseHover = (mousePosition: number | null) => {
     this.setState({ mousePosition });
-  }
+  };
 
-  private updateSelectionDraggingDiff(
+  private updateSelectionDraggingDiff = (
     selectionDraggingDiff: number | null
-  ): void {
+  ) => {
     this.setState({ selectionDraggingDiff });
-  }
+  };
 
   public render() {
     let layers: JSX.Element[] | null = null;

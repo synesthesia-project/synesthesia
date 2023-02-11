@@ -29,10 +29,6 @@ export class Stage extends React.Component<
     super(props);
     this.state = {};
 
-    this.loadAudioFile = this.loadAudioFile.bind(this);
-    this.updatePlayState = this.updatePlayState.bind(this);
-    this.playPause = this.playPause.bind(this);
-
     this.audio.addEventListener('play', this.updatePlayState);
     this.audio.addEventListener('pause', this.updatePlayState);
     this.audio.addEventListener('ended', this.updatePlayState);
@@ -109,7 +105,7 @@ export class Stage extends React.Component<
     return this.endpoint;
   }
 
-  private loadAudioFile(ev: React.ChangeEvent<HTMLInputElement>) {
+  private loadAudioFile = (ev: React.ChangeEvent<HTMLInputElement>) => {
     const files = ev.target.files;
     if (files) {
       const file = files[0];
@@ -131,9 +127,9 @@ export class Stage extends React.Component<
       console.error('no files');
     }
     ev.target.value = '';
-  }
+  };
 
-  private updatePlayState() {
+  private updatePlayState = () => {
     console.log(this.meta);
     this.getEndpoint().then((endpoint) => {
       if (!this.meta) return;
@@ -164,11 +160,11 @@ export class Stage extends React.Component<
         ],
       });
     });
-  }
+  };
 
-  private playPause() {
+  private playPause = () => {
     this.audio.paused ? this.audio.play() : this.audio.pause();
-  }
+  };
 
   public render() {
     return (
