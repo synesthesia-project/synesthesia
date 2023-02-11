@@ -126,8 +126,8 @@ export class IntegrationSource extends Source {
   private readonly settings: IntegrationSettings;
   private readonly connectionMetadata: ConnectionMetadataManager;
 
-  private readonly stateListeners: StateListener[] = [];
-  private readonly cueFileListeners: CueFileListener[] = [];
+  private readonly stateListeners = new Set<StateListener>();
+  private readonly cueFileListeners = new Set<CueFileListener>();
 
   private connection: {
     socket: WebSocket;
@@ -228,9 +228,23 @@ export class IntegrationSource extends Source {
             break;
         }
       }
-      this.stateListeners.push(l);
+      this.stateListeners.add(l);
     } else if (event === 'new-cue-file') {
-      this.cueFileListeners.push(listener as CueFileListener);
+      this.cueFileListeners.add(listener as CueFileListener);
+    }
+  }
+
+  public removeListener(event: 'state', listener: StateListener): void;
+  public removeListener(event: 'new-cue-file', listener: CueFileListener): void;
+
+  public removeListener(
+    event: 'state' | 'new-cue-file',
+    listener: StateListener | CueFileListener
+  ) {
+    if (event === 'state') {
+      this.stateListeners.delete(listener as StateListener);
+    } else if (event === 'new-cue-file') {
+      this.cueFileListeners.delete(listener as CueFileListener);
     }
   }
 

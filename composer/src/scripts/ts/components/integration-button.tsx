@@ -13,68 +13,55 @@ interface Props {
   integration: IntegrationSource;
 }
 
-interface State {
-  state: ConnectionState;
-}
+const IntegrationButton: React.FunctionComponent<Props> = ({
+  className,
+  integration,
+  settings,
+}) => {
+  const [state, setState] = React.useState<ConnectionState>('not_connected');
 
-class IntegrationButton extends React.Component<Props, State> {
-  public constructor(props: Props) {
-    super(props);
-    this.state = {
-      state: 'not_connected',
+  React.useEffect(() => {
+    integration.addListener('state', setState);
+
+    return () => {
+      integration.removeListener('state', setState);
     };
-  }
+  }, []);
 
-  public componentDidMount() {
-    this.props.integration.addListener('state', (state) => {
-      this.setState({ state });
-    });
-  }
-
-  private onClick = () => {
-    switch (this.state.state) {
+  const onClick = () => {
+    switch (state) {
       case 'not_connected':
       case 'error':
-        this.connect();
+        integration.connect();
         break;
       case 'connected':
-        this.disconnect();
+        integration.disconnect();
         break;
     }
   };
 
-  private connect() {
-    this.props.integration.connect();
-  }
+  const buttonText = (() => {
+    switch (state) {
+      case 'not_connected':
+        return `Connect to ${settings.name}`;
+      case 'connecting':
+        return 'Connecting...';
+      case 'connected':
+        return `Connected to ${settings.name}`;
+      case 'error':
+        return 'An error ocurred';
+    }
+  })();
 
-  private disconnect() {
-    this.props.integration.disconnect();
-  }
-
-  public render() {
-    const buttonText = (() => {
-      switch (this.state.state) {
-        case 'not_connected':
-          return `Connect to ${this.props.settings.name}`;
-        case 'connecting':
-          return 'Connecting...';
-        case 'connected':
-          return `Connected to ${this.props.settings.name}`;
-        case 'error':
-          return 'An error ocurred';
-      }
-    })();
-
-    return (
-      <div className={this.props.className}>
-        <button className="connection-button" onClick={this.onClick}>
-          {buttonText}
-          <span className={`indicator ${this.state.state}`} />
-        </button>
-      </div>
-    );
-  }
-}
+  return (
+    <div className={className}>
+      <button className="connection-button" onClick={onClick}>
+        {buttonText}
+        <span className={`indicator ${state}`} />
+      </button>
+    </div>
+  );
+};
 
 const StyledIntegrationButton = styled(IntegrationButton)`
   display: flex;
