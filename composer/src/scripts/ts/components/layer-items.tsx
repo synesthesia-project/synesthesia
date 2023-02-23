@@ -25,91 +25,82 @@ export interface LayerItemsProps {
   updateSelectionDraggingDiff: (diffMillis: number | null) => void;
 }
 
-export interface LayerItemsState {
-  selector:
-    | { state: 'nothing' }
-    | { state: 'hover'; position: number }
-    | { state: 'dragging'; start: number; end: number };
-}
+type LayerItemsSelector =
+  | { state: 'nothing' }
+  | { state: 'hover'; position: number }
+  | { state: 'dragging'; start: number; end: number };
 
-class LayerItems extends React.Component<LayerItemsProps, LayerItemsState> {
-  private timelineSelector: JQuery | null = null;
+const LayerItems: React.FunctionComponent<LayerItemsProps> = (props) => {
+  const timelineSelector = React.useRef<JQuery | null>(null);
+  const [selector, setSelector] = React.useState<LayerItemsSelector>({
+    state: 'nothing',
+  });
 
-  constructor(props: LayerItemsProps) {
-    super(props);
-    this.state = {
-      selector: { state: 'nothing' },
-    };
-  }
-
-  private getTimelineSelectorPosition(timelineSelector: JQuery, pageX: number) {
+  const getTimelineSelectorPosition = (
+    timelineSelector: JQuery,
+    pageX: number
+  ) => {
     return (pageX - timelineSelector.offset().left) / timelineSelector.width();
-  }
+  };
 
-  private getTimelineSelectorMousePosition(
+  const getTimelineSelectorMousePosition = (
     timelineSelector: JQuery,
     e: React.MouseEvent<HTMLDivElement>
-  ) {
-    return this.getTimelineSelectorPosition(timelineSelector, e.pageX);
-  }
+  ) => getTimelineSelectorPosition(timelineSelector, e.pageX);
 
-  private onTimelineSelectorMouseOver = (
-    e: React.MouseEvent<HTMLDivElement>
-  ) => {
-    this.updateHoverState(e);
-  };
-
-  private onTimelineSelectorMouseOut = () => {
-    this.setState({ selector: { state: 'nothing' } });
-  };
-
-  private onTimelineSelectorMouseMove = (
-    e: React.MouseEvent<HTMLDivElement>
-  ) => {
-    this.updateHoverState(e);
-  };
-
-  private onTimelineSelectorMouseDown = (
-    e: React.MouseEvent<HTMLDivElement>
-  ) => {
-    if (!this.timelineSelector) return;
-    e.preventDefault();
-    const start = this.getTimelineSelectorMousePosition(
-      this.timelineSelector,
+  const updateHoverState = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!timelineSelector.current) return;
+    const position = getTimelineSelectorMousePosition(
+      timelineSelector.current,
       e
     );
-    this.setState({ selector: { state: 'dragging', start, end: start } });
+    setSelector({ state: 'hover', position });
+  };
+
+  const onTimelineSelectorMouseOver = (e: React.MouseEvent<HTMLDivElement>) =>
+    updateHoverState(e);
+
+  const onTimelineSelectorMouseOut = () => {
+    setSelector({ state: 'nothing' });
+  };
+
+  const onTimelineSelectorMouseMove = (e: React.MouseEvent<HTMLDivElement>) =>
+    updateHoverState(e);
+
+  const onTimelineSelectorMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!timelineSelector.current) return;
+    e.preventDefault();
+    const start = getTimelineSelectorMousePosition(timelineSelector.current, e);
+    setSelector({ state: 'dragging', start, end: start });
 
     dragging.captureDragging(
       (x) => {
-        if (!this.timelineSelector) return;
-        const end = this.getTimelineSelectorPosition(this.timelineSelector, x);
-        this.setState({
-          selector: {
-            state: 'dragging',
-            start: Math.min(start, end),
-            end: Math.max(start, end),
-          },
+        if (!timelineSelector.current) return;
+        const end = getTimelineSelectorPosition(timelineSelector.current, x);
+        setSelector({
+          state: 'dragging',
+          start: Math.min(start, end),
+          end: Math.max(start, end),
         });
       },
       (x, _y, modifiers) => {
-        if (!this.timelineSelector) return;
-        const latestPosition = this.getTimelineSelectorPosition(
-          this.timelineSelector,
+        if (!timelineSelector.current) return;
+        const latestPosition = getTimelineSelectorPosition(
+          timelineSelector.current,
           x
         );
         // Calculate the items that are within the selection
         const startTimestamp =
-          Math.min(start, latestPosition) * this.props.file.lengthMillis;
+          Math.min(start, latestPosition) * props.file.lengthMillis;
         const endTimestamp =
-          Math.max(start, latestPosition) * this.props.file.lengthMillis;
-        const ids = this.props.layer.events
+          Math.max(start, latestPosition) * props.file.lengthMillis;
+        const ids = props.layer.events
           // Wrap the index in with the item so that we can retain it during filtering
           .map((item, i) => ({ item, i }))
           // Filter to only the events that are within the selection
           .filter((i) => {
             const item = i.item;
-            const duration = getEventDuration(this.props.layer, item);
+            const duration = getEventDuration(props.layer, item);
             return (
               item.timestampMillis + duration > startTimestamp &&
               item.timestampMillis < endTimestamp
@@ -117,39 +108,25 @@ class LayerItems extends React.Component<LayerItemsProps, LayerItemsState> {
           })
           // Map once again to extract the IDs of the events
           .map((item) => item.i);
-        this.props.updateSelection((s) =>
-          selection.handleItemSelectionChange(
-            s,
-            modifiers,
-            this.props.layerKey,
-            ids
-          )
+        props.updateSelection((s) =>
+          selection.handleItemSelectionChange(s, modifiers, props.layerKey, ids)
         );
-        this.setState({ selector: { state: 'nothing' } });
+        setSelector({ state: 'nothing' });
       },
       () => {
-        this.setState({ selector: { state: 'nothing' } });
+        setSelector({ state: 'nothing' });
       }
     );
   };
 
-  private updateHoverState = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!this.timelineSelector) return;
-    const position = this.getTimelineSelectorMousePosition(
-      this.timelineSelector,
-      e
-    );
-    this.setState({ selector: { state: 'hover', position } });
-  };
-
-  private onSelectedEventMouseDown = (
+  const onSelectedEventMouseDown = (
     e: React.MouseEvent<unknown>,
     clickOnlyCallback: (modifiers: ActiveModifierKeys) => void
   ) => {
-    if (!this.timelineSelector) return;
+    if (!timelineSelector.current) return;
     const initX = e.pageX;
-    const initPosition = this.getTimelineSelectorPosition(
-      this.timelineSelector,
+    const initPosition = getTimelineSelectorPosition(
+      timelineSelector.current,
       initX
     );
     let locked = true;
@@ -162,174 +139,171 @@ class LayerItems extends React.Component<LayerItemsProps, LayerItemsState> {
             x > initX + dragging.MIN_DRAG_THRESHOLD)
         )
           locked = false;
-        if (!locked && this.timelineSelector) {
-          const position = this.getTimelineSelectorPosition(
-            this.timelineSelector,
+        if (!locked && timelineSelector.current) {
+          const position = getTimelineSelectorPosition(
+            timelineSelector.current,
             x
           );
           const diffMillis =
-            (position - initPosition) * this.props.file.lengthMillis;
-          this.props.updateSelectionDraggingDiff(diffMillis);
+            (position - initPosition) * props.file.lengthMillis;
+          props.updateSelectionDraggingDiff(diffMillis);
         }
       },
       (x, _y, modifiers) => {
         if (locked) {
           clickOnlyCallback(modifiers);
         } else {
-          if (this.timelineSelector) {
-            const position = this.getTimelineSelectorPosition(
-              this.timelineSelector,
+          if (timelineSelector.current) {
+            const position = getTimelineSelectorPosition(
+              timelineSelector.current,
               x
             );
             const diffMillis =
-              (position - initPosition) * this.props.file.lengthMillis;
-            this.props.updateCueFile((f) =>
-              shiftSelectedEvents(f, this.props.selection, diffMillis)
+              (position - initPosition) * props.file.lengthMillis;
+            props.updateCueFile((f) =>
+              shiftSelectedEvents(f, props.selection, diffMillis)
             );
           }
         }
-        this.props.updateSelectionDraggingDiff(null);
+        props.updateSelectionDraggingDiff(null);
       },
-      () => this.props.updateSelectionDraggingDiff(null),
+      () => props.updateSelectionDraggingDiff(null),
       'move'
     );
   };
 
-  public render() {
-    // Items that are selected for this layer
-    const selectedEvents = new Set(
-      this.props.selection.events
-        .filter((e) => e.layer === this.props.layerKey)
-        .map((e) => e.index)
-    );
-    const extraItems: JSX.Element[] = [];
-    const items = this.props.layer.events.map((item, i) => {
-      let length = 0;
-      if (item.states.length !== 0) {
-        // Get length of item by last state
-        length = item.states[item.states.length - 1].millisDelta;
-      } else if (file.PERCUSSION_LAYER.is(this.props.layer)) {
-        // Get default length of items
-        length = this.props.layer.settings.defaultLengthMillis;
-      }
-      const selected = selectedEvents.has(i);
-      const position = item.timestampMillis / this.props.file.lengthMillis;
-      const style: React.CSSProperties = {
-        left: position * 100 + '%',
-        width: (length / this.props.file.lengthMillis) * 100 + '%',
+  // Items that are selected for this layer
+  const selectedEvents = new Set(
+    props.selection.events
+      .filter((e) => e.layer === props.layerKey)
+      .map((e) => e.index)
+  );
+  const extraItems: JSX.Element[] = [];
+  const items = props.layer.events.map((item, i) => {
+    let length = 0;
+    if (item.states.length !== 0) {
+      // Get length of item by last state
+      length = item.states[item.states.length - 1].millisDelta;
+    } else if (file.PERCUSSION_LAYER.is(props.layer)) {
+      // Get default length of items
+      length = props.layer.settings.defaultLengthMillis;
+    }
+    const selected = selectedEvents.has(i);
+    const position = item.timestampMillis / props.file.lengthMillis;
+    const style: React.CSSProperties = {
+      left: position * 100 + '%',
+      width: (length / props.file.lengthMillis) * 100 + '%',
+    };
+    let dragging = false;
+    if (selected && props.selectionDraggingDiff !== null) {
+      dragging = true;
+      // Add overlay for moving selection
+      const overlayPosition =
+        (item.timestampMillis + props.selectionDraggingDiff) /
+        props.file.lengthMillis;
+      const overlayStyle = {
+        left: overlayPosition * 100 + '%',
+        width: style.width,
       };
-      let dragging = false;
-      if (selected && this.props.selectionDraggingDiff !== null) {
-        dragging = true;
-        // Add overlay for moving selection
-        const overlayPosition =
-          (item.timestampMillis + this.props.selectionDraggingDiff) /
-          this.props.file.lengthMillis;
-        const overlayStyle = {
-          left: overlayPosition * 100 + '%',
-          width: style.width,
-        };
-        extraItems.push(
-          <div
-            key={extraItems.length}
-            className="item overlay"
-            style={overlayStyle}
-          />
-        );
-      }
-      const handleItemSelectionChange = (m: ActiveModifierKeys) =>
-        this.props.updateSelection((s) =>
-          selection.handleItemSelectionChange(s, m, this.props.layerKey, [i])
-        );
-      const onClick = (e: React.MouseEvent<unknown>) => {
-        if (!selected) handleItemSelectionChange(e);
-      };
-      const onMouseDown = (e: React.MouseEvent<unknown>) => {
-        if (selected)
-          this.onSelectedEventMouseDown(
-            e,
-            // Only select / deselect item in selection if ctrl key is pressed
-            (modifiers) => {
-              if (modifiers.ctrlKey) handleItemSelectionChange(modifiers);
-            }
-          );
-      };
-      let inDraggingSelection = false;
-      if (this.state.selector.state === 'dragging') {
-        const endPosition = position + length / this.props.file.lengthMillis;
-        if (
-          endPosition > this.state.selector.start &&
-          position < this.state.selector.end
-        )
-          inDraggingSelection = true;
-      }
-      return (
+      extraItems.push(
         <div
-          key={i}
-          className={
-            'item' +
-            (selected ? ' selected' : '') +
-            (dragging ? ' dragging' : '') +
-            (inDraggingSelection ? ' active' : '')
-          }
-          style={style}
-          onClick={onClick}
-          onMouseDown={onMouseDown}
+          key={extraItems.length}
+          className="item overlay"
+          style={overlayStyle}
         />
       );
-    });
-
-    const selectorIndicator = (() => {
-      const selectorState = this.state.selector;
-      switch (selectorState.state) {
-        case 'hover':
-          return (
-            <div
-              className="indicator"
-              style={{ left: selectorState.position * 100 + '%' }}
-            >
-              <div className="side left" />
-            </div>
-          );
-        case 'dragging': {
-          const style = {
-            left: selectorState.start * 100 + '%',
-            right: (1 - selectorState.end) * 100 + '%',
-          };
-          return (
-            <div className="indicator" style={style}>
-              <div className="side left" />
-              <div className="side right" />
-            </div>
-          );
-        }
-        case 'nothing':
-        default:
-          return null;
-      }
-    })();
-
-    return (
-      <div className={this.props.className}>
-        <div
-          className={
-            'timeline-selector ' +
-            (this.state.selector.state === 'dragging' ? ' dragging' : '')
+    }
+    const handleItemSelectionChange = (m: ActiveModifierKeys) =>
+      props.updateSelection((s) =>
+        selection.handleItemSelectionChange(s, m, props.layerKey, [i])
+      );
+    const onClick = (e: React.MouseEvent<unknown>) => {
+      if (!selected) handleItemSelectionChange(e);
+    };
+    const onMouseDown = (e: React.MouseEvent<unknown>) => {
+      if (selected)
+        onSelectedEventMouseDown(
+          e,
+          // Only select / deselect item in selection if ctrl key is pressed
+          (modifiers) => {
+            if (modifiers.ctrlKey) handleItemSelectionChange(modifiers);
           }
-          ref={(div) => (this.timelineSelector = div ? jQuery(div) : null)}
-          onMouseEnter={this.onTimelineSelectorMouseOver}
-          onMouseLeave={this.onTimelineSelectorMouseOut}
-          onMouseMove={this.onTimelineSelectorMouseMove}
-          onMouseDown={this.onTimelineSelectorMouseDown}
-        >
-          {selectorIndicator}
-        </div>
-        {items}
-        {extraItems}
-      </div>
+        );
+    };
+    let inDraggingSelection = false;
+    if (selector.state === 'dragging') {
+      const endPosition = position + length / props.file.lengthMillis;
+      if (endPosition > selector.start && position < selector.end)
+        inDraggingSelection = true;
+    }
+    return (
+      <div
+        key={i}
+        className={
+          'item' +
+          (selected ? ' selected' : '') +
+          (dragging ? ' dragging' : '') +
+          (inDraggingSelection ? ' active' : '')
+        }
+        style={style}
+        onClick={onClick}
+        onMouseDown={onMouseDown}
+      />
     );
-  }
-}
+  });
+
+  const selectorIndicator = (() => {
+    const selectorState = selector;
+    switch (selectorState.state) {
+      case 'hover':
+        return (
+          <div
+            className="indicator"
+            style={{ left: selectorState.position * 100 + '%' }}
+          >
+            <div className="side left" />
+          </div>
+        );
+      case 'dragging': {
+        const style = {
+          left: selectorState.start * 100 + '%',
+          right: (1 - selectorState.end) * 100 + '%',
+        };
+        return (
+          <div className="indicator" style={style}>
+            <div className="side left" />
+            <div className="side right" />
+          </div>
+        );
+      }
+      case 'nothing':
+      default:
+        return null;
+    }
+  })();
+
+  return (
+    <div className={props.className}>
+      <div
+        className={
+          'timeline-selector ' +
+          (selector.state === 'dragging' ? ' dragging' : '')
+        }
+        ref={(div) => {
+          timelineSelector.current = div ? jQuery(div) : null;
+        }}
+        onMouseEnter={onTimelineSelectorMouseOver}
+        onMouseLeave={onTimelineSelectorMouseOut}
+        onMouseMove={onTimelineSelectorMouseMove}
+        onMouseDown={onTimelineSelectorMouseDown}
+      >
+        {selectorIndicator}
+      </div>
+      {items}
+      {extraItems}
+    </div>
+  );
+};
 
 const StyledLayerItems = styled(LayerItems)`
   display: block;

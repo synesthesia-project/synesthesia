@@ -3,18 +3,16 @@ import { LayerItems } from './layer-items';
 import { LayerVisualization } from './layer-visualization';
 import * as React from 'react';
 import * as file from '@synesthesia-project/core/lib/file';
-import * as selection from '../data/selection';
+import { Selection, toggleLayer } from '../data/selection';
 import * as util from '@synesthesia-project/core/lib/util';
 import * as stageState from '../data/stage-state';
 
 import { MdKeyboard, MdSettings } from 'react-icons/md';
 
-export type LayerState = Record<string, never>;
-
 export interface LayerProps {
   // Properties
   className?: string;
-  selection: selection.Selection;
+  selection: Selection;
   file: file.CueFile;
   layer: file.AnyLayer;
   layerKey: number;
@@ -24,113 +22,104 @@ export interface LayerProps {
   midiLayerBindings: { input: string; note: number; layer: number }[];
   selectionDraggingDiff: number | null;
   // Callbacks
-  updateSelection: util.Mutator<selection.Selection>;
+  updateSelection: util.Mutator<Selection>;
   updateCueFile: util.Mutator<file.CueFile>;
   requestBindingForLayer: (layerKey: number | null) => void;
   updateSelectionDraggingDiff: (diffMillis: number | null) => void;
   openLayerOptions: (layerKey: number) => void;
 }
 
-class Layer extends React.Component<LayerProps, LayerState> {
-  constructor(props: LayerProps) {
-    super(props);
-  }
+const Layer: React.FunctionComponent<LayerProps> = ({
+  className,
+  selection,
+  file,
+  layer,
+  layerKey,
+  zoom,
+  positionMillis,
+  bindingLayer,
+  midiLayerBindings,
+  selectionDraggingDiff,
+  updateSelection,
+  updateCueFile,
+  requestBindingForLayer,
+  updateSelectionDraggingDiff,
+  openLayerOptions,
+}) => {
+  const isSelected = () => selection.layers.indexOf(layerKey) >= 0;
 
-  private isSelected() {
-    return this.props.selection.layers.indexOf(this.props.layerKey) >= 0;
-  }
+  const isBinding = () => bindingLayer === layerKey;
 
-  private isBinding() {
-    return this.props.bindingLayer === this.props.layerKey;
-  }
+  const toggleSelect = () => updateSelection((s) => toggleLayer(s, layerKey));
 
-  public render() {
-    const playerPosition =
-      this.props.positionMillis / this.props.file.lengthMillis;
-    const zoomMargin = stageState.relativeZoomMargins(
-      this.props.zoom,
-      playerPosition
-    );
-    let binding = '';
-    this.props.midiLayerBindings.map((b) => {
-      if (b.layer === this.props.layerKey) binding = b.note.toString();
-    });
-
-    return (
-      <div className={this.props.className}>
-        <div className="side">
-          <span
-            className={'button' + (this.isSelected() ? ' selected' : '')}
-            title="Bind to Keyboard"
-            onClick={this.toggleSelect}
-          >
-            <MdKeyboard />
-          </span>
-          <span className="column">
-            <span
-              className={'button' + (this.isBinding() ? ' selected' : '')}
-              onClick={this.toggleRequestBind}
-            >
-              <span>MIDI{binding ? ': ' + binding : ''}</span>
-            </span>
-            <span
-              className="button grow"
-              title="Settings"
-              onClick={this.openLayerOptions}
-            >
-              <MdSettings />
-            </span>
-          </span>
-        </div>
-        <LayerVisualization
-          layer={this.props.layer}
-          positionMillis={this.props.positionMillis}
-        />
-        <div className="timeline">
-          <div className="timeline-selector" />
-          <div
-            className="timeline-zoom"
-            style={{
-              left: -zoomMargin.left * 100 + '%',
-              right: -zoomMargin.right * 100 + '%',
-            }}
-          >
-            <LayerItems
-              file={this.props.file}
-              layer={this.props.layer}
-              layerKey={this.props.layerKey}
-              selection={this.props.selection}
-              updateSelection={this.props.updateSelection}
-              updateCueFile={this.props.updateCueFile}
-              selectionDraggingDiff={this.props.selectionDraggingDiff}
-              updateSelectionDraggingDiff={
-                this.props.updateSelectionDraggingDiff
-              }
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  private toggleSelect = () => {
-    this.props.updateSelection((s) =>
-      selection.toggleLayer(s, this.props.layerKey)
-    );
-  };
-
-  private toggleRequestBind = () => {
-    if (this.props.bindingLayer === this.props.layerKey) {
-      this.props.requestBindingForLayer(null);
+  const toggleRequestBind = () => {
+    if (bindingLayer === layerKey) {
+      requestBindingForLayer(null);
     } else {
-      this.props.requestBindingForLayer(this.props.layerKey);
+      requestBindingForLayer(layerKey);
     }
   };
 
-  private openLayerOptions = () => {
-    this.props.openLayerOptions(this.props.layerKey);
-  };
-}
+  const playerPosition = positionMillis / file.lengthMillis;
+  const zoomMargin = stageState.relativeZoomMargins(zoom, playerPosition);
+  let binding = '';
+  midiLayerBindings.map((b) => {
+    if (b.layer === layerKey) binding = b.note.toString();
+  });
+
+  return (
+    <div className={className}>
+      <div className="side">
+        <span
+          className={'button' + (isSelected() ? ' selected' : '')}
+          title="Bind to Keyboard"
+          onClick={toggleSelect}
+        >
+          <MdKeyboard />
+        </span>
+        <span className="column">
+          <span
+            className={'button' + (isBinding() ? ' selected' : '')}
+            onClick={toggleRequestBind}
+          >
+            <span>MIDI{binding ? ': ' + binding : ''}</span>
+          </span>
+          <span
+            className="button grow"
+            title="Settings"
+            onClick={() => openLayerOptions(layerKey)}
+          >
+            <MdSettings />
+          </span>
+        </span>
+      </div>
+      <LayerVisualization layer={layer} positionMillis={positionMillis} />
+      <div className="timeline">
+        <div className="timeline-selector" />
+        <div
+          className="timeline-zoom"
+          style={{
+            left: -zoomMargin.left * 100 + '%',
+            right: -zoomMargin.right * 100 + '%',
+          }}
+        >
+          <LayerItems
+            {...{
+              layerKey,
+              selection,
+              file,
+              layer,
+              selectionDraggingDiff,
+              updateSelection,
+              updateCueFile,
+              updateSelectionDraggingDiff,
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const layerBarHeightPx = 60;
 
