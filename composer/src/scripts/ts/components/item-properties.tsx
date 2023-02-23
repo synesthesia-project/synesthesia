@@ -1,7 +1,7 @@
 import { styled, rectButtonSmall, buttonDisabled, textInput } from './styling';
 import * as React from 'react';
 import * as file from '@synesthesia-project/core/lib/file';
-import * as selection from '../data/selection';
+import { Selection, clearSelectedEvents } from '../data/selection';
 import * as text from '../display/text';
 import * as fileManipulation from '../data/file-manipulation';
 import * as util from '@synesthesia-project/core/lib/util';
@@ -12,49 +12,42 @@ import { MdDelete } from 'react-icons/md';
 interface EventPropertiesProps {
   // Properties
   className?: string;
-  selection: selection.Selection;
+  selection: Selection;
   file: file.CueFile;
   // Callbacks
-  updateCueFileAndSelection: util.Mutator<[file.CueFile, selection.Selection]>;
+  updateCueFileAndSelection: util.Mutator<[file.CueFile, Selection]>;
 }
 
-class EventProperties extends React.Component<
-  EventPropertiesProps,
-  Record<string, never>
-> {
-  public constructor(props: EventPropertiesProps) {
-    super(props);
-  }
-
-  private getEvent = (e: { layer: number; index: number }) => {
-    return this.props.file.layers[e.layer].events[e.index];
+const EventProperties: React.FunctionComponent<EventPropertiesProps> = ({
+  className,
+  selection,
+  file,
+  updateCueFileAndSelection,
+}) => {
+  const getEvent = (e: Selection['events'][number]) => {
+    return file.layers[e.layer].events[e.index];
   };
 
-  private getEarliestStartTime = () => {
-    const startTimes = this.props.selection.events.map(
-      (e) => this.getEvent(e).timestampMillis
-    );
-    return Math.round(Math.min.apply(null, startTimes));
+  const getEarliestStartTime = () => {
+    const startTimes = selection.events.map((e) => getEvent(e).timestampMillis);
+    return Math.round(Math.min(...startTimes));
   };
 
-  private getCommonDuration = () => {
+  const getCommonDuration = () => {
     let commonDuration: number | null = null;
-    for (const e of this.props.selection.events) {
+    for (const e of selection.events) {
       const eventDuration = (() => {
-        const event = this.getEvent(e);
+        const event = getEvent(e);
         if (event.states.length === 0) {
           // Get default duration for this layer
-          const layer = this.props.file.layers[e.layer];
+          const layer = file.layers[e.layer];
           if (layer.kind === 'percussion') {
             return layer.settings.defaultLengthMillis;
           } else {
             throw new Error('unable to determine length of event');
           }
         } else {
-          return Math.max.apply(
-            null,
-            event.states.map((s) => s.millisDelta)
-          ) as number;
+          return Math.max(...event.states.map((s) => s.millisDelta));
         }
       })();
       if (commonDuration === null) {
@@ -67,97 +60,95 @@ class EventProperties extends React.Component<
     return commonDuration;
   };
 
-  private onStartTimeChange = (value: string) => {
-    this.props.updateCueFileAndSelection(([f, s]) => [
+  const onStartTimeChange = (value: string) => {
+    updateCueFileAndSelection(([f, s]) => [
       fileManipulation.updateStartTimeForSelectedEvents(
         f,
-        this.props.selection,
+        selection,
         Number(value)
       ),
       s,
     ]);
   };
 
-  private onDurationChange = (value: string) => {
-    this.props.updateCueFileAndSelection(([f, s]) => [
+  const onDurationChange = (value: string) => {
+    updateCueFileAndSelection(([f, s]) => [
       fileManipulation.updateDurationForSelectedEvents(
         f,
-        this.props.selection,
+        selection,
         Number(value)
       ),
       s,
     ]);
   };
 
-  private onDelete = () => {
-    this.props.updateCueFileAndSelection(([f, s]) => [
+  const onDelete = () => {
+    updateCueFileAndSelection(([f, s]) => [
       fileManipulation.deleteSelectedEvents(f, s),
-      selection.clearSelectedEvents(s),
+      clearSelectedEvents(s),
     ]);
   };
 
-  private onSpread = () => {
-    this.props.updateCueFileAndSelection(([f, s]) => [
+  const onSpread = () => {
+    updateCueFileAndSelection(([f, s]) => [
       fileManipulation.distributeSelectedEvents(f, s),
       s,
     ]);
   };
 
-  public render() {
-    const selectedEvents = this.props.selection.events.length;
-    return (
-      <div className={this.props.className}>
-        {selectedEvents > 0 ? (
-          <div className="selection">
-            {text.pluralize(selectedEvents, 'Item', 'Items')} Selected
+  const selectedEvents = selection.events.length;
+  return (
+    <div className={className}>
+      {selectedEvents > 0 ? (
+        <div className="selection">
+          {text.pluralize(selectedEvents, 'Item', 'Items')} Selected
+        </div>
+      ) : (
+        <div className="selection empty">Nothing Selected</div>
+      )}
+      {selectedEvents > 0 ? (
+        <div className="properties">
+          <div className="property">
+            <label htmlFor="startTime" title="Start time in milliseconds">
+              Start Time
+            </label>
+            <DelayedPropigationInput
+              id="startTime"
+              type="number"
+              value={`${getEarliestStartTime()}`}
+              onChange={onStartTimeChange}
+            />
           </div>
-        ) : (
-          <div className="selection empty">Nothing Selected</div>
-        )}
-        {selectedEvents > 0 ? (
-          <div className="properties">
-            <div className="property">
-              <label htmlFor="startTime" title="Start time in milliseconds">
-                Start Time
-              </label>
-              <DelayedPropigationInput
-                id="startTime"
-                type="number"
-                value={String(this.getEarliestStartTime())}
-                onChange={this.onStartTimeChange}
-              />
-            </div>
-            <div className="property">
-              <label htmlFor="duration">Event Duration</label>
-              <DelayedPropigationInput
-                id="duration"
-                type="number"
-                value={String(this.getCommonDuration())}
-                onChange={this.onDurationChange}
-              />
-            </div>
-            <div className="property">
-              <button onClick={this.onDelete} title="Delete">
-                <MdDelete />
-              </button>
-            </div>
-            <div
-              className="property"
-              title="Distribute the selected items evenly"
+          <div className="property">
+            <label htmlFor="duration">Event Duration</label>
+            <DelayedPropigationInput
+              id="duration"
+              type="number"
+              value={`${getCommonDuration()}`}
+              onChange={onDurationChange}
+            />
+          </div>
+          <div className="property">
+            <button onClick={onDelete} title="Delete">
+              <MdDelete />
+            </button>
+          </div>
+          <div
+            className="property"
+            title="Distribute the selected items evenly"
+          >
+            <button
+              className={selectedEvents === 1 ? 'disabled' : ''}
+              onClick={onSpread}
             >
-              <button
-                className={selectedEvents === 1 ? 'disabled' : ''}
-                onClick={this.onSpread}
-              >
-                DISTRIBUTE
-              </button>
-            </div>
+              DISTRIBUTE
+            </button>
           </div>
-        ) : null}
-      </div>
-    );
-  }
-}
+        </div>
+      ) : null}
+    </div>
+  );
+};
 
 const itemPropertiesSpacingPx = 8;
 
