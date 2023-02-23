@@ -20,97 +20,79 @@ export interface VisualisedState {
   width: number;
 }
 
-class LayerVisualization extends React.Component<
-  LayerVisualizationProps,
-  Record<string, never>
-> {
-  /** The current layer that we have processed */
-  private currentLayer: file.AnyLayer | null = null;
+const processPercussionLayerEvents = (
+  layer: file.PercussionLayer
+): file.CueFileEvent<VisualisedState>[] => {
+  const defaultPercussionStates: file.CueFileEventState<VisualisedState>[] = [
+    { millisDelta: 0, values: { width: 1 } },
+    { millisDelta: layer.settings.defaultLengthMillis, values: { width: 0 } },
+  ];
+  return util.deepFreeze(
+    layer.events
+      .map((event) => {
+        return {
+          timestampMillis: event.timestampMillis,
+          states:
+            event.states.length > 0
+              ? event.states.map((s) => ({
+                  millisDelta: s.millisDelta,
+                  values: { width: s.values.amplitude },
+                }))
+              : defaultPercussionStates,
+        };
+      })
+      .sort((a, b) => a.timestampMillis - b.timestampMillis)
+  );
+};
 
-  /** The normalized layer event data */
-  private processedLayerEvents: file.CueFileEvent<VisualisedState>[] | null =
-    null;
+const LayerVisualization: React.FunctionComponent<LayerVisualizationProps> = ({
+  className,
+  layer,
+  positionMillis,
+}) => {
+  const [processedLayerEvents, setProcessedLayerEvents] = React.useState<Array<
+    file.CueFileEvent<VisualisedState>
+  > | null>(null);
 
-  constructor(props: LayerVisualizationProps) {
-    super(props);
-  }
-
-  private processLayerIfNeeded() {
-    if (this.currentLayer !== this.props.layer) {
-      this.currentLayer = this.props.layer;
-      this.processedLayerEvents = file.switchLayer(this.currentLayer, {
-        percussion: this.processPercussionLayerEvents,
+  React.useEffect(() => {
+    setProcessedLayerEvents(
+      file.switchLayer(layer, {
+        percussion: processPercussionLayerEvents,
         tones: (_layer) => [],
-      });
-      console.debug('processed', this.currentLayer, this.processedLayerEvents);
-    }
-  }
-
-  private processPercussionLayerEvents(
-    layer: file.PercussionLayer
-  ): file.CueFileEvent<VisualisedState>[] {
-    const defaultPercussionStates: file.CueFileEventState<VisualisedState>[] = [
-      { millisDelta: 0, values: { width: 1 } },
-      { millisDelta: layer.settings.defaultLengthMillis, values: { width: 0 } },
-    ];
-    return util.deepFreeze(
-      layer.events
-        .map((event) => {
-          return {
-            timestampMillis: event.timestampMillis,
-            states:
-              event.states.length > 0
-                ? event.states.map((s) => ({
-                    millisDelta: s.millisDelta,
-                    values: { width: s.values.amplitude },
-                  }))
-                : defaultPercussionStates,
-          };
-        })
-        .sort((a, b) => a.timestampMillis - b.timestampMillis)
+      })
     );
-  }
+  }, [layer]);
 
   /**
    * Return the events that are active for the current timestamp
    */
-  private getCurrentEvents(): file.CueFileEvent<VisualisedState>[] {
-    if (!this.processedLayerEvents) return [];
-    return getActiveEvents(
-      this.processedLayerEvents,
-      this.props.positionMillis
-    );
-  }
+  const getCurrentEvents = (): file.CueFileEvent<VisualisedState>[] => {
+    if (!processedLayerEvents) return [];
+    return getActiveEvents(processedLayerEvents, positionMillis);
+  };
 
-  private getCurrentState(
+  const getCurrentState = (
     event: file.CueFileEvent<VisualisedState>
-  ): VisualisedState {
+  ): VisualisedState => {
     return {
-      width: getCurrentEventStateValue(
-        event,
-        this.props.positionMillis,
-        (s) => s.width
-      ),
+      width: getCurrentEventStateValue(event, positionMillis, (s) => s.width),
     };
-  }
+  };
 
-  public render() {
-    this.processLayerIfNeeded();
-    const states = this.getCurrentEvents().map((e) => this.getCurrentState(e));
-    const width =
-      states.length === 0
-        ? 0
-        : Math.max.apply(
-            null,
-            states.map((s) => s.width)
-          );
-    return (
-      <div className={this.props.className}>
-        <div className="box" style={{ width: width * 100 + '%' }} />
-      </div>
-    );
-  }
-}
+  const states = getCurrentEvents().map((e) => getCurrentState(e));
+  const width =
+    states.length === 0
+      ? 0
+      : Math.max.apply(
+          null,
+          states.map((s) => s.width)
+        );
+  return (
+    <div className={className}>
+      <div className="box" style={{ width: width * 100 + '%' }} />
+    </div>
+  );
+};
 
 const StyledLayerVisualization = styled(LayerVisualization)`
   width: ${(p) => p.theme.visualizationWidthPx}px;
