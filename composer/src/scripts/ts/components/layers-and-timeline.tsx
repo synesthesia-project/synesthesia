@@ -43,11 +43,18 @@ const LayersAndTimeline: React.FunctionComponent<LayersAndTimelineProps> = ({
   openLayerOptions,
   toggleZoomPanLock,
 }) => {
-  const updateInterval = React.useRef<number>(-1);
+  const nextUpdate = React.useRef<{
+    animationFrame: number;
+    playState: PlayState;
+  }>({
+    animationFrame: -1,
+    playState,
+  });
   /**
    * Current position in milliseconds, updated every so often based on frame-rate
    */
   const [positionMillis, setPositionMillis] = React.useState<number>(0);
+  // TODO: set up some kind of debouncer for this to take it at framerate
   const [mousePosition, setMousePosition] = React.useState<number | null>(null);
   /**
    * If the user is currently dragging the selected elements, then
@@ -70,20 +77,22 @@ const LayersAndTimeline: React.FunctionComponent<LayersAndTimelineProps> = ({
   };
 
   React.useEffect(() => {
+    const update = () => {
+      if (nextUpdate.current.playState) {
+        updatePosition(nextUpdate.current.playState);
+      }
+      nextUpdate.current.animationFrame = requestAnimationFrame(update);
+    };
+    nextUpdate.current.animationFrame = requestAnimationFrame(update);
+    return () => {
+      cancelAnimationFrame(nextUpdate.current.animationFrame);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    nextUpdate.current.playState = playState;
     if (playState) {
       updatePosition(playState);
-      // Start a re-rendering interval if currently playing
-      if (playState.state.type === 'playing') {
-        const update = () => {
-          console.log('update');
-          updatePosition(playState);
-          updateInterval.current = requestAnimationFrame(update);
-        };
-        updateInterval.current = requestAnimationFrame(update);
-        return () => {
-          cancelAnimationFrame(updateInterval.current);
-        };
-      }
     }
   }, [playState]);
 
