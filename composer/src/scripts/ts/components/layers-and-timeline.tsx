@@ -7,6 +7,7 @@ import * as selection from '../data/selection';
 import * as util from '@synesthesia-project/core/lib/util';
 import * as stageState from '../data/stage-state';
 import { PlayState, PlayStateData } from '../data/play-state';
+import { useDebouncedState } from './util/debounce';
 
 export interface LayersAndTimelineProps {
   // Properties
@@ -27,6 +28,8 @@ export interface LayersAndTimelineProps {
   toggleZoomPanLock: () => void;
 }
 
+let last = 0;
+
 const LayersAndTimeline: React.FunctionComponent<LayersAndTimelineProps> = ({
   className,
   selection,
@@ -43,6 +46,9 @@ const LayersAndTimeline: React.FunctionComponent<LayersAndTimelineProps> = ({
   openLayerOptions,
   toggleZoomPanLock,
 }) => {
+  const now = performance.now();
+  console.log('render', Math.floor(now - last));
+  last = now;
   const nextUpdate = React.useRef<{
     animationFrame: number;
     playState: PlayState;
@@ -55,12 +61,14 @@ const LayersAndTimeline: React.FunctionComponent<LayersAndTimelineProps> = ({
    */
   const [positionMillis, setPositionMillis] = React.useState<number>(0);
   // TODO: set up some kind of debouncer for this to take it at framerate
-  const [mousePosition, setMousePosition] = React.useState<number | null>(null);
+  const [mousePosition, setMousePosition] = useDebouncedState<number | null>(
+    null
+  );
   /**
    * If the user is currently dragging the selected elements, then
    * this is the difference in milliseconds
    */
-  const [selectionDraggingDiff, setSelectionDraggingDiff] = React.useState<
+  const [selectionDraggingDiff, setSelectionDraggingDiff] = useDebouncedState<
     number | null
   >(null);
 
