@@ -6,7 +6,8 @@ import * as file from '@synesthesia-project/core/lib/file';
 import * as selection from '../data/selection';
 import * as util from '@synesthesia-project/core/lib/util';
 import * as stageState from '../data/stage-state';
-import * as playState from '../data/play-state';
+import { PlayState, PlayStateData } from '../data/play-state';
+import { useDebouncedState } from './util/debounce';
 
 export interface LayersAndTimelineProps {
   // Properties
@@ -14,7 +15,7 @@ export interface LayersAndTimelineProps {
   selection: selection.Selection;
   file: file.CueFile | null;
   state: stageState.StageState;
-  playState: playState.PlayState;
+  playState: PlayState;
   bindingLayer: number | null;
   midiLayerBindings: { input: string; note: number; layer: number }[];
   // Callbacks
@@ -27,158 +28,158 @@ export interface LayersAndTimelineProps {
   toggleZoomPanLock: () => void;
 }
 
-export interface LayersAndTimelineState {
-  /** Current position in milliseconds, updated every so often based on frame-rate */
-  positionMillis: number;
-  mousePosition: number | null;
+let last = 0;
+
+const LayersAndTimeline: React.FunctionComponent<LayersAndTimelineProps> = ({
+  className,
+  selection,
+  file,
+  state,
+  playState,
+  bindingLayer,
+  midiLayerBindings,
+  timelineRef,
+  layersRef,
+  updateCueFile,
+  updateSelection,
+  requestBindingForLayer,
+  openLayerOptions,
+  toggleZoomPanLock,
+}) => {
+  const now = performance.now();
+  console.log('render', Math.floor(now - last));
+  last = now;
+  const nextUpdate = React.useRef<{
+    animationFrame: number;
+    playState: PlayState;
+  }>({
+    animationFrame: -1,
+    playState,
+  });
+  /**
+   * Current position in milliseconds, updated every so often based on frame-rate
+   */
+  const [positionMillis, setPositionMillis] = React.useState<number>(0);
+  // TODO: set up some kind of debouncer for this to take it at framerate
+  const [mousePosition, setMousePosition] = useDebouncedState<number | null>(
+    null
+  );
   /**
    * If the user is currently dragging the selected elements, then
    * this is the difference in milliseconds
    */
-  selectionDraggingDiff: number | null;
-}
+  const [selectionDraggingDiff, setSelectionDraggingDiff] = useDebouncedState<
+    number | null
+  >(null);
 
-class LayersAndTimeline extends React.Component<
-  LayersAndTimelineProps,
-  LayersAndTimelineState
-> {
-  private updateInterval = -1;
-
-  constructor(props: LayersAndTimelineProps) {
-    super(props);
-    this.state = {
-      positionMillis: 0,
-      mousePosition: null,
-      selectionDraggingDiff: null,
-    };
-  }
-
-  public componentDidMount() {
-    this.updatePositionInterval(this.props);
-  }
-
-  public componentWillReceiveProps(newProps: LayersAndTimelineProps) {
-    this.updatePositionInterval(newProps);
-  }
-
-  private updatePositionInterval = (newProps: LayersAndTimelineProps) => {
-    cancelAnimationFrame(this.updateInterval);
-    const playState = newProps.playState;
-    if (playState) {
-      // Start a re-rendering interval if currently playing
-      if (playState.state.type === 'playing') {
-        const update = () => {
-          this.updatePosition(playState);
-          this.updateInterval = requestAnimationFrame(update);
-        };
-        this.updateInterval = requestAnimationFrame(update);
-      }
-      this.updatePosition(playState);
-    }
-  };
-
-  private updatePosition = (playState: playState.PlayStateData) => {
+  const updatePosition = (playState: PlayStateData) => {
     const time =
       playState.state.type === 'paused'
         ? playState.state.positionMillis
         : (performance.now() - playState.state.effectiveStartTimeMillis) *
           playState.state.playSpeed;
     // Update positionMillis with time if different enough
-    if (
-      time < this.state.positionMillis - 10 ||
-      time > this.state.positionMillis + 10
-    )
-      this.setState({ positionMillis: time });
-  };
-
-  private updateMouseHover = (mousePosition: number | null) => {
-    this.setState({ mousePosition });
-  };
-
-  private updateSelectionDraggingDiff = (
-    selectionDraggingDiff: number | null
-  ) => {
-    this.setState({ selectionDraggingDiff });
-  };
-
-  public render() {
-    let layers: JSX.Element[] | null = null;
-    if (this.props.file) {
-      const file = this.props.file;
-      layers = this.props.file.layers.map((layer, i) => (
-        <Layer
-          key={i}
-          file={file}
-          layerKey={i}
-          layer={layer}
-          zoom={this.props.state.zoomPan}
-          selection={this.props.selection}
-          positionMillis={this.state.positionMillis}
-          bindingLayer={this.props.bindingLayer}
-          midiLayerBindings={this.props.midiLayerBindings}
-          selectionDraggingDiff={this.state.selectionDraggingDiff}
-          updateSelection={this.props.updateSelection}
-          updateCueFile={this.props.updateCueFile}
-          requestBindingForLayer={this.props.requestBindingForLayer}
-          updateSelectionDraggingDiff={this.updateSelectionDraggingDiff}
-          openLayerOptions={this.props.openLayerOptions}
-        />
-      ));
-    }
-
-    const playerPosition = this.props.file
-      ? this.state.positionMillis / this.props.file.lengthMillis
-      : null;
-
-    const zoomMargin = stageState.relativeZoomMargins(
-      this.props.state.zoomPan,
-      playerPosition || 0
+    setPositionMillis((current) =>
+      time < current - 10 || time > current + 10 ? time : current
     );
+  };
 
-    return (
-      <div className={this.props.className}>
-        <div className="layers" ref={(layers) => this.props.layersRef(layers)}>
-          {layers}
-          <div className="overlay">
-            <div
-              className="zoom"
-              style={{
-                left: -zoomMargin.left * 100 + '%',
-                right: -zoomMargin.right * 100 + '%',
-              }}
-            >
-              {playerPosition !== null && (
-                <div
-                  className="marker player-position"
-                  style={{ left: playerPosition * 100 + '%' }}
-                />
-              )}
-              {this.state.mousePosition !== null && (
-                <div
-                  className="marker mouse"
-                  style={{ left: this.state.mousePosition * 100 + '%' }}
-                />
-              )}
-            </div>
+  React.useEffect(() => {
+    const update = () => {
+      if (nextUpdate.current.playState) {
+        updatePosition(nextUpdate.current.playState);
+      }
+      nextUpdate.current.animationFrame = requestAnimationFrame(update);
+    };
+    nextUpdate.current.animationFrame = requestAnimationFrame(update);
+    return () => {
+      cancelAnimationFrame(nextUpdate.current.animationFrame);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    nextUpdate.current.playState = playState;
+    if (playState) {
+      updatePosition(playState);
+    }
+  }, [playState]);
+
+  const layers = file
+    ? file.layers.map((layer, i) => (
+        <Layer
+          {...{
+            key: i,
+            file,
+            layer,
+            layerKey: i,
+            zoom: state.zoomPan,
+            selection,
+            positionMillis,
+            bindingLayer,
+            midiLayerBindings,
+            selectionDraggingDiff,
+            updateSelection,
+            updateCueFile,
+            requestBindingForLayer,
+            updateSelectionDraggingDiff: setSelectionDraggingDiff,
+            openLayerOptions,
+          }}
+        />
+      ))
+    : null;
+
+  const playerPosition = file ? positionMillis / file.lengthMillis : null;
+
+  const zoomMargin = stageState.relativeZoomMargins(
+    state.zoomPan,
+    playerPosition || 0
+  );
+
+  return (
+    <div className={className}>
+      <div className="layers" ref={layersRef}>
+        {layers}
+        <div className="overlay">
+          <div
+            className="zoom"
+            style={{
+              left: -zoomMargin.left * 100 + '%',
+              right: -zoomMargin.right * 100 + '%',
+            }}
+          >
+            {playerPosition !== null && (
+              <div
+                className="marker player-position"
+                style={{ left: playerPosition * 100 + '%' }}
+              />
+            )}
+            {mousePosition !== null && (
+              <div
+                className="marker mouse"
+                style={{ left: mousePosition * 100 + '%' }}
+              />
+            )}
           </div>
         </div>
-        {this.props.file && (
-          <Timeline
-            timelineRef={this.props.timelineRef}
-            updateCueFile={this.props.updateCueFile}
-            file={this.props.file}
-            zoom={this.props.state.zoomPan}
-            positionMillis={this.state.positionMillis}
-            playState={this.props.playState}
-            updateMouseHover={this.updateMouseHover}
-            mousePosition={this.state.mousePosition}
-            toggleZoomPanLock={this.props.toggleZoomPanLock}
-          />
-        )}
       </div>
-    );
-  }
-}
+      {file && (
+        <Timeline
+          {...{
+            timelineRef,
+            updateCueFile,
+            file,
+            zoom: state.zoomPan,
+            positionMillis,
+            playState,
+            updateMouseHover: setMousePosition,
+            mousePosition,
+            toggleZoomPanLock,
+          }}
+        />
+      )}
+    </div>
+  );
+};
 
 const StyledLayersAndTimeline = styled(LayersAndTimeline)`
   flex-grow: 1;
