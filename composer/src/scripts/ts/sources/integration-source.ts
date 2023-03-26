@@ -154,7 +154,7 @@ export class IntegrationSource extends Source {
 
   public connect() {
     if (this.connection) this.connection.socket.close();
-    const socket = new WebSocket(this.settings.websocketURL);
+    const socket = new WebSocket(this.settings.composerWsUrl);
     const connection: typeof this.connection = (this.connection = {
       socket,
       endpoint: null,

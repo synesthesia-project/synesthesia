@@ -13,7 +13,8 @@ import {
 
 export interface IntegrationSettings {
   name: string;
-  websocketURL: string;
+  controllerWsUrl: string;
+  composerWsUrl: string;
 }
 
 export interface FileActionRequest {

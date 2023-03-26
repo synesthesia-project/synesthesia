@@ -45,7 +45,12 @@ export class Server {
             response.end(
               composer.getIndexHtml({
                 name: 'Synesthesia Server',
-                websocketURL: `ws://localhost:${this.port}${COMPOSER_PATH}`,
+                composerWsUrl: `ws://${
+                  request.headers.host || `localhost:${this.port}`
+                }${COMPOSER_PATH}`,
+                controllerWsUrl: `ws://${
+                  request.headers.host || `localhost:${this.port}`
+                }${CONTROLLER_WEBSOCKET_PATH}`,
               }),
               'utf-8'
             );

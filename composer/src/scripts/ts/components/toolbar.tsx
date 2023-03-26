@@ -38,8 +38,10 @@ import {
 import { IntegrationButton } from './integration-button';
 import { ConnectionMetadataManager } from '@synesthesia-project/core/lib/protocols/util/connection-metadata';
 
-interface Window {
-  integrationSettings?: IntegrationSettings;
+declare global {
+  interface Window {
+    integrationSettings?: IntegrationSettings;
+  }
 }
 
 export interface FileSourceProps {
@@ -54,7 +56,11 @@ export interface FileSourceProps {
   fileLoaded: (id: string, file: file.CueFile) => void;
 }
 
-type Integration = { source: IntegrationSource; fileState: FileState } | null;
+type Integration = {
+  settings: IntegrationSettings;
+  source: IntegrationSource;
+  fileState: FileState;
+} | null;
 
 interface FileSourceState {
   integration: Integration;
@@ -73,6 +79,7 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
   );
 
   private readonly localFileController: FileController = new FileController(
+    window.integrationSettings || null,
     (fileControllerState) => this.setState({ fileControllerState }),
     this.connectionMetadata
   );
@@ -81,11 +88,11 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
     super(props);
 
     let integration: Integration = null;
-    const w = window as Window;
-    if (w.integrationSettings) {
+    if (window.integrationSettings) {
       integration = {
+        settings: window.integrationSettings,
         source: new IntegrationSource(
-          w.integrationSettings,
+          window.integrationSettings,
           this.connectionMetadata
         ),
         fileState: {
@@ -105,7 +112,7 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
             let integration: Integration = null;
             if (state.integration) {
               integration = {
-                source: state.integration.source,
+                ...state.integration,
                 fileState,
               };
             }
@@ -117,7 +124,7 @@ class Toolbar extends React.Component<FileSourceProps, FileSourceState> {
       });
     }
 
-    console.log('integrationSettings', w.integrationSettings);
+    console.log('integrationSettings', window.integrationSettings);
 
     this.state = {
       integration,
