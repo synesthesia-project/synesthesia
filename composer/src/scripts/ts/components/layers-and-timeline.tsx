@@ -28,8 +28,6 @@ export interface LayersAndTimelineProps {
   toggleZoomPanLock: () => void;
 }
 
-let last = 0;
-
 const LayersAndTimeline: React.FunctionComponent<LayersAndTimelineProps> = ({
   className,
   selection,
@@ -46,9 +44,6 @@ const LayersAndTimeline: React.FunctionComponent<LayersAndTimelineProps> = ({
   openLayerOptions,
   toggleZoomPanLock,
 }) => {
-  const now = performance.now();
-  console.log('render', Math.floor(now - last));
-  last = now;
   const nextUpdate = React.useRef<{
     animationFrame: number;
     playState: PlayState;

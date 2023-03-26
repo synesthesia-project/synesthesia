@@ -3,6 +3,7 @@ import universalParse from 'id3-parser/lib/universal';
 import { DEFAULT_SYNESTHESIA_PORT } from '@synesthesia-project/core/lib/constants';
 import { ControllerEndpoint } from '@synesthesia-project/core/lib/protocols/control';
 import { ConnectionMetadataManager } from '@synesthesia-project/core/lib/protocols/util/connection-metadata';
+import { IntegrationSettings } from '../../../../../dist/integration/shared';
 
 export type FileControllerState =
   | {
@@ -26,8 +27,6 @@ function loadAudioFile(audio: HTMLAudioElement, url: string): Promise<void> {
 }
 
 export class FileController {
-  private readonly listener: (state: FileControllerState) => void;
-  private readonly connectionMetadata: ConnectionMetadataManager;
   private readonly audio: HTMLAudioElement = document.createElement('audio');
 
   private endpoint: Promise<ControllerEndpoint> | null = null;
@@ -38,8 +37,9 @@ export class FileController {
   } | null = null;
 
   constructor(
-    listener: (state: FileControllerState) => void,
-    connectionMetadata: ConnectionMetadataManager
+    private readonly integration: IntegrationSettings | null,
+    private readonly listener: (state: FileControllerState) => void,
+    private readonly connectionMetadata: ConnectionMetadataManager
   ) {
     this.listener = listener;
     this.connectionMetadata = connectionMetadata;
@@ -88,7 +88,8 @@ export class FileController {
       const endpointPromise = (this.endpoint = new Promise(
         (resolve, reject) => {
           const ws = new WebSocket(
-            `ws://localhost:${DEFAULT_SYNESTHESIA_PORT}/control`
+            this.integration?.controllerWsUrl ||
+              `ws://localhost:${DEFAULT_SYNESTHESIA_PORT}/control`
           );
           let endpoint: ControllerEndpoint | null = null;
           ws.addEventListener('open', () => {
