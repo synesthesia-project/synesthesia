@@ -5,12 +5,13 @@ import { styled } from './styling';
 import * as util from '@synesthesia-project/core/lib/util';
 
 import * as stageState from '../data/stage-state';
-import { PlayState, PlayStateData } from '../data/play-state';
+import { PlayState } from '../data/play-state';
 
 export interface PlayerBarProps {
   // Properties
   className?: string;
   playState: PlayState;
+  trackPosition: number;
   scrubbingPosition: number | null;
   zoom: stageState.ZoomPanState;
   // Callbacks
@@ -20,45 +21,13 @@ export interface PlayerBarProps {
 const PlayerBar: React.FunctionComponent<PlayerBarProps> = ({
   className,
   playState,
+  trackPosition,
   scrubbingPosition,
   zoom,
   updateScrubbingPosition,
 }) => {
-  const animationFrame = React.useRef(-1);
   const barRef = React.useRef<HTMLDivElement | null>(null);
   const [dragging, setDragging] = React.useState(false);
-  const [trackPosition, setTrackPosition] = React.useState(0);
-
-  const initUpdateInterval = (playState: PlayStateData) => {
-    let nextFrame: number;
-    const updater = () => {
-      if (playState.state.type !== 'playing') return;
-      // HACK: For some reason cancelAnimationFrame() alone isn't working here...
-      if (nextFrame !== animationFrame.current) return;
-      const now = performance.now();
-      const elapsed =
-        (now - playState.state.effectiveStartTimeMillis) *
-        playState.state.playSpeed;
-      setTrackPosition(elapsed / playState.durationMillis);
-      nextFrame = animationFrame.current = requestAnimationFrame(updater);
-    };
-    nextFrame = animationFrame.current = requestAnimationFrame(updater);
-  };
-
-  React.useEffect(() => {
-    cancelAnimationFrame(animationFrame.current);
-    if (playState) {
-      if (playState.state.type === 'paused') {
-        setTrackPosition(
-          playState.state.positionMillis / playState.durationMillis
-        );
-      } else {
-        initUpdateInterval(playState);
-      }
-    } else {
-      setTrackPosition(0);
-    }
-  }, [playState]);
 
   const calculateBarPosition = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!barRef.current) return 0;

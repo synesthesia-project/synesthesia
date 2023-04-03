@@ -8,7 +8,7 @@ import {
 } from './styling';
 
 import * as stageState from '../data/stage-state';
-import { PlayState, PlayStateData } from '../data/play-state';
+import { PlayState } from '../data/play-state';
 import { displayMillis } from '../display/timing';
 
 import { PlayerBar } from './player-bar';
@@ -16,19 +16,12 @@ import { DropDownButton } from './util/drop-down-button';
 import { DelayedPropigationInput } from './util/input';
 
 import { MdPlayArrow, MdPause, MdSlowMotionVideo } from 'react-icons/md';
+import { useDebouncedState } from './util/debounce';
+import { PlayStateData } from '../../../../dist/integration/shared';
 
 const NO_TIME_STRING = '---';
 const CONTROL_HEIGHT_PX = 30;
 const CONTROL_HEIGHT = CONTROL_HEIGHT_PX + 'px';
-
-interface PlayerState {
-  /**
-   * If the user is currently scrubbing the track, this number will be set to
-   * a value in the interval [0, 1] that represents where they are strubbing to.
-   */
-  scrubbingPosition: number | null;
-  elapsedTimeText: string | null;
-}
 
 interface PlayerProps {
   // Properties
@@ -39,140 +32,125 @@ interface PlayerProps {
   playerRef: (player: HTMLDivElement | null) => void;
 }
 
-class Player extends React.Component<PlayerProps, PlayerState> {
-  private updateInterval: ReturnType<typeof setInterval> | null = null;
+const Player: React.FunctionComponent<PlayerProps> = ({
+  className,
+  playState,
+  zoom,
+  playerRef,
+}) => {
+  const [
+    /**
+     * If the user is currently scrubbing the track, this number will be set to
+     * a value in the interval [0, 1] that represents where they are strubbing to.
+     */
+    scrubbingPosition,
+    setScrubbingPosition,
+  ] = useDebouncedState<number | null>(null);
 
-  constructor(props: PlayerProps) {
-    super(props);
-    this.state = {
-      scrubbingPosition: null,
-      elapsedTimeText: null,
-    };
-  }
+  const animationFrame = React.useRef(-1);
+  const [trackPosition, setTrackPosition] = React.useState(0);
 
-  public componentWillReceiveProps(nextProps: PlayerProps) {
-    // Only call updateFromPlayState if playState has changed
-    if (this.props.playState !== nextProps.playState)
-      this.updateFromPlayState(nextProps.playState);
-  }
-
-  private setPlaySpeed = (value: string) => {
-    console.log('setPlaySpeed', value);
-    const playSpeed = parseFloat(value);
-    if (isNaN(playSpeed) || !this.props.playState) return;
-    this.props.playState.controls.setPlaySpeed(playSpeed);
-  };
-
-  private setPlaySpeed1 = () => {
-    this.setPlaySpeed('1');
-  };
-
-  private setPlaySpeedHalf = () => {
-    this.setPlaySpeed('0.5');
-  };
-
-  public render() {
-    const state = this.props.playState;
-    const playing = !!state && state.state.type === 'playing';
-    const disabled = !state;
-    const durationText =
-      state && state.state.type === 'playing'
-        ? displayMillis(state.durationMillis)
-        : NO_TIME_STRING;
-    const className = this.props.className + (disabled ? ' disabled' : '');
-    const playSpeed =
-      state && state.state.type === 'playing' ? state.state.playSpeed : 1;
-    return (
-      <div className={className} ref={(div) => this.props.playerRef(div)}>
-        <span className="play-pause" onClick={this.playPauseClicked}>
-          {playing ? <MdPause /> : <MdPlayArrow />}
-        </span>
-        <DropDownButton
-          icon={MdSlowMotionVideo}
-          buttonSizePx={CONTROL_HEIGHT_PX}
-          title="Play speed"
-          buttonText={playSpeed === 1 ? '' : playSpeed + 'x'}
-          active={playSpeed !== 1}
-          disabled={disabled}
-        >
-          <div className="speed-controls">
-            <span>Play Speed:</span>
-            <button onClick={this.setPlaySpeed1}>1x</button>
-            <button onClick={this.setPlaySpeedHalf}>0.5x</button>
-            <DelayedPropigationInput
-              type="number"
-              value={playSpeed.toString()}
-              onChange={this.setPlaySpeed}
-            />
-          </div>
-        </DropDownButton>
-        <span className="elapsed-time">
-          {this.state.elapsedTimeText
-            ? this.state.elapsedTimeText
-            : NO_TIME_STRING}
-        </span>
-        <PlayerBar
-          playState={this.props.playState}
-          scrubbingPosition={this.state.scrubbingPosition}
-          zoom={this.props.zoom}
-          updateScrubbingPosition={this.updateScrubbingPosition}
-        ></PlayerBar>
-        <span className="duration">{durationText}</span>
-      </div>
-    );
-  }
-
-  private playPauseClicked = () => {
-    if (this.props.playState) this.props.playState.controls.toggle();
-  };
-
-  private updateFromPlayState(playState: PlayState) {
-    if (this.updateInterval !== null) clearInterval(this.updateInterval);
-    if (playState) {
-      if (playState.state.type === 'paused') {
-        this.updateElapsedText(playState, playState.state.positionMillis);
-      } else {
-        this.initUpdateInterval(playState);
-      }
-    } else {
-      this.setState({ elapsedTimeText: null });
-    }
-  }
-
-  private initUpdateInterval(playState: PlayStateData) {
+  const initUpdateInterval = (playState: PlayStateData) => {
+    let nextFrame: number;
     const updater = () => {
       if (playState.state.type !== 'playing') return;
-      const effectiveStartTimeMillis = playState.state.effectiveStartTimeMillis;
-      const playSpeed = playState.state.playSpeed;
-      // Check if scrubbing
+      // HACK: For some reason cancelAnimationFrame() alone isn't working here...
+      if (nextFrame !== animationFrame.current) return;
+      const now = performance.now();
       const elapsed =
-        this.state.scrubbingPosition !== null
-          ? playState.durationMillis * this.state.scrubbingPosition
-          : (performance.now() - effectiveStartTimeMillis) * playSpeed;
-      this.updateElapsedText(playState, elapsed);
+        (now - playState.state.effectiveStartTimeMillis) *
+        playState.state.playSpeed;
+      setTrackPosition(elapsed / playState.durationMillis);
+      nextFrame = animationFrame.current = requestAnimationFrame(updater);
     };
-    // Pick a nice interval that will show the milliseconds updating
-    this.updateInterval = setInterval(updater, 16);
-    updater();
-  }
-
-  /**
-   * Update elapsed text, but if scrubbing display that time instead
-   */
-  private updateElapsedText(playState: PlayStateData, elapsed: number) {
-    elapsed =
-      this.state.scrubbingPosition !== null
-        ? playState.durationMillis * this.state.scrubbingPosition
-        : elapsed;
-    this.setState({ elapsedTimeText: displayMillis(elapsed) });
-  }
-
-  private updateScrubbingPosition = (position: number | null) => {
-    this.setState({
-      scrubbingPosition: position,
-    });
+    nextFrame = animationFrame.current = requestAnimationFrame(updater);
   };
-}
+
+  React.useEffect(() => {
+    cancelAnimationFrame(animationFrame.current);
+    if (playState) {
+      if (playState.state.type === 'paused') {
+        setTrackPosition(
+          playState.state.positionMillis / playState.durationMillis
+        );
+      } else {
+        initUpdateInterval(playState);
+      }
+    } else {
+      setTrackPosition(0);
+    }
+  }, [playState]);
+
+  const elapsedTimeText = playState
+    ? displayMillis(
+        scrubbingPosition !== null
+          ? playState.durationMillis * scrubbingPosition
+          : playState.state.type === 'playing'
+          ? (performance.now() - playState.state.effectiveStartTimeMillis) *
+            playState.state.playSpeed
+          : playState.state.positionMillis
+      )
+    : null;
+
+  const setPlaySpeed = (value: string) => {
+    console.log('setPlaySpeed', value);
+    const playSpeed = parseFloat(value);
+    if (isNaN(playSpeed) || !playState) return;
+    playState.controls.setPlaySpeed(playSpeed);
+  };
+
+  const setPlaySpeed1 = () => {
+    setPlaySpeed('1');
+  };
+
+  const setPlaySpeedHalf = () => {
+    setPlaySpeed('0.5');
+  };
+
+  const playing = playState?.state.type === 'playing';
+  const disabled = !playState;
+  const durationText =
+    playState?.state.type === 'playing'
+      ? displayMillis(playState.durationMillis)
+      : NO_TIME_STRING;
+  const playSpeed =
+    playState?.state.type === 'playing' ? playState.state.playSpeed : 1;
+  return (
+    <div className={className + (disabled ? ' disabled' : '')} ref={playerRef}>
+      <span className="play-pause" onClick={playState?.controls.toggle}>
+        {playing ? <MdPause /> : <MdPlayArrow />}
+      </span>
+      <DropDownButton
+        icon={MdSlowMotionVideo}
+        buttonSizePx={CONTROL_HEIGHT_PX}
+        title="Play speed"
+        buttonText={playSpeed === 1 ? '' : playSpeed + 'x'}
+        active={playSpeed !== 1}
+        disabled={disabled}
+      >
+        <div className="speed-controls">
+          <span>Play Speed:</span>
+          <button onClick={setPlaySpeed1}>1x</button>
+          <button onClick={setPlaySpeedHalf}>0.5x</button>
+          <DelayedPropigationInput
+            type="number"
+            value={playSpeed.toString()}
+            onChange={setPlaySpeed}
+          />
+        </div>
+      </DropDownButton>
+      <span className="elapsed-time">{elapsedTimeText || NO_TIME_STRING}</span>
+      <PlayerBar
+        playState={playState}
+        trackPosition={trackPosition}
+        scrubbingPosition={scrubbingPosition}
+        zoom={zoom}
+        updateScrubbingPosition={setScrubbingPosition}
+      ></PlayerBar>
+      <span className="duration">{durationText}</span>
+    </div>
+  );
+};
 
 const StyledPlayer = styled(Player)`
   background-color: ${(p) => p.theme.bgLight1};
