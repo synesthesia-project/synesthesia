@@ -7,14 +7,6 @@ import * as util from '@synesthesia-project/core/lib/util';
 import * as stageState from '../data/stage-state';
 import { PlayState, PlayStateData } from '../data/play-state';
 
-export interface PlayerBarState {
-  /**
-   * True iff the user is currently dragging the button
-   */
-  dragging: boolean;
-  trackPosition: number;
-}
-
 export interface PlayerBarProps {
   // Properties
   className?: string;
@@ -25,143 +17,114 @@ export interface PlayerBarProps {
   updateScrubbingPosition: (position: number | null) => void;
 }
 
-class PlayerBar extends React.Component<PlayerBarProps, PlayerBarState> {
-  private updateInterval = -1;
+const PlayerBar: React.FunctionComponent<PlayerBarProps> = ({
+  className,
+  playState,
+  scrubbingPosition,
+  zoom,
+  updateScrubbingPosition,
+}) => {
+  const animationFrame = React.useRef(-1);
+  const barRef = React.useRef<HTMLDivElement | null>(null);
+  const [dragging, setDragging] = React.useState(false);
+  const [trackPosition, setTrackPosition] = React.useState(0);
 
-  // Elements
-  private barRef: HTMLDivElement | null = null;
-
-  constructor(props: PlayerBarProps) {
-    super(props);
-    this.state = {
-      dragging: false,
-      trackPosition: 0,
-    };
-  }
-
-  public componentDidMount() {
-    this.updateFromPlayState(this.props.playState);
-  }
-
-  public componentWillReceiveProps(nextProps: PlayerBarProps) {
-    // Only call updateFromPlayState if playState has changed
-    if (this.props.playState !== nextProps.playState)
-      this.updateFromPlayState(nextProps.playState);
-  }
-
-  public render() {
-    const className =
-      (this.props.className ? this.props.className : '') +
-      (this.state.dragging ? ' dragging' : '') +
-      (this.props.playState ? '' : ' disabled');
-    const fillWidth = util.restrict(this.state.trackPosition, 0, 1) * 100 + '%';
-    const buttonPosition =
-      this.props.scrubbingPosition !== null
-        ? this.props.scrubbingPosition
-        : this.state.trackPosition;
-    const buttonLeft = util.restrict(buttonPosition, 0, 1) * 100 + '%';
-    const viewport = stageState.getZoomPanViewport(
-      this.props.zoom,
-      this.state.trackPosition
-    );
-    return (
-      <div className={className}>
-        <div
-          className="zoom"
-          style={{
-            left: viewport.startPoint * 100 + '%',
-            right: (1 - viewport.endPoint) * 100 + '%',
-          }}
-        ></div>
-        <div className="bar" ref={(bar) => (this.barRef = bar)}>
-          <div className="fill" style={{ width: fillWidth }} />
-        </div>
-        <div className="button" style={{ left: buttonLeft }} />
-        <div
-          className="hit"
-          onMouseDown={this.onMouseDown}
-          onMouseMove={this.onMouseMove}
-          onMouseUp={this.onMouseUp}
-          onMouseOut={this.onMouseUp}
-        ></div>
-      </div>
-    );
-  }
-
-  private calculateBarPosition(e: React.MouseEvent<HTMLDivElement>) {
-    if (!this.barRef) return 0;
-    const $bar = jQuery(this.barRef);
-    const position = (e.pageX - $bar.offset().left) / $bar.width();
-    return util.restrict(position, 0, 1);
-  }
-
-  private onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Only allow dragging if playing
-    if (!this.props.playState) return;
-    e.preventDefault();
-    this.setState({
-      dragging: true,
-    });
-    this.props.updateScrubbingPosition(this.calculateBarPosition(e));
-  };
-
-  private onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!this.state.dragging) return;
-    e.preventDefault();
-    this.props.updateScrubbingPosition(this.calculateBarPosition(e));
-  };
-
-  private onMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!this.state.dragging) return;
-    e.preventDefault();
-    const position = this.calculateBarPosition(e);
-    if (this.props.playState) {
-      this.props.playState.controls.goToTime(
-        this.props.playState.durationMillis * position
-      );
-    }
-    this.setState({
-      dragging: false,
-    });
-    this.props.updateScrubbingPosition(null);
-  };
-
-  private updateFromPlayState = (playState: PlayState) => {
-    cancelAnimationFrame(this.updateInterval);
-    this.updateInterval = -1;
-    if (playState) {
-      if (playState.state.type === 'paused') {
-        this.updateBarPosition(
-          playState.state.positionMillis / playState.durationMillis
-        );
-      } else {
-        this.initUpdateInterval(playState);
-      }
-    } else {
-      this.updateBarPosition(0);
-    }
-  };
-
-  private initUpdateInterval = (playState: PlayStateData) => {
+  const initUpdateInterval = (playState: PlayStateData) => {
     let nextFrame: number;
     const updater = () => {
       if (playState.state.type !== 'playing') return;
       // HACK: For some reason cancelAnimationFrame() alone isn't working here...
-      if (nextFrame !== this.updateInterval) return;
+      if (nextFrame !== animationFrame.current) return;
       const now = performance.now();
       const elapsed =
         (now - playState.state.effectiveStartTimeMillis) *
         playState.state.playSpeed;
-      this.updateBarPosition(elapsed / playState.durationMillis);
-      nextFrame = this.updateInterval = requestAnimationFrame(updater);
+      setTrackPosition(elapsed / playState.durationMillis);
+      nextFrame = animationFrame.current = requestAnimationFrame(updater);
     };
-    nextFrame = this.updateInterval = requestAnimationFrame(updater);
+    nextFrame = animationFrame.current = requestAnimationFrame(updater);
   };
 
-  private updateBarPosition = (trackPosition: number) => {
-    this.setState({ trackPosition });
+  React.useEffect(() => {
+    cancelAnimationFrame(animationFrame.current);
+    if (playState) {
+      if (playState.state.type === 'paused') {
+        setTrackPosition(
+          playState.state.positionMillis / playState.durationMillis
+        );
+      } else {
+        initUpdateInterval(playState);
+      }
+    } else {
+      setTrackPosition(0);
+    }
+  }, [playState]);
+
+  const calculateBarPosition = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!barRef.current) return 0;
+    const $bar = jQuery(barRef.current);
+    const position = (e.pageX - $bar.offset().left) / $bar.width();
+    return util.restrict(position, 0, 1);
   };
-}
+
+  const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Only allow dragging if playing
+    if (!playState) return;
+    e.preventDefault();
+    setDragging(true);
+    updateScrubbingPosition(calculateBarPosition(e));
+  };
+
+  const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!dragging) return;
+    e.preventDefault();
+    updateScrubbingPosition(calculateBarPosition(e));
+  };
+
+  const onMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!dragging) return;
+    e.preventDefault();
+    const position = calculateBarPosition(e);
+    if (playState) {
+      playState.controls.goToTime(playState.durationMillis * position);
+    }
+    setDragging(false);
+    updateScrubbingPosition(null);
+  };
+
+  const finalClassName =
+    (className ? className : '') +
+    (dragging ? ' dragging' : '') +
+    (playState ? '' : ' disabled');
+  const fillWidth = util.restrict(trackPosition, 0, 1) * 100 + '%';
+  const buttonPosition =
+    scrubbingPosition !== null ? scrubbingPosition : trackPosition;
+  const buttonLeft = util.restrict(buttonPosition, 0, 1) * 100 + '%';
+  const viewport = stageState.getZoomPanViewport(zoom, trackPosition);
+
+  return (
+    <div className={finalClassName}>
+      <div
+        className="zoom"
+        style={{
+          left: viewport.startPoint * 100 + '%',
+          right: (1 - viewport.endPoint) * 100 + '%',
+        }}
+      ></div>
+      <div className="bar" ref={barRef}>
+        <div className="fill" style={{ width: fillWidth }} />
+      </div>
+      <div className="button" style={{ left: buttonLeft }} />
+      <div
+        className="hit"
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+        onMouseUp={onMouseUp}
+        onMouseOut={onMouseUp}
+      ></div>
+    </div>
+  );
+};
 
 const buttonHeightPx = 16;
 const buttonWidthPx = 6;
