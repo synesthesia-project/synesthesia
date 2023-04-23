@@ -21,7 +21,9 @@
   },
   "dependencies": {
     "lodash": "^4.17.13",
-    "ws": "^8.4.0"
+    "ws": "^8.4.0",
+    "fp-ts": "~2.13.1",
+    "io-ts": "~2.2.20"
   },
   "devDependencies": {
     "@synesthesia-project/composer": "^0.0.1",

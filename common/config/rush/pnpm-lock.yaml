@@ -7714,7 +7714,7 @@ packages:
     dev: false
 
   file:projects/server.tgz:
-    resolution: {integrity: sha512-TTo9gi2NqpSVs42V71EXgr0vKJ+5bAvqVYeBEaUhCegU/4jgWp0FRQtDS+V7ZBNvptnZXpFgJ1N9xXwCbG10kQ==, tarball: file:projects/server.tgz}
+    resolution: {integrity: sha512-n+8GZdLqZpnIzwC6q2ZhENSKVgIpTURamT/AAn+RWWw0o7mZRBcS6kXZ7ITE5LNZr9pXXd9pX19UzxImoyWrYA==, tarball: file:projects/server.tgz}
     name: '@rush-temp/server'
     version: 0.0.0
     dependencies:
@@ -7724,8 +7724,10 @@ packages:
       '@types/mocha': 5.2.7
       '@types/ws': 8.5.4
       chai: 4.2.0
+      fp-ts: 2.13.1
       gulp: 4.0.2
       gulp-mocha: 6.0.0
+      io-ts: 2.2.20_fp-ts@2.13.1
       lodash: 4.17.21
       mocha: 6.2.2
       source-map-support: 0.5.19
