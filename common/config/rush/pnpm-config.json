@@ -1,0 +1,6 @@
+{
+    "strictPeerDependencies": true,
+    "globalOverrides": {
+      "@types/json-socket>@types/node": "^18.11.18"
+    }
+}
