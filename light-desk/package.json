@@ -1,0 +1,66 @@
+{
+  "name": "@synesthesia-project/light-desk",
+  "version": "2.1.1",
+  "description": "A Node.js library for creating control panels for controlling lighting and other things",
+  "keywords": [
+    "lighting",
+    "lights",
+    "dmx",
+    "ola",
+    "osc",
+    "react",
+    "touch"
+  ],
+  "license": "MIT",
+  "main": "build/backend/index.js",
+  "types": "build/backend/index.d.js",
+  "author": {
+    "name": "Sam Lanning",
+    "email": "sam@samlanning.com",
+    "url": "https://samlanning.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/synesthesia-project/light-desk"
+  },
+  "scripts": {
+    "build": "gulp"
+  },
+  "devDependencies": {
+    "@synesthesia-project/gulp-util": "~0.0.1",
+    "@types/express": "^4.17.13",
+    "@types/lodash": "^4.14.120",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "@types/styled-components": "~5.1.26",
+    "@types/ws": "^8.2.2",
+    "gulp": "~4.0.2",
+    "gulp-clean": "^0.3.2",
+    "gulp-typedoc": "^3.0.2",
+    "gulp-webpack": "1.5.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-is": "~18.2.0",
+    "run-sequence": "^1.2.2",
+    "source-map-loader": "~0.2.4",
+    "styled-components": "5.3.3",
+    "typedoc": "^0.23.28",
+    "typescript": "~4.9.4"
+  },
+  "dependencies": {
+    "@types/node": "~18.11.18",
+    "lodash": "^4.17.13",
+    "ws": "^8.4.0"
+  },
+  "peerDependencies": {
+    "@types/express": "^4.17.13"
+  },
+  "peerDependenciesMeta": {
+    "@types/express": {
+      "optional": true
+    }
+  },
+  "files": [
+    "build/**/*"
+  ]
+}

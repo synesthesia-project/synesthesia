@@ -342,6 +342,10 @@
       "projectFolder": "gapless-meta"
     },
     {
+      "packageName": "@synesthesia-project/light-desk",
+      "projectFolder": "light-desk"
+    },
+    {
       "packageName": "@synesthesia-project/midi-consoles",
       "projectFolder": "midi-consoles"
     },
