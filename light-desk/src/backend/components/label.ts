@@ -1,10 +1,10 @@
-import {extend} from 'lodash';
+import { extend } from 'lodash';
 
 import * as proto from '../../shared/proto';
-import {LabelComponentStyle, LABEL_DEFAULT_STYLE} from '../../shared/styles';
-import {IDMap} from '../util/id-map';
+import { LabelComponentStyle, LABEL_DEFAULT_STYLE } from '../../shared/styles';
+import { IDMap } from '../util/id-map';
 
-import {Component} from './base';
+import { Component } from './base';
 
 /**
  * A simple text component. Could be used to label components in a desk, or for
@@ -13,7 +13,6 @@ import {Component} from './base';
  * ![](media://images/label_screenshot.png)
  */
 export class Label extends Component {
-
   /** @hidden */
   private readonly style: LabelComponentStyle;
   /** @hidden */
@@ -31,7 +30,7 @@ export class Label extends Component {
       component: 'label',
       key: idMap.getId(this),
       style: this.style,
-      text: this.text
+      text: this.text,
     };
   }
 

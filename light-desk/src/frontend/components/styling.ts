@@ -15,7 +15,7 @@ export const defaultTheme: DefaultTheme = {
   hintRGB: '66, 134, 244',
   hintDark1: '#2a77f3',
   textNormal: '#F3F3F5',
-  spacingPx: 15
+  spacingPx: 15,
 };
 
 export const GlobalStyle = createGlobalStyle`
@@ -36,27 +36,28 @@ body {
 }
 `;
 
-
 export const buttonStateNormal = css`
-  color: ${p => p.theme.textNormal};
+  color: ${(p) => p.theme.textNormal};
   background: linear-gradient(to bottom, #4f5053, #343436);
   text-shadow: 0 -1px rgba(0, 0, 0, 0.7);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 1px 0 0 rgba(0,0,0,0.25);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    0 1px 0 0 rgba(0, 0, 0, 0.25);
 `;
 
 export const buttonStateNormalHover = css`
-  color: ${p => p.theme.textNormal};
+  color: ${(p) => p.theme.textNormal};
   outline-color: rgba(243, 243, 245, 0.3);
-  background: linear-gradient(to bottom, #5e6064, #393A3B);
+  background: linear-gradient(to bottom, #5e6064, #393a3b);
   text-shadow: 0 -1px rgba(0, 0, 0, 0.7);
 `;
 
 export const buttonStateNormalActive = css`
   color: #ffffff;
   outline-color: rgba(255, 255, 255, 0.3);
-  background: linear-gradient(to bottom, #242525, #37383A);
+  background: linear-gradient(to bottom, #242525, #37383a);
   text-shadow: 0 -1px rgba(0, 0, 0, 0.4);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), 0 1px 0 0 rgba(255,255,255,0.15);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2),
+    0 1px 0 0 rgba(255, 255, 255, 0.15);
   transition-duration: 50ms;
 `;
 
@@ -77,8 +78,8 @@ const buttonStateDisabled = css`
   ${buttonStateNormal}
 
   cursor: default;
-  background: ${p => p.theme.bg} !important;
-  color: rgba(${p => p.theme.textNormal}, 0.4);
+  background: ${(p) => p.theme.bg} !important;
+  color: rgba(${(p) => p.theme.textNormal}, 0.4);
 `;
 
 const button = css`
@@ -88,7 +89,7 @@ const button = css`
   transition: all 200ms;
   padding: 6px 8px;
   border-radius: 3px;
-  border: 1px solid ${p => p.theme.borderDark};
+  border: 1px solid ${(p) => p.theme.borderDark};
   overflow: hidden;
   display: flex;
   justify-content: center;
@@ -139,7 +140,7 @@ export const touchIndicatorNormal = css`
 `;
 
 export const touchIndicatorTouching = css`
-  border-color: ${p => p.theme.hint};
-  background-color: rgba(${p => p.theme.hintRGB}, 0.2);
+  border-color: ${(p) => p.theme.hint};
+  background-color: rgba(${(p) => p.theme.hintRGB}, 0.2);
   transition: border-color 0s;
 `;

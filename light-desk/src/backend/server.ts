@@ -4,24 +4,28 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import * as proto from '../shared/proto';
-import {AudioFile, AUDIO_FILES} from '../shared/static';
+import { AudioFile, AUDIO_FILES } from '../shared/static';
 import { LightDeskOptions } from './options';
 
 const STATIC_DIR = path.resolve(__dirname, '../frontend');
 
-const STATIC_FILES: {[id: string]: [string, string]} = {
+const STATIC_FILES: { [id: string]: [string, string] } = {
   '/bundle.js': ['bundle.js', 'text/javascript'],
-  '/bundle.js.map': ['bundle.js.map', 'text/plain']
+  '/bundle.js.map': ['bundle.js.map', 'text/plain'],
 };
 
 // Add audio files to STATIC_FILES
 for (const key of Object.keys(AUDIO_FILES) as (keyof typeof AUDIO_FILES)[]) {
   const audioFile: AudioFile = AUDIO_FILES[key];
-  const contentType =
-    audioFile.file.endsWith('.wav') ? 'audio/wav' :
-    audioFile.file.endsWith('.ogg') ? 'audio/ogg' :
-    'application/octet-stream';
-  STATIC_FILES[`/audio/${audioFile.file}`] = [`audio/${audioFile.file}`, contentType];
+  const contentType = audioFile.file.endsWith('.wav')
+    ? 'audio/wav'
+    : audioFile.file.endsWith('.ogg')
+    ? 'audio/ogg'
+    : 'application/octet-stream';
+  STATIC_FILES[`/audio/${audioFile.file}`] = [
+    `audio/${audioFile.file}`,
+    contentType,
+  ];
 }
 
 export interface Connection {
@@ -29,15 +33,20 @@ export interface Connection {
 }
 
 export class Server {
-
   public constructor(
     private readonly options: LightDeskOptions,
     private readonly onNewConnection: (connection: Connection) => void,
     private readonly onClosedConnection: (connection: Connection) => void,
-    private readonly onMessage: (connection: Connection, message: proto.ClientMessage) => void
-  ){};
+    private readonly onMessage: (
+      connection: Connection,
+      message: proto.ClientMessage
+    ) => void
+  ) {}
 
-  public handleHttpRequest = (req: http.IncomingMessage, res: http.ServerResponse) => {
+  public handleHttpRequest = (
+    req: http.IncomingMessage,
+    res: http.ServerResponse
+  ) => {
     if (req.url === this.options.path) {
       const content = `
           <html>
@@ -65,10 +74,14 @@ export class Server {
 
     res.writeHead(404, { 'Content-Type': 'text/plain' });
     res.end('not found', 'utf-8');
-  }
+  };
 
-  private sendStaticFile = (file: string, response: http.ServerResponse, contentType: string) => {
-    fs.readFile(file, function(error, content) {
+  private sendStaticFile = (
+    file: string,
+    response: http.ServerResponse,
+    contentType: string
+  ) => {
+    fs.readFile(file, function (error, content) {
       if (error) {
         if (error.code === 'ENOENT') {
           response.writeHead(404, { 'Content-Type': 'text/plain' });
@@ -83,16 +96,17 @@ export class Server {
         response.end(content, 'utf-8');
       }
     });
-  }
+  };
 
   public handleWsConnection = <S extends WebSocket>(ws: S) => {
     const connection: Connection = {
-      sendMessage: msg => ws.send(JSON.stringify(msg))
+      sendMessage: (msg) => ws.send(JSON.stringify(msg)),
     };
     this.onNewConnection(connection);
     console.log('new connection');
-    ws.on('message', msg => this.onMessage(connection, JSON.parse(msg.toString())));
+    ws.on('message', (msg) =>
+      this.onMessage(connection, JSON.parse(msg.toString()))
+    );
     ws.on('close', () => this.onClosedConnection(connection));
-  }
-
+  };
 }

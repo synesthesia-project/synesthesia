@@ -16,14 +16,16 @@ interface Props {
 }
 
 class Rect extends React.Component<Props, {}> {
-
   public constructor(props: Props) {
     super(props);
   }
 
   public render() {
     return (
-      <div className={this.props.className} style={{ backgroundColor: colorToCss(this.props.info.color)}} />
+      <div
+        className={this.props.className}
+        style={{ backgroundColor: colorToCss(this.props.info.color) }}
+      />
     );
   }
 }

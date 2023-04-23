@@ -2,9 +2,14 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import * as proto from '../../shared/proto';
-import {play} from '../audio';
+import { play } from '../audio';
 
-import {rectButton, buttonStateNormalActive, touchIndicatorNormal, touchIndicatorTouching} from './styling';
+import {
+  rectButton,
+  buttonStateNormalActive,
+  touchIndicatorNormal,
+  touchIndicatorTouching,
+} from './styling';
 
 const TOUCH_INDICATOR_CLASS = 'touch-indicator';
 
@@ -19,11 +24,10 @@ interface State {
 }
 
 class Button extends React.Component<Props, State> {
-
   public constructor(props: Props) {
     super(props);
     this.state = {
-      touching: false
+      touching: false,
     };
 
     this.onClick = this.onClick.bind(this);
@@ -38,7 +42,8 @@ class Button extends React.Component<Props, State> {
         className={className + (this.state.touching ? ' touching' : '')}
         onClick={this.onClick}
         onTouchStart={this.onTouchStart}
-        onTouchEnd={this.onTouchEnd}>
+        onTouchEnd={this.onTouchEnd}
+      >
         <div className={TOUCH_INDICATOR_CLASS} />
         {this.props.info.text}
       </div>
@@ -51,7 +56,7 @@ class Button extends React.Component<Props, State> {
     this.props.sendMessage({
       type: 'component_message',
       componentKey: this.props.info.key,
-      component: 'button'
+      component: 'button',
     });
   }
 
@@ -62,12 +67,12 @@ class Button extends React.Component<Props, State> {
   private onTouchStart(event: React.TouchEvent<HTMLDivElement>) {
     play('touch');
     event.preventDefault();
-    this.setState({touching: true});
+    this.setState({ touching: true });
   }
 
   private onTouchEnd(event: React.TouchEvent<HTMLDivElement>) {
     event.preventDefault();
-    this.setState({touching: false});
+    this.setState({ touching: false });
     this.click();
     play('beep2');
   }
@@ -93,4 +98,4 @@ const StyledButton = styled(Button)`
   }
 `;
 
-export {StyledButton as Button};
+export { StyledButton as Button };

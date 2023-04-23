@@ -1,4 +1,4 @@
-import {AudioFile, AUDIO_FILES} from '../../shared/static';
+import { AudioFile, AUDIO_FILES } from '../../shared/static';
 
 /**
  * The root URL used for this light desk
@@ -9,7 +9,6 @@ const ROOT_URL = window.location.pathname;
  * A fixed-number collection of Audio elements for a single sound file, to allow for multi-playback of a single sound file
  */
 class AudioPool {
-
   private readonly startTime: number;
   private readonly pool: HTMLAudioElement[] = [];
   private next = 0;
@@ -27,7 +26,7 @@ class AudioPool {
     const audio = this.pool[this.next];
     audio.currentTime = this.startTime;
     audio.play();
-    this.next ++;
+    this.next++;
     if (this.next >= this.pool.length) this.next = 0;
   }
 }

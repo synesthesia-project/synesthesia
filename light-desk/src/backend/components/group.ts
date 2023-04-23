@@ -1,10 +1,10 @@
-import {extend} from 'lodash';
+import { extend } from 'lodash';
 
 import * as proto from '../../shared/proto';
-import {GroupComponentStyle, GROUP_DEFAULT_STYLE} from '../../shared/styles';
-import {IDMap} from '../util/id-map';
+import { GroupComponentStyle, GROUP_DEFAULT_STYLE } from '../../shared/styles';
+import { IDMap } from '../util/id-map';
 
-import {Component, Parent} from './base';
+import { Component, Parent } from './base';
 
 /**
  * A collection of components, grouped in either a row or column. Can contain
@@ -14,7 +14,6 @@ import {Component, Parent} from './base';
  * ![](media://images/group_screenshot.png)
  */
 export class Group extends Component implements Parent {
-
   /** @hidden */
   private readonly children: Component[] = [];
   /** @hidden */
@@ -46,7 +45,7 @@ export class Group extends Component implements Parent {
       key: idMap.getId(this),
       title: this.title,
       style: this.style,
-      children: this.children.map(c => c.getProtoInfo(idMap))
+      children: this.children.map((c) => c.getProtoInfo(idMap)),
     };
   }
 
@@ -64,8 +63,7 @@ export class Group extends Component implements Parent {
         if (c instanceof Group) {
           c.routeMessage(idMap, message);
         } else {
-          if (idMap.getId(c) === message.componentKey)
-            c.handleMessage(message);
+          if (idMap.getId(c) === message.componentKey) c.handleMessage(message);
         }
       }
     }

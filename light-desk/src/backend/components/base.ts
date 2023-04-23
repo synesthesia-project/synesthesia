@@ -1,8 +1,7 @@
 import * as proto from '../../shared/proto';
-import {IDMap} from '../util/id-map';
+import { IDMap } from '../util/id-map';
 
 export abstract class Component {
-
   /** @hidden */
   private parent: Parent | null = null;
 
@@ -26,7 +25,6 @@ export abstract class Component {
   public handleMessage(message: proto.ClientComponentMessage): void {
     console.log('Component Received Message:', message);
   }
-
 }
 
 /** @hidden */

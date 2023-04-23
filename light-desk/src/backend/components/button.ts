@@ -1,7 +1,7 @@
 import * as proto from '../../shared/proto';
-import {IDMap} from '../util/id-map';
+import { IDMap } from '../util/id-map';
 
-import {Component} from './base';
+import { Component } from './base';
 
 type Listener = () => void;
 
@@ -29,7 +29,6 @@ type Listener = () => void;
  * ![](media://images/button_screenshot.png)
  */
 export class Button extends Component {
-
   /** @hidden */
   private text: string;
 
@@ -46,7 +45,7 @@ export class Button extends Component {
     return {
       component: 'button',
       key: idMap.getId(this),
-      text: this.text
+      text: this.text,
     };
   }
 

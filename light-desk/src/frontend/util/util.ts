@@ -1,11 +1,13 @@
-
-export function trackMouseDown(move: (pos: {pageX: number, pageY: number}) => void, end: (pos: {pageX: number, pageY: number}) => void) {
+export function trackMouseDown(
+  move: (pos: { pageX: number; pageY: number }) => void,
+  end: (pos: { pageX: number; pageY: number }) => void
+) {
   const mouseMove = (ev: MouseEvent) => {
-    move({pageX: ev.pageX, pageY: ev.pageY});
+    move({ pageX: ev.pageX, pageY: ev.pageY });
   };
 
   const mouseUp = (ev: MouseEvent) => {
-    end({pageX: ev.pageX, pageY: ev.pageY});
+    end({ pageX: ev.pageX, pageY: ev.pageY });
     window.removeEventListener('mousemove', mouseMove);
     window.removeEventListener('mouseup', mouseUp);
     window.removeEventListener('mouseleave', mouseUp);
@@ -18,13 +20,13 @@ export function trackMouseDown(move: (pos: {pageX: number, pageY: number}) => vo
 
 export function trackTouch(
   touch: React.Touch,
-  move: (pos: {pageX: number, pageY: number}) => void,
-  end: (pos: {pageX: number, pageY: number}) => void
-    ) {
+  move: (pos: { pageX: number; pageY: number }) => void,
+  end: (pos: { pageX: number; pageY: number }) => void
+) {
   const touchMove = (ev: TouchEvent) => {
     for (const t of Array.from(ev.changedTouches)) {
       if (t.identifier === touch.identifier) {
-        move({pageX: t.pageX, pageY: t.pageY});
+        move({ pageX: t.pageX, pageY: t.pageY });
       }
     }
   };
@@ -32,7 +34,7 @@ export function trackTouch(
   const touchEnd = (ev: TouchEvent) => {
     for (const t of Array.from(ev.changedTouches)) {
       if (t.identifier === touch.identifier) {
-        end({pageX: t.pageX, pageY: t.pageY});
+        end({ pageX: t.pageX, pageY: t.pageY });
         window.removeEventListener('touchmove', touchMove);
         window.removeEventListener('touchend', touchEnd);
         window.removeEventListener('touchcancel', touchEnd);

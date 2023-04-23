@@ -1,7 +1,7 @@
 import { extend } from 'lodash';
 import * as http from 'http';
 import * as WebSocket from 'ws';
-import {Application} from 'express';
+import { Application } from 'express';
 
 import { Parent } from './components/base';
 import { Group } from './components/group';
@@ -10,23 +10,22 @@ import { IDMap } from './util/id-map';
 import * as proto from '../shared/proto';
 import * as color from './util/color';
 
-import {Connection, Server} from './server';
+import { Connection, Server } from './server';
 import { LightDeskOptions } from './options';
 
 const DEFAULT_LIGHT_DESK_OPTIONS: LightDeskOptions = {
-  path: '/'
-}
+  path: '/',
+};
 
 export type InitializationOptions =
   /** automatically start a simple  */
-  | { mode: 'automatic', port: number }
+  | { mode: 'automatic'; port: number }
   /** Create a websocket server that attaches to an existing express and http server */
-  | { mode: 'express', express: Application, server: http.Server }
+  | { mode: 'express'; express: Application; server: http.Server }
   /** Create a websocket server that attaches to an existing express and http server */
-  | { mode: 'manual', setup: (server: Server) => void }
+  | { mode: 'manual'; setup: (server: Server) => void };
 
 export class LightDesk implements Parent {
-
   private readonly options: LightDeskOptions;
   private rootGroup: Group | null = null;
   /**
@@ -37,8 +36,13 @@ export class LightDesk implements Parent {
 
   constructor(options: Partial<LightDeskOptions> = {}) {
     this.options = extend({}, DEFAULT_LIGHT_DESK_OPTIONS, options);
-    if (!this.options.path.endsWith('/') || !this.options.path.startsWith('/')) {
-      throw new Error(`path must start and end with "/", set to: ${this.options.path}`);
+    if (
+      !this.options.path.endsWith('/') ||
+      !this.options.path.startsWith('/')
+    ) {
+      throw new Error(
+        `path must start and end with "/", set to: ${this.options.path}`
+      );
     }
   }
 
@@ -52,16 +56,18 @@ export class LightDesk implements Parent {
     if (opts.mode === 'automatic') {
       const httpServer = http.createServer(server.handleHttpRequest);
       const wss = new WebSocket.Server({
-        server: httpServer
+        server: httpServer,
       });
       wss.on('connection', server.handleWsConnection);
 
       httpServer.listen(opts.port, () => {
-        console.log(`Light Desk Started: http://localhost:${opts.port}${this.options.path}`);
+        console.log(
+          `Light Desk Started: http://localhost:${opts.port}${this.options.path}`
+        );
       });
     } else if (opts.mode === 'express') {
       const wss = new WebSocket.Server({
-        server: opts.server
+        server: opts.server,
       });
       wss.on('connection', server.handleWsConnection);
       opts.express.get(`${this.options.path}*`, server.handleHttpRequest);
@@ -70,7 +76,7 @@ export class LightDesk implements Parent {
     } else {
       throw new Error(`Unsupported mode`);
     }
-  }
+  };
 
   public setRoot = (group: Group) => {
     if (this.rootGroup) {
@@ -79,41 +85,43 @@ export class LightDesk implements Parent {
     }
     this.rootGroup = group;
     this.rootGroup.setParent(this);
-  }
+  };
 
   public updateTree = () => {
     if (!this.rootGroup) return;
     const root = this.rootGroup.getProtoInfo(this.componentIDMap);
     for (const connection of this.connections) {
-      connection.sendMessage({type: 'update_tree', root});
+      connection.sendMessage({ type: 'update_tree', root });
     }
-  }
+  };
 
   private onNewConnection = (connection: Connection) => {
     this.connections.add(connection);
     if (this.rootGroup) {
       connection.sendMessage({
         type: 'update_tree',
-        root: this.rootGroup.getProtoInfo(this.componentIDMap)
+        root: this.rootGroup.getProtoInfo(this.componentIDMap),
       });
     }
-  }
+  };
 
   private onClosedConnection = (connection: Connection) => {
     console.log('removing connection');
     this.connections.delete(connection);
-  }
+  };
 
-  private onMessage = (_connection: Connection, message: proto.ClientMessage) => {
+  private onMessage = (
+    _connection: Connection,
+    message: proto.ClientMessage
+  ) => {
     console.log('got message', message);
     switch (message.type) {
       case 'component_message':
-      if (this.rootGroup)
-        this.rootGroup.routeMessage(this.componentIDMap, message);
-      break;
+        if (this.rootGroup)
+          this.rootGroup.routeMessage(this.componentIDMap, message);
+        break;
     }
-  }
-
+  };
 }
 
 // Export components

@@ -26,7 +26,7 @@ export interface GroupComponentStyle {
  * Default [[GroupComponentStyle]] for the [[Group]] component.
  */
 export const GROUP_DEFAULT_STYLE: GroupComponentStyle = {
-  direction: 'horizontal'
+  direction: 'horizontal',
 };
 
 /**
@@ -45,5 +45,5 @@ export interface LabelComponentStyle {
  * Default [[LabelComponentStyle]] for the [[Label]] component.
  */
 export const LABEL_DEFAULT_STYLE: LabelComponentStyle = {
-  bold: false
+  bold: false,
 };

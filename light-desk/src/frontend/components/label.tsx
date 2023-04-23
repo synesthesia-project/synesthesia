@@ -9,22 +9,17 @@ interface Props {
 }
 
 class Label extends React.Component<Props, {}> {
-
   public constructor(props: Props) {
     super(props);
   }
 
   public render() {
-    return (
-      <div className={this.props.className}>
-        {this.props.info.text}
-      </div>
-    );
+    return <div className={this.props.className}>{this.props.info.text}</div>;
   }
 }
 
 const StyledLabel = styled(Label)`
-  font-weight: ${p => p.info.style.bold ? 'bold' : 'normal'};
+  font-weight: ${(p) => (p.info.style.bold ? 'bold' : 'normal')};
 `;
 
-export {StyledLabel as Label};
+export { StyledLabel as Label };

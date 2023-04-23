@@ -2,9 +2,9 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import * as proto from '../../shared/proto';
-import {play} from '../audio';
+import { play } from '../audio';
 
-import {touchIndicatorNormal, touchIndicatorTouching} from './styling';
+import { touchIndicatorNormal, touchIndicatorTouching } from './styling';
 
 const CLASS_TOUCHING = 'touching';
 const TOUCH_INDICATOR_CLASS = 'touch-indicator';
@@ -20,11 +20,10 @@ interface State {
 }
 
 class Switch extends React.Component<Props, State> {
-
   public constructor(props: Props) {
     super(props);
     this.state = {
-      touching: false
+      touching: false,
     };
 
     this.onClick = this.onClick.bind(this);
@@ -40,10 +39,13 @@ class Switch extends React.Component<Props, State> {
         className={classes.join(' ')}
         onClick={this.onClick}
         onTouchStart={this.onTouchStart}
-        onTouchEnd={this.onTouchEnd}>
+        onTouchEnd={this.onTouchEnd}
+      >
         <div className={TOUCH_INDICATOR_CLASS} />
         <div className="inner">
-          <div className={'slider' + (this.props.info.state === 'on' ? ' on' : '')}>
+          <div
+            className={'slider' + (this.props.info.state === 'on' ? ' on' : '')}
+          >
             <div className="on-text">ON</div>
             <div className="off-text">OFF</div>
             <div className="button" />
@@ -59,7 +61,7 @@ class Switch extends React.Component<Props, State> {
     this.props.sendMessage({
       type: 'component_message',
       componentKey: this.props.info.key,
-      component: 'switch'
+      component: 'switch',
     });
   }
 
@@ -70,12 +72,12 @@ class Switch extends React.Component<Props, State> {
   private onTouchStart(event: React.TouchEvent<HTMLDivElement>) {
     play('touch');
     event.preventDefault();
-    this.setState({touching: true});
+    this.setState({ touching: true });
   }
 
   private onTouchEnd(event: React.TouchEvent<HTMLDivElement>) {
     event.preventDefault();
-    this.setState({touching: false});
+    this.setState({ touching: false });
     this.click();
     play(this.props.info.state === 'on' ? 'powerDown' : 'powerUp');
   }
@@ -89,7 +91,6 @@ const StyledSwitch = styled(Switch)`
   position: relative;
 
   .inner {
-
     display: block;
     position: relative;
     overflow: hidden;
@@ -97,7 +98,7 @@ const StyledSwitch = styled(Switch)`
     min-width: ${BUTTON_WIDTH + TEXT_WIDTH}px;
     height: ${SWITCH_HEIGHT}px;
     border-radius: 3px;
-    border: 1px solid ${p => p.theme.borderDark};
+    border: 1px solid ${(p) => p.theme.borderDark};
 
     > .slider {
       position: absolute;
@@ -106,23 +107,31 @@ const StyledSwitch = styled(Switch)`
       cursor: pointer;
       transition: left 300ms;
 
-      > .on-text, .off-text, .button  {
+      > .on-text,
+      .off-text,
+      .button {
         position: absolute;
         height: ${SWITCH_HEIGHT}px;
       }
 
-      > .on-text, .off-text {
+      > .on-text,
+      .off-text {
         width: ${TEXT_WIDTH}px;
         text-align: center;
         top: 0;
         line-height: ${SWITCH_HEIGHT - 2}px;
         text-shadow: 0 -1px rgba(0, 0, 0, 0.4);
-        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), 0 1px 0 0 rgba(255,255,255,0.15);
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2),
+          0 1px 0 0 rgba(255, 255, 255, 0.15);
       }
 
       > .on-text {
         left: -40px;
-        background: linear-gradient(to bottom, ${p => p.theme.hintDark1}, ${p => p.theme.hint});
+        background: linear-gradient(
+          to bottom,
+          ${(p) => p.theme.hintDark1},
+          ${(p) => p.theme.hint}
+        );
       }
 
       > .button {
@@ -133,11 +142,11 @@ const StyledSwitch = styled(Switch)`
         text-shadow: 0 -1px rgba(0, 0, 0, 0.7);
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
         border-radius: 3px;
-        border: 1px solid ${p => p.theme.borderDark};
+        border: 1px solid ${(p) => p.theme.borderDark};
       }
 
       > .off-text {
-        background: linear-gradient(to bottom, #242525, #37383A);
+        background: linear-gradient(to bottom, #242525, #37383a);
         left: ${BUTTON_WIDTH - 2}px;
       }
 
@@ -146,9 +155,8 @@ const StyledSwitch = styled(Switch)`
       }
 
       &:hover > .button {
-        background: linear-gradient(to bottom, #5e6064, #393A3B);
+        background: linear-gradient(to bottom, #5e6064, #393a3b);
       }
-
     }
   }
 
@@ -161,7 +169,6 @@ const StyledSwitch = styled(Switch)`
       ${touchIndicatorTouching}
     }
   }
-
 `;
 
-export {StyledSwitch as Switch};
+export { StyledSwitch as Switch };

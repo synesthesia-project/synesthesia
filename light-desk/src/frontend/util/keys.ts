@@ -1,4 +1,4 @@
 export const KEYS = {
   DOWN: 40,
-  UP: 38
+  UP: 38,
 };

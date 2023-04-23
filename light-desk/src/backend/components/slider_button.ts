@@ -1,7 +1,7 @@
 import * as proto from '../../shared/proto';
-import {IDMap} from '../util/id-map';
+import { IDMap } from '../util/id-map';
 
-import {Component} from './base';
+import { Component } from './base';
 
 type Listener = (value: number) => void;
 
@@ -30,7 +30,13 @@ export class SliderButton extends Component {
   /** @hidden */
   private readonly listeners = new Set<Listener>();
 
-  public constructor(value: number, min = 0, max = 255, step = 5, mode: SliderMode = 'writeBack') {
+  public constructor(
+    value: number,
+    min = 0,
+    max = 255,
+    step = 5,
+    mode: SliderMode = 'writeBack'
+  ) {
     super();
     this.min = min;
     this.max = max;
@@ -47,7 +53,7 @@ export class SliderButton extends Component {
       min: this.min,
       max: this.max,
       step: this.step,
-      value: this.value
+      value: this.value,
     };
   }
 
@@ -56,8 +62,7 @@ export class SliderButton extends Component {
     if (message.component !== 'slider_button') return;
     const newValue = Math.max(this.min, Math.min(this.max, message.value));
     if (this.value === newValue) return;
-    if (this.mode === 'writeBack')
-      this.value = newValue;
+    if (this.mode === 'writeBack') this.value = newValue;
     for (const l of this.listeners) {
       l(newValue);
     }

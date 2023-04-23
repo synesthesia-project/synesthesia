@@ -21,14 +21,16 @@ interface Props {
 function nextColor(props: Props): GroupColor {
   if (props.info.style.noBorder) return props.color;
   switch (props.color) {
-    case 'dark': return 'lighter';
-    case 'lighter': return 'dark';
-    case 'lighterer': return 'dark';
+    case 'dark':
+      return 'lighter';
+    case 'lighter':
+      return 'dark';
+    case 'lighterer':
+      return 'dark';
   }
 }
 
 class Group extends React.Component<Props, {}> {
-
   public constructor(props: Props) {
     super(props);
     this.childComponent = this.childComponent.bind(this);
@@ -36,7 +38,12 @@ class Group extends React.Component<Props, {}> {
 
   public render() {
     return (
-      <div className={this.props.className + (this.props.info.style.noBorder ? ' no-border' : '')}>
+      <div
+        className={
+          this.props.className +
+          (this.props.info.style.noBorder ? ' no-border' : '')
+        }
+      >
         {this.props.info.title ? (
           <div className="title">{this.props.info.title}</div>
         ) : null}
@@ -50,41 +57,73 @@ class Group extends React.Component<Props, {}> {
   private childComponent(info: proto.Component): JSX.Element {
     switch (info.component) {
       case 'button':
-        return <Button key={info.key} info={info} sendMessage={this.props.sendMessage} />;
+        return (
+          <Button
+            key={info.key}
+            info={info}
+            sendMessage={this.props.sendMessage}
+          />
+        );
       case 'group':
-        return <StyledGroup key={info.key} info={info} sendMessage={this.props.sendMessage} color={nextColor(this.props)} />;
+        return (
+          <StyledGroup
+            key={info.key}
+            info={info}
+            sendMessage={this.props.sendMessage}
+            color={nextColor(this.props)}
+          />
+        );
       case 'label':
         return <Label key={info.key} info={info} />;
       case 'rect':
         return <Rect key={info.key} info={info} />;
       case 'slider_button':
-        return <SliderButton key={info.key} info={info} sendMessage={this.props.sendMessage} />;
+        return (
+          <SliderButton
+            key={info.key}
+            info={info}
+            sendMessage={this.props.sendMessage}
+          />
+        );
       case 'switch':
-        return <Switch key={info.key} info={info} sendMessage={this.props.sendMessage} />;
+        return (
+          <Switch
+            key={info.key}
+            info={info}
+            sendMessage={this.props.sendMessage}
+          />
+        );
     }
   }
 }
 
 const StyledGroup = styled(Group)`
-  background: ${p => p.color === 'dark' ? p.theme.bgDark1 : p.color === 'lighter' ?  p.theme.bg :  p.theme.bgLight1};
-  border: 1px solid ${p => p.theme.borderDark};
+  background: ${(p) =>
+    p.color === 'dark'
+      ? p.theme.bgDark1
+      : p.color === 'lighter'
+      ? p.theme.bg
+      : p.theme.bgLight1};
+  border: 1px solid ${(p) => p.theme.borderDark};
 
   > .title {
     padding: 5px;
-    background: ${p => p.theme.borderDark};
-    border-bottom: 1px solid ${p => p.theme.borderDark};
+    background: ${(p) => p.theme.borderDark};
+    border-bottom: 1px solid ${(p) => p.theme.borderDark};
   }
 
   > .children {
-    padding: ${p => p.theme.spacingPx / 2}px;
+    padding: ${(p) => p.theme.spacingPx / 2}px;
     display: flex;
-    flex-direction: ${p => p.info.style.direction === 'vertical' ? 'column' : 'row'};
-    flex-wrap: ${p => p.info.style.wrap ? 'wrap' : 'nowrap'};
-    box-shadow: inset 0px 0px 8px 0px rgba(0,0,0,0.3);
-    ${p => p.info.style.direction === 'vertical' ? '' : 'align-items: center;'}
+    flex-direction: ${(p) =>
+      p.info.style.direction === 'vertical' ? 'column' : 'row'};
+    flex-wrap: ${(p) => (p.info.style.wrap ? 'wrap' : 'nowrap')};
+    box-shadow: inset 0px 0px 8px 0px rgba(0, 0, 0, 0.3);
+    ${(p) =>
+      p.info.style.direction === 'vertical' ? '' : 'align-items: center;'}
 
     > * {
-      margin: ${p => p.theme.spacingPx / 2}px;
+      margin: ${(p) => p.theme.spacingPx / 2}px;
     }
   }
 
@@ -100,4 +139,4 @@ const StyledGroup = styled(Group)`
   }
 `;
 
-export {StyledGroup as Group};
+export { StyledGroup as Group };

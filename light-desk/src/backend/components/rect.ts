@@ -1,8 +1,8 @@
 import * as proto from '../../shared/proto';
-import { Color, COLOR_RGB_WHITE} from '../util/color';
-import {IDMap} from '../util/id-map';
+import { Color, COLOR_RGB_WHITE } from '../util/color';
+import { IDMap } from '../util/id-map';
 
-import {Component} from './base';
+import { Component } from './base';
 
 /**
  * A simple rectangle component. Could be used for example to indicate
@@ -28,7 +28,6 @@ import {Component} from './base';
  * ![](media://images/rect_screenshot.png)
  */
 export class Rect extends Component {
-
   /** @hidden */
   private color: Color;
 
@@ -42,7 +41,7 @@ export class Rect extends Component {
     return {
       component: 'rect',
       key: idMap.getId(this),
-      color: this.color.json()
+      color: this.color.json(),
     };
   }
 
