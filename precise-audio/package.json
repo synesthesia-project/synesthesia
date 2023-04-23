@@ -36,7 +36,7 @@
     "gulp-clean": "^0.3.2",
     "source-map-loader": "~0.2.4",
     "type2docfx": "^0.10.2",
-    "typedoc": "^0.16.9",
+    "typedoc": "^0.23.28",
     "webpack": "~4.41.2"
   }
 }
