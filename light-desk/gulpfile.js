@@ -88,6 +88,14 @@ gulp.task('lint', gulp.series(
   )
 ));
 
+gulp.task('lint:fix', gulp.series(
+  gulp.parallel(
+    'frontend-lint:fix',
+    'backend-lint:fix',
+    'shared-lint:fix'
+  )
+));
+
 gulp.task('clean-docs', function () {
   return gulp.src(['docs/api'], { read: false, allowEmpty: true })
         .pipe(clean());

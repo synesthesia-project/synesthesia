@@ -24,7 +24,10 @@
     "url": "https://github.com/synesthesia-project/light-desk"
   },
   "scripts": {
-    "build": "gulp"
+    "build": "gulp",
+    "lint": "gulp lint",
+    "clean": "gulp clean",
+    "lint:fix": "gulp lint:fix"
   },
   "devDependencies": {
     "@synesthesia-project/gulp-util": "~0.0.1",
