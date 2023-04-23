@@ -19,11 +19,11 @@
     "@synesthesia-project/compositor": "^0.0.1",
     "@synesthesia-project/core": "^0.0.5",
     "openrazer": "^0.0.5",
-    "ws": "^7.1.2"
+    "ws": "^8.4.0"
   },
   "devDependencies": {
     "@synesthesia-project/gulp-util": "~0.0.1",
-    "@types/ws": "^6.0.1",
+    "@types/ws": "^8.2.2",
     "gulp": "~4.0.2"
   }
 }

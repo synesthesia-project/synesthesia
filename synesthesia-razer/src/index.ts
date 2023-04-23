@@ -115,7 +115,7 @@ export class Display {
           }
         );
         ws.addEventListener('message', (msg) => {
-          endpoint.recvMessage(JSON.parse(msg.data));
+          endpoint.recvMessage(JSON.parse(msg.data.toString()));
         });
         resolve(endpoint);
       });
