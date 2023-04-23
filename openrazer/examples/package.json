@@ -1,6 +1,7 @@
 {
   "name": "openrazer-examples",
   "description": "Example scripts using openrazer",
+  "version": "0.0.1",
   "license": "MIT",
   "scripts": {
     "clean": "gulp clean",
