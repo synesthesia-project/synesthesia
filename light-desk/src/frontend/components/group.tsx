@@ -8,6 +8,7 @@ import { Label } from './label';
 import { Rect } from './rect';
 import { SliderButton } from './slider_button';
 import { Switch } from './switch';
+import { TextInput } from './text-input';
 
 type GroupColor = 'dark' | 'lighter' | 'lighterer';
 
@@ -88,6 +89,14 @@ class Group extends React.Component<Props, never> {
       case 'switch':
         return (
           <Switch
+            key={info.key}
+            info={info}
+            sendMessage={this.props.sendMessage}
+          />
+        );
+      case 'text-input':
+        return (
+          <TextInput
             key={info.key}
             info={info}
             sendMessage={this.props.sendMessage}
