@@ -18,6 +18,14 @@ interface BaseComponent {
 export interface ButtonComponent extends BaseComponent {
   component: 'button';
   text: string;
+  state:
+    | {
+        state: 'normal';
+      }
+    | {
+        state: 'error';
+        error: string;
+      };
 }
 
 export interface GroupComponent extends BaseComponent {
@@ -51,13 +59,19 @@ export interface SwitchComponent extends BaseComponent {
   state: 'on' | 'off';
 }
 
+export interface TextInputComponent extends BaseComponent {
+  component: 'text-input';
+  value: string;
+}
+
 export type Component =
   | ButtonComponent
   | GroupComponent
   | LabelComponent
   | RectComponent
   | SliderButtonComponent
-  | SwitchComponent;
+  | SwitchComponent
+  | TextInputComponent;
 
 export interface UpdateTreeMsg {
   type: 'update_tree';
@@ -84,9 +98,15 @@ export interface SwitchToggleMessage extends BaseClientComponentMessage {
   component: 'switch';
 }
 
+export interface TextInputUpdateMessage extends BaseClientComponentMessage {
+  component: 'text-input';
+  value: string;
+}
+
 export type ClientComponentMessage =
   | SliderButtonUpdateMessage
   | ButtonPressMessage
-  | SwitchToggleMessage;
+  | SwitchToggleMessage
+  | TextInputUpdateMessage;
 
 export type ClientMessage = ClientComponentMessage;

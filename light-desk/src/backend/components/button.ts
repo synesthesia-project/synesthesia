@@ -3,7 +3,7 @@ import { IDMap } from '../util/id-map';
 
 import { Component } from './base';
 
-type Listener = () => void;
+type Listener = () => void | Promise<void>;
 
 /**
  * A simple component that can be "pressed" to trigger things.
@@ -31,6 +31,9 @@ type Listener = () => void;
 export class Button extends Component {
   /** @hidden */
   private text: string;
+  private state: proto.ButtonComponent['state'] = {
+    state: 'normal',
+  };
 
   /** @hidden */
   private readonly listeners = new Set<Listener>();
@@ -46,15 +49,40 @@ export class Button extends Component {
       component: 'button',
       key: idMap.getId(this),
       text: this.text,
+      state: this.state,
     };
   }
 
   /** @hidden */
   public handleMessage(message: proto.ClientComponentMessage) {
     if (message.component === 'button') {
-      for (const l of this.listeners) {
-        l();
-      }
+      Promise.all(
+        [...this.listeners].map(
+          (l) =>
+            new Promise((resolve, reject) => {
+              try {
+                resolve(l());
+              } catch (e) {
+                reject(e);
+              }
+            })
+        )
+      )
+        .then(() => {
+          if (this.state.state !== 'normal') {
+            this.state = {
+              state: 'normal',
+            };
+            this.updateTree();
+          }
+        })
+        .catch((e) => {
+          this.state = {
+            state: 'error',
+            error: `${e}`,
+          };
+          this.updateTree();
+        });
     }
   }
 

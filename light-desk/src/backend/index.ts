@@ -3,7 +3,7 @@ import * as http from 'http';
 import * as WebSocket from 'ws';
 import { Application } from 'express';
 
-import { Parent } from './components/base';
+import { Component, Parent } from './components/base';
 import { Group } from './components/group';
 import { IDMap } from './util/id-map';
 
@@ -95,6 +95,14 @@ export class LightDesk implements Parent {
     }
   };
 
+  public removeChild = (component: Component) => {
+    if (this.rootGroup === component) {
+      this.rootGroup = null;
+      component.setParent(null);
+      // TODO: update tree with empty tree
+    }
+  };
+
   private onNewConnection = (connection: Connection) => {
     this.connections.add(connection);
     if (this.rootGroup) {
@@ -133,4 +141,5 @@ export { Label } from './components/label';
 export { Rect } from './components/rect';
 export { SliderButton } from './components/slider_button';
 export { Switch } from './components/switch';
+export { TextInput } from './components/text-input';
 export { color };

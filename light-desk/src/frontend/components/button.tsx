@@ -10,8 +10,11 @@ import {
   touchIndicatorNormal,
   touchIndicatorTouching,
 } from './styling';
+import { calculateClass } from '../util/react';
 
 const TOUCH_INDICATOR_CLASS = 'touch-indicator';
+const TOUCHING_CLASS = 'touching';
+const ERROR_CLASS = 'error';
 
 interface Props {
   className?: string;
@@ -36,13 +39,18 @@ class Button extends React.Component<Props, State> {
   }
 
   public render() {
-    const className = this.props.className ? this.props.className : '';
+    const { state } = this.props.info;
     return (
       <div
-        className={className + (this.state.touching ? ' touching' : '')}
+        className={calculateClass(
+          this.props.className,
+          this.state.touching && TOUCHING_CLASS,
+          state.state === 'error' && ERROR_CLASS
+        )}
         onClick={this.onClick}
         onTouchStart={this.onTouchStart}
         onTouchEnd={this.onTouchEnd}
+        title={state.state === 'error' ? state.error : undefined}
       >
         <div className={TOUCH_INDICATOR_CLASS} />
         {this.props.info.text}
@@ -89,7 +97,12 @@ const StyledButton = styled(Button)`
     ${touchIndicatorNormal}
   }
 
-  &.touching {
+  &.${ERROR_CLASS} {
+    color: ${(p) => p.theme.colorRed};
+    border-color: ${(p) => p.theme.colorRed};
+  }
+
+  &.${TOUCHING_CLASS} {
     ${buttonStateNormalActive}
 
     .${TOUCH_INDICATOR_CLASS} {
