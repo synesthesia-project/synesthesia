@@ -130,6 +130,13 @@
     },
     {
       "commandKind": "bulk",
+      "summary": "Run build in all projects",
+      "name": "build",
+      "enableParallelism": true,
+      "allowWarningsInSuccessfulBuild": true
+    },
+    {
+      "commandKind": "bulk",
       "summary": "Run tests in all projects",
       "name": "test",
       "ignoreMissingScript": true,
