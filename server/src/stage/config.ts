@@ -3,10 +3,13 @@ import * as t from 'io-ts';
 export const CONFIG = t.type({
   outputs: t.record(
     t.string,
-    t.type({
-      kind: t.string,
-      config: t.unknown,
-    })
+    t.union([
+      t.undefined,
+      t.type({
+        kind: t.string,
+        config: t.unknown,
+      })
+    ]),
   ),
 });
 

@@ -29,6 +29,7 @@ export class Group extends Component implements Parent {
   public addChild(component: Component) {
     this.children.push(component);
     component.setParent(this);
+    this.updateTree();
     // TODO: allow children to have only one parent
     // TODO: prevent loops
   }

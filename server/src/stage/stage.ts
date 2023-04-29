@@ -29,11 +29,17 @@ const Stage = () => {
   const deskRoot = new ld.Group();
   desk.setRoot(deskRoot);
 
+  // Output Controls
+  const addButton = new ld.Button('Add Output');
+  deskRoot.addChild(addButton);
+
   // List of outputs
   const outputsGroup = new ld.Group();
   deskRoot.addChild(outputsGroup);
 
-  let config = CONFIG;
+  let config: Config = {
+    outputs: {}
+  };
 
   const outputKinds = new Map<string, OutputKind<unknown>>();
 
@@ -53,30 +59,36 @@ const Stage = () => {
    * Save the config with a new value,
    * and update any outputs, inputs, etc... with their changed config
    */
-  const updateConfig = async (newConfig: Config) => {
-    console.log(updateConfig, JSON.stringify(newConfig, null, '  '));
+  const updateConfig = async (update: (originalConfig: Config) => Config) => {
+    const prevConfig = config;
+    const newConfig = update(config);
+    console.log('updateConfig', JSON.stringify(newConfig, null, '  '));
     // const _oldConfig = config;
     config = newConfig;
     // TODO: compare old with new config, for changed configs:
     // - validate config type
     // - deepfreeze values
     // - update outputs
+    updateOutputsFromConfig(prevConfig);
   };
 
   const createOutput = <ConfigT>(
     key: string,
-    kind: OutputKind<ConfigT>
+    kind: OutputKind<ConfigT>,
+    initialConfig: unknown
   ): ActiveOutput<ConfigT> => {
+    console.log('createOutput', key)
     const saveConfig: OutputContext<ConfigT>['saveConfig'] = (newConfig) =>
-      updateConfig({
+      updateConfig(current => ({
+        ...current,
         outputs: {
-          ...config.outputs,
+          ...current.outputs,
           [key]: {
             kind: kind.kind,
             config: newConfig,
           },
         },
-      });
+      }));
     const render: OutputContext<ConfigT>['render'] = () => {
       throw new Error('TODO');
     };
@@ -84,7 +96,12 @@ const Stage = () => {
       saveConfig,
       render,
     });
-    output.setConfig(kind.initialConfig);
+    if (kind.config.is(initialConfig)) {
+      output.setConfig(initialConfig);
+    } else {
+      console.error(`output ${key} given invalid config: ${JSON.stringify(initialConfig, null, '  ')}`);
+      output.setConfig(kind.initialConfig);
+    }
     return {
       kind: kind.kind,
       output,
@@ -96,30 +113,65 @@ const Stage = () => {
    * Given a change to the config.outputs array,
    * initialize or tear-down each output as neccesary.
    */
-  const updateOutputsFromConfig = () => {
-    Object.entries(config.outputs).map(([key, c]) => {
-      let existing = outputs.get(key);
-      if (existing && existing.kind !== c.kind) {
+  const updateOutputsFromConfig = (prev: Config) => {
+    const allOutputKeys = new Set([
+      ...Object.keys(prev.outputs),
+      ...Object.keys(config.outputs),
+    ]);
+    for (const key of allOutputKeys) {
+      let output = outputs.get(key);
+      const oldOutputConfig = prev.outputs[key];
+      const newOutputConfig = config.outputs[key];
+      // Check if output already exists, and needs to be deleted of change kind
+      if (output && output.kind !== newOutputConfig?.kind) {
         // TODO: shutdown output
         outputs.delete(key);
         // TODO: remove child from group
-        existing = undefined;
+        output = undefined;
       }
-      if (!existing) {
-        const kind = outputKinds.get(c.kind);
+      if (newOutputConfig) {
+        const kind = outputKinds.get(newOutputConfig.kind);
         if (!kind) {
-          throw new Error(`Unknown output kind: ${c.kind}`);
+          throw new Error(`Unknown output kind: ${newOutputConfig.kind}`);
         }
-        const newOutput = createOutput(key, kind);
-        outputs.set(key, newOutput);
-        outputsGroup.addChild(newOutput.ldComponent);
+        // Check if output does not exist and needs to
+        if (!output) {
+          output = createOutput(key, kind, newOutputConfig.config);
+          outputs.set(key, output);
+          outputsGroup.addChild(output.ldComponent);
+        } else if (oldOutputConfig?.config !== newOutputConfig?.config) {
+          if (kind.config.is(newOutputConfig.config)) {
+            output.output.setConfig(newOutputConfig.config);
+          } else {
+            console.error(`output ${key} given invalid config: ${JSON.stringify(newOutputConfig.config, null, '  ')}`);
+          }
+        }
       }
-    });
+      
+    }
   };
 
   PLUGINS.map(initializePlugin);
 
-  updateOutputsFromConfig();
+  // Initialize with config
+  updateConfig(() => CONFIG);
+
+  // Add listeners to button
+  addButton.addListener(() => {
+    updateConfig(current => ({
+      ...current,
+      outputs: {
+        ...current.outputs,
+        [`test${Object.keys(current.outputs).length + 1}`]: {
+          kind: 'virtual',
+          config: {
+            pixels: 2,
+          }
+        }
+      }
+    }))
+  })
+
 
   desk.start({
     mode: 'automatic',
