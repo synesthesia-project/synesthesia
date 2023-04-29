@@ -15,7 +15,7 @@ interface Props {
   info: proto.RectComponent;
 }
 
-class Rect extends React.Component<Props, {}> {
+class Rect extends React.Component<Props, never> {
   public constructor(props: Props) {
     super(props);
   }

@@ -8,7 +8,7 @@ interface Props {
   info: proto.LabelComponent;
 }
 
-class Label extends React.Component<Props, {}> {
+class Label extends React.Component<Props, never> {
   public constructor(props: Props) {
     super(props);
   }

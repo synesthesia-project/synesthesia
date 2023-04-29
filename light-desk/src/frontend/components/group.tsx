@@ -30,7 +30,7 @@ function nextColor(props: Props): GroupColor {
   }
 }
 
-class Group extends React.Component<Props, {}> {
+class Group extends React.Component<Props, never> {
   public constructor(props: Props) {
     super(props);
     this.childComponent = this.childComponent.bind(this);
