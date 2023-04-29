@@ -20,10 +20,10 @@ export const createDesk = () => {
   const outputsGroup = new ld.Group({ direction: 'vertical' });
   deskRoot.addChild(outputsGroup);
 
-  const init = (listeners: { addOutput: (key: string) => void }) => {
-    addButton.addListener(() => {
-      listeners.addOutput(addOutputKey.getValue());
-    });
+  const init = (listeners: { addOutput: (key: string) => Promise<void> }) => {
+    addButton.addListener(async () =>
+      listeners.addOutput(addOutputKey.getValue())
+    );
   };
 
   return {

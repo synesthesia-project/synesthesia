@@ -185,18 +185,26 @@ const Stage = () => {
   // Initialize Desk
   desk.init({
     addOutput: (key) =>
-      updateConfig((current) => ({
-        ...current,
-        outputs: {
-          ...current.outputs,
-          [key]: {
-            kind: 'virtual',
-            config: {
-              pixels: 2,
+      updateConfig((current) => {
+        if (!key) {
+          throw new Error(`You must specify an output name`);
+        }
+        if (current.outputs[key]) {
+          throw new Error(`The output ${key} already exists`);
+        }
+        return {
+          ...current,
+          outputs: {
+            ...current.outputs,
+            [key]: {
+              kind: 'virtual',
+              config: {
+                pixels: 2,
+              },
             },
           },
-        },
-      })),
+        };
+      }),
   });
   desk.desk.start({
     mode: 'automatic',
