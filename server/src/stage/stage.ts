@@ -4,6 +4,7 @@ import { Config } from './config';
 import { Output, OutputContext, Plugin } from './plugins';
 import { VIRTUAL_OUTPUT_PLUGIN } from './plugins/virtual-output';
 import { OutputKind } from './plugins';
+import { createDesk } from './desk/desk';
 
 const CONFIG: Config = {
   outputs: {
@@ -25,17 +26,7 @@ type ActiveOutput<ConfigT> = {
 };
 
 const Stage = () => {
-  const desk = new ld.LightDesk();
-  const deskRoot = new ld.Group();
-  desk.setRoot(deskRoot);
-
-  // Output Controls
-  const addButton = new ld.Button('Add Output');
-  deskRoot.addChild(addButton);
-
-  // List of outputs
-  const outputsGroup = new ld.Group();
-  deskRoot.addChild(outputsGroup);
+  const desk = createDesk();
 
   let config: Config = {
     outputs: {},
@@ -155,7 +146,7 @@ const Stage = () => {
       if (output && output.kind !== newOutputConfig?.kind) {
         // TODO: shutdown output
         outputs.delete(key);
-        outputsGroup.removeChild(output.ldComponent);
+        desk.outputsGroup.removeChild(output.ldComponent);
         // TODO: remove child from group
         output = undefined;
       }
@@ -168,7 +159,7 @@ const Stage = () => {
         if (!output) {
           output = createOutput(key, kind, newOutputConfig.config);
           outputs.set(key, output);
-          outputsGroup.addChild(output.ldComponent);
+          desk.outputsGroup.addChild(output.ldComponent);
         } else if (oldOutputConfig?.config !== newOutputConfig?.config) {
           if (kind.config.is(newOutputConfig.config)) {
             output.output.setConfig(newOutputConfig.config);
@@ -191,23 +182,23 @@ const Stage = () => {
   // Initialize with config
   updateConfig(() => CONFIG);
 
-  // Add listeners to button
-  addButton.addListener(() => {
-    updateConfig((current) => ({
-      ...current,
-      outputs: {
-        ...current.outputs,
-        [`test${Object.keys(current.outputs).length + 1}`]: {
-          kind: 'virtual',
-          config: {
-            pixels: 2,
+  // Initialize Desk
+  desk.init({
+    addOutput: (key) =>
+      updateConfig((current) => ({
+        ...current,
+        outputs: {
+          ...current.outputs,
+          [key]: {
+            kind: 'virtual',
+            config: {
+              pixels: 2,
+            },
           },
         },
-      },
-    }));
+      })),
   });
-
-  desk.start({
+  desk.desk.start({
     mode: 'automatic',
     port: 1338,
   });
