@@ -18,6 +18,14 @@ interface BaseComponent {
 export interface ButtonComponent extends BaseComponent {
   component: 'button';
   text: string;
+  state:
+    | {
+        state: 'normal';
+      }
+    | {
+        state: 'error';
+        error: string;
+      };
 }
 
 export interface GroupComponent extends BaseComponent {
