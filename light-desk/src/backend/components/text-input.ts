@@ -45,4 +45,9 @@ export class TextInput extends Component {
   };
 
   public getValue = () => this.value;
+
+  public setValue = (value: string) => {
+    this.value = value;
+    this.updateTree();
+  };
 }
