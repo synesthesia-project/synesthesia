@@ -15,7 +15,7 @@ const STATIC_FILES: {[id: string]: [string, string]} = {
 };
 
 // Add audio files to STATIC_FILES
-for (const key of Object.keys(AUDIO_FILES)) {
+for (const key of Object.keys(AUDIO_FILES) as (keyof typeof AUDIO_FILES)[]) {
   const audioFile: AudioFile = AUDIO_FILES[key];
   const contentType =
     audioFile.file.endsWith('.wav') ? 'audio/wav' :

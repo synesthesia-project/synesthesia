@@ -68,8 +68,6 @@ export class LightDesk implements Parent {
     } else if (opts.mode === 'manual') {
       opts.setup(server);
     } else {
-      // @ts-ignore
-      const _n: never = opts;
       throw new Error(`Unsupported mode`);
     }
   }

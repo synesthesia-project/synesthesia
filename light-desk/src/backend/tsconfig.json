@@ -13,7 +13,6 @@
         "removeComments": true,
         "noLib": false,
         "preserveConstEnums": true,
-        "suppressImplicitAnyIndexErrors": true,
         "rootDir": "../"
     },
     "compileOnSave": false,
