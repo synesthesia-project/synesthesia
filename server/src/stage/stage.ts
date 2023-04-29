@@ -38,7 +38,7 @@ const Stage = () => {
   deskRoot.addChild(outputsGroup);
 
   let config: Config = {
-    outputs: {}
+    outputs: {},
   };
 
   const outputKinds = new Map<string, OutputKind<unknown>>();
@@ -77,9 +77,9 @@ const Stage = () => {
     kind: OutputKind<ConfigT>,
     initialConfig: unknown
   ): ActiveOutput<ConfigT> => {
-    console.log('createOutput', key)
+    console.log('createOutput', key);
     const saveConfig: OutputContext<ConfigT>['saveConfig'] = (newConfig) =>
-      updateConfig(current => ({
+      updateConfig((current) => ({
         ...current,
         outputs: {
           ...current.outputs,
@@ -99,11 +99,17 @@ const Stage = () => {
     if (kind.config.is(initialConfig)) {
       output.setConfig(initialConfig);
     } else {
-      console.error(`output ${key} given invalid config: ${JSON.stringify(initialConfig, null, '  ')}`);
+      console.error(
+        `output ${key} given invalid config: ${JSON.stringify(
+          initialConfig,
+          null,
+          '  '
+        )}`
+      );
       output.setConfig(kind.initialConfig);
     }
     const ldComponent = new ld.Group({
-      direction: 'vertical'
+      direction: 'vertical',
     });
 
     // Output Header
@@ -115,12 +121,16 @@ const Stage = () => {
     const deleteButton = new ld.Button(`Delete`);
     header.addChild(deleteButton);
 
-    deleteButton.addListener(() => updateConfig(current => ({
-      ...current,
-      outputs: Object.fromEntries(Object.entries(current.outputs).filter(([k]) => k !== key))
-    })));
+    deleteButton.addListener(() =>
+      updateConfig((current) => ({
+        ...current,
+        outputs: Object.fromEntries(
+          Object.entries(current.outputs).filter(([k]) => k !== key)
+        ),
+      }))
+    );
 
-    ldComponent.addChild(output.getLightDeskComponent())
+    ldComponent.addChild(output.getLightDeskComponent());
     return {
       kind: kind.kind,
       output,
@@ -163,11 +173,16 @@ const Stage = () => {
           if (kind.config.is(newOutputConfig.config)) {
             output.output.setConfig(newOutputConfig.config);
           } else {
-            console.error(`output ${key} given invalid config: ${JSON.stringify(newOutputConfig.config, null, '  ')}`);
+            console.error(
+              `output ${key} given invalid config: ${JSON.stringify(
+                newOutputConfig.config,
+                null,
+                '  '
+              )}`
+            );
           }
         }
       }
-      
     }
   };
 
@@ -178,7 +193,7 @@ const Stage = () => {
 
   // Add listeners to button
   addButton.addListener(() => {
-    updateConfig(current => ({
+    updateConfig((current) => ({
       ...current,
       outputs: {
         ...current.outputs,
@@ -186,12 +201,11 @@ const Stage = () => {
           kind: 'virtual',
           config: {
             pixels: 2,
-          }
-        }
-      }
-    }))
-  })
-
+          },
+        },
+      },
+    }));
+  });
 
   desk.start({
     mode: 'automatic',

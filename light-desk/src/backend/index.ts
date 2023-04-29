@@ -101,7 +101,7 @@ export class LightDesk implements Parent {
       component.setParent(null);
       // TODO: update tree with empty tree
     }
-  }
+  };
 
   private onNewConnection = (connection: Connection) => {
     this.connections.add(connection);

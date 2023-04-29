@@ -33,10 +33,10 @@ export class Group extends Component implements Parent {
   }
 
   public removeChild(component: Component) {
-    const match = this.children.findIndex(c => c === component);
+    const match = this.children.findIndex((c) => c === component);
     if (match >= 0) {
       const removed = this.children.splice(match, 1);
-      removed.map(c => c.setParent(null));
+      removed.map((c) => c.setParent(null));
       this.updateTree();
     }
   }

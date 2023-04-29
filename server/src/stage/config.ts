@@ -8,8 +8,8 @@ export const CONFIG = t.type({
       t.type({
         kind: t.string,
         config: t.unknown,
-      })
-    ]),
+      }),
+    ])
   ),
 });
 
