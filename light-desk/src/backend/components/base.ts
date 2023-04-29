@@ -6,9 +6,9 @@ export abstract class Component {
   private parent: Parent | null = null;
 
   /** @hidden */
-  public setParent(parent: Parent) {
+  public setParent(parent: Parent | null) {
     if (this.parent) {
-      // TODO: remove self from existing parent
+      this.parent.removeChild(this);
     }
     this.parent = parent;
   }
@@ -30,4 +30,5 @@ export abstract class Component {
 /** @hidden */
 export interface Parent {
   updateTree(): void;
+  removeChild(component: Component): void;
 }

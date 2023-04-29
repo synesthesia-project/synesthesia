@@ -3,7 +3,7 @@ import * as http from 'http';
 import * as WebSocket from 'ws';
 import { Application } from 'express';
 
-import { Parent } from './components/base';
+import { Component, Parent } from './components/base';
 import { Group } from './components/group';
 import { IDMap } from './util/id-map';
 
@@ -94,6 +94,14 @@ export class LightDesk implements Parent {
       connection.sendMessage({ type: 'update_tree', root });
     }
   };
+
+  public removeChild = (component: Component) => {
+    if (this.rootGroup === component) {
+      this.rootGroup = null;
+      component.setParent(null);
+      // TODO: update tree with empty tree
+    }
+  }
 
   private onNewConnection = (connection: Connection) => {
     this.connections.add(connection);

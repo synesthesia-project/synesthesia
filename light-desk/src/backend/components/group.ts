@@ -30,8 +30,15 @@ export class Group extends Component implements Parent {
     this.children.push(component);
     component.setParent(this);
     this.updateTree();
-    // TODO: allow children to have only one parent
-    // TODO: prevent loops
+  }
+
+  public removeChild(component: Component) {
+    const match = this.children.findIndex(c => c === component);
+    if (match >= 0) {
+      const removed = this.children.splice(match, 1);
+      removed.map(c => c.setParent(null));
+      this.updateTree();
+    }
   }
 
   public setTitle(title: string) {

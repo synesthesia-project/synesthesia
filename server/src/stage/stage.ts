@@ -102,10 +102,29 @@ const Stage = () => {
       console.error(`output ${key} given invalid config: ${JSON.stringify(initialConfig, null, '  ')}`);
       output.setConfig(kind.initialConfig);
     }
+    const ldComponent = new ld.Group({
+      direction: 'vertical'
+    });
+
+    // Output Header
+    const header = new ld.Group({ noBorder: true });
+    ldComponent.addChild(header);
+
+    header.addChild(new ld.Label(`${kind.kind}: ${key}`));
+
+    const deleteButton = new ld.Button(`Delete`);
+    header.addChild(deleteButton);
+
+    deleteButton.addListener(() => updateConfig(current => ({
+      ...current,
+      outputs: Object.fromEntries(Object.entries(current.outputs).filter(([k]) => k !== key))
+    })));
+
+    ldComponent.addChild(output.getLightDeskComponent())
     return {
       kind: kind.kind,
       output,
-      ldComponent: output.getLightDeskComponent(),
+      ldComponent,
     };
   };
 
@@ -126,6 +145,7 @@ const Stage = () => {
       if (output && output.kind !== newOutputConfig?.kind) {
         // TODO: shutdown output
         outputs.delete(key);
+        outputsGroup.removeChild(output.ldComponent);
         // TODO: remove child from group
         output = undefined;
       }
