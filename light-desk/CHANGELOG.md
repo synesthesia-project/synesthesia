@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   or return a promise that rejects.
 - `TextInput`: Introduce new generic text input component.
 - Throttle how often the tree is updated
+- Introduce new color constant `COLOR_RGB_BLACK`
 
 ## [2.1.1] - 2022-01-11
 
