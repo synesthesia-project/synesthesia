@@ -20,7 +20,7 @@ export interface Plugin {
  */
 export interface OutputContext<ConfigT> {
   saveConfig(config: ConfigT): Promise<void>;
-  render(pixels: PixelInfo<unknown>, pixelMap: PixelMap): RGBAColor[];
+  render(pixelMap: PixelMap, pixels: Array<PixelInfo<unknown>>): RGBAColor[];
 }
 
 export interface Output<ConfigT> {
