@@ -14,6 +14,7 @@ specifiers:
   '@rush-temp/gapless-meta': file:./projects/gapless-meta.tgz
   '@rush-temp/gulp-util': file:./projects/gulp-util.tgz
   '@rush-temp/light-desk': file:./projects/light-desk.tgz
+  '@rush-temp/live-core': file:./projects/live-core.tgz
   '@rush-temp/midi-consoles': file:./projects/midi-consoles.tgz
   '@rush-temp/openrazer': file:./projects/openrazer.tgz
   '@rush-temp/openrazer-examples': file:./projects/openrazer-examples.tgz
@@ -89,6 +90,7 @@ dependencies:
   '@rush-temp/gapless-meta': file:projects/gapless-meta.tgz
   '@rush-temp/gulp-util': file:projects/gulp-util.tgz
   '@rush-temp/light-desk': file:projects/light-desk.tgz
+  '@rush-temp/live-core': file:projects/live-core.tgz
   '@rush-temp/midi-consoles': file:projects/midi-consoles.tgz
   '@rush-temp/openrazer': file:projects/openrazer.tgz
   '@rush-temp/openrazer-examples': file:projects/openrazer-examples.tgz_eslint@8.31.0
@@ -2962,7 +2964,7 @@ packages:
     resolution: {integrity: sha512-oeyj2H3EjjonWcFjD5NvZNE9Rqe4UW+nQBU2HNeKw0koVLEFIhtyETyAakeAM3de7Z/SW5kcA+fZUait9EApnw==}
     engines: {node: '>=4.0'}
     os: [darwin]
-    deprecated: fsevents 1 will break on node v14+ and could be using insecure binaries. Upgrade to fsevents 2.
+    deprecated: The v1 package contains DANGEROUS / INSECURE binaries. Upgrade to safe fsevents v2
     requiresBuild: true
     dependencies:
       nan: 2.14.0
@@ -7656,6 +7658,17 @@ packages:
       - utf-8-validate
     dev: false
 
+  file:projects/live-core.tgz:
+    resolution: {integrity: sha512-NlKVVg/G2muHdoXEQbJVCRdx3v2Ix3WJ0siAvtDQ4YRd2W+Fco9f6DhH3IWheMi7eyB0CS0kLoZwPu2VJpTSDw==, tarball: file:projects/live-core.tgz}
+    name: '@rush-temp/live-core'
+    version: 0.0.0
+    dependencies:
+      '@types/lodash': 4.14.149
+      fp-ts: 2.13.1
+      gulp: 4.0.2
+      io-ts: 2.2.20_fp-ts@2.13.1
+    dev: false
+
   file:projects/midi-consoles.tgz:
     resolution: {integrity: sha512-oIG+/hM1vyjMfwrYfI5IlQfZQmzk3y5NPvRMuJra41nRXMgMKoIXlB7xFPQmT/xOlhCmpBJp9gT59YWCY96JlA==, tarball: file:projects/midi-consoles.tgz}
     name: '@rush-temp/midi-consoles'
@@ -7714,7 +7727,7 @@ packages:
     dev: false
 
   file:projects/server.tgz:
-    resolution: {integrity: sha512-n+8GZdLqZpnIzwC6q2ZhENSKVgIpTURamT/AAn+RWWw0o7mZRBcS6kXZ7ITE5LNZr9pXXd9pX19UzxImoyWrYA==, tarball: file:projects/server.tgz}
+    resolution: {integrity: sha512-1AaUpi/ZmfT6LQufRxBkBZRvOpazhB1Ovjs/mYMCguAYno/Klt6yO9ZwwBqIK3EJKUt3k54X6Stqk213bWHTAw==, tarball: file:projects/server.tgz}
     name: '@rush-temp/server'
     version: 0.0.0
     dependencies:

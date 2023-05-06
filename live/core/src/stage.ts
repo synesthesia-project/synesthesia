@@ -2,7 +2,6 @@ import * as ld from '@synesthesia-project/light-desk';
 
 import { Config } from './config';
 import { Output, OutputContext, Plugin } from './plugins';
-import { VIRTUAL_OUTPUT_PLUGIN } from './plugins/virtual-output';
 import { OutputKind } from './plugins';
 import { createDesk } from './desk/desk';
 
@@ -17,15 +16,13 @@ const CONFIG: Config = {
   },
 };
 
-const PLUGINS: Plugin[] = [VIRTUAL_OUTPUT_PLUGIN];
-
 type ActiveOutput<ConfigT> = {
   kind: string;
   output: Output<ConfigT>;
   ldComponent: ld.Component;
 };
 
-const Stage = () => {
+export const Stage = (plugins: Plugin[]) => {
   const desk = createDesk();
 
   let config: Config = {
@@ -177,7 +174,7 @@ const Stage = () => {
     }
   };
 
-  PLUGINS.map(initializePlugin);
+  plugins.map(initializePlugin);
 
   // Initialize with config
   updateConfig(() => CONFIG);
@@ -211,5 +208,3 @@ const Stage = () => {
     port: 1338,
   });
 };
-
-Stage();
