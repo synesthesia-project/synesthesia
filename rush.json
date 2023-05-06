@@ -346,6 +346,10 @@
       "projectFolder": "light-desk"
     },
     {
+      "packageName": "@synesthesia-project/live-core",
+      "projectFolder": "live/core"
+    },
+    {
       "packageName": "@synesthesia-project/midi-consoles",
       "projectFolder": "midi-consoles"
     },
