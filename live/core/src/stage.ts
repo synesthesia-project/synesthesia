@@ -4,6 +4,12 @@ import { Config } from './config';
 import { Output, OutputContext, Plugin } from './plugins';
 import { OutputKind } from './plugins';
 import { createDesk } from './desk/desk';
+import { RGBChase } from '@synesthesia-project/compositor/lib/modules/chase';
+import {
+  RGBA_BLUE,
+  RGBA_PURPLE,
+  RGBA_WHITE,
+} from '@synesthesia-project/compositor/lib/color';
 
 const CONFIG: Config = {
   outputs: {
@@ -30,6 +36,8 @@ export const Stage = (plugins: Plugin[]) => {
   };
 
   const outputKinds = new Map<string, OutputKind<unknown>>();
+
+  const rootModule = new RGBChase([RGBA_PURPLE, RGBA_BLUE, RGBA_WHITE]);
 
   /**
    * Map from output key to active instance of the output
@@ -77,9 +85,8 @@ export const Stage = (plugins: Plugin[]) => {
           },
         },
       }));
-    const render: OutputContext<ConfigT>['render'] = () => {
-      throw new Error('TODO');
-    };
+    const render: OutputContext<ConfigT>['render'] = (map, pixels) =>
+      rootModule.render(map, pixels, null);
     const output = kind.create({
       saveConfig,
       render,

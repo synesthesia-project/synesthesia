@@ -1,4 +1,4 @@
-import { extend } from 'lodash';
+import { extend, throttle } from 'lodash';
 import * as http from 'http';
 import * as WebSocket from 'ws';
 import { Application } from 'express';
@@ -87,13 +87,17 @@ export class LightDesk implements Parent {
     this.rootGroup.setParent(this);
   };
 
-  public updateTree = () => {
-    if (!this.rootGroup) return;
-    const root = this.rootGroup.getProtoInfo(this.componentIDMap);
-    for (const connection of this.connections) {
-      connection.sendMessage({ type: 'update_tree', root });
-    }
-  };
+  public updateTree = throttle(
+    () => {
+      if (!this.rootGroup) return;
+      const root = this.rootGroup.getProtoInfo(this.componentIDMap);
+      for (const connection of this.connections) {
+        connection.sendMessage({ type: 'update_tree', root });
+      }
+    },
+    10,
+    { leading: true, trailing: true }
+  );
 
   public removeChild = (component: Component) => {
     if (this.rootGroup === component) {

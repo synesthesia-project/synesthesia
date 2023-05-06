@@ -144,3 +144,4 @@ export class RGBColor implements Color {
 
 /** #ffffff */
 export const COLOR_RGB_WHITE = new RGBColor(255, 255, 255);
+export const COLOR_RGB_BLACK = new RGBColor(0, 0, 0);
