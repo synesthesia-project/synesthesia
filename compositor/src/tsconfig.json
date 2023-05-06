@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "target": "es6",
+        "target": "esnext",
         "module": "commonjs",
         "jsx": "react",
         "isolatedModules": false,
@@ -12,8 +12,7 @@
         "noUnusedParameters": true,
         "removeComments": true,
         "noLib": false,
-        "preserveConstEnums": true,
-        "suppressImplicitAnyIndexErrors": true
+        "preserveConstEnums": true
     },
     "compileOnSave": false,
     "buildOnSave": false,
