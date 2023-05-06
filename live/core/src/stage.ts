@@ -37,7 +37,9 @@ export const Stage = (plugins: Plugin[]) => {
 
   const outputKinds = new Map<string, OutputKind<unknown>>();
 
-  const rootModule = new RGBChase([RGBA_PURPLE, RGBA_BLUE, RGBA_WHITE]);
+  const rootModule = new RGBChase([RGBA_PURPLE, RGBA_BLUE, RGBA_WHITE], {
+    advanceAmountPerSecond: 1,
+  });
 
   /**
    * Map from output key to active instance of the output
@@ -148,10 +150,9 @@ export const Stage = (plugins: Plugin[]) => {
       const newOutputConfig = config.outputs[key];
       // Check if output already exists, and needs to be deleted of change kind
       if (output && output.kind !== newOutputConfig?.kind) {
-        // TODO: shutdown output
+        output.output.destroy();
         outputs.delete(key);
         desk.outputsGroup.removeChild(output.ldComponent);
-        // TODO: remove child from group
         output = undefined;
       }
       if (newOutputConfig) {

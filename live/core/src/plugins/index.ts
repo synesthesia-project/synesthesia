@@ -30,6 +30,10 @@ export interface Output<ConfigT> {
    */
   setConfig(config: ConfigT): unknown;
   getLightDeskComponent(): ld.Component;
+  /**
+   * Inform the output that is about to be removed and should shut down
+   */
+  destroy(): void;
 }
 
 export interface OutputKind<ConfigT> {
