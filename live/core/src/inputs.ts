@@ -21,7 +21,7 @@ export const createInputManager = () => {
 
     const module = new TransitionModule(new FillModule(RGBA_BLACK));
 
-    const group = new ld.Group();
+    const group = new ld.Group({direction: 'vertical'});
 
     const createInputGroup = new ld.Group({ noBorder: true, wrap: true });
 
@@ -78,6 +78,13 @@ export const createInputManager = () => {
             // Update existing input
             currentInput.input.setConfig(newConfig.config);
           } else {
+            // Create header
+            const header = new ld.Group({ noBorder: true });
+            group.addChild(header);
+            header.addChild(new ld.Label(kind.kind));
+            const deleteButton = new ld.Button('Replace Input');
+            header.addChild(deleteButton);
+            deleteButton.addListener(() => context.saveConfig(undefined));
             // Create new input
             currentInput = {
               kind: kind.kind,
