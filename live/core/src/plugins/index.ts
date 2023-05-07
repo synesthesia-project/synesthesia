@@ -6,6 +6,7 @@ import {
   PixelMap,
 } from '@synesthesia-project/compositor/lib/modules';
 import { RGBAColor } from '@synesthesia-project/compositor/lib/color';
+import { OptionalKindAndConfig } from '../config';
 
 export interface PluginContext {
   registerOutputKind<T>(outputKind: OutputKind<T>): void;
@@ -28,7 +29,11 @@ export interface OutputContext<ConfigT> extends ModuleContext<ConfigT> {
   render(pixelMap: PixelMap, pixels: Array<PixelInfo<unknown>>): RGBAColor[];
 }
 
-export type InputContext<ConfigT> = ModuleContext<ConfigT>;
+export interface InputContext<ConfigT> extends ModuleContext<ConfigT> {
+  createInputSocket(context: {
+    saveConfig(config: OptionalKindAndConfig): Promise<void>;
+  }): Input<OptionalKindAndConfig>;
+}
 
 export interface Module<ConfigT> {
   /**

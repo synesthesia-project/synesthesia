@@ -15,13 +15,13 @@ export const createInputManager = () => {
   const inputKindListeners = new Set<() => void>();
 
   const createSocket = (
-    context: InputContext<OptionalKindAndConfig>
+    context: Pick<InputContext<OptionalKindAndConfig>, 'saveConfig'>
   ): InputSocket => {
-    let config: OptionalKindAndConfig = undefined;
+    let config: OptionalKindAndConfig = null;
 
     const module = new TransitionModule(new FillModule(RGBA_BLACK));
 
-    const group = new ld.Group({direction: 'vertical'});
+    const group = new ld.Group({ direction: 'vertical' });
 
     const createInputGroup = new ld.Group({ noBorder: true, wrap: true });
 
@@ -46,6 +46,7 @@ export const createInputManager = () => {
     };
 
     inputKindListeners.add(updateCreateInputButtons);
+    updateCreateInputButtons();
 
     let currentInput: {
       kind: string;
@@ -84,7 +85,7 @@ export const createInputManager = () => {
             header.addChild(new ld.Label(kind.kind));
             const deleteButton = new ld.Button('Replace Input');
             header.addChild(deleteButton);
-            deleteButton.addListener(() => context.saveConfig(undefined));
+            deleteButton.addListener(() => context.saveConfig(null));
             // Create new input
             currentInput = {
               kind: kind.kind,
@@ -97,6 +98,7 @@ export const createInputManager = () => {
                     });
                   }
                 },
+                createInputSocket: createSocket
               }),
             };
             currentInput.input.setConfig(newConfig.config);

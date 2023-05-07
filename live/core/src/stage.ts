@@ -19,8 +19,21 @@ const CONFIG: Config = {
     },
   },
   inputs: {
-    current: undefined,
-  },
+    current: {
+      kind: 'add',
+      config: [
+        {
+          "kind": "fill",
+          "config": {
+            "r": 98.54237288135593,
+            "g": 0,
+            "b": 0,
+            "alpha": 1
+          }
+        }
+      ]
+    }
+  }
 };
 
 type ActiveOutput<ConfigT> = {
