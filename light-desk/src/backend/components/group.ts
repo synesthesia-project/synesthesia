@@ -26,9 +26,11 @@ export class Group extends Component implements Parent {
     this.style = extend({}, GROUP_DEFAULT_STYLE, style);
   }
 
-  public addChild(component: Component) {
-    this.children.push(component);
-    component.setParent(this);
+  public addChild(...children: Component[]) {
+    for (const c of children) {
+      this.children.push(c);
+      c.setParent(this);
+    }
     this.updateTree();
   }
 
@@ -39,6 +41,12 @@ export class Group extends Component implements Parent {
       removed.map((c) => c.setParent(null));
       this.updateTree();
     }
+  }
+
+  public removeAllChildren() {
+    this.children.splice(0, this.children.length);
+    this.children.map((c) => c.setParent(null));
+    this.updateTree();
   }
 
   public setTitle(title: string) {
