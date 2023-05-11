@@ -7659,7 +7659,7 @@ packages:
     dev: false
 
   file:projects/live-core.tgz:
-    resolution: {integrity: sha512-NlKVVg/G2muHdoXEQbJVCRdx3v2Ix3WJ0siAvtDQ4YRd2W+Fco9f6DhH3IWheMi7eyB0CS0kLoZwPu2VJpTSDw==, tarball: file:projects/live-core.tgz}
+    resolution: {integrity: sha512-X7gAVCw/nJmr59itbBTV5xN/D0KhwUp/ruPvXdSYzJ0MmdgGtfXyX1rFmf+Bm1AiQav8PneuzKS5+1lixMacoA==, tarball: file:projects/live-core.tgz}
     name: '@rush-temp/live-core'
     version: 0.0.0
     dependencies:
@@ -7667,6 +7667,7 @@ packages:
       fp-ts: 2.13.1
       gulp: 4.0.2
       io-ts: 2.2.20_fp-ts@2.13.1
+      lodash: 4.17.21
     dev: false
 
   file:projects/midi-consoles.tgz:
@@ -7727,7 +7728,7 @@ packages:
     dev: false
 
   file:projects/server.tgz:
-    resolution: {integrity: sha512-1AaUpi/ZmfT6LQufRxBkBZRvOpazhB1Ovjs/mYMCguAYno/Klt6yO9ZwwBqIK3EJKUt3k54X6Stqk213bWHTAw==, tarball: file:projects/server.tgz}
+    resolution: {integrity: sha512-PZocMqmR/4XQ9IEiWCGjdKKlxO1YmdMKcs80x79ktBEcU1+IwwTqiJ2oXSPxQ0fUfsY1e49YTi9HbK0JivR31Q==, tarball: file:projects/server.tgz}
     name: '@rush-temp/server'
     version: 0.0.0
     dependencies:

@@ -4,7 +4,14 @@ import styled, { ThemeProvider } from 'styled-components';
 import * as proto from '../../shared/proto';
 
 import { defaultTheme, GlobalStyle } from './styling';
+import { Button } from './button';
 import { Group } from './group';
+import { Label } from './label';
+import { Rect } from './rect';
+import { SliderButton } from './slider_button';
+import { StageContext } from './context';
+import { Switch } from './switch';
+import { TextInput } from './text-input';
 
 interface Props {
   className?: string;
@@ -14,6 +21,25 @@ interface State {
   root: proto.GroupComponent | null;
   sendMessage: ((msg: proto.ClientMessage) => void) | null;
 }
+
+const renderComponent = (info: proto.Component): JSX.Element => {
+  switch (info.component) {
+    case 'button':
+      return <Button key={info.key} info={info} />;
+    case 'group':
+      return <Group key={info.key} info={info} />;
+    case 'label':
+      return <Label key={info.key} info={info} />;
+    case 'rect':
+      return <Rect key={info.key} info={info} />;
+    case 'slider_button':
+      return <SliderButton key={info.key} info={info} />;
+    case 'switch':
+      return <Switch key={info.key} info={info} />;
+    case 'text-input':
+      return <TextInput key={info.key} info={info} />;
+  }
+};
 
 class Stage extends React.Component<Props, State> {
   private socket: Promise<WebSocket> | null = null;
@@ -74,19 +100,22 @@ class Stage extends React.Component<Props, State> {
 
   public render() {
     return (
-      <div className={this.props.className}>
-        {this.state.root ? (
-          <Group
-            info={this.state.root}
-            sendMessage={this.state.sendMessage}
-            color="dark"
-          />
-        ) : (
-          <div className="no-root">
-            No root has been added to the light desk
-          </div>
-        )}
-      </div>
+      <StageContext.Provider
+        value={{
+          sendMessage: this.state.sendMessage,
+          renderComponent,
+        }}
+      >
+        <div className={this.props.className}>
+          {this.state.root ? (
+            <Group info={this.state.root} />
+          ) : (
+            <div className="no-root">
+              No root has been added to the light desk
+            </div>
+          )}
+        </div>
+      </StageContext.Provider>
     );
   }
 }

@@ -5,6 +5,7 @@ import * as proto from '../../shared/proto';
 import { play } from '../audio';
 
 import { touchIndicatorNormal, touchIndicatorTouching } from './styling';
+import { StageContext } from './context';
 
 const CLASS_TOUCHING = 'touching';
 const TOUCH_INDICATOR_CLASS = 'touch-indicator';
@@ -171,4 +172,12 @@ const StyledSwitch = styled(Switch)`
   }
 `;
 
-export { StyledSwitch as Switch };
+const SwitchWrapper: React.FunctionComponent<Omit<Props, 'sendMessage'>> = (
+  props
+) => (
+  <StageContext.Consumer>
+    {({ sendMessage }) => <StyledSwitch {...props} sendMessage={sendMessage} />}
+  </StageContext.Consumer>
+);
+
+export { SwitchWrapper as Switch };

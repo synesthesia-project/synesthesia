@@ -2,6 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import * as proto from '../../shared/proto';
+import { StageContext } from './context';
 
 interface Props {
   className?: string;
@@ -43,4 +44,14 @@ const StyledTextInput = styled(TextInput)`
   text-shadow: 0 -1px rgba(0, 0, 0, 0.7);
 `;
 
-export { StyledTextInput as TextInput };
+const TextInputWrapper: React.FunctionComponent<Omit<Props, 'sendMessage'>> = (
+  props
+) => (
+  <StageContext.Consumer>
+    {({ sendMessage }) => (
+      <StyledTextInput {...props} sendMessage={sendMessage} />
+    )}
+  </StageContext.Consumer>
+);
+
+export { TextInputWrapper as TextInput };

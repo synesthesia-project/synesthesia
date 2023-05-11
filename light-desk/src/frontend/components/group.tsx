@@ -3,25 +3,19 @@ import styled from 'styled-components';
 
 import * as proto from '../../shared/proto';
 
-import { Button } from './button';
-import { Label } from './label';
-import { Rect } from './rect';
-import { SliderButton } from './slider_button';
-import { Switch } from './switch';
-import { TextInput } from './text-input';
+import { calculateClass } from '../util/react';
+import { StageContext } from './context';
 
 type GroupColor = 'dark' | 'lighter' | 'lighterer';
 
 interface Props {
   className?: string;
   info: proto.GroupComponent;
-  sendMessage: ((msg: proto.ClientMessage) => void) | null;
-  color: GroupColor;
 }
 
-function nextColor(props: Props): GroupColor {
-  if (props.info.style.noBorder) return props.color;
-  switch (props.color) {
+function nextColor(currentColor: GroupColor, props: Props): GroupColor {
+  if (props.info.style.noBorder) return currentColor;
+  switch (currentColor) {
     case 'dark':
       return 'lighter';
     case 'lighter':
@@ -31,88 +25,33 @@ function nextColor(props: Props): GroupColor {
   }
 }
 
-class Group extends React.Component<Props, never> {
-  public constructor(props: Props) {
-    super(props);
-    this.childComponent = this.childComponent.bind(this);
-  }
+const LastGroupColor = React.createContext<GroupColor>('dark');
 
-  public render() {
-    return (
-      <div
-        className={
-          this.props.className +
-          (this.props.info.style.noBorder ? ' no-border' : '')
-        }
-      >
-        {this.props.info.title ? (
-          <div className="title">{this.props.info.title}</div>
-        ) : null}
-        <div className="children">
-          {this.props.info.children.map(this.childComponent)}
-        </div>
+const Group: React.FunctionComponent<Props> = (props) => {
+  const { renderComponent } = React.useContext(StageContext);
+  const color = React.useContext(LastGroupColor);
+
+  return (
+    <div
+      className={calculateClass(
+        props.className,
+        props.info.style.noBorder && 'no-border',
+        `color-${color}`
+      )}
+    >
+      {props.info.title ? (
+        <div className="title">{props.info.title}</div>
+      ) : null}
+      <div className="children">
+        <LastGroupColor.Provider value={nextColor(color, props)}>
+          {props.info.children.map(renderComponent)}
+        </LastGroupColor.Provider>
       </div>
-    );
-  }
-
-  private childComponent(info: proto.Component): JSX.Element {
-    switch (info.component) {
-      case 'button':
-        return (
-          <Button
-            key={info.key}
-            info={info}
-            sendMessage={this.props.sendMessage}
-          />
-        );
-      case 'group':
-        return (
-          <StyledGroup
-            key={info.key}
-            info={info}
-            sendMessage={this.props.sendMessage}
-            color={nextColor(this.props)}
-          />
-        );
-      case 'label':
-        return <Label key={info.key} info={info} />;
-      case 'rect':
-        return <Rect key={info.key} info={info} />;
-      case 'slider_button':
-        return (
-          <SliderButton
-            key={info.key}
-            info={info}
-            sendMessage={this.props.sendMessage}
-          />
-        );
-      case 'switch':
-        return (
-          <Switch
-            key={info.key}
-            info={info}
-            sendMessage={this.props.sendMessage}
-          />
-        );
-      case 'text-input':
-        return (
-          <TextInput
-            key={info.key}
-            info={info}
-            sendMessage={this.props.sendMessage}
-          />
-        );
-    }
-  }
-}
+    </div>
+  );
+};
 
 const StyledGroup = styled(Group)`
-  background: ${(p) =>
-    p.color === 'dark'
-      ? p.theme.bgDark1
-      : p.color === 'lighter'
-      ? p.theme.bg
-      : p.theme.bgLight1};
   border: 1px solid ${(p) => p.theme.borderDark};
 
   > .title {
@@ -134,6 +73,18 @@ const StyledGroup = styled(Group)`
     > * {
       margin: ${(p) => p.theme.spacingPx / 2}px;
     }
+  }
+
+  &.color-dark {
+    background: ${(p) => p.theme.bgDark1};
+  }
+
+  &.color-lighter {
+    background: ${(p) => p.theme.bg};
+  }
+
+  &.color-lighterer {
+    background: ${(p) => p.theme.bgLight1};
   }
 
   &.no-border {

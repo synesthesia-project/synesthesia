@@ -11,6 +11,7 @@ import {
   touchIndicatorTouching,
 } from './styling';
 import { calculateClass } from '../util/react';
+import { StageContext } from './context';
 
 const TOUCH_INDICATOR_CLASS = 'touch-indicator';
 const TOUCHING_CLASS = 'touching';
@@ -19,72 +20,46 @@ const ERROR_CLASS = 'error';
 interface Props {
   className?: string;
   info: proto.ButtonComponent;
-  sendMessage: ((msg: proto.ClientMessage) => void) | null;
 }
 
-interface State {
-  touching: boolean;
-}
+const Button: React.FunctionComponent<Props> = (props) => {
+  const { sendMessage } = React.useContext(StageContext);
+  const [touching, setTouching] = React.useState(false);
+  const { state } = props.info;
 
-class Button extends React.Component<Props, State> {
-  public constructor(props: Props) {
-    super(props);
-    this.state = {
-      touching: false,
-    };
-
-    this.onClick = this.onClick.bind(this);
-    this.onTouchStart = this.onTouchStart.bind(this);
-    this.onTouchEnd = this.onTouchEnd.bind(this);
-  }
-
-  public render() {
-    const { state } = this.props.info;
-    return (
-      <div
-        className={calculateClass(
-          this.props.className,
-          this.state.touching && TOUCHING_CLASS,
-          state.state === 'error' && ERROR_CLASS
-        )}
-        onClick={this.onClick}
-        onTouchStart={this.onTouchStart}
-        onTouchEnd={this.onTouchEnd}
-        title={state.state === 'error' ? state.error : undefined}
-      >
-        <div className={TOUCH_INDICATOR_CLASS} />
-        {this.props.info.text}
-      </div>
-    );
-  }
-
-  private click() {
-    if (!this.props.sendMessage) return;
-    console.log('sending message');
-    this.props.sendMessage({
+  const click = () =>
+    sendMessage?.({
       type: 'component_message',
-      componentKey: this.props.info.key,
+      componentKey: props.info.key,
       component: 'button',
     });
-  }
 
-  private onClick(_: React.MouseEvent<HTMLDivElement>) {
-    this.click();
-  }
-
-  private onTouchStart(event: React.TouchEvent<HTMLDivElement>) {
-    play('touch');
-    event.preventDefault();
-    this.setState({ touching: true });
-  }
-
-  private onTouchEnd(event: React.TouchEvent<HTMLDivElement>) {
-    event.preventDefault();
-    this.setState({ touching: false });
-    this.click();
-    play('beep2');
-  }
-}
+  return (
+    <div
+      className={calculateClass(
+        props.className,
+        touching && TOUCHING_CLASS,
+        state.state === 'error' && ERROR_CLASS
+      )}
+      onClick={click}
+      onTouchStart={(event) => {
+        play('touch');
+        event.preventDefault();
+        setTouching(true);
+      }}
+      onTouchEnd={(event) => {
+        event.preventDefault();
+        setTouching(false);
+        click();
+        play('beep2');
+      }}
+      title={state.state === 'error' ? state.error : undefined}
+    >
+      <div className={TOUCH_INDICATOR_CLASS} />
+      {props.info.text}
+    </div>
+  );
+};
 
 const StyledButton = styled(Button)`
   ${rectButton}

@@ -1,6 +1,7 @@
 import * as ld from '@synesthesia-project/light-desk';
+import { throttle } from 'lodash';
 
-import { Config } from './config';
+import { Config, loadConfig, saveConfig } from './config';
 import { InputKind, Output, OutputContext, Plugin } from './plugins';
 import { OutputKind } from './plugins';
 import { createDesk } from './desk/desk';
@@ -9,43 +10,27 @@ import FillModule from '@synesthesia-project/compositor/lib/modules/fill';
 import { RGBA_BLACK } from '@synesthesia-project/compositor/lib/color';
 import { createInputManager } from './inputs';
 
-const CONFIG: Config = {
-  outputs: {
-    test1: {
-      kind: 'virtual',
-      config: {
-        pixels: 2,
-      },
-    },
-  },
-  inputs: {
-    current: {
-      kind: 'add',
-      config: [
-        {
-          kind: 'fill',
-          config: {
-            r: 98.54237288135593,
-            g: 0,
-            b: 0,
-            alpha: 1,
-          },
-        },
-      ],
-    },
-  },
-};
-
 type ActiveOutput<ConfigT> = {
   kind: string;
   output: Output<ConfigT>;
   ldComponent: ld.Component;
 };
 
-export const Stage = (plugins: Plugin[]) => {
+export const Stage = async (plugins: Plugin[], configPath: string) => {
   const desk = createDesk();
 
   let config: Config = {};
+
+  const saveCurrentConfig = throttle(
+    () => {
+      saveConfig(configPath, config);
+    },
+    1000,
+    {
+      leading: true,
+      trailing: true,
+    }
+  );
 
   const outputKinds = new Map<string, OutputKind<unknown>>();
 
@@ -87,10 +72,12 @@ export const Stage = (plugins: Plugin[]) => {
    * Save the config with a new value,
    * and update any outputs, inputs, etc... with their changed config
    */
-  const updateConfig = async (update: (originalConfig: Config) => Config) => {
+  const updateConfig = async (
+    update: (originalConfig: Config) => Config,
+    save = true
+  ) => {
     const prevConfig = config;
     const newConfig = update(config);
-    console.log('updateConfig', JSON.stringify(newConfig, null, '  '));
     // const _oldConfig = config;
     config = newConfig;
     // TODO: compare old with new config, for changed configs:
@@ -99,6 +86,9 @@ export const Stage = (plugins: Plugin[]) => {
     // - update outputs
     updateOutputsFromConfig(prevConfig);
     updateInputsFromConfig(prevConfig);
+    if (save) {
+      saveCurrentConfig();
+    }
   };
 
   const createOutput = <ConfigT>(
@@ -222,7 +212,7 @@ export const Stage = (plugins: Plugin[]) => {
   plugins.map(initializePlugin);
 
   // Initialize with config
-  updateConfig(() => CONFIG);
+  await loadConfig(configPath).then((c) => updateConfig(() => c, false));
 
   // Initialize Desk
   desk.init({
