@@ -6,6 +6,7 @@ import * as util from '../util/util';
 import { play } from '../audio';
 
 import { buttonStateNormal, buttonStateNormalHover } from './styling';
+import { StageContext } from './context';
 
 const CLASS_STATE_OPEN = 'open';
 const CLASS_SLIDER_DISPLAY = 'slider-display';
@@ -261,4 +262,14 @@ const StyledSliderButton = styled(SliderButton)`
   }
 `;
 
-export { StyledSliderButton as SliderButton };
+const SliderButtonWrapper: React.FunctionComponent<
+  Omit<Props, 'sendMessage'>
+> = (props) => (
+  <StageContext.Consumer>
+    {({ sendMessage }) => (
+      <StyledSliderButton {...props} sendMessage={sendMessage} />
+    )}
+  </StageContext.Consumer>
+);
+
+export { SliderButtonWrapper as SliderButton };
