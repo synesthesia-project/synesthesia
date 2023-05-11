@@ -3,13 +3,8 @@ import styled from 'styled-components';
 
 import * as proto from '../../shared/proto';
 
-import { Button } from './button';
-import { Label } from './label';
-import { Rect } from './rect';
-import { SliderButton } from './slider_button';
-import { Switch } from './switch';
-import { TextInput } from './text-input';
 import { calculateClass } from '../util/react';
+import { StageContext } from './context';
 
 type GroupColor = 'dark' | 'lighter' | 'lighterer';
 
@@ -32,26 +27,8 @@ function nextColor(currentColor: GroupColor, props: Props): GroupColor {
 
 const LastGroupColor = React.createContext<GroupColor>('dark');
 
-const childComponent = (info: proto.Component): JSX.Element => {
-  switch (info.component) {
-    case 'button':
-      return <Button key={info.key} info={info} />;
-    case 'group':
-      return <StyledGroup key={info.key} info={info} />;
-    case 'label':
-      return <Label key={info.key} info={info} />;
-    case 'rect':
-      return <Rect key={info.key} info={info} />;
-    case 'slider_button':
-      return <SliderButton key={info.key} info={info} />;
-    case 'switch':
-      return <Switch key={info.key} info={info} />;
-    case 'text-input':
-      return <TextInput key={info.key} info={info} />;
-  }
-};
-
 const Group: React.FunctionComponent<Props> = (props) => {
+  const { renderComponent } = React.useContext(StageContext);
   const color = React.useContext(LastGroupColor);
 
   return (
@@ -67,7 +44,7 @@ const Group: React.FunctionComponent<Props> = (props) => {
       ) : null}
       <div className="children">
         <LastGroupColor.Provider value={nextColor(color, props)}>
-          {props.info.children.map(childComponent)}
+          {props.info.children.map(renderComponent)}
         </LastGroupColor.Provider>
       </div>
     </div>
