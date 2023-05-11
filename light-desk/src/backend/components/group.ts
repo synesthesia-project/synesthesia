@@ -4,7 +4,7 @@ import * as proto from '../../shared/proto';
 import { GroupComponentStyle, GROUP_DEFAULT_STYLE } from '../../shared/styles';
 import { IDMap } from '../util/id-map';
 
-import { Component, Parent } from './base';
+import { BaseParent, Component } from './base';
 
 /**
  * A collection of components, grouped in either a row or column. Can contain
@@ -13,7 +13,7 @@ import { Component, Parent } from './base';
  *
  * ![](media://images/group_screenshot.png)
  */
-export class Group extends Component implements Parent {
+export class Group extends BaseParent {
   /** @hidden */
   private readonly children: Component[] = [];
   /** @hidden */
@@ -73,23 +73,8 @@ export class Group extends Component implements Parent {
     };
   }
 
-  /**
-   * TODO: we can do this better, right now it broadcasts the message to all
-   * components of the tree
-   *
-   * @hidden
-   */
-  public routeMessage(idMap: IDMap, message: proto.ClientComponentMessage) {
-    if (idMap.getId(this) === message.componentKey) {
-      this.handleMessage(message);
-    } else {
-      for (const c of this.children) {
-        if (c instanceof Group) {
-          c.routeMessage(idMap, message);
-        } else {
-          if (idMap.getId(c) === message.componentKey) c.handleMessage(message);
-        }
-      }
-    }
+  /** @hidden */
+  getAllChildren(): Iterable<Component> {
+    return this.children;
   }
 }
