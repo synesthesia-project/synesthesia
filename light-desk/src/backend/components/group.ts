@@ -28,8 +28,10 @@ export class Group extends Component implements Parent {
 
   public addChild(...children: Component[]) {
     for (const c of children) {
-      this.children.push(c);
-      c.setParent(this);
+      if (!this.children.includes(c)) {
+        this.children.push(c);
+        c.setParent(this);
+      }
     }
     this.updateTree();
   }
