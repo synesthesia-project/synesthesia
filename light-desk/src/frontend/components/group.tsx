@@ -10,13 +10,13 @@ import { SliderButton } from './slider_button';
 import { Switch } from './switch';
 import { TextInput } from './text-input';
 import { calculateClass } from '../util/react';
+import { StageContext } from './context';
 
 type GroupColor = 'dark' | 'lighter' | 'lighterer';
 
 interface Props {
   className?: string;
   info: proto.GroupComponent;
-  sendMessage: ((msg: proto.ClientMessage) => void) | null;
 }
 
 function nextColor(currentColor: GroupColor, props: Props): GroupColor {
@@ -39,11 +39,9 @@ const childComponent = (
 ): JSX.Element => {
   switch (info.component) {
     case 'button':
-      return <Button key={info.key} info={info} sendMessage={sendMessage} />;
+      return <Button key={info.key} info={info} />;
     case 'group':
-      return (
-        <StyledGroup key={info.key} info={info} sendMessage={sendMessage} />
-      );
+      return <StyledGroup key={info.key} info={info} />;
     case 'label':
       return <Label key={info.key} info={info} />;
     case 'rect':
@@ -60,6 +58,7 @@ const childComponent = (
 };
 
 const Group: React.FunctionComponent<Props> = (props) => {
+  const { sendMessage } = React.useContext(StageContext);
   const color = React.useContext(LastGroupColor);
 
   return (
@@ -75,7 +74,7 @@ const Group: React.FunctionComponent<Props> = (props) => {
       ) : null}
       <div className="children">
         <LastGroupColor.Provider value={nextColor(color, props)}>
-          {props.info.children.map((c) => childComponent(c, props.sendMessage))}
+          {props.info.children.map((c) => childComponent(c, sendMessage))}
         </LastGroupColor.Provider>
       </div>
     </div>

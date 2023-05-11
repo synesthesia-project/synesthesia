@@ -11,6 +11,7 @@ import {
   touchIndicatorTouching,
 } from './styling';
 import { calculateClass } from '../util/react';
+import { StageContext } from './context';
 
 const TOUCH_INDICATOR_CLASS = 'touch-indicator';
 const TOUCHING_CLASS = 'touching';
@@ -19,15 +20,15 @@ const ERROR_CLASS = 'error';
 interface Props {
   className?: string;
   info: proto.ButtonComponent;
-  sendMessage: ((msg: proto.ClientMessage) => void) | null;
 }
 
 const Button: React.FunctionComponent<Props> = (props) => {
+  const { sendMessage } = React.useContext(StageContext);
   const [touching, setTouching] = React.useState(false);
   const { state } = props.info;
 
   const click = () =>
-    props.sendMessage?.({
+    sendMessage?.({
       type: 'component_message',
       componentKey: props.info.key,
       component: 'button',

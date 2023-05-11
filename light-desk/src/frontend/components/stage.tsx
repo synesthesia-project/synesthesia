@@ -5,6 +5,7 @@ import * as proto from '../../shared/proto';
 
 import { defaultTheme, GlobalStyle } from './styling';
 import { Group } from './group';
+import { StageContext } from './context';
 
 interface Props {
   className?: string;
@@ -74,15 +75,21 @@ class Stage extends React.Component<Props, State> {
 
   public render() {
     return (
-      <div className={this.props.className}>
-        {this.state.root ? (
-          <Group info={this.state.root} sendMessage={this.state.sendMessage} />
-        ) : (
-          <div className="no-root">
-            No root has been added to the light desk
-          </div>
-        )}
-      </div>
+      <StageContext.Provider
+        value={{
+          sendMessage: this.state.sendMessage,
+        }}
+      >
+        <div className={this.props.className}>
+          {this.state.root ? (
+            <Group info={this.state.root} />
+          ) : (
+            <div className="no-root">
+              No root has been added to the light desk
+            </div>
+          )}
+        </div>
+      </StageContext.Provider>
     );
   }
 }
