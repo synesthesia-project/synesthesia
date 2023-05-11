@@ -1,4 +1,4 @@
-import { RGBA_BLACK } from '@synesthesia-project/compositor/lib/color';
+import { RGBA_TRANSPARENT } from '@synesthesia-project/compositor/lib/color';
 import FillModule from '@synesthesia-project/compositor/lib/modules/fill';
 import { TransitionModule } from '@synesthesia-project/compositor/lib/modules/transition';
 import * as ld from '@synesthesia-project/light-desk';
@@ -19,7 +19,7 @@ export const createInputManager = () => {
   ): InputSocket => {
     let config: OptionalKindAndConfig = null;
 
-    const module = new TransitionModule(new FillModule(RGBA_BLACK));
+    const module = new TransitionModule(new FillModule(RGBA_TRANSPARENT));
 
     const group = new ld.Group({ direction: 'vertical' });
 
@@ -61,7 +61,10 @@ export const createInputManager = () => {
           (!newConfig || currentInput.kind !== newConfig.kind)
         ) {
           // Disable existing input
-          module.transition(new FillModule(RGBA_BLACK), TRANSITION_DURATION);
+          module.transition(
+            new FillModule(RGBA_TRANSPARENT),
+            TRANSITION_DURATION
+          );
           // TODO: destroy only after transition out finished
           currentInput.input.destroy();
           group.removeAllChildren();
