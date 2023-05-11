@@ -35,8 +35,6 @@ export const createInputManager = () => {
       }
     };
 
-    group.addChild(createInputGroup);
-
     const setInputKind = (kind: InputKind<unknown>) => {
       group.removeChild(createInputGroup);
       context.saveConfig({
