@@ -20,15 +20,24 @@ export const createDesk = () => {
   const outputsGroup = new ld.Group({ direction: 'vertical' });
   deskRoot.addChild(outputsGroup);
 
+  const inputGroup = new ld.Group({ direction: 'vertical', noBorder: true });
+  deskRoot.addChild(inputGroup);
+
   const init = (listeners: { addOutput: (key: string) => Promise<void> }) => {
     addButton.addListener(async () =>
       listeners.addOutput(addOutputKey.getValue())
     );
   };
 
+  const setInput = (component: ld.Component) => {
+    inputGroup.removeAllChildren();
+    inputGroup.addChild(component);
+  };
+
   return {
     desk,
     outputsGroup,
+    setInput,
     init,
   };
 };

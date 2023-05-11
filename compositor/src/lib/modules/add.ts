@@ -27,11 +27,11 @@ export function alphaCombine(bottom: RGBAColor, top: RGBAColor) {
  * Combine the output of multiple modules together in an "additive" manner
  */
 export default class AddModule<State> implements CompositorModule<State> {
-  private readonly layers: CompositorModule<State>[];
+  private layers: CompositorModule<State>[];
 
   public constructor(layers: CompositorModule<State>[]) {
     if (layers.length === 0) throw new Error('must supply at least one layer');
-    this.layers = layers;
+    this.layers = [...layers];
   }
 
   public render(
@@ -51,4 +51,9 @@ export default class AddModule<State> implements CompositorModule<State> {
     }
     return result;
   }
+
+  public setLayers = (layers: CompositorModule<State>[]) => {
+    if (layers.length === 0) throw new Error('must supply at least one layer');
+    this.layers = [...layers];
+  };
 }

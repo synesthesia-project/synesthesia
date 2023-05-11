@@ -77,7 +77,7 @@ const createVirtualOutput = (
     }
   };
 
-  setInterval(render, 10);
+  const renderInterval = setInterval(render, 10);
 
   return {
     setConfig: (config) => {
@@ -114,6 +114,9 @@ const createVirtualOutput = (
       pixelsInput.setValue(`${config.pixels}`);
     },
     getLightDeskComponent: () => group,
+    destroy: () => {
+      clearInterval(renderInterval);
+    },
   };
 };
 

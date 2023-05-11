@@ -1,11 +1,10 @@
-import { CompositorModule, RenderMethod } from "."; 
+import { CompositorModule, RenderMethod } from '.';
 
 export class TransitionModule<State> implements CompositorModule<State> {
-
   private readonly modules: {
     /**
      * Value from 0-1 that represents how far this module has transitioned in.
-     * 
+     *
      * For the first module, this makes no difference
      * (as it will always be fully transitioned-in)
      */
@@ -24,11 +23,13 @@ export class TransitionModule<State> implements CompositorModule<State> {
   private lastFrame = Date.now();
 
   public constructor(init: CompositorModule<State>) {
-    this.modules = [{
-      transitionAmount: 1,
-      transitionSpeed: 0,
-      module: init
-    }];
+    this.modules = [
+      {
+        transitionAmount: 1,
+        transitionSpeed: 0,
+        module: init,
+      },
+    ];
   }
 
   render: RenderMethod<State> = (map, pixels, state) => {
@@ -62,7 +63,7 @@ export class TransitionModule<State> implements CompositorModule<State> {
       this.modules.splice(0, sliceModules);
     }
     return result;
-  }
+  };
 
   transition = (
     newPattern: CompositorModule<State>,
@@ -71,7 +72,7 @@ export class TransitionModule<State> implements CompositorModule<State> {
     this.modules.push({
       transitionAmount: 0,
       transitionSpeed: 1 / transitionLengthSeconds,
-      module: newPattern
+      module: newPattern,
     });
-  }
+  };
 }

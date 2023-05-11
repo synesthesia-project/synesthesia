@@ -7,7 +7,7 @@ export abstract class Component {
 
   /** @hidden */
   public setParent(parent: Parent | null) {
-    if (this.parent) {
+    if (this.parent && this.parent !== parent) {
       this.parent.removeChild(this);
     }
     this.parent = parent;
