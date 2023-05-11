@@ -2,9 +2,7 @@ import * as t from 'io-ts';
 import * as ld from '@synesthesia-project/light-desk';
 import { Input, InputContext, InputKind, Plugin } from '.';
 import AddModule from '@synesthesia-project/compositor/lib/modules/add';
-import {
-  RGBA_TRANSPARENT,
-} from '@synesthesia-project/compositor/lib/color';
+import { RGBA_TRANSPARENT } from '@synesthesia-project/compositor/lib/color';
 import FillModule from '@synesthesia-project/compositor/lib/modules/fill';
 import { OPTIONAL_KIND_AND_CONFIG, OptionalKindAndConfig } from '../config';
 
@@ -20,9 +18,7 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
   };
 
   const group = new ld.Group({ direction: 'vertical' });
-  const module = new AddModule([
-    new FillModule(RGBA_TRANSPARENT)
-  ]);
+  const module = new AddModule([new FillModule(RGBA_TRANSPARENT)]);
 
   const layers: Array<Input<OptionalKindAndConfig>> = [];
 
@@ -32,10 +28,7 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
   const addLayer = new ld.Button('Add Layer');
   header.addChild(addLayer);
   addLayer.addListener(() => {
-    context.saveConfig([
-      ...state.config || [],
-      null
-    ]);
+    context.saveConfig([...(state.config || []), null]);
   });
 
   const removeLayer = new ld.Button('Remove Layer');
@@ -54,25 +47,25 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
       // Add any missing layers
       for (let i = prevConfig.length; i < newConfig.length; i++) {
         const input = context.createInputSocket({
-          saveConfig: async singleConfig => {
+          saveConfig: async (singleConfig) => {
             if (state.config) {
               context.saveConfig([
                 ...state.config.slice(0, i),
                 singleConfig,
-                ...state.config.slice(i + 1)
-              ])
+                ...state.config.slice(i + 1),
+              ]);
             }
-          }
+          },
         });
         layers[i] = input;
         input.setConfig(newConfig[i]);
         layersGroup.addChild(input.getLightDeskComponent());
       }
       // Remove any extra layers
-      layers.splice(newConfig.length).map(layer => {
+      layers.splice(newConfig.length).map((layer) => {
         layer.destroy();
-        layersGroup.removeChild(layer.getLightDeskComponent())
-      })
+        layersGroup.removeChild(layer.getLightDeskComponent());
+      });
       // Update each layers' config
       for (let i = 0; i < newConfig.length; i++) {
         layers[i].setConfig(newConfig[i]);
@@ -81,12 +74,12 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
       if (layers.length === 0) {
         module.setLayers([new FillModule(RGBA_TRANSPARENT)]);
       } else {
-        module.setLayers(layers.map(l => l.getModlue()));
+        module.setLayers(layers.map((l) => l.getModlue()));
       }
     },
     getLightDeskComponent: () => group,
     destroy: () => {
-      layers.map(layer => layer.destroy());
+      layers.map((layer) => layer.destroy());
     },
     getModlue: () => module,
   };

@@ -55,5 +55,5 @@ export default class AddModule<State> implements CompositorModule<State> {
   public setLayers = (layers: CompositorModule<State>[]) => {
     if (layers.length === 0) throw new Error('must supply at least one layer');
     this.layers = [...layers];
-  }
+  };
 }

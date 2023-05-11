@@ -98,7 +98,7 @@ export const createInputManager = () => {
                     });
                   }
                 },
-                createInputSocket: createSocket
+                createInputSocket: createSocket,
               }),
             };
             currentInput.input.setConfig(newConfig.config);
