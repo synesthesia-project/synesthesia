@@ -27,7 +27,6 @@ export const createInputManager = () => {
 
     const updateCreateInputButtons = () => {
       createInputGroup.removeAllChildren();
-      createInputGroup.addChild(new ld.Label('Create Input'));
       for (const kind of inputKinds.values()) {
         const inputButton = new ld.Button(kind.kind);
         inputButton.addListener(() => setInputKind(kind));
@@ -69,6 +68,7 @@ export const createInputManager = () => {
           currentInput = null;
         }
         if (!newConfig) {
+          group.setTitle(`Create Input`);
           group.addChild(createInputGroup);
         } else {
           const kind = inputKinds.get(newConfig.kind);
@@ -81,11 +81,9 @@ export const createInputManager = () => {
             currentInput.input.setConfig(newConfig.config);
           } else {
             // Create header
-            const header = new ld.Group({ noBorder: true });
-            group.addChild(header);
-            header.addChild(new ld.Label(kind.kind));
+            group.setTitle(`input: ${kind.kind}`);
             const deleteButton = new ld.Button('Replace Input');
-            header.addChild(deleteButton);
+            group.addChild(deleteButton);
             deleteButton.addListener(() => context.saveConfig(null));
             // Create new input
             currentInput = {

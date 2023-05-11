@@ -26,7 +26,7 @@ const createFillInput = (context: InputContext<Config>): Input<Config> => {
     color: RGBA_BLACK,
   };
 
-  const group = new ld.Group();
+  const group = new ld.Group({ noBorder: true });
   const module = new FillModule<unknown>(() => state.color);
 
   const rect = new ld.Rect(COLOR_RGB_BLACK);

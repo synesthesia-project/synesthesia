@@ -129,15 +129,10 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
     const ldComponent = new ld.Group({
       direction: 'vertical',
     });
-
-    // Output Header
-    const header = new ld.Group({ noBorder: true });
-    ldComponent.addChild(header);
-
-    header.addChild(new ld.Label(`${kind.kind}: ${key}`));
+    ldComponent.setTitle(`${kind.kind}: ${key}`);
 
     const deleteButton = new ld.Button(`Delete`);
-    header.addChild(deleteButton);
+    ldComponent.addChild(deleteButton);
 
     deleteButton.addListener(() =>
       updateConfig((current) => ({
