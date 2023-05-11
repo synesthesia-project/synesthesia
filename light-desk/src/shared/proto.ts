@@ -1,3 +1,4 @@
+import { ListComponentOptions } from './options';
 import * as styles from './styles';
 
 /** JSON version of [[RGBColor]] */
@@ -41,6 +42,12 @@ export interface LabelComponent extends BaseComponent {
   text: string;
 }
 
+export interface ListComponent extends BaseComponent {
+  component: 'list';
+  children: Component[];
+  options: ListComponentOptions;
+}
+
 export interface RectComponent extends BaseComponent {
   component: 'rect';
   color: ColorJSON;
@@ -68,6 +75,7 @@ export type Component =
   | ButtonComponent
   | GroupComponent
   | LabelComponent
+  | ListComponent
   | RectComponent
   | SliderButtonComponent
   | SwitchComponent
