@@ -23,7 +23,7 @@ type Config = t.TypeOf<typeof VIRTUAL_OUTPUT_CONFIG>;
 const createVirtualOutput = (
   context: OutputContext<Config>
 ): Output<Config> => {
-  const group = new ld.Group();
+  const group = new ld.Group({ noBorder: true });
   const label = new ld.Label(`pixels:`);
   group.addChild(label);
 
