@@ -26,7 +26,7 @@ export class Group extends Component implements Parent {
     this.style = extend({}, GROUP_DEFAULT_STYLE, style);
   }
 
-  public addChild(...children: Component[]) {
+  public addChildren<CS extends Component[]>(...children: CS): CS {
     for (const c of children) {
       if (!this.children.includes(c)) {
         this.children.push(c);
@@ -34,6 +34,12 @@ export class Group extends Component implements Parent {
       }
     }
     this.updateTree();
+    return children;
+  }
+
+  public addChild<C extends Component>(child: C): C {
+    this.addChildren(child);
+    return child;
   }
 
   public removeChild(component: Component) {

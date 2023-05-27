@@ -24,14 +24,11 @@ const createVirtualOutput = (
   context: OutputContext<Config>
 ): Output<Config> => {
   const group = new ld.Group({ noBorder: true });
-  const label = new ld.Label(`pixels:`);
-  group.addChild(label);
+  group.addChild(new ld.Label(`pixels:`));
 
-  const pixelsInput = new ld.TextInput('');
-  group.addChild(pixelsInput);
+  const pixelsInput = group.addChild(new ld.TextInput(''));
 
-  const update = new ld.Button('Update');
-  group.addChild(update);
+  const update = group.addChild(new ld.Button('Update'));
 
   let pixels: {
     px: Array<{

@@ -29,17 +29,14 @@ const createFillInput = (context: InputContext<Config>): Input<Config> => {
   const group = new ld.Group({ noBorder: true });
   const module = new FillModule<unknown>(() => state.color);
 
-  const rect = new ld.Rect(COLOR_RGB_BLACK);
-  group.addChild(rect);
+  const rect = group.addChild(new ld.Rect(COLOR_RGB_BLACK));
 
   const sliders = {
-    r: new ld.SliderButton(0, 0, 255, 1, 'writeThrough'),
-    g: new ld.SliderButton(0, 0, 255, 1, 'writeThrough'),
-    b: new ld.SliderButton(0, 0, 255, 1, 'writeThrough'),
+    r: group.addChild(new ld.SliderButton(0, 0, 255, 1, 'writeThrough')),
+    g: group.addChild(new ld.SliderButton(0, 0, 255, 1, 'writeThrough')),
+    b: group.addChild(new ld.SliderButton(0, 0, 255, 1, 'writeThrough')),
     alpha: new ld.SliderButton(1, 0, 1, 0.01, 'writeThrough'),
   } as const;
-
-  group.addChild(...Object.values(sliders));
 
   const updateConfig = (config: Partial<Config>) =>
     state.config && context.saveConfig({ ...state.config, ...config });

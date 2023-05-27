@@ -6,20 +6,20 @@ export const createDesk = () => {
   const deskRoot = new ld.Group({ noBorder: true, direction: 'vertical' });
   desk.setRoot(deskRoot);
 
-  const header = new ld.Group({ noBorder: true });
-  deskRoot.addChild(header);
+  const header = deskRoot.addChild(new ld.Group({ noBorder: true }));
 
   header.addChild(new ld.Label(`Output Name:`));
 
-  const addOutputKey = new ld.TextInput('');
-  header.addChild(addOutputKey);
+  const addOutputKey = header.addChild(new ld.TextInput(''));
 
   // List of outputs
-  const outputsGroup = new ld.Group({ direction: 'vertical' });
-  deskRoot.addChild(outputsGroup);
+  const outputsGroup = deskRoot.addChild(
+    new ld.Group({ direction: 'vertical' })
+  );
 
-  const inputGroup = new ld.Group({ direction: 'vertical', noBorder: true });
-  deskRoot.addChild(inputGroup);
+  const inputGroup = deskRoot.addChild(
+    new ld.Group({ direction: 'vertical', noBorder: true })
+  );
 
   const init = (options: {
     addOutput: (kind: OutputKind<unknown>, key: string) => Promise<void>;

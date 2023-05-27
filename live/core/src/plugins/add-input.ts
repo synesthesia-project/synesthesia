@@ -22,23 +22,21 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
 
   const layers: Array<Input<OptionalKindAndConfig>> = [];
 
-  const header = new ld.Group({ noBorder: true });
-  group.addChild(header);
+  const header = group.addChild(new ld.Group({ noBorder: true }));
 
-  const addLayer = new ld.Button('Add Layer');
-  header.addChild(addLayer);
+  const addLayer = header.addChild(new ld.Button('Add Layer'));
   addLayer.addListener(() => {
     context.saveConfig([...(state.config || []), null]);
   });
 
-  const removeLayer = new ld.Button('Remove Layer');
-  header.addChild(removeLayer);
+  const removeLayer = header.addChild(new ld.Button('Remove Layer'));
   removeLayer.addListener(() => {
     context.saveConfig(state.config?.slice(0, state.config.length - 1) || []);
   });
 
-  const layersGroup = new ld.Group({ direction: 'vertical', noBorder: true });
-  group.addChild(layersGroup);
+  const layersGroup = group.addChild(
+    new ld.Group({ direction: 'vertical', noBorder: true })
+  );
 
   return {
     setConfig: (newConfig) => {
