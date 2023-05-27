@@ -14,6 +14,7 @@ specifiers:
   '@rush-temp/gapless-meta': file:./projects/gapless-meta.tgz
   '@rush-temp/gulp-util': file:./projects/gulp-util.tgz
   '@rush-temp/light-desk': file:./projects/light-desk.tgz
+  '@rush-temp/live-app': file:./projects/live-app.tgz
   '@rush-temp/live-core': file:./projects/live-core.tgz
   '@rush-temp/live-dmx': file:./projects/live-dmx.tgz
   '@rush-temp/midi-consoles': file:./projects/midi-consoles.tgz
@@ -92,6 +93,7 @@ dependencies:
   '@rush-temp/gapless-meta': file:projects/gapless-meta.tgz
   '@rush-temp/gulp-util': file:projects/gulp-util.tgz
   '@rush-temp/light-desk': file:projects/light-desk.tgz
+  '@rush-temp/live-app': file:projects/live-app.tgz
   '@rush-temp/live-core': file:projects/live-core.tgz
   '@rush-temp/live-dmx': file:projects/live-dmx.tgz
   '@rush-temp/midi-consoles': file:projects/midi-consoles.tgz
@@ -7666,6 +7668,19 @@ packages:
       - utf-8-validate
     dev: false
 
+  file:projects/live-app.tgz:
+    resolution: {integrity: sha512-xl+cwFpuN7zcaiWVOb5v92Wr+5AsC2OjN9pYt4gOG9czDHf7ymqyCvQy8LCaQfx2DjQ4FbNVSnO6HadxA6mYhQ==, tarball: file:projects/live-app.tgz}
+    name: '@rush-temp/live-app'
+    version: 0.0.0
+    dependencies:
+      '@types/lodash': 4.14.149
+      artnet: 1.4.0
+      fp-ts: 2.13.1
+      gulp: 4.0.2
+      io-ts: 2.2.20_fp-ts@2.13.1
+      lodash: 4.17.21
+    dev: false
+
   file:projects/live-core.tgz:
     resolution: {integrity: sha512-X7gAVCw/nJmr59itbBTV5xN/D0KhwUp/ruPvXdSYzJ0MmdgGtfXyX1rFmf+Bm1AiQav8PneuzKS5+1lixMacoA==, tarball: file:projects/live-core.tgz}
     name: '@rush-temp/live-core'
@@ -7749,7 +7764,7 @@ packages:
     dev: false
 
   file:projects/server.tgz:
-    resolution: {integrity: sha512-+34Hnv9MoHq70dnQO9Y3CgoJCLXRaB0e2ayUeMSoV+eg3jS/2A2Cv0M8ydB75HfIaSgP/Nf26iESwDQYvO3GUQ==, tarball: file:projects/server.tgz}
+    resolution: {integrity: sha512-1AaUpi/ZmfT6LQufRxBkBZRvOpazhB1Ovjs/mYMCguAYno/Klt6yO9ZwwBqIK3EJKUt3k54X6Stqk213bWHTAw==, tarball: file:projects/server.tgz}
     name: '@rush-temp/server'
     version: 0.0.0
     dependencies:
