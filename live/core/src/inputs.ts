@@ -82,8 +82,7 @@ export const createInputManager = () => {
           } else {
             // Create header
             group.setTitle(`input: ${kind.kind}`);
-            const deleteButton = new ld.Button('Replace Input');
-            group.addChild(deleteButton);
+            const deleteButton = group.addChild(new ld.Button('Replace Input'));
             deleteButton.addListener(() => context.saveConfig(null));
             // Create new input
             currentInput = {

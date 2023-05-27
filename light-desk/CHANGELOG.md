@@ -6,8 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- `Group`: Allow components to be dynamically added
-  and removed after first render.
+- `Group`:
+  - Allow components to be dynamically added
+    and removed after first render.
+  - Return child in addChild, allowing for chaining
 - `Button`: Introduce error state that will trigger
   when any listeners throw an error,
   or return a promise that rejects.

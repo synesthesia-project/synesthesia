@@ -1,0 +1,40 @@
+{
+  "name": "@synesthesia-project/live-dmx",
+  "version": "0.0.1",
+  "description": "DMX plugin for synesthesia live",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "author": {
+    "name": "Sam Lanning",
+    "email": "sam@samlanning.com",
+    "url": "https://samlanning.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/synesthesia-project/synesthesia/tree/develop/live/dmx"
+  },
+  "scripts": {
+    "clean": "gulp clean",
+    "build": "gulp",
+    "lint": "gulp lint",
+    "lint:fix": "gulp lint:fix"
+  },
+  "peerDependencies": {
+    "@synesthesia-project/live-core": "*"
+  },
+  "dependencies": {
+    "artnet": "^1.4.0",
+    "fp-ts": "~2.13.1",
+    "io-ts": "~2.2.20",
+    "lodash": "^4.17.13"
+  },
+  "devDependencies": {
+    "@synesthesia-project/live-core": "^0.0.1",
+    "@synesthesia-project/compositor": "^0.0.1",
+    "@synesthesia-project/gulp-util": "~0.0.1",
+    "@synesthesia-project/light-desk": "^2.1.1",
+    "@types/lodash": "^4.14.120",
+    "gulp": "~4.0.2"
+  }
+}

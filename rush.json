@@ -350,6 +350,10 @@
       "projectFolder": "live/core"
     },
     {
+      "packageName": "@synesthesia-project/live-dmx",
+      "projectFolder": "live/dmx"
+    },
+    {
       "packageName": "@synesthesia-project/midi-consoles",
       "projectFolder": "midi-consoles"
     },

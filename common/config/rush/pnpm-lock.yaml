@@ -15,6 +15,7 @@ specifiers:
   '@rush-temp/gulp-util': file:./projects/gulp-util.tgz
   '@rush-temp/light-desk': file:./projects/light-desk.tgz
   '@rush-temp/live-core': file:./projects/live-core.tgz
+  '@rush-temp/live-dmx': file:./projects/live-dmx.tgz
   '@rush-temp/midi-consoles': file:./projects/midi-consoles.tgz
   '@rush-temp/openrazer': file:./projects/openrazer.tgz
   '@rush-temp/openrazer-examples': file:./projects/openrazer-examples.tgz
@@ -38,6 +39,7 @@ specifiers:
   '@types/ws': ^8.2.2
   '@typescript-eslint/eslint-plugin': ~5.48.0
   '@typescript-eslint/parser': ~5.48.0
+  artnet: ^1.4.0
   chai: ^4.2.0
   eslint: ~8.31.0
   eslint-plugin-prettier: ~4.2.1
@@ -91,6 +93,7 @@ dependencies:
   '@rush-temp/gulp-util': file:projects/gulp-util.tgz
   '@rush-temp/light-desk': file:projects/light-desk.tgz
   '@rush-temp/live-core': file:projects/live-core.tgz
+  '@rush-temp/live-dmx': file:projects/live-dmx.tgz
   '@rush-temp/midi-consoles': file:projects/midi-consoles.tgz
   '@rush-temp/openrazer': file:projects/openrazer.tgz
   '@rush-temp/openrazer-examples': file:projects/openrazer-examples.tgz_eslint@8.31.0
@@ -114,6 +117,7 @@ dependencies:
   '@types/ws': 8.5.4
   '@typescript-eslint/eslint-plugin': 5.48.0_k73wpmdolxikpyqun3p36akaaq
   '@typescript-eslint/parser': 5.48.0_iukboom6ndih5an6iafl45j2fe
+  artnet: 1.4.0
   chai: 4.2.0
   eslint: 8.31.0
   eslint-plugin-prettier: 4.2.1_crnjwcwerrbat3mlbmrsoa543e
@@ -1188,6 +1192,10 @@ packages:
   /array-unique/0.3.2:
     resolution: {integrity: sha1-qJS3XUvE9s1nnvMkSp/Y9Gri1Cg=}
     engines: {node: '>=0.10.0'}
+    dev: false
+
+  /artnet/1.4.0:
+    resolution: {integrity: sha512-5s/1DRr+qidggUwslxiGvY3ZHPIuYUfLKgcqv4MbODwjq4ipTWqr6gOfSqRfdNEGjIkzIQ6M0V4ukFbCwBMjKQ==}
     dev: false
 
   /asn1.js/4.10.1:
@@ -7670,6 +7678,19 @@ packages:
       lodash: 4.17.21
     dev: false
 
+  file:projects/live-dmx.tgz:
+    resolution: {integrity: sha512-uy6jW4PKykSzYgye8TeMCRoDZG48ZXPho94Z3UiNbSYnHqnuwYR2qCwo99vTCpN/TUg1PP5HN7vTdt3o6e9/CQ==, tarball: file:projects/live-dmx.tgz}
+    name: '@rush-temp/live-dmx'
+    version: 0.0.0
+    dependencies:
+      '@types/lodash': 4.14.149
+      artnet: 1.4.0
+      fp-ts: 2.13.1
+      gulp: 4.0.2
+      io-ts: 2.2.20_fp-ts@2.13.1
+      lodash: 4.17.21
+    dev: false
+
   file:projects/midi-consoles.tgz:
     resolution: {integrity: sha512-oIG+/hM1vyjMfwrYfI5IlQfZQmzk3y5NPvRMuJra41nRXMgMKoIXlB7xFPQmT/xOlhCmpBJp9gT59YWCY96JlA==, tarball: file:projects/midi-consoles.tgz}
     name: '@rush-temp/midi-consoles'
@@ -7728,7 +7749,7 @@ packages:
     dev: false
 
   file:projects/server.tgz:
-    resolution: {integrity: sha512-PZocMqmR/4XQ9IEiWCGjdKKlxO1YmdMKcs80x79ktBEcU1+IwwTqiJ2oXSPxQ0fUfsY1e49YTi9HbK0JivR31Q==, tarball: file:projects/server.tgz}
+    resolution: {integrity: sha512-+34Hnv9MoHq70dnQO9Y3CgoJCLXRaB0e2ayUeMSoV+eg3jS/2A2Cv0M8ydB75HfIaSgP/Nf26iESwDQYvO3GUQ==, tarball: file:projects/server.tgz}
     name: '@rush-temp/server'
     version: 0.0.0
     dependencies:
