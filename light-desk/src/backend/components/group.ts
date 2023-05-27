@@ -52,8 +52,7 @@ export class Group extends BaseParent {
   }
 
   public removeAllChildren() {
-    this.children.splice(0, this.children.length);
-    this.children.map((c) => c.setParent(null));
+    this.children.splice(0, this.children.length).map((c) => c.setParent(null));
     this.updateTree();
   }
 

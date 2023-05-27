@@ -12,6 +12,7 @@ import { SliderButton } from './slider_button';
 import { StageContext } from './context';
 import { Switch } from './switch';
 import { TextInput } from './text-input';
+import { Tabs } from './tabs';
 
 interface Props {
   className?: string;
@@ -36,6 +37,8 @@ const renderComponent = (info: proto.Component): JSX.Element => {
       return <SliderButton key={info.key} info={info} />;
     case 'switch':
       return <Switch key={info.key} info={info} />;
+    case 'tabs':
+      return <Tabs key={info.key} info={info} />;
     case 'text-input':
       return <TextInput key={info.key} info={info} />;
   }
