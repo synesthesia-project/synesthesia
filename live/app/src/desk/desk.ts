@@ -3,22 +3,34 @@ import type { OutputKind } from '@synesthesia-project/live-core/lib/plugins';
 
 export const createDesk = () => {
   const desk = new ld.LightDesk();
+
   const deskRoot = new ld.Group({ noBorder: true, direction: 'vertical' });
   desk.setRoot(deskRoot);
 
-  const header = deskRoot.addChild(new ld.Group({ noBorder: true }));
+  const tabs = deskRoot.addChild(new ld.Tabs());
+
+  // Compositor
+
+  const compositorTab = tabs.addTab(
+    'Compositor',
+    new ld.Group({ direction: 'vertical', noBorder: true })
+  );
+
+  // Outputs
+
+  const outputsTab = tabs.addTab(
+    'Outputs',
+    new ld.Group({ direction: 'vertical', noBorder: true })
+  );
+
+  const header = outputsTab.addChild(new ld.Group({ noBorder: true }));
 
   header.addChild(new ld.Label(`Output Name:`));
 
   const addOutputKey = header.addChild(new ld.TextInput(''));
 
-  // List of outputs
-  const outputsGroup = deskRoot.addChild(
+  const outputsGroup = outputsTab.addChild(
     new ld.Group({ direction: 'vertical' })
-  );
-
-  const inputGroup = deskRoot.addChild(
-    new ld.Group({ direction: 'vertical', noBorder: true })
   );
 
   const init = (options: {
@@ -35,8 +47,8 @@ export const createDesk = () => {
   };
 
   const setInput = (component: ld.Component) => {
-    inputGroup.removeAllChildren();
-    inputGroup.addChild(component);
+    compositorTab.removeAllChildren();
+    compositorTab.addChild(component);
   };
 
   return {
