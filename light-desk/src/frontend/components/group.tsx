@@ -6,7 +6,7 @@ import * as proto from '../../shared/proto';
 import { calculateClass } from '../util/react';
 import { StageContext } from './context';
 
-type GroupColor = 'dark' | 'lighter' | 'lighterer';
+export type GroupColor = 'dark' | 'lighter' | 'lighterer';
 
 interface Props {
   className?: string;

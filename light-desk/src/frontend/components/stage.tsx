@@ -28,6 +28,8 @@ const renderComponent = (info: proto.Component): JSX.Element => {
       return <Button key={info.key} info={info} />;
     case 'group':
       return <Group key={info.key} info={info} />;
+    case 'list':
+      return <List key={info.key} info={info} />;
     case 'label':
       return <Label key={info.key} info={info} />;
     case 'rect':
