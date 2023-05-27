@@ -18,7 +18,7 @@ of the project can be found here: <https://www.youtube.com/watch?v=egsswPi8yio>
 This repository contains most of the syntesthesia-project related code, either directly or as submodules.
 Is is also used for higher-level project discussions and to keep track of the work that needs to be done using issues and [this kanban board](https://github.com/synesthesia-project/synesthesia/projects/2), as well as non-development related stuff (e.g. branding assets).
 
-### [core](https://github.com/synesthesia-project/core)
+### [core](core)
 
 [![](https://img.shields.io/npm/v/@synesthesia-project/core.svg)](https://www.npmjs.com/package/@synesthesia-project/core)
 
@@ -38,12 +38,7 @@ Central component of the synesthesia project
 
 A synesthesia consumer for Razer Peripherals
 
-### [light-desk](https://github.com/synesthesia-project/light-desk)
-
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/synesthesia-project/light-desk.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/synesthesia-project/light-desk/alerts/)
-[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/synesthesia-project/light-desk.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/synesthesia-project/light-desk/context:javascript)
-[![Build Status](https://dev.azure.com/synesthesia--project/synesthesia/_apis/build/status/light-desk%20builds?branchName=master)](https://dev.azure.com/synesthesia--project/synesthesia/_build/latest?definitionId=1?branchName=master)
-[![](https://img.shields.io/npm/v/@synesthesia-project/light-desk.svg)](https://www.npmjs.com/package/@synesthesia-project/light-desk)
+### [light-desk](light-desk)
 
 A Node.js library for creating control panels for controlling lighting and other things
 
