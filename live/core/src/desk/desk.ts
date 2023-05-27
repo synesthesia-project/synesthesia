@@ -1,4 +1,5 @@
 import * as ld from '@synesthesia-project/light-desk';
+import { OutputKind } from '../plugins';
 
 export const createDesk = () => {
   const desk = new ld.LightDesk();
@@ -13,9 +14,6 @@ export const createDesk = () => {
   const addOutputKey = new ld.TextInput('');
   header.addChild(addOutputKey);
 
-  const addButton = new ld.Button('Add Output');
-  header.addChild(addButton);
-
   // List of outputs
   const outputsGroup = new ld.Group({ direction: 'vertical' });
   deskRoot.addChild(outputsGroup);
@@ -23,10 +21,17 @@ export const createDesk = () => {
   const inputGroup = new ld.Group({ direction: 'vertical', noBorder: true });
   deskRoot.addChild(inputGroup);
 
-  const init = (listeners: { addOutput: (key: string) => Promise<void> }) => {
-    addButton.addListener(async () =>
-      listeners.addOutput(addOutputKey.getValue())
-    );
+  const init = (options: {
+    addOutput: (kind: OutputKind<unknown>, key: string) => Promise<void>;
+    outputKinds: Array<OutputKind<unknown>>;
+  }) => {
+    for (const kind of options.outputKinds) {
+      const addButton = new ld.Button(`Add ${kind.kind} output`);
+      header.addChild(addButton);
+      addButton.addListener(async () =>
+        options.addOutput(kind, addOutputKey.getValue())
+      );
+    }
   };
 
   const setInput = (component: ld.Component) => {

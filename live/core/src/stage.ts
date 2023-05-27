@@ -211,7 +211,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
 
   // Initialize Desk
   desk.init({
-    addOutput: (key) =>
+    addOutput: (kind, key) =>
       updateConfig((current) => {
         if (!key) {
           throw new Error(`You must specify an output name`);
@@ -224,14 +224,13 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
           outputs: {
             ...current.outputs,
             [key]: {
-              kind: 'virtual',
-              config: {
-                pixels: 2,
-              },
+              kind: kind.kind,
+              config: kind.initialConfig,
             },
           },
         };
       }),
+    outputKinds: [...outputKinds.values()],
   });
   desk.desk.start({
     mode: 'automatic',

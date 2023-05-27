@@ -67,7 +67,7 @@ const createVirtualOutput = (
     }
     for (let i = 0; i < pixels.rects.length; i++) {
       const samplePixel = Math.round(
-        (i / (pixels.rects.length - 1)) * (pixels.px.length - 1)
+        (i / Math.max(1, pixels.rects.length - 1)) * (pixels.px.length - 1)
       );
       const px = pixels.px[samplePixel];
       const c = px.color.transition(RGBA_BLACK, x);
