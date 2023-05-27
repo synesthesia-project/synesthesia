@@ -346,6 +346,10 @@
       "projectFolder": "light-desk"
     },
     {
+      "packageName": "@synesthesia-project/live-app",
+      "projectFolder": "live/app"
+    },
+    {
       "packageName": "@synesthesia-project/live-core",
       "projectFolder": "live/core"
     },
