@@ -12,8 +12,9 @@ import {
   PixelMap,
 } from '@synesthesia-project/compositor/lib/modules';
 
-const UNIVERSE_REGEX = /^[0-9]+$/;
+const INTEGER_REGEX = /^[0-9]+$/;
 const MAX_UNIVERSE = 32767;
+const MAX_CHANNEL = 512;
 
 const DMX_OUTPUT_CONFIG = t.type({
   artnetUniverse: t.union([t.number, t.null]),
@@ -53,10 +54,68 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
   const setUniverse = new ld.Button('Set');
   header.addChild(setUniverse);
 
+  const addFixture = new ld.Button('Add Fixture');
+  header.addChild(addFixture);
+
+  addFixture.addListener(() => {
+    context.saveConfig({
+      ...config,
+      fixtures: [...config.fixtures, {}],
+    });
+  });
+
+  const fixtureGroup = new ld.Group({ noBorder: true, direction: 'vertical' });
+  group.addChild(fixtureGroup);
+
+  const updateFixtureConfig = (
+    index: number,
+    change: (current: Fixture) => Fixture
+  ) => {
+    const fixtures = [...config.fixtures];
+    fixtures[index] = change(fixtures[index]);
+    context.saveConfig({
+      ...config,
+      fixtures,
+    });
+  };
+
+  const updateFixtureGroup = () => {
+    fixtureGroup.removeAllChildren();
+    config.fixtures.map((f, i) => {
+      const grp = fixtureGroup.addChild(new ld.Group());
+      grp.addChild(new ld.Label('RGB Channels:'));
+      const [ri, gi, bi, setColorChannels] = grp.addChildren(
+        new ld.TextInput(`${f.rgb?.r || ''}`),
+        new ld.TextInput(`${f.rgb?.g || ''}`),
+        new ld.TextInput(`${f.rgb?.b || ''}`),
+        new ld.Button('Set')
+      );
+      setColorChannels.addListener(() => {
+        const [rt, gt, bt] = [ri, gi, bi].map((t) => t.getValue());
+        if (![rt, gt, bt].some((t) => t !== '')) {
+          // No values set, remove colors
+          updateFixtureConfig(i, (c) => ({ ...c, rgb: undefined }));
+        }
+        // Some values set
+        if ([rt, gt, bt].some((t) => !INTEGER_REGEX.exec(t))) {
+          // No values set, remove colors
+          throw new Error(
+            `All channels must be positive integers, unless all are empty`
+          );
+        }
+        const [r, g, b] = [rt, gt, bt].map((t) => parseInt(t));
+        if ([r, g, b].some((c) => c < 1 || c > MAX_CHANNEL)) {
+          throw new Error(`Channels must be between 1 and ${MAX_CHANNEL}`);
+        }
+        updateFixtureConfig(i, (c) => ({ ...c, rgb: { r, g, b } }));
+      });
+    });
+  };
+
   setUniverse.addListener(() => {
     const val = universeInput.getValue();
-    if (!UNIVERSE_REGEX.exec(val)) {
-      throw new Error(`Universe value must be number`);
+    if (!INTEGER_REGEX.exec(val)) {
+      throw new Error(`Universe value must be a positive integer`);
     }
     const artnetUniverse = parseInt(val);
     if (artnetUniverse < 0 || artnetUniverse > MAX_UNIVERSE) {
@@ -77,16 +136,16 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
     pixelInfo: Array<PixelInfo<null>>;
   } | null;
 
-  group.addChild(new ld.Label('DMX'));
-
   const a = artnet({
     sendAll: true,
   });
 
   const buffer: number[] = [];
-  for (let i = 0; i < 512; i++) {
-    buffer[i] = 0;
-  }
+  const clearBuffer = () => {
+    for (let i = 0; i < 512; i++) {
+      buffer[i] = 0;
+    }
+  };
 
   const render = () => {
     if (!pixels) return;
@@ -133,6 +192,8 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
           y: f.pos?.y ?? 0,
         })),
       };
+      updateFixtureGroup();
+      clearBuffer();
       render();
     },
     destroy: () => {
