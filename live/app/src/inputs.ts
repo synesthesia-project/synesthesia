@@ -85,7 +85,7 @@ export const createInputManager = () => {
             currentInput.input.setConfig(newConfig.config);
           } else {
             // Create header
-            group.setTitle(`input: ${kind.kind}`);
+            group.setTitle(kind.kind);
             const deleteButton = group.addChild(new ld.Button('Replace Input'));
             deleteButton.addListener(() => context.saveConfig(null));
             // Create new input
