@@ -79,10 +79,23 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
     });
   };
 
+  const removeFixture = (index: number) => {
+    const fixtures = [...config.fixtures];
+    fixtures.splice(index, 1),
+      context.saveConfig({
+        ...config,
+        fixtures,
+      });
+  };
+
   const updateFixtureGroup = () => {
     fixtureGroup.removeAllChildren();
     config.fixtures.map((f, i) => {
       const grp = fixtureGroup.addChild(new ld.Group());
+
+      const remove = grp.addChild(new ld.Button('Remove'));
+      remove.addListener(() => removeFixture(i));
+
       grp.addChild(new ld.Label('RGB Channels:'));
       const [ri, gi, bi, setColorChannels] = grp.addChildren(
         new ld.TextInput(`${f.rgb?.r || ''}`),
