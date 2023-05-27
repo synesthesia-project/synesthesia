@@ -9,7 +9,7 @@ import type {
 } from '@synesthesia-project/live-core/lib/plugins';
 import type { OptionalKindAndConfig } from '@synesthesia-project/live-core/lib/config';
 
-type InputSocket = Input<OptionalKindAndConfig>;
+export type InputSocket = Input<OptionalKindAndConfig>;
 
 const TRANSITION_DURATION = 1;
 
