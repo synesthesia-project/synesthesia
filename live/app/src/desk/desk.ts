@@ -1,5 +1,5 @@
 import * as ld from '@synesthesia-project/light-desk';
-import { OutputKind } from '../plugins';
+import type { OutputKind } from '@synesthesia-project/live-core/lib/plugins';
 
 export const createDesk = () => {
   const desk = new ld.LightDesk();

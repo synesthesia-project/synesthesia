@@ -1,6 +1,11 @@
 import * as t from 'io-ts';
 import * as ld from '@synesthesia-project/light-desk';
-import { Input, InputContext, InputKind, Plugin } from '.';
+import type {
+  Input,
+  InputContext,
+  InputKind,
+  Plugin,
+} from '@synesthesia-project/live-core/lib/plugins';
 import FillModule from '@synesthesia-project/compositor/lib/modules/fill';
 import {
   RGBAColor,
