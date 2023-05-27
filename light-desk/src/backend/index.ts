@@ -145,5 +145,6 @@ export { Label } from './components/label';
 export { Rect } from './components/rect';
 export { SliderButton } from './components/slider_button';
 export { Switch } from './components/switch';
+export { Tabs } from './components/tabs';
 export { TextInput } from './components/text-input';
 export { color };

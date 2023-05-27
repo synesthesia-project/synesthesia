@@ -59,6 +59,14 @@ export interface SwitchComponent extends BaseComponent {
   state: 'on' | 'off';
 }
 
+export interface TabsComponent extends BaseComponent {
+  component: 'tabs';
+  tabs: Array<{
+    name: string;
+    component: Component;
+  }>;
+}
+
 export interface TextInputComponent extends BaseComponent {
   component: 'text-input';
   value: string;
@@ -71,6 +79,7 @@ export type Component =
   | RectComponent
   | SliderButtonComponent
   | SwitchComponent
+  | TabsComponent
   | TextInputComponent;
 
 export interface UpdateTreeMsg {
