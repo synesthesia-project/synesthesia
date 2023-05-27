@@ -1,4 +1,4 @@
-name: "CLA Assistant"
+name: "cla"
 
 on:
   issue_comment:
@@ -7,7 +7,7 @@ on:
     types: [opened,closed,synchronize]
 
 jobs:
-  CLAAssistant:
+  cla:
     runs-on: ubuntu-latest
     steps:
       - name: "CLA Assistant"
@@ -19,5 +19,5 @@ jobs:
         with:
           path-to-signatures: signatures/version1/cla.json
           path-to-document: 'https://github.com/synesthesia-project/cla/blob/main/INDIVIDUAL_CONTRIBUTOR_LICENSE_AGREEMENT.md' 
-          branch: cla
+          branch: main
           remote-repository-name: cla
