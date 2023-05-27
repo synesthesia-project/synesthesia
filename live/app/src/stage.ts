@@ -1,13 +1,18 @@
 import * as ld from '@synesthesia-project/light-desk';
 import { throttle } from 'lodash';
-
-import { Config, loadConfig, saveConfig } from './config';
-import { InputKind, Output, OutputContext, Plugin } from './plugins';
-import { OutputKind } from './plugins';
-import { createDesk } from './desk/desk';
 import { TransitionModule } from '@synesthesia-project/compositor/lib/modules/transition';
 import FillModule from '@synesthesia-project/compositor/lib/modules/fill';
 import { RGBA_BLACK } from '@synesthesia-project/compositor/lib/color';
+import type {
+  InputKind,
+  Output,
+  OutputContext,
+  Plugin,
+  OutputKind,
+} from '@synesthesia-project/live-core/lib/plugins';
+
+import { Config, loadConfig, saveConfig } from './config';
+import { createDesk } from './desk/desk';
 import { createInputManager } from './inputs';
 
 type ActiveOutput<ConfigT> = {

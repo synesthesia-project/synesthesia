@@ -5,8 +5,12 @@ import {
   RGBA_BLACK,
   RGBA_PURPLE,
 } from '@synesthesia-project/compositor/lib/color';
-
-import { Output, OutputContext, OutputKind, Plugin } from '.';
+import type {
+  Output,
+  OutputContext,
+  OutputKind,
+  Plugin,
+} from '@synesthesia-project/live-core/lib/plugins';
 import {
   PixelInfo,
   PixelMap,

@@ -1,10 +1,18 @@
 import * as t from 'io-ts';
 import * as ld from '@synesthesia-project/light-desk';
-import { Input, InputContext, InputKind, Plugin } from '.';
+import type {
+  Input,
+  InputContext,
+  InputKind,
+  Plugin,
+} from '@synesthesia-project/live-core/lib/plugins';
 import AddModule from '@synesthesia-project/compositor/lib/modules/add';
 import { RGBA_TRANSPARENT } from '@synesthesia-project/compositor/lib/color';
 import FillModule from '@synesthesia-project/compositor/lib/modules/fill';
-import { OPTIONAL_KIND_AND_CONFIG, OptionalKindAndConfig } from '../config';
+import {
+  OPTIONAL_KIND_AND_CONFIG,
+  OptionalKindAndConfig,
+} from '@synesthesia-project/live-core/lib/config';
 
 const ADD_INPUT_CONFIG = t.array(OPTIONAL_KIND_AND_CONFIG);
 

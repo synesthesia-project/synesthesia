@@ -2,8 +2,12 @@ import { RGBA_TRANSPARENT } from '@synesthesia-project/compositor/lib/color';
 import FillModule from '@synesthesia-project/compositor/lib/modules/fill';
 import { TransitionModule } from '@synesthesia-project/compositor/lib/modules/transition';
 import * as ld from '@synesthesia-project/light-desk';
-import { Input, InputContext, InputKind } from './plugins';
-import { OptionalKindAndConfig } from './config';
+import type {
+  Input,
+  InputContext,
+  InputKind,
+} from '@synesthesia-project/live-core/lib/plugins';
+import type { OptionalKindAndConfig } from '@synesthesia-project/live-core/lib/config';
 
 type InputSocket = Input<OptionalKindAndConfig>;
 
