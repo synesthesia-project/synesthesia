@@ -7,8 +7,9 @@ import { OPTIONAL_KIND_AND_CONFIG } from '@synesthesia-project/live-core/lib/con
 
 export const CONFIG = t.partial({
   outputs: t.record(t.string, OPTIONAL_KIND_AND_CONFIG),
-  inputs: t.partial({
-    current: OPTIONAL_KIND_AND_CONFIG,
+  compositor: t.type({
+    current: t.union([t.null, t.number]),
+    cues: t.array(OPTIONAL_KIND_AND_CONFIG),
   }),
 });
 

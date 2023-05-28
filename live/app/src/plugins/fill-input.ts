@@ -40,7 +40,7 @@ const createFillInput = (context: InputContext<Config>): Input<Config> => {
     r: group.addChild(new ld.SliderButton(0, 0, 255, 1, 'writeThrough')),
     g: group.addChild(new ld.SliderButton(0, 0, 255, 1, 'writeThrough')),
     b: group.addChild(new ld.SliderButton(0, 0, 255, 1, 'writeThrough')),
-    alpha: new ld.SliderButton(1, 0, 1, 0.01, 'writeThrough'),
+    alpha: group.addChild(new ld.SliderButton(1, 0, 1, 0.01, 'writeThrough')),
   } as const;
 
   const updateConfig = (config: Partial<Config>) =>

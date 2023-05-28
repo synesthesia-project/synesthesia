@@ -9,11 +9,34 @@ export const createDesk = () => {
 
   const tabs = deskRoot.addChild(new ld.Tabs());
 
+  // Desk
+
+  const deskTab = tabs.addTab(
+    'Desk',
+    new ld.Group({ direction: 'vertical', noBorder: true })
+  );
+
+  const compositorCueTriggers = deskTab.addChild(
+    new ld.Group({ direction: 'vertical' })
+  );
+
   // Compositor
 
   const compositorTab = tabs.addTab(
     'Compositor',
     new ld.Group({ direction: 'vertical', noBorder: true })
+  );
+
+  const compositorHeader = compositorTab.addChild(
+    new ld.Group({ noBorder: true })
+  );
+
+  const addCompositorCueButton = compositorHeader.addChild(
+    new ld.Button(`Add Cue`)
+  );
+
+  const compositorCuesGroup = compositorTab.addChild(
+    new ld.Group({ direction: 'vertical' })
   );
 
   // Outputs
@@ -23,38 +46,36 @@ export const createDesk = () => {
     new ld.Group({ direction: 'vertical', noBorder: true })
   );
 
-  const header = outputsTab.addChild(new ld.Group({ noBorder: true }));
+  const outputHeader = outputsTab.addChild(new ld.Group({ noBorder: true }));
 
-  header.addChild(new ld.Label(`Output Name:`));
+  outputHeader.addChild(new ld.Label(`Output Name:`));
 
-  const addOutputKey = header.addChild(new ld.TextInput(''));
+  const addOutputKey = outputHeader.addChild(new ld.TextInput(''));
 
   const outputsGroup = outputsTab.addChild(
     new ld.Group({ direction: 'vertical' })
   );
 
   const init = (options: {
+    addCompositorCue: () => Promise<void>;
     addOutput: (kind: OutputKind<unknown>, key: string) => Promise<void>;
     outputKinds: Array<OutputKind<unknown>>;
   }) => {
     for (const kind of options.outputKinds) {
       const addButton = new ld.Button(`Add ${kind.kind} output`);
-      header.addChild(addButton);
+      outputHeader.addChild(addButton);
       addButton.addListener(async () =>
         options.addOutput(kind, addOutputKey.getValue())
       );
     }
-  };
-
-  const setInput = (component: ld.Component) => {
-    compositorTab.removeAllChildren();
-    compositorTab.addChild(component);
+    addCompositorCueButton.addListener(options.addCompositorCue);
   };
 
   return {
     desk,
     outputsGroup,
-    setInput,
+    compositorCuesGroup,
+    compositorCueTriggers,
     init,
   };
 };

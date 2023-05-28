@@ -9,7 +9,7 @@ import type {
 } from '@synesthesia-project/live-core/lib/plugins';
 import type { OptionalKindAndConfig } from '@synesthesia-project/live-core/lib/config';
 
-type InputSocket = Input<OptionalKindAndConfig>;
+export type InputSocket = Input<OptionalKindAndConfig>;
 
 const TRANSITION_DURATION = 1;
 
@@ -85,7 +85,7 @@ export const createInputManager = () => {
             currentInput.input.setConfig(newConfig.config);
           } else {
             // Create header
-            group.setTitle(`input: ${kind.kind}`);
+            group.setTitle(kind.kind);
             const deleteButton = group.addChild(new ld.Button('Replace Input'));
             deleteButton.addListener(() => context.saveConfig(null));
             // Create new input

@@ -13,7 +13,7 @@ import type {
 
 import { Config, loadConfig, saveConfig } from './config';
 import { createDesk } from './desk/desk';
-import { createInputManager } from './inputs';
+import { InputSocket, createInputManager } from './inputs';
 
 type ActiveOutput<ConfigT> = {
   kind: string;
@@ -41,28 +41,20 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
 
   const inputManager = createInputManager();
 
-  const rootModule = new TransitionModule(new FillModule(RGBA_BLACK));
+  const compositor: {
+    root: TransitionModule<unknown>;
+    current: null | number;
+    inputs: InputSocket[];
+  } = {
+    root: new TransitionModule(new FillModule(RGBA_BLACK)),
+    current: null,
+    inputs: [],
+  };
 
   /**
    * Map from output key to active instance of the output
    */
   const outputs = new Map<string, ActiveOutput<unknown>>();
-
-  const inputs = {
-    current: inputManager.createSocket({
-      saveConfig: (config) =>
-        updateConfig((original) => ({
-          ...original,
-          inputs: {
-            current: config,
-          },
-        })),
-    }),
-  };
-
-  rootModule.transition(inputs.current.getModlue(), 0);
-
-  desk.setInput(inputs.current.getLightDeskComponent());
 
   const initializePlugin = (plugin: Plugin) => {
     plugin.init({
@@ -90,7 +82,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
     // - deepfreeze values
     // - update outputs
     updateOutputsFromConfig(prevConfig);
-    updateInputsFromConfig(prevConfig);
+    updateInputsFromConfig();
     if (save) {
       saveCurrentConfig();
     }
@@ -114,7 +106,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
         },
       }));
     const render: OutputContext<ConfigT>['render'] = (map, pixels) =>
-      rootModule.render(map, pixels, null);
+      compositor.root.render(map, pixels, null);
     const output = kind.create({
       saveConfig,
       render,
@@ -203,9 +195,58 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
     }
   };
 
-  const updateInputsFromConfig = (prev: Config) => {
-    if (prev.inputs?.current !== config.inputs?.current) {
-      inputs.current.setConfig(config.inputs?.current);
+  const updateInputsFromConfig = () => {
+    const cues = config.compositor?.cues || [];
+    for (let i = 0; i < cues.length; i++) {
+      let existing = compositor.inputs[i];
+      if (!existing) {
+        existing = compositor.inputs[i] = inputManager.createSocket({
+          saveConfig: (inputConfig) =>
+            updateConfig((current) => {
+              const newCues = [...(current.compositor?.cues || [])];
+              newCues[i] = inputConfig;
+              return {
+                ...current,
+                compositor: {
+                  current: current.compositor?.current ?? null,
+                  cues: newCues,
+                },
+              };
+            }),
+        });
+        desk.compositorCuesGroup.addChild(existing.getLightDeskComponent());
+      }
+      existing.setConfig(cues[i]);
+    }
+    // Remove any deleted inputs
+    compositor.inputs.splice(cues.length).map((i) => i.destroy());
+    // Update cue triggers
+    desk.compositorCueTriggers.removeAllChildren();
+    for (let i = 0; i < cues.length; i++) {
+      desk.compositorCueTriggers
+        .addChild(new ld.Button(`Cue ${i}`))
+        .addListener(() =>
+          updateConfig((config) => ({
+            ...config,
+            compositor: {
+              current: i,
+              cues: config.compositor?.cues || [],
+            },
+          }))
+        );
+    }
+    // Transition to new cue if changed
+    if (config.compositor?.current !== compositor.current) {
+      compositor.current = config.compositor?.current ?? null;
+      const module =
+        compositor.current !== null
+          ? compositor.inputs[compositor.current]?.getModlue()
+          : null;
+      if (module) {
+        compositor.root.transition(module, 1);
+      } else {
+        compositor.root.transition(new FillModule(RGBA_BLACK), 1);
+      }
     }
   };
 
@@ -216,6 +257,14 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
 
   // Initialize Desk
   desk.init({
+    addCompositorCue: () =>
+      updateConfig((config) => ({
+        ...config,
+        compositor: {
+          current: config.compositor?.current ?? 0,
+          cues: [...(config.compositor?.cues || []), null],
+        },
+      })),
     addOutput: (kind, key) =>
       updateConfig((current) => {
         if (!key) {
