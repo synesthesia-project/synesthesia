@@ -5,6 +5,7 @@ import { GroupComponentStyle, GROUP_DEFAULT_STYLE } from '../../shared/styles';
 import { IDMap } from '../util/id-map';
 
 import { BaseParent, Component } from './base';
+import type { Button } from './button';
 
 type Label = (proto.GroupComponent['labels'] & Array<unknown>)[number];
 
@@ -24,6 +25,8 @@ export class Group extends BaseParent {
   private title: string | undefined = undefined;
   /** @hidden */
   labels?: Label[];
+  /** @hidden */
+  headerButtons?: Button[];
 
   public constructor(style: Partial<GroupComponentStyle> = {}) {
     super();
@@ -53,6 +56,7 @@ export class Group extends BaseParent {
       removed.map((c) => c.setParent(null));
       this.updateTree();
     }
+    this.removeHeaderButton(component);
   }
 
   public removeAllChildren() {
@@ -70,6 +74,24 @@ export class Group extends BaseParent {
     this.updateTree();
   };
 
+  public addHeaderButton = (button: Button): Button => {
+    this.headerButtons = [...(this.headerButtons || []), button];
+    button.setParent(this);
+    this.updateTree();
+    return button;
+  };
+
+  public removeHeaderButton = (button: Component) => {
+    if (this.headerButtons) {
+      const match = this.headerButtons.findIndex((c) => c === button);
+      if (match >= 0) {
+        const removed = this.headerButtons.splice(match, 1);
+        removed.map((c) => c.setParent(null));
+        this.updateTree();
+      }
+    }
+  };
+
   /** @hidden */
   public getProtoInfo(idMap: IDMap): proto.GroupComponent {
     return {
@@ -79,11 +101,12 @@ export class Group extends BaseParent {
       style: this.style,
       children: this.children.map((c) => c.getProtoInfo(idMap)),
       labels: this.labels,
+      headerButtons: this.headerButtons?.map((c) => c.getProtoInfo(idMap)),
     };
   }
 
   /** @hidden */
   getAllChildren(): Iterable<Component> {
-    return this.children;
+    return [...this.children, ...(this.headerButtons || [])];
   }
 }

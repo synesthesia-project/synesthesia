@@ -44,7 +44,7 @@ export class Button extends Component {
   }
 
   /** @hidden */
-  public getProtoInfo(idMap: IDMap): proto.Component {
+  public getProtoInfo(idMap: IDMap): proto.ButtonComponent {
     return {
       component: 'button',
       key: idMap.getId(this),
