@@ -32,12 +32,12 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
 
   const header = group.addChild(new ld.Group({ noBorder: true }));
 
-  const addLayer = header.addChild(new ld.Button('Add Layer'));
+  const addLayer = header.addChild(new ld.Button('Add Layer', 'add'));
   addLayer.addListener(() => {
     context.saveConfig([...(state.config || []), null]);
   });
 
-  const removeLayer = header.addChild(new ld.Button('Remove Layer'));
+  const removeLayer = header.addChild(new ld.Button('Remove Layer', 'remove'));
   removeLayer.addListener(() => {
     context.saveConfig(state.config?.slice(0, state.config.length - 1) || []);
   });

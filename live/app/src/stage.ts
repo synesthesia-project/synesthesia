@@ -128,7 +128,9 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
     });
     ldComponent.addLabel({ text: kind.kind });
     ldComponent.setTitle(key);
-    const deleteButton = ldComponent.addHeaderButton(new ld.Button('Delete'));
+    const deleteButton = ldComponent.addHeaderButton(
+      new ld.Button('Delete', 'delete')
+    );
 
     deleteButton.addListener(() =>
       updateConfig((current) => ({
@@ -223,7 +225,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
     desk.compositorCueTriggers.removeAllChildren();
     for (let i = 0; i < cues.length; i++) {
       desk.compositorCueTriggers
-        .addChild(new ld.Button(`Cue ${i}`))
+        .addChild(new ld.Button(`Cue ${i}`, 'play_arrow'))
         .addListener(() =>
           updateConfig((config) => ({
             ...config,

@@ -32,7 +32,7 @@ export const createInputManager = () => {
     const updateCreateInputButtons = () => {
       createInputGroup.removeAllChildren();
       for (const kind of inputKinds.values()) {
-        const inputButton = new ld.Button(kind.kind);
+        const inputButton = new ld.Button(kind.kind, 'add');
         inputButton.addListener(() => setInputKind(kind));
         createInputGroup.addChild(inputButton);
       }
@@ -54,7 +54,7 @@ export const createInputManager = () => {
       input: Input<unknown>;
     } | null = null;
 
-    const replaceButton = new ld.Button('Replace');
+    const replaceButton = new ld.Button('replace', 'refresh');
     replaceButton.addListener(() => context.saveConfig(null));
 
     return {

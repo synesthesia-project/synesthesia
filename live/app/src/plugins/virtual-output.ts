@@ -32,7 +32,7 @@ const createVirtualOutput = (
 
   const pixelsInput = group.addChild(new ld.TextInput(''));
 
-  const update = group.addChild(new ld.Button('Update'));
+  const update = group.addChild(new ld.Button('Update', 'save'));
 
   let pixels: {
     px: Array<{
