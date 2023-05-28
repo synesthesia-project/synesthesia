@@ -33,6 +33,9 @@ export interface GroupComponent extends BaseComponent {
   title?: string;
   style: styles.GroupComponentStyle;
   children: Component[];
+  labels?: Array<{
+    text: string;
+  }>;
 }
 
 export interface LabelComponent extends BaseComponent {

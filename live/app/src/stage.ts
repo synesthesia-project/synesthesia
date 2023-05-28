@@ -126,7 +126,8 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
     const ldComponent = new ld.Group({
       direction: 'vertical',
     });
-    ldComponent.setTitle(`${kind.kind}: ${key}`);
+    ldComponent.addLabel({ text: kind.kind });
+    ldComponent.setTitle(key);
 
     const deleteButton = new ld.Button(`Delete`);
     ldComponent.addChild(deleteButton);

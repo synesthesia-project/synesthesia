@@ -6,6 +6,8 @@ import { IDMap } from '../util/id-map';
 
 import { BaseParent, Component } from './base';
 
+type Label = (proto.GroupComponent['labels'] & Array<unknown>)[number];
+
 /**
  * A collection of components, grouped in either a row or column. Can contain
  * further groups as children to organize components however you wish, and have
@@ -20,6 +22,8 @@ export class Group extends BaseParent {
   private readonly style: GroupComponentStyle;
   /** @hidden */
   private title: string | undefined = undefined;
+  /** @hidden */
+  labels?: Label[];
 
   public constructor(style: Partial<GroupComponentStyle> = {}) {
     super();
@@ -61,6 +65,11 @@ export class Group extends BaseParent {
     this.updateTree();
   }
 
+  public addLabel = (label: Label) => {
+    this.labels = [...(this.labels || []), label];
+    this.updateTree();
+  };
+
   /** @hidden */
   public getProtoInfo(idMap: IDMap): proto.GroupComponent {
     return {
@@ -69,6 +78,7 @@ export class Group extends BaseParent {
       title: this.title,
       style: this.style,
       children: this.children.map((c) => c.getProtoInfo(idMap)),
+      labels: this.labels,
     };
   }
 
