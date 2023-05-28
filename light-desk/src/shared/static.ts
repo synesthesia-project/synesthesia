@@ -34,3 +34,7 @@ export const AUDIO_FILES = {
   powerUp: sample('freesound/264762__farpro__guiclick.ogg', 1, 0.6, 0),
   powerDown: sample('freesound/264763__farpro__guiclick2.ogg', 1, 0.6, 0),
 };
+
+export const FONTS = {
+  materialSymbols: 'material-symbols.woff',
+};

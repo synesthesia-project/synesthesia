@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import * as proto from '../shared/proto';
-import { AudioFile, AUDIO_FILES } from '../shared/static';
+import { AudioFile, AUDIO_FILES, FONTS } from '../shared/static';
 import { LightDeskOptions } from './options';
 
 const STATIC_DIR = path.resolve(__dirname, '../frontend');
@@ -12,6 +12,10 @@ const STATIC_DIR = path.resolve(__dirname, '../frontend');
 const STATIC_FILES: { [id: string]: [string, string] } = {
   '/bundle.js': ['bundle.js', 'text/javascript'],
   '/bundle.js.map': ['bundle.js.map', 'text/plain'],
+  [`/${FONTS.materialSymbols}`]: [
+    `assets/${FONTS.materialSymbols}`,
+    'font/woff2',
+  ],
 };
 
 // Add audio files to STATIC_FILES
