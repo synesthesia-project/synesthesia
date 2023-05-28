@@ -5,7 +5,7 @@ import * as proto from '../../shared/proto';
 
 import { calculateClass } from '../util/react';
 import { StageContext } from './context';
-import { play } from '../audio';
+import { play } from '../util/audio';
 import { NestedContent } from './nesting';
 
 interface Props {

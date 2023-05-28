@@ -61,8 +61,8 @@ gulp.task('shared-copy', function () {
     return gulp.src(['.tmp/shared/**/*']).pipe(gulp.dest('build/shared'));
 });
 
-gulp.task('frontend-audio-copy', function () {
-    return gulp.src(['src/frontend/audio/**/*']).pipe(gulp.dest('build/frontend/audio'));
+gulp.task('frontend-assets-copy', function () {
+    return gulp.src(['src/frontend/assets/**/*']).pipe(gulp.dest('build/frontend/assets'));
 });
 
 gulp.task('default', gulp.series(
@@ -76,7 +76,7 @@ gulp.task('default', gulp.series(
     'frontend-webpack',
     'backend-copy',
     'shared-copy',
-    'frontend-audio-copy'
+    'frontend-assets-copy'
   )
 ));
 

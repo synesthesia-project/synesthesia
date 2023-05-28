@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import * as proto from '../../shared/proto';
-import { play } from '../audio';
+import { play } from '../util/audio';
 
 import { touchIndicatorNormal, touchIndicatorTouching } from './styling';
 import { StageContext } from './context';

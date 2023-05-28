@@ -23,7 +23,7 @@ for (const key of Object.keys(AUDIO_FILES) as (keyof typeof AUDIO_FILES)[]) {
     ? 'audio/ogg'
     : 'application/octet-stream';
   STATIC_FILES[`/audio/${audioFile.file}`] = [
-    `audio/${audioFile.file}`,
+    `assets/audio/${audioFile.file}`,
     contentType,
   ];
 }
