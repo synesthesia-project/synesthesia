@@ -12,6 +12,26 @@ interface Props {
   info: proto.GroupComponent;
 }
 
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 5px 2px;
+  background: ${(p) => p.theme.borderDark};
+  border-bottom: 1px solid ${(p) => p.theme.borderDark};
+
+  > * {
+    margin: 0 3px;
+  }
+`;
+
+const Label = styled.span`
+  display: inline-block;
+  border-radius: 3px;
+  background: ${(p) => p.theme.bg};
+  border: 1px solid ${(p) => p.theme.bgLight1};
+  padding: 3px 4px;
+`;
+
 const GroupChildren = styled.div<Pick<Props, 'info'>>`
   display: flex;
   flex-direction: ${(p) =>
@@ -33,6 +53,10 @@ const Group: React.FunctionComponent<Props> = (props) => {
     </GroupChildren>
   );
 
+  const displayHeader = [props.info.title, props.info.labels?.length].some(
+    (v) => v
+  );
+
   return (
     <div
       className={calculateClass(
@@ -40,8 +64,13 @@ const Group: React.FunctionComponent<Props> = (props) => {
         props.info.style.noBorder && 'no-border'
       )}
     >
-      {props.info.title ? (
-        <div className="title">{props.info.title}</div>
+      {displayHeader ? (
+        <Header>
+          {props.info.labels?.map((l) => (
+            <Label>{l.text}</Label>
+          ))}
+          {props.info.title && <span>{props.info.title}</span>}
+        </Header>
       ) : null}
       {props.info.style.noBorder ? (
         children
