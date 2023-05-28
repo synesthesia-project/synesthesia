@@ -2,6 +2,7 @@ import { Stage } from './stage';
 import { VIRTUAL_OUTPUT_PLUGIN } from './plugins/virtual-output';
 import { FILL_INPUT_PLUGIN } from './plugins/fill-input';
 import { ADD_INPUT_PLUGIN } from './plugins/add-input';
+import { CHASE_INPUT_PLUGIN } from './plugins/chase-input';
 import { DMX_PLUGIN } from '@synesthesia-project/live-dmx';
 
 const configPath = process.argv[2];
@@ -11,6 +12,12 @@ if (!configPath) {
 }
 
 Stage(
-  [VIRTUAL_OUTPUT_PLUGIN, FILL_INPUT_PLUGIN, ADD_INPUT_PLUGIN, DMX_PLUGIN],
+  [
+    VIRTUAL_OUTPUT_PLUGIN,
+    CHASE_INPUT_PLUGIN,
+    FILL_INPUT_PLUGIN,
+    ADD_INPUT_PLUGIN,
+    DMX_PLUGIN,
+  ],
   configPath
 );
