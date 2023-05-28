@@ -10,7 +10,7 @@ the license under which that sub-project is released.
 
 Specific Exceptions:
 
-## `live/app` - source-available non-commercial license (CC BY-NC 4.0)
+## `live/app` - source-available non-commercial license (CC BY-NC-SA 4.0)
 
 This subproject is free for non-commercial use,
 if you would like to use this for commercial purposes,
