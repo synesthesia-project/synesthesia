@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import * as proto from '../../shared/proto';
 import * as util from '../util/util';
-import { play } from '../audio';
+import { play } from '../util/audio';
 
 import { buttonStateNormal, buttonStateNormalHover } from './styling';
 import { StageContext } from './context';

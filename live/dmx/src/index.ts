@@ -51,10 +51,10 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
   header.addChild(new ld.Label('Universe: '));
   const universeInput = new ld.TextInput('0');
   header.addChild(universeInput);
-  const setUniverse = new ld.Button('Set');
+  const setUniverse = new ld.Button('Set', 'save');
   header.addChild(setUniverse);
 
-  const addFixture = new ld.Button('Add Fixture');
+  const addFixture = new ld.Button('Add Fixture', 'add');
   header.addChild(addFixture);
 
   addFixture.addListener(() => {
@@ -93,7 +93,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
     config.fixtures.map((f, i) => {
       const grp = fixtureGroup.addChild(new ld.Group());
 
-      const remove = grp.addChild(new ld.Button('Remove'));
+      const remove = grp.addChild(new ld.Button('Remove', 'delete'));
       remove.addListener(() => removeFixture(i));
 
       grp.addChild(new ld.Label('RGB Channels:'));
@@ -101,7 +101,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
         new ld.TextInput(`${f.rgb?.r || ''}`),
         new ld.TextInput(`${f.rgb?.g || ''}`),
         new ld.TextInput(`${f.rgb?.b || ''}`),
-        new ld.Button('Set')
+        new ld.Button('Set', 'save')
       );
       setColorChannels.addListener(() => {
         const [rt, gt, bt] = [ri, gi, bi].map((t) => t.getValue());

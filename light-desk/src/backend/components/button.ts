@@ -31,6 +31,7 @@ type Listener = () => void | Promise<void>;
 export class Button extends Component {
   /** @hidden */
   private text: string;
+  private icon?: string;
   private state: proto.ButtonComponent['state'] = {
     state: 'normal',
   };
@@ -38,9 +39,10 @@ export class Button extends Component {
   /** @hidden */
   private readonly listeners = new Set<Listener>();
 
-  public constructor(text: string) {
+  public constructor(text: string | null, icon?: string) {
     super();
-    this.text = text;
+    this.text = text || '';
+    this.icon = icon;
   }
 
   /** @hidden */
@@ -50,6 +52,7 @@ export class Button extends Component {
       key: idMap.getId(this),
       text: this.text,
       state: this.state,
+      icon: this.icon,
     };
   }
 

@@ -32,7 +32,7 @@ export const createDesk = () => {
   );
 
   const addCompositorCueButton = compositorHeader.addChild(
-    new ld.Button(`Add Cue`)
+    new ld.Button(`Add Cue`, 'add')
   );
 
   const compositorCuesGroup = compositorTab.addChild(

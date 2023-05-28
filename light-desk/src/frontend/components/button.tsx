@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import * as proto from '../../shared/proto';
-import { play } from '../audio';
+import { play } from '../util/audio';
 
 import {
   rectButton,
@@ -12,6 +12,7 @@ import {
 } from './styling';
 import { calculateClass } from '../util/react';
 import { StageContext } from './context';
+import { Icon } from './icon';
 
 const TOUCH_INDICATOR_CLASS = 'touch-indicator';
 const TOUCHING_CLASS = 'touching';
@@ -21,6 +22,21 @@ interface Props {
   className?: string;
   info: proto.ButtonComponent;
 }
+
+const ButtonContents = styled.div`
+  padding: 6px 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  > * {
+    padding: 0;
+  }
+`;
+
+const ButtonLabel = styled.span`
+  padding: 0 4px;
+`;
 
 const Button: React.FunctionComponent<Props> = (props) => {
   const { sendMessage } = React.useContext(StageContext);
@@ -56,7 +72,10 @@ const Button: React.FunctionComponent<Props> = (props) => {
       title={state.state === 'error' ? state.error : undefined}
     >
       <div className={TOUCH_INDICATOR_CLASS} />
-      {props.info.text}
+      <ButtonContents>
+        {props.info.icon && <Icon icon={props.info.icon} />}
+        {props.info.text && <ButtonLabel>{props.info.text}</ButtonLabel>}
+      </ButtonContents>
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import { DefaultTheme, createGlobalStyle, css } from 'styled-components';
+import { FONTS } from '../../shared/static';
 
 export const defaultTheme: DefaultTheme = {
   colorGreen: '#98c379',
@@ -33,6 +34,12 @@ body {
   &.touch-mode * {
     cursor: none !important;
   }
+}
+
+@font-face {
+  font-family: 'Material Symbols Outlined';
+  font-style: normal;
+  src: url(${FONTS.materialSymbols}) format('woff');
 }
 `;
 
@@ -87,7 +94,6 @@ const button = css`
   box-sizing: border-box;
   cursor: pointer;
   transition: all 200ms;
-  padding: 6px 8px;
   border-radius: 3px;
   border: 1px solid ${(p) => p.theme.borderDark};
   overflow: hidden;

@@ -18,6 +18,7 @@ interface BaseComponent {
 export interface ButtonComponent extends BaseComponent {
   component: 'button';
   text: string;
+  icon?: string;
   state:
     | {
         state: 'normal';

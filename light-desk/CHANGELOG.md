@@ -12,9 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Return child in addChild, allowing for chaining
   - Allow addition of labels
   - Allow buttons to be added to the header
-- `Button`: Introduce error state that will trigger
-  when any listeners throw an error,
-  or return a promise that rejects.
+- `Button`:
+  - Introduce error state that will trigger
+    when any listeners throw an error,
+    or return a promise that rejects.
+  - Introduce icons
 - `TextInput`: Introduce new generic text input component.
 - Throttle how often the tree is updated
 - Introduce new color constant `COLOR_RGB_BLACK`
