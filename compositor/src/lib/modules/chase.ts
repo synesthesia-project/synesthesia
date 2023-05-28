@@ -2,10 +2,10 @@ import { CompositorModule, RenderMethod } from '.';
 import { RGBAColor } from '../color';
 import { restrictNumber } from '../util';
 
-export class RGBChase<State> implements CompositorModule<State> {
-  private readonly advanceAmountPerSecond: number;
+export class ChaseModule<State> implements CompositorModule<State> {
+  private advanceAmountPerSecond: number;
 
-  private readonly colors: RGBAColor[];
+  private readonly sequence: Array<CompositorModule<State>>;
 
   /**
    * Array of values from 0-colors.length that
@@ -20,16 +20,16 @@ export class RGBChase<State> implements CompositorModule<State> {
   private lastFrame = Date.now();
 
   public constructor(
-    colors: RGBAColor[],
+    sequence: Array<CompositorModule<State>>,
     options?: {
       advanceAmountPerSecond?: number;
     }
   ) {
-    this.colors = colors;
+    this.sequence = sequence;
     this.advanceAmountPerSecond = options?.advanceAmountPerSecond || 0.3;
   }
 
-  render: RenderMethod<State> = (_map, pixels) => {
+  render: RenderMethod<State> = (map, pixels, state) => {
     // How many seconds since last frame
     const now = Date.now();
     const diff = (now - this.lastFrame) / 1000;
@@ -39,22 +39,32 @@ export class RGBChase<State> implements CompositorModule<State> {
     // For each pixel,
     // advance the position by an appropriate amount,
     // and calculate it's color
-    const result: RGBAColor[] = pixels.map((_info, i) => {
+    const result: RGBAColor[] = pixels.map((info, i) => {
       let pos = this.positions[i];
       if (pos === undefined) {
-        pos = Math.random() * this.colors.length;
+        pos = Math.random() * this.sequence.length;
       }
       // Advance position
       pos += advance;
-      if (pos >= this.colors.length) {
-        pos -= this.colors.length;
+      if (pos >= this.sequence.length) {
+        pos -= this.sequence.length;
       }
       this.positions[i] = pos;
-      const color1 = restrictNumber(Math.floor(pos), 0, this.colors.length - 1);
-      const color2 = color1 + 1 >= this.colors.length ? 0 : color1 + 1;
-      const transition = restrictNumber(pos - color1, 0, 1);
-      return this.colors[color1].transition(this.colors[color2], transition);
+      const module1 = restrictNumber(
+        Math.floor(pos),
+        0,
+        this.sequence.length - 1
+      );
+      const module2 = module1 + 1 >= this.sequence.length ? 0 : module1 + 1;
+      const transition = restrictNumber(pos - module1, 0, 1);
+      const color1 = this.sequence[module1].render(map, [info], state)[0];
+      const color2 = this.sequence[module2].render(map, [info], state)[0];
+      return color1.transition(color2, transition);
     });
     return result;
   };
+
+  public setAdvanceAmountPerSecond(advanceAmountPerSecond: number) {
+    this.advanceAmountPerSecond = advanceAmountPerSecond;
+  }
 }
