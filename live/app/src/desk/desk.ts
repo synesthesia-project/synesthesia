@@ -36,7 +36,7 @@ export const createDesk = () => {
   );
 
   const compositorCuesGroup = compositorTab.addChild(
-    new ld.Group({ direction: 'vertical' })
+    new ld.Group({ direction: 'vertical', noBorder: true })
   );
 
   // Outputs
@@ -53,7 +53,7 @@ export const createDesk = () => {
   const addOutputKey = outputHeader.addChild(new ld.TextInput(''));
 
   const outputsGroup = outputsTab.addChild(
-    new ld.Group({ direction: 'vertical' })
+    new ld.Group({ direction: 'vertical', noBorder: true })
   );
 
   const init = (options: {
