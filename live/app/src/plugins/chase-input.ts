@@ -40,22 +40,12 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
 
   const header = group.addChild(new ld.Group({ noBorder: true }));
 
-  header.addChild(new ld.Label('Stops:'));
-
-  const addLayer = header.addChild(new ld.Button('Add', 'add'));
+  const addLayer = header.addChild(new ld.Button('Add Stop', 'add'));
   addLayer.addListener(() => {
     context.saveConfig({
       ...state.config,
       sequence: [...state.config.sequence, null],
     });
-  });
-
-  const removeLayer = header.addChild(new ld.Button('Remove', 'remove'));
-  removeLayer.addListener(() => {
-    const newSequence = [...state.config.sequence];
-    // TODO: allow for removing any item in sequence
-    newSequence.splice(newSequence.length - 1);
-    context.saveConfig({ ...state.config, sequence: newSequence });
   });
 
   header.addChild(new ld.Label('Speed:'));
@@ -98,6 +88,15 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
                 ],
               });
             }
+          },
+          groupConfig: {
+            additionalButtons: [
+              new ld.Button(null, 'delete').addListener(() => {
+                const newSequence = [...state.config.sequence];
+                newSequence.splice(i, 1);
+                context.saveConfig({ ...state.config, sequence: newSequence });
+              }),
+            ],
           },
         });
         layers[i] = input;

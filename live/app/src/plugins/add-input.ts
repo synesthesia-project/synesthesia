@@ -37,11 +37,6 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
     context.saveConfig([...(state.config || []), null]);
   });
 
-  const removeLayer = header.addChild(new ld.Button('Remove Layer', 'remove'));
-  removeLayer.addListener(() => {
-    context.saveConfig(state.config?.slice(0, state.config.length - 1) || []);
-  });
-
   const layersGroup = group.addChild(
     new ld.Group({ direction: 'vertical', noBorder: true })
   );
@@ -61,6 +56,15 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
                 ...state.config.slice(i + 1),
               ]);
             }
+          },
+          groupConfig: {
+            additionalButtons: [
+              new ld.Button(null, 'delete').addListener(() => {
+                const newConfig = [...(state.config || [])];
+                newConfig.splice(i, 1);
+                context.saveConfig(newConfig);
+              }),
+            ],
           },
         });
         layers[i] = input;

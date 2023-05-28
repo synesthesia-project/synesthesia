@@ -19,13 +19,21 @@ export const createInputManager = () => {
   const inputKindListeners = new Set<() => void>();
 
   const createSocket = (
-    context: Pick<InputContext<OptionalKindAndConfig>, 'saveConfig'>
+    context: Pick<InputContext<OptionalKindAndConfig>, 'saveConfig'> & {
+      groupConfig?: {
+        additionalButtons: ld.Button[];
+      };
+    }
   ): InputSocket => {
     let config: OptionalKindAndConfig = null;
 
     const module = new TransitionModule(new FillModule(RGBA_TRANSPARENT));
 
     const group = new ld.Group({ direction: 'vertical' });
+
+    for (const button of context.groupConfig?.additionalButtons || []) {
+      group.addHeaderButton(button);
+    }
 
     const createInputGroup = new ld.Group({ noBorder: true, wrap: true });
 

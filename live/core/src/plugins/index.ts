@@ -32,6 +32,9 @@ export interface OutputContext<ConfigT> extends ModuleContext<ConfigT> {
 export interface InputContext<ConfigT> extends ModuleContext<ConfigT> {
   createInputSocket(context: {
     saveConfig(config: OptionalKindAndConfig): Promise<void>;
+    groupConfig?: {
+      additionalButtons: ld.Button[];
+    };
   }): Input<OptionalKindAndConfig>;
 }
 
