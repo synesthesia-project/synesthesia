@@ -32,7 +32,7 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
     },
   };
 
-  const group = new ld.Group({ direction: 'vertical' });
+  const group = new ld.Group({ direction: 'vertical', noBorder: true });
   const module = new TransitionModule(new FillModule(RGBA_TRANSPARENT));
   let chaseModule: ChaseModule<unknown> | null = null;
 

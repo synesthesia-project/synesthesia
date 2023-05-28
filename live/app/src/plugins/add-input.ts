@@ -25,7 +25,7 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
     config: null,
   };
 
-  const group = new ld.Group({ direction: 'vertical' });
+  const group = new ld.Group({ direction: 'vertical', noBorder: true });
   const module = new AddModule([new FillModule(RGBA_TRANSPARENT)]);
 
   const layers: Array<Input<OptionalKindAndConfig>> = [];
