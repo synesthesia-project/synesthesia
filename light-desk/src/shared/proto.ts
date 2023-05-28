@@ -36,6 +36,7 @@ export interface GroupComponent extends BaseComponent {
   labels?: Array<{
     text: string;
   }>;
+  headerButtons?: ButtonComponent[];
 }
 
 export interface LabelComponent extends BaseComponent {

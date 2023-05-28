@@ -42,6 +42,10 @@ export interface Parent {
 
 export abstract class BaseParent extends Component implements Parent {
   abstract removeChild(component: Component): void;
+
+  /**
+   * Return all children components that messages need to be routed to
+   */
   abstract getAllChildren(): Iterable<Component>;
 
   /**

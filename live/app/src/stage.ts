@@ -128,9 +128,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
     });
     ldComponent.addLabel({ text: kind.kind });
     ldComponent.setTitle(key);
-
-    const deleteButton = new ld.Button(`Delete`);
-    ldComponent.addChild(deleteButton);
+    const deleteButton = ldComponent.addHeaderButton(new ld.Button('Delete'));
 
     deleteButton.addListener(() =>
       updateConfig((current) => ({

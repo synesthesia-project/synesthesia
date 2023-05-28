@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     and removed after first render.
   - Return child in addChild, allowing for chaining
   - Allow addition of labels
+  - Allow buttons to be added to the header
 - `Button`: Introduce error state that will trigger
   when any listeners throw an error,
   or return a promise that rejects.

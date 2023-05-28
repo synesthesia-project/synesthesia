@@ -6,6 +6,7 @@ import * as proto from '../../shared/proto';
 import { calculateClass } from '../util/react';
 import { StageContext } from './context';
 import { NestedContent } from './nesting';
+import { Button } from './button';
 
 interface Props {
   className?: string;
@@ -32,6 +33,10 @@ const Label = styled.span`
   padding: 3px 4px;
 `;
 
+const Grow = styled.span`
+  flex-grow: 1;
+`;
+
 const GroupChildren = styled.div<Pick<Props, 'info'>>`
   display: flex;
   flex-direction: ${(p) =>
@@ -53,9 +58,11 @@ const Group: React.FunctionComponent<Props> = (props) => {
     </GroupChildren>
   );
 
-  const displayHeader = [props.info.title, props.info.labels?.length].some(
-    (v) => v
-  );
+  const displayHeader = [
+    props.info.title,
+    props.info.labels?.length,
+    props.info.headerButtons,
+  ].some((v) => v);
 
   return (
     <div
@@ -70,6 +77,10 @@ const Group: React.FunctionComponent<Props> = (props) => {
             <Label>{l.text}</Label>
           ))}
           {props.info.title && <span>{props.info.title}</span>}
+          <Grow />
+          {props.info.headerButtons?.map((b) => (
+            <Button info={b} />
+          ))}
         </Header>
       ) : null}
       {props.info.style.noBorder ? (
