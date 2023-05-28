@@ -54,6 +54,9 @@ export const createInputManager = () => {
       input: Input<unknown>;
     } | null = null;
 
+    const replaceButton = new ld.Button('Replace');
+    replaceButton.addListener(() => context.saveConfig(null));
+
     return {
       setConfig: (newConfig) => {
         config = newConfig;
@@ -69,6 +72,7 @@ export const createInputManager = () => {
           // TODO: destroy only after transition out finished
           currentInput.input.destroy();
           group.removeAllChildren();
+          group.removeHeaderButton(replaceButton);
           currentInput = null;
         }
         if (!newConfig) {
@@ -86,8 +90,7 @@ export const createInputManager = () => {
           } else {
             // Create header
             group.setTitle(kind.kind);
-            const deleteButton = group.addChild(new ld.Button('Replace Input'));
-            deleteButton.addListener(() => context.saveConfig(null));
+            group.addHeaderButton(replaceButton);
             // Create new input
             currentInput = {
               kind: kind.kind,
