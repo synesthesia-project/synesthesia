@@ -1,15 +1,16 @@
 import * as styles from './styles';
 
 /** JSON version of [[RGBColor]] */
-export type RGBColorJSON = {
-  type: 'rgb';
+export type RGBAColorJSON = {
+  type: 'rgba';
   r: number;
   g: number;
   b: number;
+  a: number;
 };
 
 /** An object that can be used directly in JSON to represent a [[Color]] */
-export type ColorJSON = RGBColorJSON;
+export type ColorJSON = RGBAColorJSON;
 
 interface BaseComponent {
   key: number;
