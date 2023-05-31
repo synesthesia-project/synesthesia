@@ -167,9 +167,9 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
       const color = frame[i];
       const fixture = pixels.fixtures[i];
       if (fixture?.rgb) {
-        buffer[fixture.rgb.r - 1] = color.r;
-        buffer[fixture.rgb.g - 1] = color.g;
-        buffer[fixture.rgb.b - 1] = color.b;
+        buffer[fixture.rgb.r - 1] = color.r * color.alpha;
+        buffer[fixture.rgb.g - 1] = color.g * color.alpha;
+        buffer[fixture.rgb.b - 1] = color.b * color.alpha;
       }
     }
     a.set(config.artnetUniverse ?? 0, 1, buffer);
