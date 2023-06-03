@@ -4,10 +4,18 @@ import * as proto from '../../shared/proto';
 import { GroupComponentStyle, GROUP_DEFAULT_STYLE } from '../../shared/styles';
 import { IDMap } from '../util/id-map';
 
-import { BaseParent, Component } from './base';
+import { BaseParent, Component, EventEmitter, Listenable } from './base';
 import type { Button } from './button';
 
 type Label = (proto.GroupComponent['labels'] & Array<unknown>)[number];
+
+type GroupOptions = {
+  editableTitle?: boolean;
+};
+
+type Events = {
+  'title-changed': (title: string) => void;
+};
 
 /**
  * A collection of components, grouped in either a row or column. Can contain
@@ -16,7 +24,9 @@ type Label = (proto.GroupComponent['labels'] & Array<unknown>)[number];
  *
  * ![](media://images/group_screenshot.png)
  */
-export class Group extends BaseParent {
+export class Group extends BaseParent implements Listenable<Events> {
+  /** @hidden */
+  private readonly events = new EventEmitter<Events>();
   /** @hidden */
   private readonly children: Component[] = [];
   /** @hidden */
@@ -24,14 +34,23 @@ export class Group extends BaseParent {
   /** @hidden */
   private title: string | undefined = undefined;
   /** @hidden */
-  labels?: Label[];
+  private labels?: Label[];
   /** @hidden */
-  headerButtons?: Button[];
+  private headerButtons?: Button[];
+  /** @hidden */
+  private editableTitle: boolean;
 
-  public constructor(style: Partial<GroupComponentStyle> = {}) {
+  public constructor(
+    style: Partial<GroupComponentStyle> = {},
+    opts?: GroupOptions
+  ) {
     super();
     this.style = extend({}, GROUP_DEFAULT_STYLE, style);
+    this.editableTitle = opts?.editableTitle ?? false;
   }
+
+  addListener = this.events.addListener;
+  removeListener = this.events.removeListener;
 
   public addChildren<CS extends Component[]>(...children: CS): CS {
     for (const c of children) {
@@ -102,11 +121,20 @@ export class Group extends BaseParent {
       children: this.children.map((c) => c.getProtoInfo(idMap)),
       labels: this.labels,
       headerButtons: this.headerButtons?.map((c) => c.getProtoInfo(idMap)),
+      editableTitle: this.editableTitle,
     };
   }
 
   /** @hidden */
   getAllChildren(): Iterable<Component> {
     return [...this.children, ...(this.headerButtons || [])];
+  }
+
+  /** @hidden */
+  public handleMessage(message: proto.ClientComponentMessage) {
+    if (message.component === 'group') {
+      this.setTitle(message.title);
+      this.events.emit('title-changed', message.title);
+    }
   }
 }

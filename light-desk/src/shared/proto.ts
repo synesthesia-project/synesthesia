@@ -39,6 +39,7 @@ export interface GroupComponent extends BaseComponent {
     text: string;
   }>;
   headerButtons?: ButtonComponent[];
+  editableTitle: boolean;
 }
 
 export interface LabelComponent extends BaseComponent {
@@ -109,6 +110,11 @@ export interface ButtonPressMessage extends BaseClientComponentMessage {
   component: 'button';
 }
 
+export interface GroupTitleChangeMessage extends BaseClientComponentMessage {
+  component: 'group';
+  title: string;
+}
+
 export interface SwitchToggleMessage extends BaseClientComponentMessage {
   component: 'switch';
 }
@@ -121,6 +127,7 @@ export interface TextInputUpdateMessage extends BaseClientComponentMessage {
 export type ClientComponentMessage =
   | SliderButtonUpdateMessage
   | ButtonPressMessage
+  | GroupTitleChangeMessage
   | SwitchToggleMessage
   | TextInputUpdateMessage;
 

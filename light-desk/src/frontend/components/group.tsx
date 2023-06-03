@@ -1,4 +1,12 @@
 import * as React from 'react';
+import {
+  SyntheticEvent,
+  EventHandler,
+  FunctionComponent,
+  useState,
+  useContext,
+  KeyboardEvent,
+} from 'react';
 import styled from 'styled-components';
 
 import * as proto from '../../shared/proto';
@@ -7,6 +15,7 @@ import { calculateClass } from '../util/react';
 import { StageContext } from './context';
 import { NestedContent } from './nesting';
 import { Button } from './button';
+import { Icon } from './icon';
 
 interface Props {
   className?: string;
@@ -50,19 +59,69 @@ const GroupChildren = styled.div<Pick<Props, 'info'>>`
   }
 `;
 
-const Group: React.FunctionComponent<Props> = (props) => {
-  const { renderComponent } = React.useContext(StageContext);
+const EditableTitle = styled.span`
+  display: flex;
+  align-items: center;
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 3px 2px;
+
+  > * {
+    margin: 0 2px;
+  }
+
+  > .icon {
+    color: ${(p) => p.theme.bg};
+  }
+
+  &:hover {
+    background: ${(p) => p.theme.bg};
+
+    > .icon {
+      color: ${(p) => p.theme.hint};
+    }
+  }
+`;
+
+const TitleInput = styled.input`
+  background: none;
+  border: none;
+  outline: none;
+  color: ${(p) => p.theme.textNormal};
+`;
+
+const Group: FunctionComponent<Props> = (props) => {
+  const { renderComponent, sendMessage } = useContext(StageContext);
+  const [editingTitle, setEditingTitle] = useState(false);
   const children = (
     <GroupChildren info={props.info}>
       {props.info.children.map(renderComponent)}
     </GroupChildren>
   );
 
+  const showTitle = props.info.title || props.info.editableTitle;
+
   const displayHeader = [
-    props.info.title,
+    showTitle,
     props.info.labels?.length,
     props.info.headerButtons,
   ].some((v) => v);
+
+  const updateTitle: EventHandler<SyntheticEvent<HTMLInputElement>> = (e) => {
+    sendMessage?.({
+      type: 'component_message',
+      componentKey: props.info.key,
+      component: 'group',
+      title: e.currentTarget.value,
+    });
+    setEditingTitle(false);
+  };
+
+  const keyDown: EventHandler<KeyboardEvent<HTMLInputElement>> = (e) => {
+    if (e.key == 'Enter') {
+      updateTitle(e);
+    }
+  };
 
   return (
     <div
@@ -76,7 +135,25 @@ const Group: React.FunctionComponent<Props> = (props) => {
           {props.info.labels?.map((l) => (
             <Label>{l.text}</Label>
           ))}
-          {props.info.title && <span>{props.info.title}</span>}
+          {showTitle &&
+            (props.info.editableTitle ? (
+              editingTitle ? (
+                <TitleInput
+                  // Focus input when it's created
+                  ref={(input) => input?.focus()}
+                  onBlur={updateTitle}
+                  onKeyDown={keyDown}
+                  defaultValue={props.info.title}
+                />
+              ) : (
+                <EditableTitle onClick={() => setEditingTitle(true)}>
+                  <span>{props.info.title}</span>
+                  <Icon className="icon" icon="edit" />
+                </EditableTitle>
+              )
+            ) : (
+              <span>{props.info.title}</span>
+            ))}
           <Grow />
           {props.info.headerButtons?.map((b) => (
             <Button info={b} />
