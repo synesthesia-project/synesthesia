@@ -68,3 +68,39 @@ export abstract class BaseParent extends Component implements Parent {
     }
   }
 }
+
+export interface Listenable<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Map extends Record<string, (...args: any[]) => void>
+> {
+  addListener<T extends keyof Map>(type: T, listener: Map[T]): void;
+  removeListener<T extends keyof Map>(type: T, listener: Map[T]): void;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export class EventEmitter<Map extends Record<string, (...args: any[]) => void>>
+  implements Listenable<Map>
+{
+  private readonly listeners = new Map<
+    keyof Map,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    Set<(...args: any[]) => void>
+  >();
+
+  addListener = <T extends keyof Map>(type: T, listener: Map[T]) => {
+    let set = this.listeners.get(type);
+    if (!set) {
+      set = new Set();
+      this.listeners.set(type, set);
+    }
+    set.add(listener);
+  };
+
+  removeListener = <T extends keyof Map>(type: T, listener: Map[T]) => {
+    this.listeners.get(type)?.delete(listener);
+  };
+
+  emit = <T extends keyof Map>(type: T, ...args: Parameters<Map[T]>) => {
+    (this.listeners.get(type) as Set<Map[T]>).forEach((l) => l(...args));
+  };
+}

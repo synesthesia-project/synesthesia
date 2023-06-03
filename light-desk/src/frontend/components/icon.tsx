@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-interface Props {
+interface Props extends React.HTMLAttributes<HTMLSpanElement> {
   /**
    * Icon name from https://fonts.google.com/icons?icon.style=Outlined
    */
@@ -23,6 +23,8 @@ const Span = styled.span`
   font-variation-settings: 'wght' 300, 'GRAD' -25;
 `;
 
-const Icon: React.FunctionComponent<Props> = ({ icon }) => <Span>{icon}</Span>;
+const Icon: React.FunctionComponent<Props> = ({ icon, ...props }) => (
+  <Span {...props}>{icon}</Span>
+);
 
 export { Icon };
