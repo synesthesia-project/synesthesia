@@ -10,6 +10,7 @@ import type {
   Plugin,
   OutputKind,
 } from '@synesthesia-project/live-core/lib/plugins';
+import { isDefined } from '@synesthesia-project/live-core/lib/util';
 
 import { Config, loadConfig, saveConfig } from './config';
 import { createDesk } from './desk/desk';
@@ -89,10 +90,11 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
   };
 
   const createOutput = <ConfigT>(
-    key: string,
+    initialKey: string,
     kind: OutputKind<ConfigT>,
     initialConfig: unknown
   ): ActiveOutput<ConfigT> => {
+    let key = initialKey;
     console.log('createOutput', key);
     const saveConfig: OutputContext<ConfigT>['saveConfig'] = (newConfig) =>
       updateConfig((current) => ({
@@ -123,11 +125,30 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       );
       output.setConfig(kind.initialConfig);
     }
-    const ldComponent = new ld.Group({
-      direction: 'vertical',
-    });
+    const ldComponent = new ld.Group(
+      {
+        direction: 'vertical',
+      },
+      {
+        editableTitle: true,
+      }
+    );
     ldComponent.addLabel({ text: kind.kind });
     ldComponent.setTitle(key);
+
+    ldComponent.addListener('title-changed', (newKey) => {
+      updateConfig((current) => ({
+        ...current,
+        // Rename key of output, and sort by key name
+        outputs: Object.fromEntries(
+          Object.entries(current.outputs || {})
+            .map(([k, v]) => [k === key ? newKey : k, v] as const)
+            .sort(([a], [b]) => a.localeCompare(b))
+        ),
+      }));
+      key = newKey;
+    });
+
     const deleteButton = ldComponent.addHeaderButton(
       new ld.Button('Delete', 'delete')
     );
@@ -194,6 +215,14 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
         }
       }
     }
+    // Remove all outputs and re-add them in name order
+    desk.outputsGroup.removeAllChildren();
+    desk.outputsGroup.addChildren(
+      ...Object.keys(config.outputs ?? [])
+        .sort()
+        .map((k) => outputs.get(k)?.ldComponent)
+        .filter(isDefined)
+    );
   };
 
   const updateInputsFromConfig = () => {
@@ -276,13 +305,15 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
         }
         return {
           ...current,
-          outputs: {
-            ...current.outputs,
-            [key]: {
-              kind: kind.kind,
-              config: kind.initialConfig,
-            },
-          },
+          outputs: Object.fromEntries(
+            Object.entries({
+              ...current.outputs,
+              [key]: {
+                kind: kind.kind,
+                config: kind.initialConfig,
+              },
+            }).sort(([a], [b]) => a.localeCompare(b))
+          ),
         };
       }),
     outputKinds: [...outputKinds.values()],
