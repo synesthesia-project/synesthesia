@@ -46,6 +46,15 @@ export class RGBAColor {
     );
     return new RGBAColor(r, g, b, a);
   }
+
+  public equals(other: RGBAColor): boolean {
+    return (
+      other.r === this.r &&
+      other.g === this.g &&
+      other.b === this.b &&
+      other.alpha === this.alpha
+    );
+  }
 }
 
 export const RGBA_BLACK = new RGBAColor(0, 0, 0);

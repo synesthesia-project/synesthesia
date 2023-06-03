@@ -1,5 +1,8 @@
 import * as proto from '../../shared/proto';
-import { Color, COLOR_RGB_WHITE } from '../util/color';
+import {
+  RGBAColor,
+  RGBA_TRANSPARENT,
+} from '@synesthesia-project/compositor/lib/color';
 import { IDMap } from '../util/id-map';
 
 import { Component } from './base';
@@ -8,30 +11,12 @@ import { Component } from './base';
  * A simple rectangle component. Could be used for example to indicate
  * certain states, or represent the color of certain lights or fixtures,
  * or perhaps colours used in a chase.
- *
- * **Example:**
- *
- * ```js
- * const lightDesk = require('@synesthesia-project/light-desk');
- *
- * // ...
- *
- * group.addChild(new lightDesk.Rect(new lightDesk.color.RGBColor(85, 85, 85)));
- * group.addChild(new lightDesk.Rect(new lightDesk.color.RGBColor(255, 255, 0)));
- * group.addChild(new lightDesk.Rect(new lightDesk.color.RGBColor(255, 0, 0)));
- * group.addChild(new lightDesk.Rect(new lightDesk.color.RGBColor(255, 255, 255)));
- * group.addChild(new lightDesk.Rect(new lightDesk.color.RGBColor(200, 200, 200)));
- * ```
- *
- * **Preview:**
- *
- * ![](media://images/rect_screenshot.png)
  */
 export class Rect extends Component {
   /** @hidden */
-  private color: Color;
+  private color: RGBAColor;
 
-  public constructor(color: Color = COLOR_RGB_WHITE) {
+  public constructor(color: RGBAColor = RGBA_TRANSPARENT) {
     super();
     this.color = color;
   }
@@ -41,11 +26,17 @@ export class Rect extends Component {
     return {
       component: 'rect',
       key: idMap.getId(this),
-      color: this.color.json(),
+      color: {
+        type: 'rgba',
+        r: this.color.r,
+        g: this.color.g,
+        b: this.color.b,
+        a: this.color.alpha,
+      },
     };
   }
 
-  public setColor(color: Color): Rect {
+  public setColor(color: RGBAColor): Rect {
     if (!this.color.equals(color)) {
       this.color = color;
       this.updateTree();

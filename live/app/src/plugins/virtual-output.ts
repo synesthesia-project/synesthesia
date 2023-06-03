@@ -72,9 +72,7 @@ const createVirtualOutput = (
       );
       const px = pixels.px[samplePixel];
       const c = px.color.transition(RGBA_BLACK, x);
-      pixels.rects[i].setColor(
-        new ld.color.RGBColor(c.r * c.alpha, c.g * c.alpha, c.b * c.alpha)
-      );
+      pixels.rects[i].setColor(c);
     }
   };
 

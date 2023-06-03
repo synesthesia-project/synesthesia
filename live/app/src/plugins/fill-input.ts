@@ -11,7 +11,6 @@ import {
   RGBAColor,
   RGBA_BLACK,
 } from '@synesthesia-project/compositor/lib/color';
-import { COLOR_RGB_BLACK } from '@synesthesia-project/light-desk/build/backend/util/color';
 
 const FILL_INPUT_CONFIG = t.type({
   r: t.number,
@@ -34,7 +33,7 @@ const createFillInput = (context: InputContext<Config>): Input<Config> => {
   const group = new ld.Group({ noBorder: true });
   const module = new FillModule<unknown>(() => state.color);
 
-  const rect = group.addChild(new ld.Rect(COLOR_RGB_BLACK));
+  const rect = group.addChild(new ld.Rect());
 
   const sliders = {
     r: group.addChild(new ld.SliderButton(0, 0, 255, 1, 'writeThrough')),
@@ -58,10 +57,8 @@ const createFillInput = (context: InputContext<Config>): Input<Config> => {
       sliders.g.setValue(g);
       sliders.b.setValue(b);
       sliders.alpha.setValue(alpha);
-      rect.setColor(
-        new ld.color.RGBColor(c.r * c.alpha, c.g * c.alpha, c.b * c.alpha)
-      );
       state.color = new RGBAColor(r, g, b, alpha);
+      rect.setColor(state.color);
     },
     getLightDeskComponent: () => group,
     destroy: () => {

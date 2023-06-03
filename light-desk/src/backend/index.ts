@@ -8,7 +8,6 @@ import { Group } from './components/group';
 import { IDMap } from './util/id-map';
 
 import * as proto from '../shared/proto';
-import * as color from './util/color';
 
 import { Connection, Server } from './server';
 import { LightDeskOptions } from './options';
@@ -147,4 +146,3 @@ export { SliderButton } from './components/slider_button';
 export { Switch } from './components/switch';
 export { Tabs } from './components/tabs';
 export { TextInput } from './components/text-input';
-export { color };
