@@ -94,7 +94,17 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
   const updateFixtureGroup = () => {
     fixtureGroup.removeAllChildren();
     for (const [uuid, f] of Object.entries(config.fixtures)) {
-      const grp = fixtureGroup.addChild(new ld.Group());
+      const grp = fixtureGroup.addChild(
+        new ld.Group(undefined, {
+          editableTitle: true,
+        })
+      );
+
+      if (f.name) grp.setTitle(f.name);
+
+      grp.addListener('title-changed', (name) =>
+        updateFixtureConfig(uuid, (c) => ({ ...c, name }))
+      );
 
       const remove = grp.addChild(new ld.Button('Remove', 'delete'));
       remove.addListener(() => removeFixture(uuid));
