@@ -58,7 +58,7 @@ export const createDesk = () => {
 
   const init = (options: {
     addCompositorCue: () => Promise<void>;
-    addOutput: (kind: OutputKind<unknown>, key: string) => Promise<void>;
+    addOutput: (kind: OutputKind<unknown>, name: string) => Promise<void>;
     outputKinds: Array<OutputKind<unknown>>;
   }) => {
     for (const kind of options.outputKinds) {

@@ -11,6 +11,7 @@ import type {
   OutputKind,
 } from '@synesthesia-project/live-core/lib/plugins';
 import { isDefined } from '@synesthesia-project/live-core/lib/util';
+import { v4 as uuidv4 } from 'uuid';
 
 import { Config, loadConfig, saveConfig } from './config';
 import { createDesk } from './desk/desk';
@@ -90,11 +91,11 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
   };
 
   const createOutput = <ConfigT>(
-    initialKey: string,
+    key: string,
+    name: string,
     kind: OutputKind<ConfigT>,
     initialConfig: unknown
   ): ActiveOutput<ConfigT> => {
-    let key = initialKey;
     console.log('createOutput', key);
     const saveConfig: OutputContext<ConfigT>['saveConfig'] = (newConfig) =>
       updateConfig((current) => ({
@@ -102,6 +103,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
         outputs: {
           ...current.outputs,
           [key]: {
+            name,
             kind: kind.kind,
             config: newConfig,
           },
@@ -134,20 +136,22 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       }
     );
     ldComponent.addLabel({ text: kind.kind });
-    ldComponent.setTitle(key);
+    ldComponent.setTitle(name);
 
-    ldComponent.addListener('title-changed', (newKey) => {
+    ldComponent.addListener('title-changed', (name) =>
       updateConfig((current) => ({
         ...current,
-        // Rename key of output, and sort by key name
-        outputs: Object.fromEntries(
-          Object.entries(current.outputs || {})
-            .map(([k, v]) => [k === key ? newKey : k, v] as const)
-            .sort(([a], [b]) => a.localeCompare(b))
-        ),
-      }));
-      key = newKey;
-    });
+        outputs: current.outputs?.[key]
+          ? {
+              ...current.outputs,
+              [key]: {
+                ...current.outputs[key],
+                name,
+              },
+            }
+          : current.outputs,
+      }))
+    );
 
     const deleteButton = ldComponent.addHeaderButton(
       new ld.Button('Delete', 'delete')
@@ -197,7 +201,12 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
         }
         // Check if output does not exist and needs to
         if (!output) {
-          output = createOutput(key, kind, newOutputConfig.config);
+          output = createOutput(
+            key,
+            newOutputConfig.name,
+            kind,
+            newOutputConfig.config
+          );
           outputs.set(key, output);
           desk.outputsGroup.addChild(output.ldComponent);
         } else if (oldOutputConfig?.config !== newOutputConfig?.config) {
@@ -295,20 +304,18 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
           cues: [...(config.compositor?.cues || []), null],
         },
       })),
-    addOutput: (kind, key) =>
+    addOutput: (kind, name) =>
       updateConfig((current) => {
-        if (!key) {
+        if (!name) {
           throw new Error(`You must specify an output name`);
-        }
-        if (current.outputs?.[key]) {
-          throw new Error(`The output ${key} already exists`);
         }
         return {
           ...current,
           outputs: Object.fromEntries(
             Object.entries({
               ...current.outputs,
-              [key]: {
+              [uuidv4()]: {
+                name,
                 kind: kind.kind,
                 config: kind.initialConfig,
               },

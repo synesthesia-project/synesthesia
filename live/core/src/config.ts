@@ -7,6 +7,13 @@ export const KIND_AND_CONFIG = t.type({
 
 export type KindAndConfig = t.TypeOf<typeof KIND_AND_CONFIG>;
 
+export const OUTPUT = t.intersection([
+  t.type({
+    name: t.string,
+  }),
+  KIND_AND_CONFIG,
+]);
+
 export const OPTIONAL_KIND_AND_CONFIG = t.union([
   t.undefined,
   t.null,
