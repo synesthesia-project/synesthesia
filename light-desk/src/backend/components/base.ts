@@ -101,6 +101,6 @@ export class EventEmitter<Map extends Record<string, (...args: any[]) => void>>
   };
 
   emit = <T extends keyof Map>(type: T, ...args: Parameters<Map[T]>) => {
-    (this.listeners.get(type) as Set<Map[T]>).forEach((l) => l(...args));
+    this.listeners.get(type)?.forEach((l) => l(...args));
   };
 }
