@@ -7638,7 +7638,7 @@ packages:
     dev: false
 
   file:projects/light-desk.tgz:
-    resolution: {integrity: sha512-pLhQEYb38TqOPiS7xnEeKHryO9jedWSlLvFPg1PFnDyRjquN8Y8RgIsUtTkaYOwLRksThQJabfDZDQI8KdUYMA==, tarball: file:projects/light-desk.tgz}
+    resolution: {integrity: sha512-Omd43InkpK662ZIn5/jOq454ONKUC0/YwugulrzhpOVEkTWITow6BPMo0bUWDP4MORjb9eTBqZCkR/SDQRRfXg==, tarball: file:projects/light-desk.tgz}
     name: '@rush-temp/light-desk'
     version: 0.0.0
     dependencies:
@@ -7669,16 +7669,18 @@ packages:
     dev: false
 
   file:projects/live-app.tgz:
-    resolution: {integrity: sha512-xl+cwFpuN7zcaiWVOb5v92Wr+5AsC2OjN9pYt4gOG9czDHf7ymqyCvQy8LCaQfx2DjQ4FbNVSnO6HadxA6mYhQ==, tarball: file:projects/live-app.tgz}
+    resolution: {integrity: sha512-AwCg43OAY791Y/EZbZjBNJXb6BtKlRU70c9bEFF/p4UY05hwvWBHSZ2FRoKb8K0IdQcgq+Afd1dSHhnl3x8HOQ==, tarball: file:projects/live-app.tgz}
     name: '@rush-temp/live-app'
     version: 0.0.0
     dependencies:
       '@types/lodash': 4.14.149
+      '@types/uuid': 9.0.0
       artnet: 1.4.0
       fp-ts: 2.13.1
       gulp: 4.0.2
       io-ts: 2.2.20_fp-ts@2.13.1
       lodash: 4.17.21
+      uuid: 9.0.0
     dev: false
 
   file:projects/live-core.tgz:
@@ -7694,16 +7696,18 @@ packages:
     dev: false
 
   file:projects/live-dmx.tgz:
-    resolution: {integrity: sha512-uy6jW4PKykSzYgye8TeMCRoDZG48ZXPho94Z3UiNbSYnHqnuwYR2qCwo99vTCpN/TUg1PP5HN7vTdt3o6e9/CQ==, tarball: file:projects/live-dmx.tgz}
+    resolution: {integrity: sha512-D1fcqzU/n/RRDv93zv1xawRb2n37kyc9qpVuPYOiMipgMrfdfLM8m8mH0BacpvQ2iuE+ijNDL7kI34/GEaSPAQ==, tarball: file:projects/live-dmx.tgz}
     name: '@rush-temp/live-dmx'
     version: 0.0.0
     dependencies:
       '@types/lodash': 4.14.149
+      '@types/uuid': 9.0.0
       artnet: 1.4.0
       fp-ts: 2.13.1
       gulp: 4.0.2
       io-ts: 2.2.20_fp-ts@2.13.1
       lodash: 4.17.21
+      uuid: 9.0.0
     dev: false
 
   file:projects/midi-consoles.tgz:

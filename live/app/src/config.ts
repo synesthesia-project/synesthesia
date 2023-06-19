@@ -3,10 +3,13 @@ import { readFile, writeFile, mkdir } from 'fs/promises';
 import { dirname } from 'path';
 import { isRight } from 'fp-ts/lib/Either';
 
-import { OPTIONAL_KIND_AND_CONFIG } from '@synesthesia-project/live-core/lib/config';
+import {
+  OPTIONAL_KIND_AND_CONFIG,
+  OUTPUT,
+} from '@synesthesia-project/live-core/lib/config';
 
 export const CONFIG = t.partial({
-  outputs: t.record(t.string, OPTIONAL_KIND_AND_CONFIG),
+  outputs: t.record(t.string, OUTPUT),
   compositor: t.type({
     current: t.union([t.null, t.number]),
     cues: t.array(OPTIONAL_KIND_AND_CONFIG),

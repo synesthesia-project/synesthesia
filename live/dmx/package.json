@@ -27,7 +27,9 @@
     "artnet": "^1.4.0",
     "fp-ts": "~2.13.1",
     "io-ts": "~2.2.20",
-    "lodash": "^4.17.13"
+    "lodash": "^4.17.13",
+    "@types/uuid": "~9.0.0",
+    "uuid": "~9.0.0"
   },
   "devDependencies": {
     "@synesthesia-project/live-core": "^0.0.1",

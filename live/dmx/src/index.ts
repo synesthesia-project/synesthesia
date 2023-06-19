@@ -11,6 +11,7 @@ import {
   PixelInfo,
   PixelMap,
 } from '@synesthesia-project/compositor/lib/modules';
+import { v4 as uuidv4 } from 'uuid';
 
 const INTEGER_REGEX = /^[0-9]+$/;
 const MAX_UNIVERSE = 32767;
@@ -18,8 +19,10 @@ const MAX_CHANNEL = 512;
 
 const DMX_OUTPUT_CONFIG = t.type({
   artnetUniverse: t.union([t.number, t.null]),
-  fixtures: t.array(
+  fixtures: t.record(
+    t.string,
     t.partial({
+      name: t.string,
       pos: t.type({
         x: t.number,
         y: t.number,
@@ -40,7 +43,7 @@ type Fixture = Config['fixtures'][number];
 const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
   let config: Config = {
     artnetUniverse: 0,
-    fixtures: [],
+    fixtures: {},
   };
 
   const group = new ld.Group({ noBorder: true, direction: 'vertical' });
@@ -60,7 +63,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
   addFixture.addListener(() => {
     context.saveConfig({
       ...config,
-      fixtures: [...config.fixtures, {}],
+      fixtures: { ...config.fixtures, [uuidv4()]: {} },
     });
   });
 
@@ -68,33 +71,33 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
   group.addChild(fixtureGroup);
 
   const updateFixtureConfig = (
-    index: number,
+    uuid: string,
     change: (current: Fixture) => Fixture
-  ) => {
-    const fixtures = [...config.fixtures];
-    fixtures[index] = change(fixtures[index]);
+  ) =>
+    context.saveConfig({
+      ...config,
+      fixtures: {
+        ...config.fixtures,
+        [uuid]: change(config.fixtures[uuid]),
+      },
+    });
+
+  const removeFixture = (uuid: string) => {
+    const fixtures = { ...config.fixtures };
+    delete fixtures[uuid];
     context.saveConfig({
       ...config,
       fixtures,
     });
   };
 
-  const removeFixture = (index: number) => {
-    const fixtures = [...config.fixtures];
-    fixtures.splice(index, 1),
-      context.saveConfig({
-        ...config,
-        fixtures,
-      });
-  };
-
   const updateFixtureGroup = () => {
     fixtureGroup.removeAllChildren();
-    config.fixtures.map((f, i) => {
+    for (const [uuid, f] of Object.entries(config.fixtures)) {
       const grp = fixtureGroup.addChild(new ld.Group());
 
       const remove = grp.addChild(new ld.Button('Remove', 'delete'));
-      remove.addListener(() => removeFixture(i));
+      remove.addListener(() => removeFixture(uuid));
 
       grp.addChild(new ld.Label('RGB Channels:'));
       const [ri, gi, bi, setColorChannels] = grp.addChildren(
@@ -107,7 +110,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
         const [rt, gt, bt] = [ri, gi, bi].map((t) => t.getValue());
         if (![rt, gt, bt].some((t) => t !== '')) {
           // No values set, remove colors
-          updateFixtureConfig(i, (c) => ({ ...c, rgb: undefined }));
+          updateFixtureConfig(uuid, (c) => ({ ...c, rgb: undefined }));
         }
         // Some values set
         if ([rt, gt, bt].some((t) => !INTEGER_REGEX.exec(t))) {
@@ -120,9 +123,9 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
         if ([r, g, b].some((c) => c < 1 || c > MAX_CHANNEL)) {
           throw new Error(`Channels must be between 1 and ${MAX_CHANNEL}`);
         }
-        updateFixtureConfig(i, (c) => ({ ...c, rgb: { r, g, b } }));
+        updateFixtureConfig(uuid, (c) => ({ ...c, rgb: { r, g, b } }));
       });
-    });
+    }
   };
 
   setUniverse.addListener(() => {
@@ -182,7 +185,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
       config = c;
       universeInput.setValue(`${c.artnetUniverse}`);
       // Only include fixtures with RGB output in pixel fixtures
-      const pixelFixtures = config.fixtures.filter((f) => f.rgb);
+      const pixelFixtures = Object.values(config.fixtures).filter((f) => f.rgb);
       pixels = {
         fixtures: pixelFixtures,
         map: {
@@ -222,7 +225,7 @@ export const DMX_OUTPUT_KIND: OutputKind<Config> = {
   config: DMX_OUTPUT_CONFIG,
   initialConfig: {
     artnetUniverse: 0,
-    fixtures: [],
+    fixtures: {},
   },
   create: createDmxOutput,
 };
