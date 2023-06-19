@@ -106,7 +106,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
         updateFixtureConfig(uuid, (c) => ({ ...c, name }))
       );
 
-      const remove = grp.addChild(new ld.Button('Remove', 'delete'));
+      const remove = grp.addHeaderButton(new ld.Button(null, 'delete'));
       remove.addListener(() => removeFixture(uuid));
 
       grp.addChild(new ld.Label('RGB Channels:'));
