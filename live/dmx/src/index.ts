@@ -352,6 +352,14 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
         buffer[fixture.rgb.b - 1] = color.b * color.alpha;
       }
     }
+    for (const fixture of Object.values(config.fixtures)) {
+      for (const ch of Object.values(fixture.channels || {})) {
+        // TODO: get value from sequences if set there
+        if (ch.channel !== undefined && ch.value !== undefined) {
+          buffer[ch.channel - 1] = ch.value;
+        }
+      }
+    }
     a.set(config.artnetUniverse ?? 0, 1, buffer);
   };
 
