@@ -46,6 +46,9 @@ export class TextInput extends Component {
 
   public getValue = () => this.value;
 
+  public getValidatedValue = <T>(validator: (text: string) => T): null | T =>
+    this.value === '' ? null : validator(this.value);
+
   public setValue = (value: string) => {
     this.value = value;
     this.updateTree();
