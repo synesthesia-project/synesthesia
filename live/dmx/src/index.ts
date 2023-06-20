@@ -17,6 +17,23 @@ const INTEGER_REGEX = /^[0-9]+$/;
 const MAX_UNIVERSE = 32767;
 const MAX_CHANNEL = 512;
 
+const validateChannel = (t: string): number => {
+  if (!INTEGER_REGEX.exec(t)) {
+    throw new Error(`Channels must be positive integers`);
+  }
+  const c = parseInt(t);
+  if (c < 1 || c > MAX_CHANNEL) {
+    throw new Error(`Channels must be between 1 and ${MAX_CHANNEL}`);
+  }
+  return c;
+};
+
+/**
+ * Return true if all the given values are set
+ */
+const allSet = <T>(values: (T | null | undefined)[]): values is T[] =>
+  !values.some((v) => v === null || v === undefined);
+
 const DMX_OUTPUT_CONFIG = t.type({
   artnetUniverse: t.union([t.number, t.null]),
   fixtures: t.record(
@@ -117,23 +134,19 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
         new ld.Button('Set', 'save')
       );
       setColorChannels.addListener(() => {
-        const [rt, gt, bt] = [ri, gi, bi].map((t) => t.getValue());
-        if (![rt, gt, bt].some((t) => t !== '')) {
+        const rgb = [ri, gi, bi].map((t) =>
+          t.getValidatedValue(validateChannel)
+        );
+        if (!rgb.some((c) => c !== null)) {
           // No values set, remove colors
           updateFixtureConfig(uuid, (c) => ({ ...c, rgb: undefined }));
         }
-        // Some values set
-        if ([rt, gt, bt].some((t) => !INTEGER_REGEX.exec(t))) {
-          // No values set, remove colors
-          throw new Error(
-            `All channels must be positive integers, unless all are empty`
-          );
+        if (allSet(rgb)) {
+          const [r, g, b] = rgb;
+          updateFixtureConfig(uuid, (c) => ({ ...c, rgb: { r, g, b } }));
+        } else {
+          throw new Error(`All channels must be set or empty`);
         }
-        const [r, g, b] = [rt, gt, bt].map((t) => parseInt(t));
-        if ([r, g, b].some((c) => c < 1 || c > MAX_CHANNEL)) {
-          throw new Error(`Channels must be between 1 and ${MAX_CHANNEL}`);
-        }
-        updateFixtureConfig(uuid, (c) => ({ ...c, rgb: { r, g, b } }));
       });
     }
   };
