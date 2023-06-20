@@ -275,7 +275,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
       // Update channel components
       if (ch.value) chComponents.slider.setValue(ch.value);
       if (ch.name) chComponents.name.setValue(ch.name);
-      if (ch.channel) chComponents.name.setValue(`${ch.channel}`);
+      if (ch.channel) chComponents.channel.setValue(`${ch.channel}`);
     }
 
     // Remove any removed channels

@@ -2,7 +2,7 @@ import * as ld from '@synesthesia-project/light-desk';
 import { throttle } from 'lodash';
 import { TransitionModule } from '@synesthesia-project/compositor/lib/modules/transition';
 import FillModule from '@synesthesia-project/compositor/lib/modules/fill';
-import { RGBA_BLACK } from '@synesthesia-project/compositor/lib/color';
+import { RGBA_TRANSPARENT } from '@synesthesia-project/compositor/lib/color';
 import type {
   InputKind,
   Output,
@@ -48,7 +48,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
     current: null | number;
     inputs: InputSocket[];
   } = {
-    root: new TransitionModule(new FillModule(RGBA_BLACK)),
+    root: new TransitionModule(new FillModule(RGBA_TRANSPARENT)),
     current: null,
     inputs: [],
   };
@@ -284,7 +284,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       if (module) {
         compositor.root.transition(module, 1);
       } else {
-        compositor.root.transition(new FillModule(RGBA_BLACK), 1);
+        compositor.root.transition(new FillModule(RGBA_TRANSPARENT), 1);
       }
     }
   };
