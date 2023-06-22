@@ -65,6 +65,16 @@ export const Sequences = (options: {
       })
     );
 
+    ldComponent.addHeaderButton(new ld.Button(null, 'delete')).addListener(() =>
+      updateConfig((c) => ({
+        ...c,
+        groups: {
+          ...c.groups,
+          [gId]: undefined,
+        },
+      }))
+    );
+
     return {
       ldComponent,
     };
@@ -77,6 +87,13 @@ export const Sequences = (options: {
         groups.set(gId, (group = createGroup(gId)));
       }
       group.ldComponent.setTitle(g?.name || '');
+    }
+    // Remove deleted groups
+    for (const [gId, group] of groups.entries()) {
+      if (!config.groups[gId]) {
+        configGroup.removeChild(group.ldComponent);
+        groups.delete(gId);
+      }
     }
   };
 
