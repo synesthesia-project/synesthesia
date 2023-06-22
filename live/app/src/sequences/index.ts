@@ -1,7 +1,11 @@
 import * as ld from '@synesthesia-project/light-desk';
 import { v4 as uuidv4 } from 'uuid';
 
-import { SequencesConfig } from '../config';
+import {
+  SequencesConfig,
+  SequencesGroupConfig,
+  SequencesSequenceConfig,
+} from '../config';
 import { Channel } from '@synesthesia-project/live-core/lib/plugins';
 import { Option, createTreeSelector } from '../desk/tree-selector';
 
@@ -9,10 +13,16 @@ export const INIT_SEQUENCES_CONFIG: SequencesConfig = {
   groups: {},
 };
 
+type Sequence = {
+  lastConfig?: SequencesSequenceConfig;
+  ldComponent: ld.Group;
+};
+
 type Group = {
-  lastConfig: SequencesConfig['groups'][string];
+  lastConfig?: SequencesGroupConfig;
   ldComponent: ld.Group;
   channelsList: ld.Group;
+  sequences: Map<string, Sequence>;
   /**
    * Reset channel adder to initial state
    */
@@ -25,6 +35,43 @@ export const Sequences = (options: {
   ) => Promise<void>;
 }) => {
   const { updateConfig } = options;
+
+  const updateGroupConfig = (
+    gId: string,
+    update: (current: SequencesGroupConfig) => SequencesGroupConfig | undefined
+  ) =>
+    updateConfig((c) => {
+      const existing = c.groups[gId];
+      return existing
+        ? {
+            ...c,
+            groups: {
+              ...c.groups,
+              [gId]: update(existing),
+            },
+          }
+        : c;
+    });
+
+  const updateSequenceConfig = (
+    gId: string,
+    sqId: string,
+    update: (
+      current: SequencesSequenceConfig
+    ) => SequencesSequenceConfig | undefined
+  ) =>
+    updateGroupConfig(gId, (c) => {
+      const existing = c.sequences[sqId];
+      return existing
+        ? {
+            ...c,
+            sequences: {
+              ...c.sequences,
+              [sqId]: update(existing),
+            },
+          }
+        : c;
+    });
 
   let config: SequencesConfig = INIT_SEQUENCES_CONFIG;
 
@@ -44,6 +91,7 @@ export const Sequences = (options: {
         [uuidv4()]: {
           name: '',
           channels: [],
+          sequences: {},
         },
       },
     }))
@@ -72,23 +120,12 @@ export const Sequences = (options: {
           new ld.Group({ noBorder: true })
         );
 
-        cGroup.addChild(new ld.Button(null, 'delete')).addListener(() => {
-          updateConfig((c) => {
-            const existing = c.groups[gId];
-            return existing
-              ? {
-                  ...c,
-                  groups: {
-                    ...c.groups,
-                    [gId]: {
-                      ...existing,
-                      channels: existing.channels.filter((chId) => chId != cId),
-                    },
-                  },
-                }
-              : c;
-          });
-        });
+        cGroup.addChild(new ld.Button(null, 'delete')).addListener(() =>
+          updateGroupConfig(gId, (c) => ({
+            ...c,
+            channels: c.channels.filter((chId) => chId != cId),
+          }))
+        );
 
         cGroup.addChild(
           new ld.Label(channel ? channel.name.join(' > ') : 'Unknown Channel')
@@ -121,21 +158,7 @@ export const Sequences = (options: {
     );
 
     ldComponent.addListener('title-changed', (title) =>
-      updateConfig((c) => {
-        const existing = c.groups[gId];
-        return existing
-          ? {
-              ...c,
-              groups: {
-                ...c.groups,
-                [gId]: {
-                  ...existing,
-                  name: title,
-                },
-              },
-            }
-          : c;
-      })
+      updateGroupConfig(gId, (c) => ({ ...c, name: title }))
     );
 
     const adderContainer = ldComponent.addChild(
@@ -170,21 +193,10 @@ export const Sequences = (options: {
     addChannel.addListener(() => {
       closeAllAdders();
       selector.selectFrom(getUnassignedChannels(), (id) => {
-        updateConfig((c) => {
-          const existing = c.groups[gId];
-          return existing
-            ? {
-                ...c,
-                groups: {
-                  ...c.groups,
-                  [gId]: {
-                    ...existing,
-                    channels: [...existing.channels, id],
-                  },
-                },
-              }
-            : c;
-        });
+        updateGroupConfig(gId, (c) => ({
+          ...c,
+          channels: [...c.channels, id],
+        }));
         closeAllAdders();
         updateChannelsDisplay(gId);
       });
@@ -193,22 +205,67 @@ export const Sequences = (options: {
 
     cancel.addListener(closeAllAdders);
 
-    ldComponent.addHeaderButton(new ld.Button(null, 'delete')).addListener(() =>
-      updateConfig((c) => ({
-        ...c,
-        groups: {
-          ...c.groups,
-          [gId]: undefined,
-        },
-      }))
-    );
+    ldComponent
+      .addHeaderButton(new ld.Button('Add Sequence', 'animation'))
+      .addListener(() =>
+        updateGroupConfig(gId, (c) => ({
+          ...c,
+          sequences: {
+            ...c.sequences,
+            [uuidv4()]: {
+              name: '',
+              channels: {},
+            },
+          },
+        }))
+      );
+
+    ldComponent
+      .addHeaderButton(new ld.Button(null, 'delete'))
+      .addListener(() => updateGroupConfig(gId, () => undefined));
 
     return {
       lastConfig: undefined,
       ldComponent,
       channelsList,
+      sequences: new Map(),
       closeAdder,
     };
+  };
+
+  const createSequence = (gId: string, sqId: string): Sequence => {
+    const ldComponent = new ld.Group(
+      { direction: 'vertical' },
+      {
+        editableTitle: true,
+      }
+    );
+
+    ldComponent.addListener('title-changed', (title) =>
+      updateSequenceConfig(gId, sqId, (c) => ({ ...c, name: title }))
+    );
+
+    return {
+      ldComponent,
+    };
+  };
+
+  const updateGroupSequences = (gId: string) => {
+    const group = groups.get(gId);
+    const groupConfig = config.groups[gId];
+    if (!group || !groupConfig) return;
+
+    for (const [sqId, sq] of Object.entries(groupConfig.sequences)) {
+      let sequence = group.sequences.get(sqId);
+      if (!sequence) {
+        group.sequences.set(sqId, (sequence = createSequence(gId, sqId)));
+        group.ldComponent.addChild(sequence.ldComponent);
+      }
+      if (sq !== sequence.lastConfig) {
+        // If sequence config has changed, update it
+        sequence.ldComponent.setTitle(sq?.name || '');
+      }
+    }
   };
 
   const loadConfig = (newConfig: SequencesConfig) => {
@@ -221,7 +278,9 @@ export const Sequences = (options: {
       if (g !== group.lastConfig) {
         // If the group config has changed, update it
         group.ldComponent.setTitle(g?.name || '');
+        updateGroupSequences(gId);
         updateChannelsDisplay(gId);
+        group.lastConfig = g;
       }
     }
     // Remove deleted groups
