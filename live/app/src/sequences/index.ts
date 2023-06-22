@@ -1,4 +1,6 @@
 import * as ld from '@synesthesia-project/light-desk';
+import { v4 as uuidv4 } from 'uuid';
+
 import { SequencesConfig } from '../config';
 import { Channel } from '@synesthesia-project/live-core/lib/plugins';
 
@@ -6,25 +8,83 @@ export const INIT_SEQUENCES_CONFIG: SequencesConfig = {
   groups: {},
 };
 
-export const Sequences = () => {
+type Group = {
+  ldComponent: ld.Group;
+};
+
+export const Sequences = (options: {
+  updateConfig: (
+    update: (config: SequencesConfig) => SequencesConfig
+  ) => Promise<void>;
+}) => {
+  const { updateConfig } = options;
+
+  const groups = new Map<string, Group>();
+
   const configGroup = new ld.Group({ direction: 'vertical', noBorder: true });
 
-  configGroup.addChild(new ld.Label('SQ'));
+  const header = configGroup.addChild(new ld.Group({ noBorder: true }));
 
-  const init = (_options: {
-    updateConfig: (
-      update: (config: SequencesConfig) => SequencesConfig
-    ) => Promise<void>;
-  }) => {};
+  header.addChild(new ld.Button('Add Group', 'add')).addListener(() =>
+    updateConfig((c) => ({
+      ...c,
+      groups: {
+        ...c.groups,
+        [uuidv4()]: {
+          name: '',
+        },
+      },
+    }))
+  );
 
-  const loadConfig = (_config: SequencesConfig) => {};
+  const createGroup = (gId: string): Group => {
+    const ldComponent = configGroup.addChild(
+      new ld.Group(
+        {},
+        {
+          editableTitle: true,
+        }
+      )
+    );
+
+    ldComponent.addListener('title-changed', (title) =>
+      updateConfig((c) => {
+        const existing = c.groups[gId];
+        return existing
+          ? {
+              ...c,
+              groups: {
+                ...c.groups,
+                [gId]: {
+                  ...existing,
+                  name: title,
+                },
+              },
+            }
+          : c;
+      })
+    );
+
+    return {
+      ldComponent,
+    };
+  };
+
+  const loadConfig = (config: SequencesConfig) => {
+    for (const [gId, g] of Object.entries(config.groups)) {
+      let group = groups.get(gId);
+      if (!group) {
+        groups.set(gId, (group = createGroup(gId)));
+      }
+      group.ldComponent.setTitle(g?.name || '');
+    }
+  };
 
   const setChannels = (channels: Record<string, Channel>) => {
     console.log('setChannels', channels);
   };
 
   return {
-    init,
     configGroup,
     setConfig: loadConfig,
     setChannels,

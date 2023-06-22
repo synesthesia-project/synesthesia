@@ -9,7 +9,15 @@ import {
 } from '@synesthesia-project/live-core/lib/config';
 
 export const SEQUENCES_CONFIG = t.type({
-  groups: t.record(t.string, t.type({})),
+  groups: t.record(
+    t.string,
+    t.union([
+      t.undefined,
+      t.type({
+        name: t.string,
+      }),
+    ])
+  ),
 });
 
 export type SequencesConfig = t.TypeOf<typeof SEQUENCES_CONFIG>;

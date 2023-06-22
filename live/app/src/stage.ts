@@ -29,9 +29,6 @@ type ActiveOutput<ConfigT> = {
 export const Stage = async (plugins: Plugin[], configPath: string) => {
   const desk = createDesk();
 
-  const sequences = Sequences();
-  desk.sequencesGroup.addChild(sequences.configGroup);
-
   let config: Config = {};
 
   const saveCurrentConfig = throttle(
@@ -98,6 +95,18 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       saveCurrentConfig();
     }
   };
+
+  // Setup Sequences
+
+  const sequences = Sequences({
+    updateConfig: (update) =>
+      updateConfig((config) => ({
+        ...config,
+        sequences: update(config.sequences || INIT_SEQUENCES_CONFIG),
+      })),
+  });
+
+  desk.sequencesGroup.addChild(sequences.configGroup);
 
   const sendChannelsToSequences = () => {
     const preparedChannels: Record<string, Channel> = {};
@@ -364,14 +373,6 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
         };
       }),
     outputKinds: [...outputKinds.values()],
-  });
-
-  sequences.init({
-    updateConfig: (update) =>
-      updateConfig((config) => ({
-        ...config,
-        sequences: update(config.sequences || INIT_SEQUENCES_CONFIG),
-      })),
   });
 
   desk.desk.start({
