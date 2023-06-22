@@ -20,6 +20,7 @@ class Label extends React.Component<Props, never> {
 
 const StyledLabel = styled(Label)`
   font-weight: ${(p) => (p.info.style.bold ? 'bold' : 'normal')};
+  white-space: nowrap;
 `;
 
 export { StyledLabel as Label };
