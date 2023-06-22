@@ -237,11 +237,15 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
         if (output.ldComponent) {
           desk.outputsGroup.removeChild(output.ldComponent);
         }
-        if (Object.entries(output.channels).length > 0) {
-          // Channels must be unregistered in sequences
-          channelsNeedUpdating = true;
-        }
         output = undefined;
+      }
+      // If output has channels registered
+      if (output && Object.entries(output.channels).length > 0) {
+        // Channels must be updated if kind has changed (or output deleted)
+        channelsNeedUpdating ||= output.kind !== newOutputConfig?.kind;
+        // Channels must be updated if output name has changed
+        channelsNeedUpdating ||=
+          oldOutputConfig?.name !== newOutputConfig?.name;
       }
       if (newOutputConfig) {
         const kind = outputKinds.get(newOutputConfig.kind);
