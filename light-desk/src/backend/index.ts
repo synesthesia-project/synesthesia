@@ -88,11 +88,13 @@ export class LightDesk implements Parent {
 
   public updateTree = throttle(
     () => {
-      if (!this.rootGroup) return;
-      const root = this.rootGroup.getProtoInfo(this.componentIDMap);
-      for (const connection of this.connections) {
-        connection.sendMessage({ type: 'update_tree', root });
-      }
+      setImmediate(() => {
+        if (!this.rootGroup) return;
+        const root = this.rootGroup.getProtoInfo(this.componentIDMap);
+        for (const connection of this.connections) {
+          connection.sendMessage({ type: 'update_tree', root });
+        }
+      });
     },
     10,
     { leading: true, trailing: true }

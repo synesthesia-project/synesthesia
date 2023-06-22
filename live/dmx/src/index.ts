@@ -5,6 +5,7 @@ import {
   OutputContext,
   OutputKind,
   Plugin,
+  Channel as OutputChannel,
 } from '@synesthesia-project/live-core/lib/plugins';
 import * as ld from '@synesthesia-project/light-desk';
 import {
@@ -365,6 +366,21 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
 
   const renderInterval = setInterval(render, 10);
 
+  const setChannels = () => {
+    const channels: Record<string, OutputChannel> = {};
+    Object.values(config.fixtures).map((f, fIndex) => {
+      for (const [chId, ch] of Object.entries(f.channels || {})) {
+        if (ch.name && ch.channel) {
+          channels[chId] = {
+            type: 'dmx',
+            name: [f.name || `Fixture ${fIndex}`, ch.name],
+          };
+        }
+      }
+    });
+    context.setChannels(channels);
+  };
+
   return {
     setConfig: (c) => {
       config = c;
@@ -394,6 +410,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
         })),
       };
       updateFixtureGroup();
+      setChannels();
       clearBuffer();
       render();
     },

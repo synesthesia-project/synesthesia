@@ -8,12 +8,39 @@ import {
   OUTPUT,
 } from '@synesthesia-project/live-core/lib/config';
 
+const optionalRecord = <T extends t.Mixed>(type: T) =>
+  t.record(t.string, t.union([t.undefined, type]));
+
+export const SEQUENCES_SEQUENCE_CONFIG = t.type({
+  name: t.string,
+  channels: optionalRecord(t.string),
+});
+
+export type SequencesSequenceConfig = t.TypeOf<
+  typeof SEQUENCES_SEQUENCE_CONFIG
+>;
+
+export const SEQUENCES_GROUP_CONFIG = t.type({
+  name: t.string,
+  channels: t.array(t.string),
+  sequences: optionalRecord(SEQUENCES_SEQUENCE_CONFIG),
+});
+
+export type SequencesGroupConfig = t.TypeOf<typeof SEQUENCES_GROUP_CONFIG>;
+
+export const SEQUENCES_CONFIG = t.type({
+  groups: optionalRecord(SEQUENCES_GROUP_CONFIG),
+});
+
+export type SequencesConfig = t.TypeOf<typeof SEQUENCES_CONFIG>;
+
 export const CONFIG = t.partial({
   outputs: t.record(t.string, OUTPUT),
   compositor: t.type({
     current: t.union([t.null, t.number]),
     cues: t.array(OPTIONAL_KIND_AND_CONFIG),
   }),
+  sequences: SEQUENCES_CONFIG,
 });
 
 export type Config = t.TypeOf<typeof CONFIG>;
