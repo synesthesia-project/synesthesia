@@ -245,6 +245,10 @@ export const Sequences = (options: {
       updateSequenceConfig(gId, sqId, (c) => ({ ...c, name: title }))
     );
 
+    ldComponent
+      .addHeaderButton(new ld.Button(null, 'delete'))
+      .addListener(() => updateSequenceConfig(gId, sqId, () => undefined));
+
     return {
       ldComponent,
     };
@@ -264,6 +268,13 @@ export const Sequences = (options: {
       if (sq !== sequence.lastConfig) {
         // If sequence config has changed, update it
         sequence.ldComponent.setTitle(sq?.name || '');
+      }
+    }
+    // Remove deleted sequences
+    for (const [sqId, sq] of group.sequences.entries()) {
+      if (!groupConfig.sequences[sqId]) {
+        group.ldComponent.removeChild(sq.ldComponent);
+        group.sequences.delete(sqId);
       }
     }
   };
