@@ -21,12 +21,28 @@ export interface ModuleContext<ConfigT> {
   saveConfig(config: ConfigT): Promise<void>;
 }
 
+export interface Channel {
+  /**
+   * A way to identify the channel for a human,
+   * split up into path segments to allow for easier navigation for selecting
+   * the channel.
+   */
+  name: string[];
+  type: 'dmx';
+}
+
 /**
  * A handle given to any new output that can be used by the
  * output to interact with the stage and its context.
  */
 export interface OutputContext<ConfigT> extends ModuleContext<ConfigT> {
   render(pixelMap: PixelMap, pixels: Array<PixelInfo<unknown>>): RGBAColor[];
+  /**
+   * Update the channels that are configured for this output.
+   *
+   * A map from channel UUIDs to their metadata.
+   */
+  setChannels(channels: Record<string, Channel>): void;
 }
 
 export interface InputContext<ConfigT> extends ModuleContext<ConfigT> {

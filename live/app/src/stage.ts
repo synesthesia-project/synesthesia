@@ -111,9 +111,13 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       }));
     const render: OutputContext<ConfigT>['render'] = (map, pixels) =>
       compositor.root.render(map, pixels, null);
+    const setChannels: OutputContext<ConfigT>['setChannels'] = (channels) => {
+      console.log('setChannels', JSON.stringify(channels, null, '  '));
+    };
     const output = kind.create({
       saveConfig,
       render,
+      setChannels,
     });
     if (kind.config.is(initialConfig)) {
       output.setConfig(initialConfig);
