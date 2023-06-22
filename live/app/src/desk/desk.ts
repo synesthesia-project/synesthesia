@@ -39,6 +39,13 @@ export const createDesk = () => {
     new ld.Group({ direction: 'vertical', noBorder: true })
   );
 
+  // Sequences
+
+  const sequencesGroup = tabs.addTab(
+    'Sequences',
+    new ld.Group({ direction: 'vertical', noBorder: true })
+  );
+
   // Outputs
 
   const outputsTab = tabs.addTab(
@@ -74,6 +81,7 @@ export const createDesk = () => {
   return {
     desk,
     outputsGroup,
+    sequencesGroup,
     compositorCuesGroup,
     compositorCueTriggers,
     init,

@@ -8,12 +8,19 @@ import {
   OUTPUT,
 } from '@synesthesia-project/live-core/lib/config';
 
+export const SEQUENCES_CONFIG = t.type({
+  groups: t.record(t.string, t.type({})),
+});
+
+export type SequencesConfig = t.TypeOf<typeof SEQUENCES_CONFIG>;
+
 export const CONFIG = t.partial({
   outputs: t.record(t.string, OUTPUT),
   compositor: t.type({
     current: t.union([t.null, t.number]),
     cues: t.array(OPTIONAL_KIND_AND_CONFIG),
   }),
+  sequences: SEQUENCES_CONFIG,
 });
 
 export type Config = t.TypeOf<typeof CONFIG>;

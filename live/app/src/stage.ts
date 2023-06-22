@@ -9,6 +9,7 @@ import type {
   OutputContext,
   Plugin,
   OutputKind,
+  Channel,
 } from '@synesthesia-project/live-core/lib/plugins';
 import { isDefined } from '@synesthesia-project/live-core/lib/util';
 import { v4 as uuidv4 } from 'uuid';
@@ -16,15 +17,20 @@ import { v4 as uuidv4 } from 'uuid';
 import { Config, loadConfig, saveConfig } from './config';
 import { createDesk } from './desk/desk';
 import { InputSocket, createInputManager } from './inputs';
+import { INIT_SEQUENCES_CONFIG, Sequences } from './sequences';
 
 type ActiveOutput<ConfigT> = {
   kind: string;
-  output: Output<ConfigT>;
-  ldComponent: ld.Component;
+  output?: Output<ConfigT>;
+  ldComponent?: ld.Component;
+  channels: Record<string, Channel>;
 };
 
 export const Stage = async (plugins: Plugin[], configPath: string) => {
   const desk = createDesk();
+
+  const sequences = Sequences();
+  desk.sequencesGroup.addChild(sequences.configGroup);
 
   let config: Config = {};
 
@@ -85,42 +91,68 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
     // - update outputs
     updateOutputsFromConfig(prevConfig);
     updateInputsFromConfig();
+    if (newConfig.sequences !== prevConfig.sequences) {
+      sequences.setConfig(newConfig.sequences || INIT_SEQUENCES_CONFIG);
+    }
     if (save) {
       saveCurrentConfig();
     }
   };
 
+  const sendChannelsToSequences = () => {
+    const preparedChannels: Record<string, Channel> = {};
+    [...outputs.entries()].map(([outputId, output], outputIndex) => {
+      const name = config.outputs?.[outputId]?.name || `Output ${outputIndex}`;
+      for (const [chId, ch] of Object.entries(output.channels)) {
+        preparedChannels[chId] = {
+          ...ch,
+          name: [name, ...ch.name],
+        };
+      }
+    });
+    sequences.setChannels(preparedChannels);
+  };
+
   const createOutput = <ConfigT>(
     key: string,
-    name: string,
     kind: OutputKind<ConfigT>,
     initialConfig: unknown
   ): ActiveOutput<ConfigT> => {
-    console.log('createOutput', key);
-    const saveConfig: OutputContext<ConfigT>['saveConfig'] = (newConfig) =>
-      updateConfig((current) => ({
-        ...current,
-        outputs: {
-          ...current.outputs,
-          [key]: {
-            name,
-            kind: kind.kind,
-            config: newConfig,
+    const activeOutput: ActiveOutput<ConfigT> = {
+      kind: kind.kind,
+      channels: {},
+    };
+    outputs.set(key, activeOutput);
+    const saveConfig: OutputContext<ConfigT>['saveConfig'] = async (
+      newConfig
+    ) => {
+      const currentOutputConfig = config.outputs?.[key];
+      if (currentOutputConfig) {
+        await updateConfig((current) => ({
+          ...current,
+          outputs: {
+            ...current.outputs,
+            [key]: {
+              ...currentOutputConfig,
+              config: newConfig,
+            },
           },
-        },
-      }));
+        }));
+      }
+    };
     const render: OutputContext<ConfigT>['render'] = (map, pixels) =>
       compositor.root.render(map, pixels, null);
     const setChannels: OutputContext<ConfigT>['setChannels'] = (channels) => {
-      console.log('setChannels', JSON.stringify(channels, null, '  '));
+      activeOutput.channels = channels;
+      sendChannelsToSequences();
     };
-    const output = kind.create({
+    activeOutput.output = kind.create({
       saveConfig,
       render,
       setChannels,
     });
     if (kind.config.is(initialConfig)) {
-      output.setConfig(initialConfig);
+      activeOutput.output.setConfig(initialConfig);
     } else {
       console.error(
         `output ${key} given invalid config: ${JSON.stringify(
@@ -129,7 +161,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
           '  '
         )}`
       );
-      output.setConfig(kind.initialConfig);
+      activeOutput.output.setConfig(kind.initialConfig);
     }
     const ldComponent = new ld.Group(
       {
@@ -139,8 +171,9 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
         editableTitle: true,
       }
     );
+    activeOutput.ldComponent = ldComponent;
     ldComponent.addLabel({ text: kind.kind });
-    ldComponent.setTitle(name);
+    ldComponent.setTitle(config.outputs?.[key].name ?? '');
 
     ldComponent.addListener('title-changed', (name) =>
       updateConfig((current) => ({
@@ -170,12 +203,8 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       }))
     );
 
-    ldComponent.addChild(output.getLightDeskComponent());
-    return {
-      kind: kind.kind,
-      output,
-      ldComponent,
-    };
+    ldComponent.addChild(activeOutput.output.getLightDeskComponent());
+    return activeOutput;
   };
 
   /**
@@ -187,15 +216,22 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       ...Object.keys(prev.outputs ?? []),
       ...Object.keys(config.outputs ?? []),
     ]);
+    let channelsNeedUpdating = false;
     for (const key of allOutputKeys) {
       let output = outputs.get(key);
       const oldOutputConfig = prev.outputs?.[key];
       const newOutputConfig = config.outputs?.[key];
       // Check if output already exists, and needs to be deleted of change kind
       if (output && output.kind !== newOutputConfig?.kind) {
-        output.output.destroy();
+        output.output?.destroy();
         outputs.delete(key);
-        desk.outputsGroup.removeChild(output.ldComponent);
+        if (output.ldComponent) {
+          desk.outputsGroup.removeChild(output.ldComponent);
+        }
+        if (Object.entries(output.channels).length > 0) {
+          // Channels must be unregistered in sequences
+          channelsNeedUpdating = true;
+        }
         output = undefined;
       }
       if (newOutputConfig) {
@@ -205,17 +241,13 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
         }
         // Check if output does not exist and needs to
         if (!output) {
-          output = createOutput(
-            key,
-            newOutputConfig.name,
-            kind,
-            newOutputConfig.config
-          );
-          outputs.set(key, output);
-          desk.outputsGroup.addChild(output.ldComponent);
+          output = createOutput(key, kind, newOutputConfig.config);
+          if (output.ldComponent) {
+            desk.outputsGroup.addChild(output.ldComponent);
+          }
         } else if (oldOutputConfig?.config !== newOutputConfig?.config) {
           if (kind.config.is(newOutputConfig.config)) {
-            output.output.setConfig(newOutputConfig.config);
+            output.output?.setConfig(newOutputConfig.config);
           } else {
             console.error(
               `output ${key} given invalid config: ${JSON.stringify(
@@ -227,6 +259,9 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
           }
         }
       }
+    }
+    if (channelsNeedUpdating) {
+      sendChannelsToSequences();
     }
     // Remove all outputs and re-add them in name order
     desk.outputsGroup.removeAllChildren();
@@ -298,7 +333,8 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
   // Initialize with config
   await loadConfig(configPath).then((c) => updateConfig(() => c, false));
 
-  // Initialize Desk
+  // Initialize Modules
+
   desk.init({
     addCompositorCue: () =>
       updateConfig((config) => ({
@@ -329,6 +365,15 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       }),
     outputKinds: [...outputKinds.values()],
   });
+
+  sequences.init({
+    updateConfig: (update) =>
+      updateConfig((config) => ({
+        ...config,
+        sequences: update(config.sequences || INIT_SEQUENCES_CONFIG),
+      })),
+  });
+
   desk.desk.start({
     mode: 'automatic',
     port: 1338,
