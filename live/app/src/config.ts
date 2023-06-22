@@ -15,6 +15,7 @@ export const SEQUENCES_CONFIG = t.type({
       t.undefined,
       t.type({
         name: t.string,
+        channels: t.array(t.string),
       }),
     ])
   ),
