@@ -8,15 +8,23 @@ import {
 } from '../config';
 import { Channel } from '@synesthesia-project/live-core/lib/plugins';
 import { Option, createTreeSelector } from '../desk/tree-selector';
+import { isEqual } from 'lodash';
 
 export const INIT_SEQUENCES_CONFIG: SequencesConfig = {
   groups: {},
+};
+
+type SequenceChannel = {
+  deskGroup: ld.Group;
+  input: ld.TextInput;
+  label: ld.Label;
 };
 
 type Sequence = {
   lastConfig?: SequencesSequenceConfig;
   configComponent: ld.Group;
   deskButton: ld.Button;
+  channels: Map<string, SequenceChannel>;
 };
 
 type Group = {
@@ -74,6 +82,20 @@ export const Sequences = (options: {
           }
         : c;
     });
+
+  const updateSequenceChannel = (
+    gId: string,
+    sId: string,
+    chId: string,
+    value: string
+  ) =>
+    updateSequenceConfig(gId, sId, (c) => ({
+      ...c,
+      channels: {
+        ...c.channels,
+        [chId]: value,
+      },
+    }));
 
   let config: SequencesConfig = INIT_SEQUENCES_CONFIG;
 
@@ -162,7 +184,9 @@ export const Sequences = (options: {
       )
     );
 
-    const deskComponent = deskGroup.addChild(new ld.Group({ direction: 'vertical' }));
+    const deskComponent = deskGroup.addChild(
+      new ld.Group({ direction: 'vertical' })
+    );
 
     configComponent.addListener('title-changed', (title) =>
       updateGroupConfig(gId, (c) => ({ ...c, name: title }))
@@ -256,10 +280,11 @@ export const Sequences = (options: {
     const deskButton = new ld.Button(null);
 
     deskButton.addListener(() => {
-      updateGroupConfig(gId, c => ({
-      ...c,
-      selectedSequence: sqId,
-    }))});
+      updateGroupConfig(gId, (c) => ({
+        ...c,
+        selectedSequence: sqId,
+      }));
+    });
 
     configComponent
       .addHeaderButton(new ld.Button(null, 'delete'))
@@ -268,6 +293,7 @@ export const Sequences = (options: {
     return {
       configComponent,
       deskButton,
+      channels: new Map(),
     };
   };
 
@@ -288,7 +314,53 @@ export const Sequences = (options: {
         sequence.configComponent.setTitle(sq?.name || '');
         sequence.deskButton.setText(sq?.name || `Sequence ${i}`);
       }
-      sequence.deskButton.setMode(groupConfig.selectedSequence === sqId ? 'pressed' : 'normal' );
+      sequence.deskButton.setMode(
+        groupConfig.selectedSequence === sqId ? 'pressed' : 'normal'
+      );
+      // Update channels in sequence
+      const gChannelsList = new Set(groupConfig.channels);
+      for (const chId of [...gChannelsList].sort()) {
+        const ch = channels[chId];
+        if (ch) {
+          let channel = sequence.channels.get(chId);
+          if (!channel) {
+            const deskGroup = sequence.configComponent.addChild(
+              new ld.Group({ noBorder: true })
+            );
+            const label = deskGroup.addChild(new ld.Label(''));
+            const input = deskGroup.addChild(new ld.TextInput(''));
+            deskGroup
+              .addChild(new ld.Button('Set', 'save'))
+              .addListener(() =>
+                updateSequenceChannel(gId, sqId, chId, input.getValue())
+              );
+            sequence.channels.set(
+              chId,
+              (channel = {
+                deskGroup,
+                label,
+                input,
+              })
+            );
+          }
+          channel.label.setText(ch.name.join(' > '));
+          channel.input.setValue(sq?.channels[chId] || '');
+        }
+      }
+      // Remove deleted channels:
+      for (const [chId, channel] of sequence.channels.entries()) {
+        if (!gChannelsList.has(chId)) {
+          sequence.configComponent.removeChild(channel.deskGroup);
+          sequence.channels.delete(chId);
+          updateSequenceConfig(gId, sqId, (c) => ({
+            ...c,
+            channels: {
+              ...c.channels,
+              [chId]: undefined,
+            },
+          }));
+        }
+      }
     });
     // Remove deleted sequences
     for (const [sqId, sq] of group.sequences.entries()) {
@@ -307,13 +379,13 @@ export const Sequences = (options: {
       if (!group) {
         groups.set(gId, (group = createGroup(gId)));
       }
-      if (g !== group.lastConfig) {
+      if (!isEqual(g, group.lastConfig)) {
+        group.lastConfig = g;
         // If the group config has changed, update it
         group.configComponent.setTitle(g?.name || '');
         group.deskComponent.setTitle(g?.name || `Group ${i}`);
         updateGroupSequences(gId);
         updateChannelsDisplay(gId);
-        group.lastConfig = g;
       }
     });
     // Remove deleted groups
