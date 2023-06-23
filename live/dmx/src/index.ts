@@ -332,6 +332,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
 
   const a = artnet({
     sendAll: true,
+    host: '192.168.0.255',
   });
 
   const buffer: number[] = [];
