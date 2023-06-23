@@ -23,6 +23,7 @@ export type SequencesSequenceConfig = t.TypeOf<
 export const SEQUENCES_GROUP_CONFIG = t.type({
   name: t.string,
   channels: t.array(t.string),
+  selectedSequence: t.union([t.undefined, t.string]),
   sequences: optionalRecord(SEQUENCES_SEQUENCE_CONFIG),
 });
 

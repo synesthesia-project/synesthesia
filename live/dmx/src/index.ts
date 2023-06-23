@@ -332,6 +332,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
 
   const a = artnet({
     sendAll: true,
+    host: '192.168.0.255',
   });
 
   const buffer: number[] = [];
@@ -353,11 +354,13 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
         buffer[fixture.rgb.b - 1] = color.b * color.alpha;
       }
     }
+    const channelValues = context.getChannelValues();
     for (const fixture of Object.values(config.fixtures)) {
-      for (const ch of Object.values(fixture.channels || {})) {
+      for (const [chId, ch] of Object.entries(fixture.channels || {})) {
         // TODO: get value from sequences if set there
         if (ch.channel !== undefined && ch.value !== undefined) {
-          buffer[ch.channel - 1] = ch.value;
+          const value = channelValues.get(chId) || ch.value;
+          buffer[ch.channel - 1] = value;
         }
       }
     }

@@ -107,6 +107,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
   });
 
   desk.sequencesGroup.addChild(sequences.configGroup);
+  desk.sequencesDesk.addChild(sequences.deskGroup);
 
   const sendChannelsToSequences = () => {
     const preparedChannels: Record<string, Channel> = {};
@@ -159,6 +160,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       saveConfig,
       render,
       setChannels,
+      getChannelValues: sequences.getSequenceValues,
     });
     if (kind.config.is(initialConfig)) {
       activeOutput.output.setConfig(initialConfig);

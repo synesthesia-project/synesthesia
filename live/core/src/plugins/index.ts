@@ -37,6 +37,7 @@ export interface Channel {
  */
 export interface OutputContext<ConfigT> extends ModuleContext<ConfigT> {
   render(pixelMap: PixelMap, pixels: Array<PixelInfo<unknown>>): RGBAColor[];
+  getChannelValues(): Map<string, number>;
   /**
    * Update the channels that are configured for this output.
    *

@@ -22,7 +22,7 @@ export interface ButtonComponent extends BaseComponent {
   icon?: string;
   state:
     | {
-        state: 'normal';
+        state: 'normal' | 'pressed';
       }
     | {
         state: 'error';
