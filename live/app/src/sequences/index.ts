@@ -101,6 +101,8 @@ export const Sequences = (options: {
 
   let channels: Record<string, Channel | undefined> = {};
 
+  const channelValues = new Map<string, number>();
+
   const groups = new Map<string, Group>();
 
   const configGroup = new ld.Group({ direction: 'vertical', noBorder: true });
@@ -404,10 +406,28 @@ export const Sequences = (options: {
     [...groups.keys()].map(updateChannelsDisplay);
   };
 
+  const getSequenceValues = (): Map<string, number> => {
+    for (const group of groups.values()) {
+      const sequence =
+        (group.lastConfig?.selectedSequence &&
+          group.lastConfig?.sequences[group.lastConfig.selectedSequence]) ||
+        null;
+      if (sequence) {
+        for (const [chId, value] of Object.entries(sequence.channels)) {
+          if (value) {
+            channelValues.set(chId, parseInt(value) || 0);
+          }
+        }
+      }
+    }
+    return channelValues;
+  };
+
   return {
     configGroup,
     deskGroup,
     setConfig: loadConfig,
     setChannels,
+    getSequenceValues,
   };
 };
