@@ -160,6 +160,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       saveConfig,
       render,
       setChannels,
+      getChannelValues: sequences.getSequenceValues,
     });
     if (kind.config.is(initialConfig)) {
       activeOutput.output.setConfig(initialConfig);
