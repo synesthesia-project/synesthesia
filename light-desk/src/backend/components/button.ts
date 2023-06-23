@@ -5,6 +5,8 @@ import { Component } from './base';
 
 type Listener = () => void | Promise<void>;
 
+export type ButtonMode = 'normal' | 'pressed';
+
 /**
  * A simple component that can be "pressed" to trigger things.
  *
@@ -32,8 +34,9 @@ export class Button extends Component {
   /** @hidden */
   private text: string;
   private icon?: string;
+  private mode: ButtonMode = 'normal';
   private state: proto.ButtonComponent['state'] = {
-    state: 'normal',
+    state: this.mode,
   };
 
   /** @hidden */
@@ -44,6 +47,24 @@ export class Button extends Component {
     this.text = text || '';
     this.icon = icon;
   }
+
+  public setText = (text: string | null) => {
+    this.text = text || '';
+    this.updateTree();
+  };
+
+  public setIcon = (icon: string | undefined) => {
+    this.icon = icon;
+    this.updateTree();
+  };
+
+  public setMode = (mode: ButtonMode) => {
+    this.mode = mode;
+    this.state = {
+      state: this.mode,
+    };
+    this.updateTree();
+  };
 
   /** @hidden */
   public getProtoInfo(idMap: IDMap): proto.ButtonComponent {
@@ -74,7 +95,7 @@ export class Button extends Component {
         .then(() => {
           if (this.state.state !== 'normal') {
             this.state = {
-              state: 'normal',
+              state: this.mode,
             };
             this.updateTree();
           }

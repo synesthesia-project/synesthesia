@@ -107,6 +107,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
   });
 
   desk.sequencesGroup.addChild(sequences.configGroup);
+  desk.sequencesDesk.addChild(sequences.deskGroup);
 
   const sendChannelsToSequences = () => {
     const preparedChannels: Record<string, Channel> = {};
