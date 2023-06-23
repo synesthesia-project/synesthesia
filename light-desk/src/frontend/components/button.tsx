@@ -54,7 +54,7 @@ const Button: React.FunctionComponent<Props> = (props) => {
     <div
       className={calculateClass(
         props.className,
-        touching && TOUCHING_CLASS,
+        touching || state.state === 'pressed' ? TOUCHING_CLASS : null,
         state.state === 'error' && ERROR_CLASS
       )}
       onClick={click}

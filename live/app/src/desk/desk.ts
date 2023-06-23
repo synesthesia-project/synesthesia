@@ -20,6 +20,10 @@ export const createDesk = () => {
     new ld.Group({ direction: 'vertical' })
   );
 
+  const sequencesDesk = deskTab.addChild(
+    new ld.Group({ direction: 'vertical', noBorder: true })
+  );
+
   // Compositor
 
   const compositorTab = tabs.addTab(
@@ -84,6 +88,7 @@ export const createDesk = () => {
     sequencesGroup,
     compositorCuesGroup,
     compositorCueTriggers,
+    sequencesDesk,
     init,
   };
 };

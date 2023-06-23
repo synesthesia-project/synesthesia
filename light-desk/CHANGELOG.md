@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     when any listeners throw an error,
     or return a promise that rejects.
   - Introduce icons
+  - Allow button text to be updated
 - `TextInput`: Introduce new generic text input component.
 - Throttle how often the tree is updated
 - Introduce new color constant `COLOR_RGB_BLACK`
