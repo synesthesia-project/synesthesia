@@ -46,13 +46,27 @@ export interface OutputContext<ConfigT> extends ModuleContext<ConfigT> {
   setChannels(channels: Record<string, Channel>): void;
 }
 
+export interface InputContextGroupConfig {
+  additionalButtons?: ld.Button[];
+  title?: {
+    text: string;
+    /**
+     * If set, allow the group's title to be changed by the user,
+     * and call this callback when that is done.
+     */
+    update?: (text: string) => void;
+  };
+}
+
+export interface InputSocket extends Input<OptionalKindAndConfig> {
+  setGroupConfig(groupConfig: InputContextGroupConfig): void;
+}
+
 export interface InputContext<ConfigT> extends ModuleContext<ConfigT> {
   createInputSocket(context: {
     saveConfig(config: OptionalKindAndConfig): Promise<void>;
-    groupConfig?: {
-      additionalButtons: ld.Button[];
-    };
-  }): Input<OptionalKindAndConfig>;
+    groupConfig?: InputContextGroupConfig;
+  }): InputSocket;
 }
 
 export interface Module<ConfigT> {
