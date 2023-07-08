@@ -16,11 +16,16 @@ import { StageContext } from './context';
 import { NestedContent } from './nesting';
 import { Button } from './button';
 import { Icon } from './icon';
+import { usePressable } from '../util/touch';
 
 interface Props {
   className?: string;
   info: proto.GroupComponent;
 }
+
+const CollapseIcon = styled(Icon)({
+  cursor: 'pointer',
+});
 
 const Header = styled.div`
   display: flex;
@@ -28,6 +33,14 @@ const Header = styled.div`
   padding: 5px 2px;
   background: ${(p) => p.theme.borderDark};
   border-bottom: 1px solid ${(p) => p.theme.borderDark};
+
+  &.touching {
+    background: ${(p) => p.theme.bgDark1};
+  }
+
+  &.collapsed {
+    border-bottom: none;
+  }
 
   > * {
     margin: 0 3px;
@@ -42,9 +55,15 @@ const Label = styled.span`
   padding: 3px 4px;
 `;
 
-const Grow = styled.span`
-  flex-grow: 1;
-`;
+const Grow = styled.span({
+  flexGrow: '1',
+});
+
+const CollapseBar = styled.span({
+  flexGrow: '1',
+  cursor: 'pointer',
+  height: '30px',
+});
 
 const GroupChildren = styled.div<Pick<Props, 'info'>>`
   display: flex;
@@ -98,6 +117,13 @@ const Group: FunctionComponent<Props> = (props) => {
       {props.info.children.map(renderComponent)}
     </GroupChildren>
   );
+  const collapsible = !!props.info.defaultCollapsibleState;
+  const [collapsed, setCollapsed] = useState(
+    props.info.defaultCollapsibleState === 'open' ? false : true
+  );
+  const collapsePressable = usePressable(() =>
+    setCollapsed((current) => !current)
+  );
 
   const showTitle = props.info.title || props.info.editableTitle;
 
@@ -105,6 +131,7 @@ const Group: FunctionComponent<Props> = (props) => {
     showTitle,
     props.info.labels?.length,
     props.info.headerButtons,
+    collapsible,
   ].some((v) => v);
 
   const updateTitle: EventHandler<SyntheticEvent<HTMLInputElement>> = (e) => {
@@ -123,6 +150,12 @@ const Group: FunctionComponent<Props> = (props) => {
     }
   };
 
+  const childrenElements = props.info.style.noBorder ? (
+    children
+  ) : (
+    <NestedContent>{children}</NestedContent>
+  );
+
   return (
     <div
       className={calculateClass(
@@ -131,7 +164,18 @@ const Group: FunctionComponent<Props> = (props) => {
       )}
     >
       {displayHeader ? (
-        <Header>
+        <Header
+          className={calculateClass(
+            collapsePressable.touching && 'touching',
+            collapsible && collapsed && 'collapsed',
+          )}
+        >
+          {collapsible && (
+            <CollapseIcon
+              icon={collapsed ? 'arrow_right' : 'arrow_drop_down'}
+              {...collapsePressable.handlers}
+            />
+          )}
           {props.info.labels?.map((l) => (
             <Label>{l.text}</Label>
           ))}
@@ -154,17 +198,17 @@ const Group: FunctionComponent<Props> = (props) => {
             ) : (
               <span>{props.info.title}</span>
             ))}
-          <Grow />
+          {collapsible ? (
+            <CollapseBar {...collapsePressable.handlers} />
+          ) : (
+            <Grow />
+          )}
           {props.info.headerButtons?.map((b) => (
             <Button info={b} />
           ))}
         </Header>
       ) : null}
-      {props.info.style.noBorder ? (
-        children
-      ) : (
-        <NestedContent>{children}</NestedContent>
-      )}
+      {collapsible && collapsed ? null : childrenElements}
     </div>
   );
 };

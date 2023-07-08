@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Allow addition of labels
   - Allow buttons to be added to the header
   - Allow titles to be editable
+  - Allow groups to be collapsible
 - `Button`:
   - Introduce error state that will trigger
     when any listeners throw an error,

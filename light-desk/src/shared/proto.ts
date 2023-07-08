@@ -40,6 +40,11 @@ export interface GroupComponent extends BaseComponent {
   }>;
   headerButtons?: ButtonComponent[];
   editableTitle: boolean;
+  /**
+   * If set, allows the group to be collapsed,
+   * by default set to the given state
+   */
+  defaultCollapsibleState?: 'open' | 'closed';
 }
 
 export interface LabelComponent extends BaseComponent {
