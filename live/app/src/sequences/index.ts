@@ -182,6 +182,7 @@ export const Sequences = (options: {
         { direction: 'vertical' },
         {
           editableTitle: true,
+          defaultCollapsibleState: 'auto',
         }
       )
     );
@@ -199,7 +200,10 @@ export const Sequences = (options: {
     );
 
     const channelsList = configComponent.addChild(
-      new ld.Group({ direction: 'vertical' })
+      new ld.Group(
+        { direction: 'vertical' },
+        { defaultCollapsibleState: 'auto' }
+      )
     );
     channelsList.setTitle('Channels');
 
@@ -272,6 +276,7 @@ export const Sequences = (options: {
       { direction: 'vertical' },
       {
         editableTitle: true,
+        defaultCollapsibleState: 'auto',
       }
     );
 

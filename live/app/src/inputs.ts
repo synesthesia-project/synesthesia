@@ -70,6 +70,7 @@ export const createInputManager = () => {
       group.setTitle(groupConfig?.title?.text || '');
       group.setOptions({
         editableTitle: !!groupConfig?.title?.update,
+        defaultCollapsibleState: 'auto',
       });
     };
 

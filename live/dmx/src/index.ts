@@ -147,6 +147,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
         },
         {
           editableTitle: true,
+          defaultCollapsibleState: 'auto',
         }
       )
     );
