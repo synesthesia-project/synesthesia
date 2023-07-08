@@ -11,6 +11,7 @@ type Label = (proto.GroupComponent['labels'] & Array<unknown>)[number];
 
 type GroupOptions = {
   editableTitle?: boolean;
+  defaultCollapsibleState?: proto.GroupComponent['defaultCollapsibleState'];
 };
 
 type Events = {
@@ -138,6 +139,7 @@ export class Group extends BaseParent implements Listenable<Events> {
       labels: this.labels,
       headerButtons: this.headerButtons?.map((c) => c.getProtoInfo(idMap)),
       editableTitle: this.options.editableTitle || false,
+      defaultCollapsibleState: this.options.defaultCollapsibleState,
     };
   }
 

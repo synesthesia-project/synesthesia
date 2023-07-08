@@ -181,6 +181,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       },
       {
         editableTitle: true,
+        defaultCollapsibleState: 'auto',
       }
     );
     activeOutput.ldComponent = ldComponent;

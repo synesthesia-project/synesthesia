@@ -2,7 +2,6 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import * as proto from '../../shared/proto';
-import { play } from '../util/audio';
 
 import {
   rectButton,
@@ -13,6 +12,7 @@ import {
 import { calculateClass } from '../util/react';
 import { StageContext } from './context';
 import { Icon } from './icon';
+import { usePressable } from '../util/touch';
 
 const TOUCH_INDICATOR_CLASS = 'touch-indicator';
 const TOUCHING_CLASS = 'touching';
@@ -40,15 +40,14 @@ const ButtonLabel = styled.span`
 
 const Button: React.FunctionComponent<Props> = (props) => {
   const { sendMessage } = React.useContext(StageContext);
-  const [touching, setTouching] = React.useState(false);
-  const { state } = props.info;
-
-  const click = () =>
+  const { touching, handlers } = usePressable(() =>
     sendMessage?.({
       type: 'component_message',
       componentKey: props.info.key,
       component: 'button',
-    });
+    })
+  );
+  const { state } = props.info;
 
   return (
     <div
@@ -57,18 +56,7 @@ const Button: React.FunctionComponent<Props> = (props) => {
         touching || state.state === 'pressed' ? TOUCHING_CLASS : null,
         state.state === 'error' && ERROR_CLASS
       )}
-      onClick={click}
-      onTouchStart={(event) => {
-        play('touch');
-        event.preventDefault();
-        setTouching(true);
-      }}
-      onTouchEnd={(event) => {
-        event.preventDefault();
-        setTouching(false);
-        click();
-        play('beep2');
-      }}
+      {...handlers}
       title={state.state === 'error' ? state.error : undefined}
     >
       <div className={TOUCH_INDICATOR_CLASS} />

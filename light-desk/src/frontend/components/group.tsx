@@ -16,11 +16,16 @@ import { StageContext } from './context';
 import { NestedContent } from './nesting';
 import { Button } from './button';
 import { Icon } from './icon';
+import { usePressable } from '../util/touch';
 
 interface Props {
   className?: string;
   info: proto.GroupComponent;
 }
+
+const CollapseIcon = styled(Icon)({
+  cursor: 'pointer',
+});
 
 const Header = styled.div`
   display: flex;
@@ -28,6 +33,14 @@ const Header = styled.div`
   padding: 5px 2px;
   background: ${(p) => p.theme.borderDark};
   border-bottom: 1px solid ${(p) => p.theme.borderDark};
+
+  &.touching {
+    background: ${(p) => p.theme.bgDark1};
+  }
+
+  &.collapsed {
+    border-bottom: none;
+  }
 
   > * {
     margin: 0 3px;
@@ -42,9 +55,15 @@ const Label = styled.span`
   padding: 3px 4px;
 `;
 
-const Grow = styled.span`
-  flex-grow: 1;
-`;
+const Grow = styled.span({
+  flexGrow: '1',
+});
+
+const CollapseBar = styled.span({
+  flexGrow: '1',
+  cursor: 'pointer',
+  height: '30px',
+});
 
 const GroupChildren = styled.div<Pick<Props, 'info'>>`
   display: flex;
@@ -90,13 +109,81 @@ const TitleInput = styled.input`
   color: ${(p) => p.theme.textNormal};
 `;
 
+const GroupStateContext = React.createContext<{
+  isCollapsed: (
+    key: number,
+    defaultState: proto.DefaultGroupCollapsedState
+  ) => boolean;
+  toggleCollapsed: (key: number) => void;
+}>({
+  isCollapsed: () => {
+    throw new Error('missing GroupStateContext');
+  },
+  toggleCollapsed: () => {
+    throw new Error('missing GroupStateContext');
+  },
+});
+
+export const GroupStateWrapper: React.FunctionComponent<{
+  /**
+   * Whether new groups using `auto` should be open by default.
+   */
+  openByDefault: boolean;
+  children: JSX.Element | JSX.Element[];
+}> = ({ openByDefault, children }) => {
+  const [state, setState] = useState<
+    Record<number, proto.GroupCollapsedState | undefined>
+  >({});
+
+  const isCollapsed = (
+    key: number,
+    defaultState: proto.DefaultGroupCollapsedState
+  ): boolean => {
+    let match = state[key];
+    if (!match) {
+      match =
+        defaultState === 'auto'
+          ? openByDefault
+            ? 'open'
+            : 'closed'
+          : defaultState;
+      setState((current) => ({
+        ...current,
+        [key]: match,
+      }));
+    }
+    return match === 'closed';
+  };
+
+  const toggleCollapsed = (key: number) => {
+    setState((current) => ({
+      ...current,
+      [key]: current[key] === 'closed' ? 'open' : 'closed',
+    }));
+  };
+
+  return (
+    <GroupStateContext.Provider value={{ isCollapsed, toggleCollapsed }}>
+      {children}
+    </GroupStateContext.Provider>
+  );
+};
+
 const Group: FunctionComponent<Props> = (props) => {
+  const groupState = useContext(GroupStateContext);
   const { renderComponent, sendMessage } = useContext(StageContext);
   const [editingTitle, setEditingTitle] = useState(false);
   const children = (
     <GroupChildren info={props.info}>
       {props.info.children.map(renderComponent)}
     </GroupChildren>
+  );
+  const collapsible = !!props.info.defaultCollapsibleState;
+  const collapsed = props.info.defaultCollapsibleState
+    ? groupState.isCollapsed(props.info.key, props.info.defaultCollapsibleState)
+    : false;
+  const collapsePressable = usePressable(() =>
+    groupState.toggleCollapsed(props.info.key)
   );
 
   const showTitle = props.info.title || props.info.editableTitle;
@@ -105,6 +192,7 @@ const Group: FunctionComponent<Props> = (props) => {
     showTitle,
     props.info.labels?.length,
     props.info.headerButtons,
+    collapsible,
   ].some((v) => v);
 
   const updateTitle: EventHandler<SyntheticEvent<HTMLInputElement>> = (e) => {
@@ -123,6 +211,12 @@ const Group: FunctionComponent<Props> = (props) => {
     }
   };
 
+  const childrenElements = props.info.style.noBorder ? (
+    children
+  ) : (
+    <NestedContent>{children}</NestedContent>
+  );
+
   return (
     <div
       className={calculateClass(
@@ -131,7 +225,18 @@ const Group: FunctionComponent<Props> = (props) => {
       )}
     >
       {displayHeader ? (
-        <Header>
+        <Header
+          className={calculateClass(
+            collapsePressable.touching && 'touching',
+            collapsible && collapsed && 'collapsed'
+          )}
+        >
+          {collapsible && (
+            <CollapseIcon
+              icon={collapsed ? 'arrow_right' : 'arrow_drop_down'}
+              {...collapsePressable.handlers}
+            />
+          )}
           {props.info.labels?.map((l) => (
             <Label>{l.text}</Label>
           ))}
@@ -154,17 +259,17 @@ const Group: FunctionComponent<Props> = (props) => {
             ) : (
               <span>{props.info.title}</span>
             ))}
-          <Grow />
+          {collapsible ? (
+            <CollapseBar {...collapsePressable.handlers} />
+          ) : (
+            <Grow />
+          )}
           {props.info.headerButtons?.map((b) => (
             <Button info={b} />
           ))}
         </Header>
       ) : null}
-      {props.info.style.noBorder ? (
-        children
-      ) : (
-        <NestedContent>{children}</NestedContent>
-      )}
+      {collapsible && collapsed ? null : childrenElements}
     </div>
   );
 };
