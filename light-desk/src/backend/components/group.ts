@@ -93,6 +93,11 @@ export class Group extends BaseParent implements Listenable<Events> {
     this.updateTree();
   };
 
+  public setLabels = (labels: Label[]) => {
+    this.labels = labels;
+    this.updateTree();
+  };
+
   public addHeaderButton = (button: Button): Button => {
     this.headerButtons = [...(this.headerButtons || []), button];
     button.setParent(this);

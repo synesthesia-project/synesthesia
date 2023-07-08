@@ -39,6 +39,7 @@ export const createInputManager = () => {
 
     const updateCreateInputButtons = () => {
       createInputGroup.removeAllChildren();
+      createInputGroup.addChild(new ld.Label('Select Module:'));
       for (const kind of inputKinds.values()) {
         const inputButton = new ld.Button(kind.kind, 'add');
         inputButton.addListener(() => setInputKind(kind));
@@ -84,7 +85,7 @@ export const createInputManager = () => {
           currentInput = null;
         }
         if (!newConfig) {
-          group.setTitle(`Create Input`);
+          group.setLabels([]);
           group.addChild(createInputGroup);
         } else {
           const kind = inputKinds.get(newConfig.kind);
@@ -96,8 +97,8 @@ export const createInputManager = () => {
             // Update existing input
             currentInput.input.setConfig(newConfig.config);
           } else {
-            // Create header
-            group.setTitle(kind.kind);
+            // Update header
+            group.setLabels([{ text: kind.kind }]);
             group.addHeaderButton(replaceButton);
             // Create new input
             currentInput = {
