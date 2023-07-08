@@ -292,6 +292,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
     const cues = config.compositor?.cues || {};
     desk.compositorCueTriggers.removeAllChildren();
     for (const [cueId, cueConfig] of Object.entries(cues)) {
+      if (cueConfig === undefined) continue;
       let existing = compositor.cues.get(cueId);
       if (!existing) {
         existing = inputManager.createSocket({
@@ -308,6 +309,24 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
                 },
               };
             }),
+          groupConfig: {
+            additionalButtons: [
+              new ld.Button(null, 'delete').addListener(() =>
+                updateConfig((current) => {
+                  return {
+                    ...current,
+                    compositor: {
+                      current: current.compositor?.current ?? null,
+                      cues: {
+                        ...current.compositor?.cues,
+                        [cueId]: undefined,
+                      },
+                    },
+                  };
+                })
+              ),
+            ],
+          },
         });
         compositor.cues.set(cueId, existing);
         desk.compositorCuesGroup.addChild(existing.getLightDeskComponent());
@@ -328,8 +347,9 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
     }
     // Remove any deleted inputs
     for (const [cueId, cue] of compositor.cues.entries()) {
-      if (!(cueId in (config.compositor?.cues || {}))) {
+      if (config.compositor?.cues[cueId] === undefined) {
         cue.destroy();
+        desk.compositorCuesGroup.removeChild(cue.getLightDeskComponent());
         compositor.cues.delete(cueId);
       }
     }
