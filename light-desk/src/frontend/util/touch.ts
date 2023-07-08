@@ -3,15 +3,12 @@ export function switchToMouseMode(ev: MouseEvent) {
   document.body.classList.remove('touch-mode');
 }
 
-export function switchToTouchMode(ev: TouchEvent) {
-  ev.preventDefault();
+export function switchToTouchMode(_ev: TouchEvent) {
   document.body.classList.add('touch-mode');
 }
 
 export function initialiseListeners() {
   window.addEventListener('mousemove', switchToMouseMode);
   window.addEventListener('touchstart', switchToTouchMode, { passive: false });
-  // window.addEventListener('contextmenu', (ev) => {
-  //   ev.preventDefault();
-  // });
 }
+
