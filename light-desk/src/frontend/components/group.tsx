@@ -109,7 +109,68 @@ const TitleInput = styled.input`
   color: ${(p) => p.theme.textNormal};
 `;
 
+const GroupStateContext = React.createContext<{
+  isCollapsed: (
+    key: number,
+    defaultState: proto.DefaultGroupCollapsedState
+  ) => boolean;
+  toggleCollapsed: (key: number) => void;
+}>({
+  isCollapsed: () => {
+    throw new Error('missing GroupStateContext');
+  },
+  toggleCollapsed: () => {
+    throw new Error('missing GroupStateContext');
+  },
+});
+
+export const GroupStateWrapper: React.FunctionComponent<{
+  /**
+   * Whether new groups using `auto` should be open by default.
+   */
+  openByDefault: boolean;
+  children: JSX.Element | JSX.Element[];
+}> = ({ openByDefault, children }) => {
+  const [state, setState] = useState<
+    Record<number, proto.GroupCollapsedState | undefined>
+  >({});
+
+  const isCollapsed = (
+    key: number,
+    defaultState: proto.DefaultGroupCollapsedState
+  ): boolean => {
+    let match = state[key];
+    if (!match) {
+      match =
+        defaultState === 'auto'
+          ? openByDefault
+            ? 'open'
+            : 'closed'
+          : defaultState;
+      setState((current) => ({
+        ...current,
+        [key]: match,
+      }));
+    }
+    return match === 'closed';
+  };
+
+  const toggleCollapsed = (key: number) => {
+    setState((current) => ({
+      ...current,
+      [key]: current[key] === 'closed' ? 'open' : 'closed',
+    }));
+  };
+
+  return (
+    <GroupStateContext.Provider value={{ isCollapsed, toggleCollapsed }}>
+      {children}
+    </GroupStateContext.Provider>
+  );
+};
+
 const Group: FunctionComponent<Props> = (props) => {
+  const groupState = useContext(GroupStateContext);
   const { renderComponent, sendMessage } = useContext(StageContext);
   const [editingTitle, setEditingTitle] = useState(false);
   const children = (
@@ -118,11 +179,11 @@ const Group: FunctionComponent<Props> = (props) => {
     </GroupChildren>
   );
   const collapsible = !!props.info.defaultCollapsibleState;
-  const [collapsed, setCollapsed] = useState(
-    props.info.defaultCollapsibleState === 'open' ? false : true
-  );
+  const collapsed = props.info.defaultCollapsibleState
+    ? groupState.isCollapsed(props.info.key, props.info.defaultCollapsibleState)
+    : false;
   const collapsePressable = usePressable(() =>
-    setCollapsed((current) => !current)
+    groupState.toggleCollapsed(props.info.key)
   );
 
   const showTitle = props.info.title || props.info.editableTitle;
@@ -167,7 +228,7 @@ const Group: FunctionComponent<Props> = (props) => {
         <Header
           className={calculateClass(
             collapsePressable.touching && 'touching',
-            collapsible && collapsed && 'collapsed',
+            collapsible && collapsed && 'collapsed'
           )}
         >
           {collapsible && (

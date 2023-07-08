@@ -30,6 +30,10 @@ export interface ButtonComponent extends BaseComponent {
       };
 }
 
+export type GroupCollapsedState = 'open' | 'closed';
+
+export type DefaultGroupCollapsedState = GroupCollapsedState | 'auto';
+
 export interface GroupComponent extends BaseComponent {
   component: 'group';
   title?: string;
@@ -44,7 +48,7 @@ export interface GroupComponent extends BaseComponent {
    * If set, allows the group to be collapsed,
    * by default set to the given state
    */
-  defaultCollapsibleState?: 'open' | 'closed';
+  defaultCollapsibleState?: DefaultGroupCollapsedState;
 }
 
 export interface LabelComponent extends BaseComponent {
