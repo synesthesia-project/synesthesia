@@ -38,8 +38,8 @@ export type SequencesConfig = t.TypeOf<typeof SEQUENCES_CONFIG>;
 export const CONFIG = t.partial({
   outputs: t.record(t.string, OUTPUT),
   compositor: t.type({
-    current: t.union([t.null, t.number]),
-    cues: t.array(OPTIONAL_KIND_AND_CONFIG),
+    current: t.union([t.null, t.string]),
+    cues: optionalRecord(OPTIONAL_KIND_AND_CONFIG),
   }),
   sequences: SEQUENCES_CONFIG,
 });

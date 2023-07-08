@@ -48,12 +48,12 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
 
   const compositor: {
     root: TransitionModule<unknown>;
-    current: null | number;
-    inputs: InputSocket[];
+    current: null | string;
+    cues: Map<string, InputSocket>;
   } = {
     root: new TransitionModule(new FillModule(RGBA_TRANSPARENT)),
     current: null,
-    inputs: [],
+    cues: new Map(),
   };
 
   /**
@@ -289,51 +289,56 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
   };
 
   const updateInputsFromConfig = () => {
-    const cues = config.compositor?.cues || [];
-    for (let i = 0; i < cues.length; i++) {
-      let existing = compositor.inputs[i];
+    const cues = config.compositor?.cues || {};
+    desk.compositorCueTriggers.removeAllChildren();
+    for (const [cueId, cueConfig] of Object.entries(cues)) {
+      let existing = compositor.cues.get(cueId);
       if (!existing) {
-        existing = compositor.inputs[i] = inputManager.createSocket({
+        existing = inputManager.createSocket({
           saveConfig: (inputConfig) =>
             updateConfig((current) => {
-              const newCues = [...(current.compositor?.cues || [])];
-              newCues[i] = inputConfig;
               return {
                 ...current,
                 compositor: {
                   current: current.compositor?.current ?? null,
-                  cues: newCues,
+                  cues: {
+                    ...current.compositor?.cues,
+                    [cueId]: inputConfig,
+                  },
                 },
               };
             }),
         });
+        compositor.cues.set(cueId, existing);
         desk.compositorCuesGroup.addChild(existing.getLightDeskComponent());
       }
-      existing.setConfig(cues[i]);
-    }
-    // Remove any deleted inputs
-    compositor.inputs.splice(cues.length).map((i) => i.destroy());
-    // Update cue triggers
-    desk.compositorCueTriggers.removeAllChildren();
-    for (let i = 0; i < cues.length; i++) {
+      existing.setConfig(cueConfig);
+      // Add button for cue
       desk.compositorCueTriggers
-        .addChild(new ld.Button(`Cue ${i}`, 'play_arrow'))
+        .addChild(new ld.Button(`Cue ${cueId}`, 'play_arrow'))
         .addListener(() =>
           updateConfig((config) => ({
             ...config,
             compositor: {
-              current: i,
-              cues: config.compositor?.cues || [],
+              current: cueId,
+              cues: config.compositor?.cues || {},
             },
           }))
         );
+    }
+    // Remove any deleted inputs
+    for (const [cueId, cue] of compositor.cues.entries()) {
+      if (!(cueId in (config.compositor?.cues || {}))) {
+        cue.destroy();
+        compositor.cues.delete(cueId);
+      }
     }
     // Transition to new cue if changed
     if (config.compositor?.current !== compositor.current) {
       compositor.current = config.compositor?.current ?? null;
       const module =
         compositor.current !== null
-          ? compositor.inputs[compositor.current]?.getModlue()
+          ? compositor.cues.get(compositor.current)?.getModlue()
           : null;
       if (module) {
         compositor.root.transition(module, 1);
@@ -355,8 +360,8 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       updateConfig((config) => ({
         ...config,
         compositor: {
-          current: config.compositor?.current ?? 0,
-          cues: [...(config.compositor?.cues || []), null],
+          current: config.compositor?.current ?? null,
+          cues: { ...config.compositor?.cues, [uuidv4()]: null },
         },
       })),
     addOutput: (kind, name) =>
