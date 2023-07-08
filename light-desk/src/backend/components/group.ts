@@ -38,7 +38,7 @@ export class Group extends BaseParent implements Listenable<Events> {
   /** @hidden */
   private headerButtons?: Button[];
   /** @hidden */
-  private editableTitle: boolean;
+  private options: GroupOptions;
 
   public constructor(
     style: Partial<GroupComponentStyle> = {},
@@ -46,8 +46,13 @@ export class Group extends BaseParent implements Listenable<Events> {
   ) {
     super();
     this.style = extend({}, GROUP_DEFAULT_STYLE, style);
-    this.editableTitle = opts?.editableTitle ?? false;
+    this.options = opts || {};
   }
+
+  public setOptions = (options: GroupOptions) => {
+    this.options = options;
+    this.updateTree();
+  };
 
   addListener = this.events.addListener;
   removeListener = this.events.removeListener;
@@ -116,6 +121,12 @@ export class Group extends BaseParent implements Listenable<Events> {
     }
   };
 
+  public removeAllHeaderButtons = () => {
+    this.headerButtons?.map((c) => c.setParent(null));
+    this.headerButtons = undefined;
+    this.updateTree();
+  };
+
   /** @hidden */
   public getProtoInfo(idMap: IDMap): proto.GroupComponent {
     return {
@@ -126,7 +137,7 @@ export class Group extends BaseParent implements Listenable<Events> {
       children: this.children.map((c) => c.getProtoInfo(idMap)),
       labels: this.labels,
       headerButtons: this.headerButtons?.map((c) => c.getProtoInfo(idMap)),
-      editableTitle: this.editableTitle,
+      editableTitle: this.options.editableTitle || false,
     };
   }
 

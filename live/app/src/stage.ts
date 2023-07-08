@@ -10,13 +10,14 @@ import type {
   Plugin,
   OutputKind,
   Channel,
+  InputSocket,
 } from '@synesthesia-project/live-core/lib/plugins';
 import { isDefined } from '@synesthesia-project/live-core/lib/util';
 import { v4 as uuidv4 } from 'uuid';
 
-import { Config, loadConfig, saveConfig } from './config';
+import { Config, CueConfig, loadConfig, saveConfig } from './config';
 import { createDesk } from './desk/desk';
-import { InputSocket, createInputManager } from './inputs';
+import { createInputManager } from './inputs';
 import { INIT_SEQUENCES_CONFIG, Sequences } from './sequences';
 
 type ActiveOutput<ConfigT> = {
@@ -293,22 +294,29 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
     desk.compositorCueTriggers.removeAllChildren();
     for (const [cueId, cueConfig] of Object.entries(cues)) {
       if (cueConfig === undefined) continue;
+
+      const updateCueConfig = (newCueConfig: Partial<CueConfig>) =>
+        updateConfig((current) => {
+          const existing = current.compositor?.cues[cueId];
+          return {
+            ...current,
+            compositor: {
+              current: current.compositor?.current ?? null,
+              cues: {
+                ...current.compositor?.cues,
+                [cueId]: existing && {
+                  ...existing,
+                  ...newCueConfig,
+                },
+              },
+            },
+          };
+        });
+
       let existing = compositor.cues.get(cueId);
       if (!existing) {
         existing = inputManager.createSocket({
-          saveConfig: (inputConfig) =>
-            updateConfig((current) => {
-              return {
-                ...current,
-                compositor: {
-                  current: current.compositor?.current ?? null,
-                  cues: {
-                    ...current.compositor?.cues,
-                    [cueId]: inputConfig,
-                  },
-                },
-              };
-            }),
+          saveConfig: (module) => updateCueConfig({ module }),
           groupConfig: {
             additionalButtons: [
               new ld.Button(null, 'delete').addListener(() =>
@@ -326,15 +334,19 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
                 })
               ),
             ],
+            title: {
+              text: cueConfig?.name || '',
+              update: (name) => updateCueConfig({ name }),
+            },
           },
         });
         compositor.cues.set(cueId, existing);
         desk.compositorCuesGroup.addChild(existing.getLightDeskComponent());
       }
-      existing.setConfig(cueConfig);
+      existing.setConfig(cueConfig.module);
       // Add button for cue
       desk.compositorCueTriggers
-        .addChild(new ld.Button(`Cue ${cueId}`, 'play_arrow'))
+        .addChild(new ld.Button(cueConfig.name || `Cue`, 'play_arrow'))
         .addListener(() =>
           updateConfig((config) => ({
             ...config,
@@ -381,7 +393,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
         ...config,
         compositor: {
           current: config.compositor?.current ?? null,
-          cues: { ...config.compositor?.cues, [uuidv4()]: null },
+          cues: { ...config.compositor?.cues, [uuidv4()]: {} },
         },
       })),
     addOutput: (kind, name) =>

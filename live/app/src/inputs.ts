@@ -5,11 +5,11 @@ import * as ld from '@synesthesia-project/light-desk';
 import type {
   Input,
   InputContext,
+  InputContextGroupConfig,
   InputKind,
+  InputSocket,
 } from '@synesthesia-project/live-core/lib/plugins';
 import type { OptionalKindAndConfig } from '@synesthesia-project/live-core/lib/config';
-
-export type InputSocket = Input<OptionalKindAndConfig>;
 
 const TRANSITION_DURATION = 1;
 
@@ -20,20 +20,17 @@ export const createInputManager = () => {
 
   const createSocket = (
     context: Pick<InputContext<OptionalKindAndConfig>, 'saveConfig'> & {
-      groupConfig?: {
-        additionalButtons: ld.Button[];
-      };
+      groupConfig?: InputContextGroupConfig;
     }
   ): InputSocket => {
     let config: OptionalKindAndConfig = null;
+    let groupConfig: InputContextGroupConfig | null =
+      context.groupConfig || null;
+    let displayReplaceButton = false;
 
     const module = new TransitionModule(new FillModule(RGBA_TRANSPARENT));
 
     const group = new ld.Group({ direction: 'vertical' });
-
-    for (const button of context.groupConfig?.additionalButtons || []) {
-      group.addHeaderButton(button);
-    }
 
     const createInputGroup = new ld.Group({ noBorder: true, wrap: true });
 
@@ -66,6 +63,22 @@ export const createInputManager = () => {
     const replaceButton = new ld.Button('replace', 'refresh');
     replaceButton.addListener(() => context.saveConfig(null));
 
+    const updateGroupDisplay = () => {
+      group.removeAllHeaderButtons();
+      if (displayReplaceButton) group.addHeaderButton(replaceButton);
+      groupConfig?.additionalButtons?.map((b) => group.addHeaderButton(b));
+      group.setTitle(groupConfig?.title?.text || '');
+      group.setOptions({
+        editableTitle: !!groupConfig?.title?.update,
+      });
+    };
+
+    group.addListener('title-changed', (text) => {
+      groupConfig?.title?.update?.(text);
+    });
+
+    updateGroupDisplay();
+
     return {
       setConfig: (newConfig) => {
         config = newConfig;
@@ -81,7 +94,8 @@ export const createInputManager = () => {
           // TODO: destroy only after transition out finished
           currentInput.input.destroy();
           group.removeAllChildren();
-          group.removeHeaderButton(replaceButton);
+          displayReplaceButton = false;
+          updateGroupDisplay();
           currentInput = null;
         }
         if (!newConfig) {
@@ -99,7 +113,8 @@ export const createInputManager = () => {
           } else {
             // Update header
             group.setLabels([{ text: kind.kind }]);
-            group.addHeaderButton(replaceButton);
+            displayReplaceButton = true;
+            updateGroupDisplay();
             // Create new input
             currentInput = {
               kind: kind.kind,
@@ -123,6 +138,10 @@ export const createInputManager = () => {
             );
           }
         }
+      },
+      setGroupConfig: (newGroupConfig) => {
+        groupConfig = newGroupConfig;
+        updateGroupDisplay();
       },
       getLightDeskComponent: () => group,
       getModlue: () => module,
