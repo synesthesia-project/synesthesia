@@ -6,13 +6,18 @@ export function switchToMouseMode(ev: MouseEvent) {
   document.body.classList.remove('touch-mode');
 }
 
-export function switchToTouchMode(_ev: TouchEvent) {
+export function switchToTouchMode() {
   document.body.classList.add('touch-mode');
 }
 
 export function initialiseListeners() {
   window.addEventListener('mousemove', switchToMouseMode);
   window.addEventListener('touchstart', switchToTouchMode, { passive: false });
+  window.addEventListener('contextmenu', (e) => {
+    if ((e as PointerEvent).pointerType === 'touch') {
+      e.preventDefault();
+    }
+  });
 }
 
 export const usePressable = (
@@ -22,6 +27,7 @@ export const usePressable = (
   handlers: {
     onClick: React.MouseEventHandler<unknown>;
     onTouchStart: React.TouchEventHandler<unknown>;
+    onTouchMove: React.TouchEventHandler<unknown>;
     onTouchEnd: React.TouchEventHandler<unknown>;
   };
 } => {
@@ -31,16 +37,21 @@ export const usePressable = (
     touching,
     handlers: {
       onClick: click,
-      onTouchStart: (event) => {
+      onTouchStart: () => {
         play('touch');
-        event.preventDefault();
         setTouching(true);
       },
-      onTouchEnd: (event) => {
-        event.preventDefault();
+      onTouchMove: () => {
         setTouching(false);
-        click();
-        play('beep2');
+      },
+      onTouchEnd: (event) => {
+        if (touching) {
+          // Prevent 'click' event (and double press)
+          event.preventDefault();
+          setTouching(false);
+          click();
+          play('beep2');
+        }
       },
     },
   };
