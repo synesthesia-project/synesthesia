@@ -27,6 +27,7 @@ export const usePressable = (
   handlers: {
     onClick: React.MouseEventHandler<unknown>;
     onTouchStart: React.TouchEventHandler<unknown>;
+    onTouchMove: React.TouchEventHandler<unknown>;
     onTouchEnd: React.TouchEventHandler<unknown>;
   };
 } => {
@@ -36,16 +37,21 @@ export const usePressable = (
     touching,
     handlers: {
       onClick: click,
-      onTouchStart: (event) => {
+      onTouchStart: () => {
         play('touch');
-        event.preventDefault();
         setTouching(true);
       },
-      onTouchEnd: (event) => {
-        event.preventDefault();
+      onTouchMove: () => {
         setTouching(false);
-        click();
-        play('beep2');
+      },
+      onTouchEnd: (event) => {
+        if (touching) {
+          // Prevent 'click' event (and double press)
+          event.preventDefault();
+          setTouching(false);
+          click();
+          play('beep2');
+        }
       },
     },
   };
