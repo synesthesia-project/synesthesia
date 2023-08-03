@@ -24,177 +24,150 @@ interface Props {
   sendMessage: ((msg: proto.ClientMessage) => void) | null;
 }
 
-interface State {
-  openState: null | {
-    startValue: number | null;
-    startX: number;
-    innerLeft: string;
-  };
-  newValueDiff: null | number;
-}
+type OpenState = {
+  startValue: number | null;
+  startX: number;
+  innerLeft: string;
+};
 
-class SliderButton extends React.Component<Props, State> {
-  public constructor(props: Props) {
-    super(props);
-    this.state = {
-      openState: null,
-      newValueDiff: null,
-    };
+const getRelativeCursorPosition = (elem: Element, pageX: number) => {
+  const rect = elem.getBoundingClientRect();
+  return pageX - rect.left;
+};
 
-    this.onMouseDown = this.onMouseDown.bind(this);
-    this.onTouchStart = this.onTouchStart.bind(this);
-  }
+const SliderButton: React.FunctionComponent<Props> = (props) => {
+  const [openState, setOpenState] = React.useState<null | OpenState>(null);
+  const [valueDiff, setNewValueDiff] = React.useState<null | number>(null);
 
-  private displayValue(value: number) {
-    if (this.props.info.max === 1 && this.props.info.min === 0) {
+  const displayValue = (value: number) => {
+    if (props.info.max === 1 && props.info.min === 0) {
       return `${Math.round(value * 100)}%`;
     }
     return value.toLocaleString();
-  }
+  };
 
-  private getNewValue(startValue: null | number, diff: number) {
+  const getNewValue = (startValue: null | number, diff: number) => {
     if (startValue === null) startValue = 0;
     return Math.max(
-      this.props.info.min,
-      Math.min(this.props.info.max, startValue + diff)
+      props.info.min,
+      Math.min(props.info.max, startValue + diff)
     );
-  }
+  };
 
-  public render() {
-    const value =
-      this.state.openState && this.state.newValueDiff !== null
-        ? this.getNewValue(
-            this.state.openState.startValue,
-            this.state.newValueDiff
-          )
-        : this.props.info.value;
-    const valueDisplay = value !== null ? this.displayValue(value) : '';
-    const valueCSSPercent = value
-      ? ((value - this.props.info.min) /
-          (this.props.info.max - this.props.info.min)) *
-          100 +
-        '%'
-      : '0';
-    const classes = [this.props.className];
-    if (this.state.openState) classes.push(CLASS_STATE_OPEN);
-    return (
-      <div className={classes.join(' ')}>
-        <div
-          className="inner"
-          onMouseDown={this.onMouseDown}
-          onTouchStart={this.onTouchStart}
-          style={
-            this.state.openState ? { left: this.state.openState.innerLeft } : {}
-          }
-        >
-          <div className={CLASS_SLIDER_DISPLAY}>
-            <div className="inner" style={{ width: valueCSSPercent }} />
-          </div>
-          <div className={CLASS_SLIDER_VALUE}>{valueDisplay}</div>
-        </div>
-      </div>
-    );
-  }
-
-  private getRelativeCursorPosition(elem: Element, pageX: number) {
-    const rect = elem.getBoundingClientRect();
-    return pageX - rect.left;
-  }
-
-  private onMouseDown(e: React.MouseEvent<HTMLDivElement>) {
+  const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     const originalPageX = e.pageX;
-    const cursorPosition = this.getRelativeCursorPosition(
-      e.currentTarget,
-      e.pageX
-    );
-    this.onDown(cursorPosition);
+    const cursorPosition = getRelativeCursorPosition(e.currentTarget, e.pageX);
+    const start = onDown(cursorPosition);
     util.trackMouseDown(
-      (p) => this.onMove(p.pageX - originalPageX),
-      (p) => this.onUp(p.pageX - originalPageX)
+      (p) => onMove(start)(p.pageX - originalPageX),
+      (p) => onUp(start)(p.pageX - originalPageX)
     );
-  }
+  };
 
-  private onTouchStart(e: React.TouchEvent<HTMLDivElement>) {
+  const onTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    e.stopPropagation();
     play('touch');
     for (const touch of Array.from(e.changedTouches)) {
       const originalPageX = touch.pageX;
-      const cursorPosition = this.getRelativeCursorPosition(
+      const cursorPosition = getRelativeCursorPosition(
         e.currentTarget,
         touch.pageX
       );
-      this.onDown(cursorPosition);
+      const start = onDown(cursorPosition);
       util.trackTouch(
         touch,
-        (p) => this.onMove(p.pageX - originalPageX),
+        (p) => onMove(start)(p.pageX - originalPageX),
         (p) => {
           play('beep2');
-          this.onUp(p.pageX - originalPageX);
+          onUp(start)(p.pageX - originalPageX);
         }
       );
       return;
     }
-  }
+  };
 
-  private onDown(cursorStartPosition: number) {
-    const value = this.props.info.value === null ? 0 : this.props.info.value;
+  const onDown = (cursorStartPosition: number) => {
+    const value = props.info.value === null ? 0 : props.info.value;
     /** Value between 0 - 1 representing where between min - max the value is */
-    const amnt =
-      (value - this.props.info.min) /
-      (this.props.info.max - this.props.info.min);
+    const amnt = (value - props.info.min) / (props.info.max - props.info.min);
     const innerLeft =
       cursorStartPosition -
       amnt * OPEN_SLIDER_INNER_WIDTH -
       SLIDER_PADDING * 2 -
       SLIDER_VALUE_WIDTH +
       'px';
-    this.setState((_, props) => ({
-      openState: {
-        startValue: props.info.value,
-        startX: cursorStartPosition,
-        innerLeft,
-      },
-      newValueDiff: 0,
-    }));
-  }
+    const start: OpenState = {
+      startValue: props.info.value,
+      startX: cursorStartPosition,
+      innerLeft,
+    };
+    setOpenState({
+      startValue: props.info.value,
+      startX: cursorStartPosition,
+      innerLeft,
+    });
+    setNewValueDiff(0);
+    return start;
+  };
 
-  private onMove(relX: number) {
+  const onMove = (start: OpenState) => (relX: number) => {
     const amntDiff = relX / OPEN_SLIDER_INNER_WIDTH;
-    const newValueDiff = (this.props.info.max - this.props.info.min) * amntDiff;
-    if (this.state.openState && this.props.sendMessage) {
-      const value = this.getNewValue(
-        this.state.openState.startValue,
-        newValueDiff
-      );
-      this.props.sendMessage({
+    const newValueDiff = (props.info.max - props.info.min) * amntDiff;
+    if (props.sendMessage) {
+      const value = getNewValue(start.startValue, newValueDiff);
+      props.sendMessage({
         type: 'component_message',
-        componentKey: this.props.info.key,
+        componentKey: props.info.key,
         component: 'slider_button',
         value,
       });
     }
-    this.setState({ newValueDiff });
-  }
+    setNewValueDiff(newValueDiff);
+  };
 
-  private onUp(relX: number) {
+  const onUp = (start: OpenState) => (relX: number) => {
     const amntDiff = relX / OPEN_SLIDER_INNER_WIDTH;
-    const newValueDiff = (this.props.info.max - this.props.info.min) * amntDiff;
-    if (this.state.openState && this.props.sendMessage) {
-      const value = this.getNewValue(
-        this.state.openState.startValue,
-        newValueDiff
-      );
-      this.props.sendMessage({
+    const newValueDiff = (props.info.max - props.info.min) * amntDiff;
+    if (props.sendMessage) {
+      const value = getNewValue(start.startValue, newValueDiff);
+      props.sendMessage({
         type: 'component_message',
-        componentKey: this.props.info.key,
+        componentKey: props.info.key,
         component: 'slider_button',
         value,
       });
     }
-    this.setState({ openState: null, newValueDiff: null });
-    console.log('up', relX);
-  }
-}
+    setOpenState(null);
+    setNewValueDiff(null);
+  };
+
+  const value =
+    openState && valueDiff !== null
+      ? getNewValue(openState.startValue, valueDiff)
+      : props.info.value;
+  const valueDisplay = value !== null ? displayValue(value) : '';
+  const valueCSSPercent = value
+    ? ((value - props.info.min) / (props.info.max - props.info.min)) * 100 + '%'
+    : '0';
+  const classes = [props.className];
+  if (openState) classes.push(CLASS_STATE_OPEN);
+  return (
+    <div className={classes.join(' ')}>
+      <div
+        className="inner"
+        onMouseDown={onMouseDown}
+        onTouchStart={onTouchStart}
+        style={openState ? { left: openState.innerLeft } : {}}
+      >
+        <div className={CLASS_SLIDER_DISPLAY}>
+          <div className="inner" style={{ width: valueCSSPercent }} />
+        </div>
+        <div className={CLASS_SLIDER_VALUE}>{valueDisplay}</div>
+      </div>
+    </div>
+  );
+};
 
 const StyledSliderButton = styled(SliderButton)`
   position: relative;
