@@ -66,7 +66,6 @@ const SliderButton: React.FunctionComponent<Props> = (props) => {
   };
 
   const onTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-    e.stopPropagation();
     play('touch');
     for (const touch of Array.from(e.changedTouches)) {
       const originalPageX = touch.pageX;

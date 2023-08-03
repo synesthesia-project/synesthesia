@@ -6,7 +6,7 @@ export function switchToMouseMode(ev: MouseEvent) {
   document.body.classList.remove('touch-mode');
 }
 
-export function switchToTouchMode(_ev: TouchEvent) {
+export function switchToTouchMode() {
   document.body.classList.add('touch-mode');
 }
 

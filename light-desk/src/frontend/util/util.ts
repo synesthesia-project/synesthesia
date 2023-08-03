@@ -24,6 +24,7 @@ export function trackTouch(
   end: (pos: { pageX: number; pageY: number }) => void
 ) {
   const touchMove = (ev: TouchEvent) => {
+    ev.preventDefault();
     for (const t of Array.from(ev.changedTouches)) {
       if (t.identifier === touch.identifier) {
         move({ pageX: t.pageX, pageY: t.pageY });
@@ -42,7 +43,7 @@ export function trackTouch(
     }
   };
 
-  window.addEventListener('touchmove', touchMove);
+  window.addEventListener('touchmove', touchMove, { passive: false });
   window.addEventListener('touchend', touchEnd);
   window.addEventListener('touchcancel', touchEnd);
 }
