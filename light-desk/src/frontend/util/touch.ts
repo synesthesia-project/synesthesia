@@ -13,6 +13,11 @@ export function switchToTouchMode(_ev: TouchEvent) {
 export function initialiseListeners() {
   window.addEventListener('mousemove', switchToMouseMode);
   window.addEventListener('touchstart', switchToTouchMode, { passive: false });
+  window.addEventListener('contextmenu', (e) => {
+    if ((e as PointerEvent).pointerType === 'touch') {
+      e.preventDefault();
+    }
+  });
 }
 
 export const usePressable = (
