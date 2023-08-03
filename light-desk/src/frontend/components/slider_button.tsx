@@ -16,7 +16,7 @@ const OPEN_SLIDER_WIDTH = 400;
 const SLIDER_PADDING = 15;
 const SLIDER_VALUE_WIDTH = 60;
 const OPEN_SLIDER_INNER_WIDTH =
-  OPEN_SLIDER_WIDTH - SLIDER_PADDING * 3 - SLIDER_VALUE_WIDTH;
+  OPEN_SLIDER_WIDTH - SLIDER_PADDING * 4 - SLIDER_VALUE_WIDTH * 2;
 
 interface Props {
   className?: string;
@@ -159,6 +159,7 @@ const SliderButton: React.FunctionComponent<Props> = (props) => {
         onTouchStart={onTouchStart}
         style={openState ? { left: openState.innerLeft } : {}}
       >
+        <div className={CLASS_SLIDER_VALUE}>{valueDisplay}</div>
         <div className={CLASS_SLIDER_DISPLAY}>
           <div className="inner" style={{ width: valueCSSPercent }} />
         </div>
@@ -175,6 +176,9 @@ const StyledSliderButton = styled(SliderButton)`
 
   > .inner {
     position: absolute;
+    display: flex;
+    align-items: center;
+    padding: 0 ${SLIDER_PADDING / 2}px;
     left: 0;
     top: 0;
     bottom: 0;
@@ -186,14 +190,11 @@ const StyledSliderButton = styled(SliderButton)`
     ${buttonStateNormal}
 
     > .${CLASS_SLIDER_DISPLAY} {
-      position: absolute;
+      flex-grow: 1;
+      margin: 0 ${SLIDER_PADDING / 2}px;
       height: 4px;
-      left: ${SLIDER_PADDING}px;
-      right: ${SLIDER_PADDING}px;
-      top: ${(30 - 4 - 1) / 2}px;
       background: ${(p) => p.theme.bgDark1};
       border: 1px solid ${(p) => p.theme.borderDark};
-      transition: left 200ms;
 
       > .inner {
         height: 100%;
@@ -202,13 +203,11 @@ const StyledSliderButton = styled(SliderButton)`
     }
 
     > .${CLASS_SLIDER_VALUE} {
-      position: absolute;
-      left: right: ${SLIDER_PADDING}px;
       width: ${SLIDER_VALUE_WIDTH}px;
+      margin: 0 -${SLIDER_VALUE_WIDTH / 2}px;
       line-height: 30px;
       text-align: center;
       opacity: 0;
-      transition: opacity 200ms;
     }
 
     &:hover {
@@ -223,12 +222,9 @@ const StyledSliderButton = styled(SliderButton)`
       background: ${(p) => p.theme.bgDark1};
       width: ${OPEN_SLIDER_WIDTH}px;
 
-      > .${CLASS_SLIDER_DISPLAY} {
-        left: ${SLIDER_PADDING * 2 + SLIDER_VALUE_WIDTH}px;
-      }
-
       > .${CLASS_SLIDER_VALUE} {
         opacity: 1;
+        margin: 0 ${SLIDER_PADDING / 2}px;
       }
     }
   }
