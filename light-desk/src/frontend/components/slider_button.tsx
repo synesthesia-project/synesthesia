@@ -48,10 +48,11 @@ const SliderButton: React.FunctionComponent<Props> = (props) => {
 
   const getNewValue = (startValue: null | number, diff: number) => {
     if (startValue === null) startValue = 0;
-    return Math.max(
-      props.info.min,
-      Math.min(props.info.max, startValue + diff)
+    const i = Math.round(
+      (startValue + diff - props.info.min) / props.info.step
     );
+    const v = i * props.info.step + props.info.min;
+    return Math.max(props.info.min, Math.min(props.info.max, v));
   };
 
   const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {

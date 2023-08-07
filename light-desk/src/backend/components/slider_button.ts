@@ -60,7 +60,7 @@ export class SliderButton extends Component {
   /** @hidden */
   public handleMessage(message: proto.ClientComponentMessage) {
     if (message.component !== 'slider_button') return;
-    const newValue = Math.max(this.min, Math.min(this.max, message.value));
+    const newValue = this.sanitizeNumber(message.value);
     if (this.value === newValue) return;
     if (this.mode === 'writeBack') this.value = newValue;
     for (const l of this.listeners) {
@@ -74,9 +74,19 @@ export class SliderButton extends Component {
   }
 
   public setValue(value: number) {
-    const newValue = Math.max(this.min, Math.min(this.max, value));
+    const newValue = this.sanitizeNumber(value);
     if (newValue === this.value) return;
     this.value = newValue;
     this.updateTree();
+  }
+
+  private sanitizeNumber(value: number) {
+    // Return the closest number according to the min, max and step values
+    // allowedValue = min + step * i (for some integer i)
+    const i = Math.round((value - this.min) / this.step);
+    const v = i * this.step + this.min;
+    // map value to an integer index
+    const clampedValue = Math.max(this.min, Math.min(this.max, v));
+    return clampedValue;
   }
 }
