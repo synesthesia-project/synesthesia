@@ -27,7 +27,7 @@ type Config = t.TypeOf<typeof VIRTUAL_OUTPUT_CONFIG>;
 const createVirtualOutput = (
   context: OutputContext<Config>
 ): Output<Config> => {
-  const group = new ld.Group({ noBorder: true });
+  const group = new ld.Group({ noBorder: true, wrap: true });
   group.addChild(new ld.Label(`pixels:`));
 
   const pixelsInput = group.addChild(new ld.TextInput(''));
@@ -55,7 +55,7 @@ const createVirtualOutput = (
   });
 
   const x = 0;
-  let rects = new ld.Group();
+  let rects = new ld.Group({ wrap: true });
 
   const render = () => {
     if (!pixels) return;
@@ -81,7 +81,7 @@ const createVirtualOutput = (
   return {
     setConfig: (config) => {
       group.removeChild(rects);
-      rects = new ld.Group({ noBorder: true });
+      rects = new ld.Group({ noBorder: true, wrap: true });
       pixels = {
         px: [],
         rects: [],

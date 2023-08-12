@@ -47,7 +47,7 @@ export const createFixture = (
 
   const group = new ld.Group({ noBorder: true, direction: 'vertical' });
 
-  const header = group.addChild(new ld.Group({ noBorder: true }));
+  const header = group.addChild(new ld.Group({ noBorder: true, wrap: true }));
 
   header.addChild(new ld.Label('RGB Channels:'));
   const [ri, gi, bi, setColorChannels] = header.addChildren(
@@ -103,7 +103,9 @@ export const createFixture = (
         let chComponents = channels.get(chId);
         if (!chComponents) {
           // Create channel components
-          const chGroup = group.addChild(new ld.Group({ noBorder: true }));
+          const chGroup = group.addChild(
+            new ld.Group({ noBorder: true, wrap: true })
+          );
 
           const updateChannel = (update: Channel) =>
             updateConfig((c) => ({
