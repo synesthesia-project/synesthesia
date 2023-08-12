@@ -18,6 +18,7 @@ export interface Plugin {
 }
 
 export interface ModuleContext<ConfigT> {
+  // TODO: change this to take an updater function
   saveConfig(config: ConfigT): Promise<void>;
 }
 
@@ -35,7 +36,9 @@ export interface Channel {
  * A handle given to any new output that can be used by the
  * output to interact with the stage and its context.
  */
-export interface OutputContext<ConfigT> extends ModuleContext<ConfigT> {
+export interface OutputContext<ConfigT> {
+  // TODO remove this definition and extend ModuleContext instead
+  saveConfig(update: (existing: ConfigT) => ConfigT): Promise<void>;
   render(pixelMap: PixelMap, pixels: Array<PixelInfo<unknown>>): RGBAColor[];
   getChannelValues(): Map<string, number>;
   /**
