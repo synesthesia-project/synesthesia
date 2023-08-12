@@ -6,22 +6,35 @@ import type {
   InputKind,
   Plugin,
 } from '@synesthesia-project/live-core/lib/plugins';
-import FillModule from '@synesthesia-project/compositor/lib/modules/fill';
+import ScanModule from '@synesthesia-project/compositor/lib/modules/scan';
 import {
   RGBAColor,
   RGBA_BLACK,
 } from '@synesthesia-project/compositor/lib/color';
 
-const FILL_INPUT_CONFIG = t.type({
+const SCAN_INPUT_CONFIG = t.type({
   r: t.number,
   g: t.number,
   b: t.number,
   alpha: t.number,
+  beamWidth: t.number,
+  delay: t.number,
+  speed: t.number,
 });
 
-type Config = t.TypeOf<typeof FILL_INPUT_CONFIG>;
+type Config = t.TypeOf<typeof SCAN_INPUT_CONFIG>;
 
-const createFillInput = (context: InputContext<Config>): Input<Config> => {
+const DEFAULT_CONFIG: Config = {
+  r: 255,
+  g: 255,
+  b: 255,
+  alpha: 0.1,
+  beamWidth: 0.2,
+  delay: 0.5,
+  speed: 0.5,
+};
+
+const createScanInput = (context: InputContext<Config>): Input<Config> => {
   const state: {
     config: Config | null;
     color: RGBAColor;
@@ -31,16 +44,32 @@ const createFillInput = (context: InputContext<Config>): Input<Config> => {
   };
 
   const group = new ld.Group({ noBorder: true, wrap: true });
-  const module = new FillModule(() => state.color);
+  const module = new ScanModule(() => state.color);
 
   const rect = group.addChild(new ld.Rect());
 
+  group.addChild(new ld.Label('Color:'));
   const sliders = {
     r: group.addChild(new ld.SliderButton(0, 0, 255, 1, 'writeThrough')),
     g: group.addChild(new ld.SliderButton(0, 0, 255, 1, 'writeThrough')),
     b: group.addChild(new ld.SliderButton(0, 0, 255, 1, 'writeThrough')),
     alpha: group.addChild(new ld.SliderButton(1, 0, 1, 0.01, 'writeThrough')),
   } as const;
+
+  group.addChild(new ld.Label('Beam Width:'));
+  const beamWidth = group.addChild(
+    new ld.SliderButton(DEFAULT_CONFIG.beamWidth, 0, 1, 0.01, 'writeThrough')
+  );
+
+  group.addChild(new ld.Label('Delay:'));
+  const delay = group.addChild(
+    new ld.SliderButton(DEFAULT_CONFIG.delay, 0, 40, 0.01, 'writeThrough')
+  );
+
+  group.addChild(new ld.Label('Speed:'));
+  const speed = group.addChild(
+    new ld.SliderButton(DEFAULT_CONFIG.speed, -10, 10, 0.01, 'writeThrough')
+  );
 
   const updateConfig = (config: Partial<Config>) =>
     state.config && context.saveConfig({ ...state.config, ...config });
@@ -50,15 +79,30 @@ const createFillInput = (context: InputContext<Config>): Input<Config> => {
   sliders.b.addListener((b) => updateConfig({ b }));
   sliders.alpha.addListener((alpha) => updateConfig({ alpha }));
 
+  beamWidth.addListener((beamWidth) => updateConfig({ beamWidth }));
+  delay.addListener((delay) => updateConfig({ delay }));
+  speed.addListener((speed) => updateConfig({ speed }));
+
   return {
     setConfig: (c) => {
+      if (state.config === c) {
+        return;
+      }
       const { r, g, b, alpha } = (state.config = c);
       sliders.r.setValue(r);
       sliders.g.setValue(g);
       sliders.b.setValue(b);
       sliders.alpha.setValue(alpha);
+      beamWidth.setValue(c.beamWidth);
+      delay.setValue(c.delay);
+      speed.setValue(c.speed);
       state.color = new RGBAColor(r, g, b, alpha);
       rect.setColor(state.color);
+      module.setOptions({
+        beamWidth: c.beamWidth,
+        delay: c.delay,
+        speed: c.speed,
+      });
     },
     getLightDeskComponent: () => group,
     destroy: () => {
@@ -68,20 +112,15 @@ const createFillInput = (context: InputContext<Config>): Input<Config> => {
   };
 };
 
-export const FILL_INPUT_KIND: InputKind<Config> = {
-  kind: 'fill',
-  config: FILL_INPUT_CONFIG,
-  initialConfig: {
-    r: 0,
-    g: 0,
-    b: 0,
-    alpha: 1,
-  },
-  create: createFillInput,
+export const SCAN_INPUT_KIND: InputKind<Config> = {
+  kind: 'scan',
+  config: SCAN_INPUT_CONFIG,
+  initialConfig: DEFAULT_CONFIG,
+  create: createScanInput,
 };
 
-export const FILL_INPUT_PLUGIN: Plugin = {
+export const SCAN_INPUT_PLUGIN: Plugin = {
   init: (context) => {
-    context.registerInputKind(FILL_INPUT_KIND);
+    context.registerInputKind(SCAN_INPUT_KIND);
   },
 };

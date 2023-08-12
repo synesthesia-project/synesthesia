@@ -4,6 +4,7 @@ import { FILL_INPUT_PLUGIN } from './plugins/fill-input';
 import { ADD_INPUT_PLUGIN } from './plugins/add-input';
 import { CHASE_INPUT_PLUGIN } from './plugins/chase-input';
 import { DMX_PLUGIN } from '@synesthesia-project/live-dmx';
+import { SCAN_INPUT_PLUGIN } from './plugins/scan-input';
 
 const configPath = process.argv[2];
 
@@ -16,6 +17,7 @@ Stage(
     VIRTUAL_OUTPUT_PLUGIN,
     CHASE_INPUT_PLUGIN,
     FILL_INPUT_PLUGIN,
+    SCAN_INPUT_PLUGIN,
     ADD_INPUT_PLUGIN,
     DMX_PLUGIN,
   ],
