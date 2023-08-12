@@ -139,5 +139,6 @@ export const createRGBStripFixture = (
       return pixels;
     },
     getChannels: () => [],
+    getTotalChannelsUsed: () => (config.pixels ? config.pixels * 3 : 0),
   };
 };

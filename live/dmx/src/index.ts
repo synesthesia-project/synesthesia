@@ -228,17 +228,6 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
     }
     fixture.config = fxConfig;
 
-    fixture.components.group.setTitle(fxConfig.name || '');
-    if (fxConfig.universe !== undefined && fxConfig.channel !== undefined) {
-      fixture.components.group.setLabels([
-        { text: `${fxConfig.universe}.${fxConfig.channel}` },
-      ]);
-    } else {
-      fixture.components.group.setLabels([{ text: 'unpatched' }]);
-    }
-    fixture.components.patch.universe.setValue(`${fxConfig.universe ?? ''}`);
-    fixture.components.patch.channel.setValue(`${fxConfig.channel ?? ''}`);
-
     if (
       fixture.fixture.type === 'custom' &&
       fxConfig.config.type === 'custom'
@@ -252,6 +241,26 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
     } else {
       throw new Error(`Config Mismatch`);
     }
+
+    fixture.components.group.setTitle(fxConfig.name || '');
+    const labels: Array<{
+      text: string;
+    }> = [{ text: `${fxConfig.config.type}` }];
+    if (fxConfig.universe !== undefined && fxConfig.channel !== undefined) {
+      const firstChannel = fxConfig.channel;
+      const lastChannel =
+        firstChannel + fixture.fixture.getTotalChannelsUsed() - 1;
+      const channelNotation =
+        firstChannel !== lastChannel
+          ? `${firstChannel}-${lastChannel}`
+          : `${firstChannel}`;
+      labels.push({
+        text: `${fxConfig.universe}.${channelNotation}`,
+      });
+    }
+    fixture.components.group.setLabels(labels);
+    fixture.components.patch.universe.setValue(`${fxConfig.universe ?? ''}`);
+    fixture.components.patch.channel.setValue(`${fxConfig.channel ?? ''}`);
   };
 
   const updateFixtures = (config: Config) => {

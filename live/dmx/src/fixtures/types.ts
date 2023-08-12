@@ -36,4 +36,5 @@ export type Fixture<T extends { type: string }> = {
   defaultConfig: T;
   getPixels: () => FixturePixel[];
   getChannels: () => FixtureChannel[];
+  getTotalChannelsUsed: () => number;
 };

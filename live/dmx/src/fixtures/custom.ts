@@ -201,5 +201,13 @@ export const createFixture = (
       }
       return channels;
     },
+    getTotalChannelsUsed: () => {
+      return Math.max(
+        ...Object.values(config.channels || {}).map((c) => c.channel ?? 0),
+        config.rgb?.r ?? 0,
+        config.rgb?.g ?? 0,
+        config.rgb?.b ?? 0
+      );
+    },
   };
 };
