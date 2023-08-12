@@ -50,7 +50,7 @@ export class Display {
       buffer: { index: number; start: number; colors: openrazer.RGB[] }[];
     };
     mousemat: MouseMat | null;
-    compositor: Compositor<PixelData, { synesthesia: SynesthesiaPlayState }>;
+    compositor: Compositor<PixelData>;
   } | null = null;
   private x = 0;
 
@@ -101,10 +101,7 @@ export class Display {
               );
               this.state = { playState, files: nextFiles };
               // Update the state of any compositors
-              if (this.devices)
-                this.devices.compositor.updateState({
-                  synesthesia: this.state,
-                });
+              // TODO: update the state of the synesthezia modulator
             }
           },
           {
@@ -215,37 +212,31 @@ export class Display {
         mousemat = { dev, map, buffer };
       }
 
-      const compositor = new Compositor<
-        PixelData,
-        { synesthesia: SynesthesiaPlayState }
-      >(
-        {
-          root: new SynesthesiaModulateModule(
-            new AddModule([
-              new FillModule(new RGBAColor(96, 0, 160, 1)),
-              new ScanModule(new RGBAColor(160, 0, 104, 1), {
-                delay: 0,
-                speed: -0.1,
-              }),
-              new ScanModule(new RGBAColor(160, 0, 104, 1), { speed: 0.5 }),
-              new ScanModule(new RGBAColor(160, 0, 104, 1), {
-                delay: 0,
-                speed: 0.2,
-              }),
-              new ScanModule(new RGBAColor(247, 69, 185, 1), {
-                delay: 0,
-                speed: -0.3,
-              }),
-              new ScanModule(new RGBAColor(247, 69, 185, 1), {
-                delay: 1,
-                speed: 0.3,
-              }),
-            ])
-          ),
-          pixels,
-        },
-        { synesthesia: this.state }
-      );
+      const compositor = new Compositor<PixelData>({
+        root: new SynesthesiaModulateModule(
+          new AddModule([
+            new FillModule(new RGBAColor(96, 0, 160, 1)),
+            new ScanModule(new RGBAColor(160, 0, 104, 1), {
+              delay: 0,
+              speed: -0.1,
+            }),
+            new ScanModule(new RGBAColor(160, 0, 104, 1), { speed: 0.5 }),
+            new ScanModule(new RGBAColor(160, 0, 104, 1), {
+              delay: 0,
+              speed: 0.2,
+            }),
+            new ScanModule(new RGBAColor(247, 69, 185, 1), {
+              delay: 0,
+              speed: -0.3,
+            }),
+            new ScanModule(new RGBAColor(247, 69, 185, 1), {
+              delay: 1,
+              speed: 0.3,
+            }),
+          ])
+        ),
+        pixels,
+      });
       this.devices = {
         keyboard: { dev: keyboard, map, buffer },
         mousemat,

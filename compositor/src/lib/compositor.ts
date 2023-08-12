@@ -1,8 +1,8 @@
 import { PixelMap, CompositorModule, PixelInfo } from './modules';
 import { RGBAColor } from './color';
 
-export interface Config<PixelData, State> {
-  root: CompositorModule<State>;
+export interface Config<PixelData> {
+  root: CompositorModule;
   pixels: PixelInfo<PixelData>[];
 }
 
@@ -11,15 +11,12 @@ type RenderResult<PixelData> = {
   output: RGBAColor;
 }[];
 
-export class Compositor<PixelData, State> {
-  private readonly config: Config<PixelData, State>;
+export class Compositor<PixelData> {
+  private readonly config: Config<PixelData>;
   private readonly map: PixelMap;
 
-  private state: State;
-
-  public constructor(config: Config<PixelData, State>, initialState: State) {
+  public constructor(config: Config<PixelData>) {
     this.config = config;
-    this.state = initialState;
 
     // Calculate Map
     const xs = config.pixels.map((p) => p.x);
@@ -33,21 +30,12 @@ export class Compositor<PixelData, State> {
   }
 
   public renderFrame(): RenderResult<PixelData> {
-    const result = this.config.root.render(
-      this.map,
-      this.config.pixels,
-      this.state
-    );
+    const result = this.config.root.render(this.map, this.config.pixels);
     if (result.length !== this.config.pixels.length)
       throw new Error('Unexpected number of pixels returned');
     return this.config.pixels.map((pixel, i) => ({
       pixel,
       output: result[i],
     }));
-  }
-
-  public updateState(state: State) {
-    // TODO: transition
-    this.state = state;
   }
 }

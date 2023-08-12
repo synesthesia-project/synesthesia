@@ -10,20 +10,16 @@ import {
 /**
  * Simple module that modulates the alpha of its child component
  */
-export class ModulateModule<State> implements CompositorModule<State> {
-  private readonly child: CompositorModule<State>;
+export class ModulateModule implements CompositorModule {
+  private readonly child: CompositorModule;
   private alpha = 1;
 
-  public constructor(child: CompositorModule<State>) {
+  public constructor(child: CompositorModule) {
     this.child = child;
   }
 
-  public render(
-    map: PixelMap,
-    pixels: PixelInfo<unknown>[],
-    state: State
-  ): RGBAColor[] {
-    const result = this.child.render(map, pixels, state);
+  public render(map: PixelMap, pixels: PixelInfo<unknown>[]): RGBAColor[] {
+    const result = this.child.render(map, pixels);
     if (this.alpha === 1) return result;
     return result.map(
       (value) =>
@@ -40,26 +36,22 @@ export class ModulateModule<State> implements CompositorModule<State> {
  * Adjust the opacity / alpha of the given module based
  * on the current music playing on synesthesia
  */
-export default class SynesthesiaModulateModule<
-  State extends { synesthesia: SynesthesiaPlayState }
-> extends ModulateModule<State> {
+export default class SynesthesiaModulateModule extends ModulateModule {
   private readonly idleAlpha = 1;
   private readonly activeMinAlpha = 0.1;
   private readonly activeMaxAlpha = 1;
 
-  public render(
-    map: PixelMap,
-    pixels: PixelInfo<unknown>[],
-    state: State
-  ): RGBAColor[] {
+  private synesthesia: SynesthesiaPlayState | null = null;
+
+  public render(map: PixelMap, pixels: PixelInfo<unknown>[]): RGBAColor[] {
     const timestampMillis = Date.now();
     let alpha: number;
-    if (state.synesthesia.playState.layers.length === 0) {
+    if (!this.synesthesia?.playState.layers.length) {
       alpha = this.idleAlpha;
     } else {
       let amplitude = 0;
-      for (const layer of state.synesthesia.playState.layers) {
-        const f = state.synesthesia.files.get(layer.fileHash);
+      for (const layer of this.synesthesia.playState.layers) {
+        const f = this.synesthesia.files.get(layer.fileHash);
         if (!f) continue;
         const t =
           (timestampMillis - layer.effectiveStartTimeMillis) * layer.playSpeed;
@@ -76,6 +68,6 @@ export default class SynesthesiaModulateModule<
         (this.activeMaxAlpha - this.activeMinAlpha) * amplitude;
     }
     this.setAlpha(alpha);
-    return super.render(map, pixels, state);
+    return super.render(map, pixels);
   }
 }

@@ -12,7 +12,6 @@ import {
   PixelInfo,
   tee,
 } from '@synesthesia-project/compositor';
-import { SynesthesiaPlayState } from '@synesthesia-project/compositor/lib/modules';
 import FillModule from '@synesthesia-project/compositor/lib/modules/fill';
 import AddModule from '@synesthesia-project/compositor/lib/modules/add';
 import ScanModule from '@synesthesia-project/compositor/lib/modules/scan';
@@ -37,11 +36,11 @@ export class Display {
 
   private buffer: Buffer;
   private pulse?: {
-    module: ModulateModule<unknown>;
+    module: ModulateModule;
     alpha: number;
     up: boolean;
   };
-  private compositor: Compositor<number, { synesthesia: SynesthesiaPlayState }>;
+  private compositor: Compositor<number>;
   private stream: fs.WriteStream;
 
   public constructor() {
@@ -56,40 +55,34 @@ export class Display {
       };
     }
 
-    this.compositor = new Compositor<
-      number,
-      { synesthesia: SynesthesiaPlayState }
-    >(
-      {
-        root: new SynesthesiaModulateModule(
-          new AddModule([
-            tee(
-              (module) => (this.pulse = { module, alpha: 1, up: true }),
-              new ModulateModule(new FillModule(new RGBAColor(96, 0, 160, 1)))
-            ),
-            new ScanModule(new RGBAColor(160, 0, 104, 1), {
-              delay: 0,
-              speed: -0.1,
-            }),
-            new ScanModule(new RGBAColor(160, 0, 104, 1), { speed: 0.5 }),
-            new ScanModule(new RGBAColor(160, 0, 104, 1), {
-              delay: 0,
-              speed: 0.2,
-            }),
-            new ScanModule(new RGBAColor(247, 69, 185, 1), {
-              delay: 0,
-              speed: -0.3,
-            }),
-            new ScanModule(new RGBAColor(247, 69, 185, 1), {
-              delay: 1,
-              speed: 0.3,
-            }),
-          ])
-        ),
-        pixels,
-      },
-      { synesthesia: this.state }
-    );
+    this.compositor = new Compositor<number>({
+      root: new SynesthesiaModulateModule(
+        new AddModule([
+          tee(
+            (module) => (this.pulse = { module, alpha: 1, up: true }),
+            new ModulateModule(new FillModule(new RGBAColor(96, 0, 160, 1)))
+          ),
+          new ScanModule(new RGBAColor(160, 0, 104, 1), {
+            delay: 0,
+            speed: -0.1,
+          }),
+          new ScanModule(new RGBAColor(160, 0, 104, 1), { speed: 0.5 }),
+          new ScanModule(new RGBAColor(160, 0, 104, 1), {
+            delay: 0,
+            speed: 0.2,
+          }),
+          new ScanModule(new RGBAColor(247, 69, 185, 1), {
+            delay: 0,
+            speed: -0.3,
+          }),
+          new ScanModule(new RGBAColor(247, 69, 185, 1), {
+            delay: 1,
+            speed: 0.3,
+          }),
+        ])
+      ),
+      pixels,
+    });
 
     this.stream = fs.createWriteStream('/tmp/leds');
 
@@ -138,7 +131,8 @@ export class Display {
               );
               this.state = { playState, files: nextFiles };
 
-              this.compositor.updateState({ synesthesia: this.state });
+              // this.compositor.updateState({ synesthesia: this.state });
+              // TODO: update the synesthezia module directly
             }
           },
           {

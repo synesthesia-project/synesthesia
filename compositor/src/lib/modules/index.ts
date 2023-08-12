@@ -18,14 +18,13 @@ export interface PixelInfo<Data> {
   data: Data;
 }
 
-export type RenderMethod<State> = (
+export type RenderMethod = (
   map: PixelMap,
-  pixels: PixelInfo<unknown>[],
-  state: State
+  pixels: PixelInfo<unknown>[]
 ) => RGBAColor[];
 
-export interface CompositorModule<State> {
-  render: RenderMethod<State>;
+export interface CompositorModule {
+  render: RenderMethod;
 }
 
 export interface SynesthesiaPlayState {
