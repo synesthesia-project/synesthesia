@@ -2,10 +2,10 @@ import { CompositorModule, RenderMethod } from '.';
 import { RGBAColor } from '../color';
 import { restrictNumber } from '../util';
 
-export class ChaseModule<State> implements CompositorModule<State> {
+export class ChaseModule implements CompositorModule {
   private advanceAmountPerSecond: number;
 
-  private readonly sequence: Array<CompositorModule<State>>;
+  private readonly sequence: Array<CompositorModule>;
 
   /**
    * Array of values from 0-colors.length that
@@ -20,7 +20,7 @@ export class ChaseModule<State> implements CompositorModule<State> {
   private lastFrame = Date.now();
 
   public constructor(
-    sequence: Array<CompositorModule<State>>,
+    sequence: Array<CompositorModule>,
     options?: {
       advanceAmountPerSecond?: number;
     }
@@ -29,7 +29,7 @@ export class ChaseModule<State> implements CompositorModule<State> {
     this.advanceAmountPerSecond = options?.advanceAmountPerSecond || 0.3;
   }
 
-  render: RenderMethod<State> = (map, pixels, state) => {
+  render: RenderMethod = (map, pixels) => {
     // How many seconds since last frame
     const now = Date.now();
     const diff = (now - this.lastFrame) / 1000;
@@ -57,8 +57,8 @@ export class ChaseModule<State> implements CompositorModule<State> {
       );
       const module2 = module1 + 1 >= this.sequence.length ? 0 : module1 + 1;
       const transition = restrictNumber(pos - module1, 0, 1);
-      const color1 = this.sequence[module1].render(map, [info], state)[0];
-      const color2 = this.sequence[module2].render(map, [info], state)[0];
+      const color1 = this.sequence[module1].render(map, [info])[0];
+      const color2 = this.sequence[module2].render(map, [info])[0];
       return color1.transition(color2, transition);
     });
     return result;

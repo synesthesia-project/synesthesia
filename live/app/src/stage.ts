@@ -48,7 +48,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
   const inputManager = createInputManager();
 
   const compositor: {
-    root: TransitionModule<unknown>;
+    root: TransitionModule;
     current: null | string;
     cues: Map<string, InputSocket>;
   } = {
@@ -151,7 +151,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       }
     };
     const render: OutputContext<ConfigT>['render'] = (map, pixels) =>
-      compositor.root.render(map, pixels, null);
+      compositor.root.render(map, pixels);
     const setChannels: OutputContext<ConfigT>['setChannels'] = (channels) => {
       activeOutput.channels = channels;
       sendChannelsToSequences();

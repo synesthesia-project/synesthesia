@@ -22,11 +22,8 @@ interface Origin {
   xRatio: number;
 }
 
-/**
- * Module that fills all pixels with a given color
- */
-export default class ScanModule<State> implements CompositorModule<State> {
-  private readonly color: ((state: State) => RGBAColor) | RGBAColor;
+export default class ScanModule implements CompositorModule {
+  private readonly color: (() => RGBAColor) | RGBAColor;
 
   private readonly beamWidth: number;
   private readonly delay: number;
@@ -54,7 +51,7 @@ export default class ScanModule<State> implements CompositorModule<State> {
   private origin: Origin;
 
   public constructor(
-    color: ((state: State) => RGBAColor) | RGBAColor,
+    color: (() => RGBAColor) | RGBAColor,
     options: Partial<ScanOptions> = {}
   ) {
     this.color = color;
@@ -75,11 +72,7 @@ export default class ScanModule<State> implements CompositorModule<State> {
     };
   }
 
-  public render(
-    map: PixelMap,
-    pixels: PixelInfo<unknown>[],
-    state: State
-  ): RGBAColor[] {
+  public render(map: PixelMap, pixels: PixelInfo<unknown>[]): RGBAColor[] {
     const now = new Date().getTime();
     const diff = now - this.origin.time;
     /** 0 = start of map, 1 = end of map */
@@ -93,8 +86,7 @@ export default class ScanModule<State> implements CompositorModule<State> {
       this.origin.xRatio = xRatio = xRatio + this.xRatioShift;
     }
     const mapWidth = map.xMax - map.xMin;
-    const color =
-      typeof this.color === 'function' ? this.color(state) : this.color;
+    const color = typeof this.color === 'function' ? this.color() : this.color;
     return pixels.map((pixel) => {
       const pixelXRatio = (pixel.x - map.xMin) / mapWidth;
       const distance = Math.abs(pixelXRatio - xRatio);

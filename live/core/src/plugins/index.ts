@@ -88,7 +88,7 @@ export interface Module<ConfigT> {
 export type Output<ConfigT> = Module<ConfigT>;
 
 export interface Input<ConfigT> extends Module<ConfigT> {
-  getModlue(): CompositorModule<unknown>;
+  getModlue(): CompositorModule;
 }
 
 export interface ModuleKind<ConfigT> {

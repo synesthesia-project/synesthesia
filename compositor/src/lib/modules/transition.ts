@@ -1,6 +1,6 @@
 import { CompositorModule, RenderMethod } from '.';
 
-export class TransitionModule<State> implements CompositorModule<State> {
+export class TransitionModule implements CompositorModule {
   private readonly modules: {
     /**
      * Value from 0-1 that represents how far this module has transitioned in.
@@ -13,7 +13,7 @@ export class TransitionModule<State> implements CompositorModule<State> {
      * What ratio to transition in 1 second
      */
     transitionSpeed: number;
-    module: CompositorModule<State>;
+    module: CompositorModule;
   }[];
 
   /**
@@ -22,7 +22,7 @@ export class TransitionModule<State> implements CompositorModule<State> {
    */
   private lastFrame = Date.now();
 
-  public constructor(init: CompositorModule<State>) {
+  public constructor(init: CompositorModule) {
     this.modules = [
       {
         transitionAmount: 1,
@@ -32,16 +32,16 @@ export class TransitionModule<State> implements CompositorModule<State> {
     ];
   }
 
-  render: RenderMethod<State> = (map, pixels, state) => {
+  render: RenderMethod = (map, pixels) => {
     // How many seconds since last frame
     const now = Date.now();
     const diff = (now - this.lastFrame) / 1000;
     this.lastFrame = now;
     // Calculate the current frame
-    const result = this.modules[0].module.render(map, pixels, state);
+    const result = this.modules[0].module.render(map, pixels);
     for (let i = 1; i < this.modules.length; i++) {
       const next = this.modules[i];
-      const nextFrame = next.module.render(map, pixels, state);
+      const nextFrame = next.module.render(map, pixels);
       if (result.length !== nextFrame.length) {
         console.error('mismatched frame lengths');
       } else {
@@ -66,7 +66,7 @@ export class TransitionModule<State> implements CompositorModule<State> {
   };
 
   transition = (
-    newPattern: CompositorModule<State>,
+    newPattern: CompositorModule,
     transitionLengthSeconds: number
   ) => {
     this.modules.push({

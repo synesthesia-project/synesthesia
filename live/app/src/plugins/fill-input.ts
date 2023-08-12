@@ -31,7 +31,7 @@ const createFillInput = (context: InputContext<Config>): Input<Config> => {
   };
 
   const group = new ld.Group({ noBorder: true });
-  const module = new FillModule<unknown>(() => state.color);
+  const module = new FillModule(() => state.color);
 
   const rect = group.addChild(new ld.Rect());
 

@@ -26,24 +26,20 @@ export function alphaCombine(bottom: RGBAColor, top: RGBAColor) {
 /**
  * Combine the output of multiple modules together in an "additive" manner
  */
-export default class AddModule<State> implements CompositorModule<State> {
-  private layers: CompositorModule<State>[];
+export default class AddModule implements CompositorModule {
+  private layers: CompositorModule[];
 
-  public constructor(layers: CompositorModule<State>[]) {
+  public constructor(layers: CompositorModule[]) {
     if (layers.length === 0) throw new Error('must supply at least one layer');
     this.layers = [...layers];
   }
 
-  public render(
-    map: PixelMap,
-    pixels: PixelInfo<unknown>[],
-    state: State
-  ): RGBAColor[] {
-    const result = this.layers[0].render(map, pixels, state);
+  public render(map: PixelMap, pixels: PixelInfo<unknown>[]): RGBAColor[] {
+    const result = this.layers[0].render(map, pixels);
     if (result.length !== pixels.length)
       throw new Error('Unexpected number of pixels returned');
     for (let l = 1; l < this.layers.length; l++) {
-      const layerResult = this.layers[l].render(map, pixels, state);
+      const layerResult = this.layers[l].render(map, pixels);
       if (layerResult.length !== pixels.length)
         throw new Error('Unexpected number of pixels returned');
       for (let i = 0; i < pixels.length; i++)
@@ -52,7 +48,7 @@ export default class AddModule<State> implements CompositorModule<State> {
     return result;
   }
 
-  public setLayers = (layers: CompositorModule<State>[]) => {
+  public setLayers = (layers: CompositorModule[]) => {
     if (layers.length === 0) throw new Error('must supply at least one layer');
     this.layers = [...layers];
   };
