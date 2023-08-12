@@ -356,7 +356,8 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
               cues: config.compositor?.cues || {},
             },
           }))
-        );
+        )
+        .setMode(cueId === config.compositor?.current ? 'pressed' : 'normal');
     }
     // Remove any deleted inputs
     for (const [cueId, cue] of compositor.cues.entries()) {
