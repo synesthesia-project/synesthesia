@@ -1,4 +1,3 @@
-import artnet = require('artnet');
 import * as t from 'io-ts';
 import {
   Output,
@@ -14,8 +13,9 @@ import {
 } from '@synesthesia-project/compositor/lib/modules';
 import { v4 as uuidv4 } from 'uuid';
 
+import { UNIVERSES_CONFIG, Universes } from './universes';
+
 const INTEGER_REGEX = /^[0-9]+$/;
-const MAX_UNIVERSE = 32767;
 const MAX_CHANNEL = 512;
 const MAX_VALUE = 255;
 
@@ -44,10 +44,12 @@ const CHANNEL = t.partial({
 });
 
 const DMX_OUTPUT_CONFIG = t.type({
-  artnetUniverse: t.union([t.number, t.null]),
+  universes: UNIVERSES_CONFIG,
   fixtures: t.record(
     t.string,
     t.partial({
+      universe: t.number,
+      channel: t.number,
       name: t.string,
       pos: t.type({
         x: t.number,
@@ -71,20 +73,20 @@ type Channel = t.TypeOf<typeof CHANNEL>;
 
 const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
   let config: Config = {
-    artnetUniverse: 0,
+    universes: [],
     fixtures: {},
   };
 
+  const universes = new Universes(config.universes, (update) =>
+    context.saveConfig({ ...config, universes: update(config.universes) })
+  );
+
   const group = new ld.Group({ noBorder: true, direction: 'vertical' });
+
+  group.addChild(universes.group);
 
   const header = new ld.Group({ noBorder: true, direction: 'horizontal' });
   group.addChild(header);
-
-  header.addChild(new ld.Label('Universe: '));
-  const universeInput = new ld.TextInput('0');
-  header.addChild(universeInput);
-  const setUniverse = new ld.Button('Set', 'save');
-  header.addChild(setUniverse);
 
   const addFixture = new ld.Button('Add Fixture', 'add');
   header.addChild(addFixture);
@@ -125,6 +127,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
     {
       config: Fixture;
       group: ld.Group;
+      patch: Record<'universe' | 'channel', ld.TextInput>;
       rgb: Record<'ri' | 'gi' | 'bi', ld.TextInput>;
       channels: Map<
         string,
@@ -167,6 +170,32 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
       .addHeaderButton(new ld.Button(null, 'delete'))
       .addListener(() => removeFixture(fxId));
 
+    const patch = group.addChild(new ld.Group({ noBorder: true }));
+
+    patch.addChild(new ld.Label('Universe + Channel:'));
+    const [universe, channel, setUniverseChannel] = patch.addChildren(
+      new ld.TextInput(''),
+      new ld.TextInput(''),
+      new ld.Button('Set', 'save')
+    );
+    setUniverseChannel.addListener(() => {
+      const u = universe.getValidatedValue(universes.validateUniverse);
+      const c = channel.getValidatedValue(validateChannel);
+      if (u !== null && c !== null) {
+        updateFixtureConfig(fxId, (config) => ({
+          ...config,
+          universe: u,
+          channel: c,
+        }));
+      } else {
+        updateFixtureConfig(fxId, (c) => ({
+          ...c,
+          universe: undefined,
+          channel: undefined,
+        }));
+      }
+    });
+
     const header = group.addChild(new ld.Group({ noBorder: true }));
 
     header.addChild(new ld.Label('RGB Channels:'));
@@ -192,6 +221,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
     fixtureComponents.set(fxId, {
       config: {},
       group,
+      patch: { universe, channel },
       rgb: { ri, gi, bi },
       channels: new Map(),
     });
@@ -210,9 +240,16 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
     components.config = fx;
 
     components.group.setTitle(fx.name || '');
-    components.rgb.ri.setValue(`${fx.rgb?.r || ''}`);
-    components.rgb.gi.setValue(`${fx.rgb?.g || ''}`);
-    components.rgb.bi.setValue(`${fx.rgb?.b || ''}`);
+    if (fx.universe !== undefined && fx.channel !== undefined) {
+      components.group.setLabels([{ text: `${fx.universe}.${fx.channel}` }]);
+    } else {
+      components.group.setLabels([{ text: 'unpatched' }]);
+    }
+    components.patch.universe.setValue(`${fx.universe ?? ''}`);
+    components.patch.channel.setValue(`${fx.channel ?? ''}`);
+    components.rgb.ri.setValue(`${fx.rgb?.r ?? ''}`);
+    components.rgb.gi.setValue(`${fx.rgb?.g ?? ''}`);
+    components.rgb.bi.setValue(`${fx.rgb?.b ?? ''}`);
 
     // Create / update channel components
     for (const [chId, ch] of Object.entries(fx.channels || {})) {
@@ -307,21 +344,6 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
     }
   };
 
-  setUniverse.addListener(() => {
-    const val = universeInput.getValue();
-    if (!INTEGER_REGEX.exec(val)) {
-      throw new Error(`Universe value must be a positive integer`);
-    }
-    const artnetUniverse = parseInt(val);
-    if (artnetUniverse < 0 || artnetUniverse > MAX_UNIVERSE) {
-      throw new Error(`Universe must be between 0 and ${MAX_UNIVERSE}`);
-    }
-    context.saveConfig({
-      ...config,
-      artnetUniverse,
-    });
-  });
-
   let pixels: {
     /**
      * Fixtures that secifically have "pixel" outputs
@@ -331,40 +353,38 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
     pixelInfo: Array<PixelInfo<null>>;
   } | null;
 
-  const a = artnet({
-    sendAll: true,
-  });
-
-  const buffer: number[] = [];
-  const clearBuffer = () => {
-    for (let i = 0; i < 512; i++) {
-      buffer[i] = 0;
-    }
-  };
-
   const render = () => {
-    if (!pixels) return;
-    const frame = context.render(pixels.map, pixels.pixelInfo);
-    for (let i = 0; i < frame.length; i++) {
-      const color = frame[i];
-      const fixture = pixels.fixtures[i];
-      if (fixture?.rgb) {
-        buffer[fixture.rgb.r - 1] = color.r * color.alpha;
-        buffer[fixture.rgb.g - 1] = color.g * color.alpha;
-        buffer[fixture.rgb.b - 1] = color.b * color.alpha;
-      }
-    }
-    const channelValues = context.getChannelValues();
-    for (const fixture of Object.values(config.fixtures)) {
-      for (const [chId, ch] of Object.entries(fixture.channels || {})) {
-        // TODO: get value from sequences if set there
-        if (ch.channel !== undefined && ch.value !== undefined) {
-          const value = channelValues.get(chId) || ch.value;
-          buffer[ch.channel - 1] = value;
+    universes.render((buffers) => {
+      if (!pixels) return;
+      const frame = context.render(pixels.map, pixels.pixelInfo);
+      for (let i = 0; i < frame.length; i++) {
+        const color = frame[i];
+        const fixture = pixels.fixtures[i];
+        const buffer =
+          fixture?.universe !== undefined && buffers[fixture.universe];
+        if (buffer && fixture?.rgb && fixture.channel !== undefined) {
+          const channelOffset = fixture.channel - 1;
+          buffer[channelOffset + fixture.rgb.r - 1] = color.r * color.alpha;
+          buffer[channelOffset + fixture.rgb.g - 1] = color.g * color.alpha;
+          buffer[channelOffset + fixture.rgb.b - 1] = color.b * color.alpha;
         }
       }
-    }
-    a.set(config.artnetUniverse ?? 0, 1, buffer);
+      const channelValues = context.getChannelValues();
+      for (const fixture of Object.values(config.fixtures)) {
+        const buffer =
+          fixture?.universe !== undefined && buffers[fixture.universe];
+        if (buffer && fixture.channel !== undefined) {
+          const channelOffset = fixture.channel - 1;
+          for (const [chId, ch] of Object.entries(fixture.channels || {})) {
+            // TODO: get value from sequences if set there
+            if (ch.channel !== undefined && ch.value !== undefined) {
+              const value = channelValues.get(chId) || ch.value;
+              buffer[channelOffset + ch.channel - 1] = value;
+            }
+          }
+        }
+      }
+    });
   };
 
   const renderInterval = setInterval(render, 10);
@@ -387,7 +407,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
   return {
     setConfig: (c) => {
       config = c;
-      universeInput.setValue(`${c.artnetUniverse}`);
+      universes.setConfig(c.universes);
       // Only include fixtures with RGB output in pixel fixtures
       const pixelFixtures = Object.values(config.fixtures).filter((f) => f.rgb);
       pixels = {
@@ -414,12 +434,11 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
       };
       updateFixtureGroup();
       setChannels();
-      clearBuffer();
       render();
     },
     destroy: () => {
       clearInterval(renderInterval);
-      a.close();
+      universes.destroy();
     },
     getLightDeskComponent: () => group,
   };
@@ -429,7 +448,7 @@ export const DMX_OUTPUT_KIND: OutputKind<Config> = {
   kind: 'dmx',
   config: DMX_OUTPUT_CONFIG,
   initialConfig: {
-    artnetUniverse: 0,
+    universes: [],
     fixtures: {},
   },
   create: createDmxOutput,
