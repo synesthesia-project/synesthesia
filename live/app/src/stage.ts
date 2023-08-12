@@ -134,9 +134,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       channels: {},
     };
     outputs.set(key, activeOutput);
-    const saveConfig: OutputContext<ConfigT>['saveConfig'] = async (
-      newConfig
-    ) => {
+    const saveConfig: OutputContext<ConfigT>['saveConfig'] = async (update) => {
       const currentOutputConfig = config.outputs?.[key];
       if (currentOutputConfig) {
         await updateConfig((current) => ({
@@ -145,7 +143,8 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
             ...current.outputs,
             [key]: {
               ...currentOutputConfig,
-              config: newConfig,
+              // TODO: validate prior to calling update
+              config: update(currentOutputConfig.config as ConfigT),
             },
           },
         }));

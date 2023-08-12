@@ -1,9 +1,9 @@
 import artnet = require('artnet');
 import * as t from 'io-ts';
 import * as ld from '@synesthesia-project/light-desk';
+import { INTEGER_REGEX } from './util';
 
 const MAX_UNIVERSE = 32767;
-const INTEGER_REGEX = /^[0-9]+$/;
 
 type ArtNet = ReturnType<typeof artnet>;
 
@@ -39,6 +39,7 @@ type ActiveUniverse = {
 };
 
 export class Universes {
+  private lastConfig: UniversesConfig = [];
   public readonly group: ld.Group = new ld.Group(
     { direction: 'vertical' },
     { defaultCollapsibleState: 'closed' }
@@ -47,7 +48,6 @@ export class Universes {
   private readonly universes: ActiveUniverse[] = [];
 
   public constructor(
-    private config: UniversesConfig,
     private readonly updateConfig: (
       update: (current: UniversesConfig) => UniversesConfig
     ) => void
@@ -75,10 +75,10 @@ export class Universes {
   }
 
   public setConfig = (config: UniversesConfig) => {
-    if (config === this.config) {
+    if (config === this.lastConfig) {
       return;
     }
-    this.config = config;
+    this.lastConfig = config;
     this.group.removeAllChildren();
     this.group.setTitle(`Universes (${config.length})`);
     config.map((uConfig, i) => {
@@ -241,7 +241,7 @@ export class Universes {
       throw new Error(`Universe must be positive integers`);
     }
     const u = parseInt(text);
-    if (u < 0 || u >= this.config.length) {
+    if (u < 0 || u >= this.lastConfig.length) {
       throw new Error(`Universe ${u} does not exist`);
     }
     return u;

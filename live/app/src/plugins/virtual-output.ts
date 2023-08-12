@@ -46,9 +46,9 @@ const createVirtualOutput = (
   update.addListener(async () => {
     const value = pixelsInput.getValue();
     if (PIXEL_COUNT_MATCH.test(value)) {
-      context.saveConfig({
+      context.saveConfig(() => ({
         pixels: parseInt(value),
-      });
+      }));
     } else {
       throw new Error(`Invalid pixel count: ${value}`);
     }
