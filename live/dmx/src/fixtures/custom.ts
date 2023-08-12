@@ -47,13 +47,6 @@ export const createFixture = (
 
   const group = new ld.Group({ noBorder: true, direction: 'vertical' });
 
-  group.addChild(new ld.Button('Add Channel', 'add')).addListener(() =>
-    updateConfig((c) => ({
-      ...c,
-      channels: { ...c.channels, [uuidv4()]: {} },
-    }))
-  );
-
   const header = group.addChild(new ld.Group({ noBorder: true }));
 
   header.addChild(new ld.Label('RGB Channels:'));
@@ -77,6 +70,13 @@ export const createFixture = (
     }
   });
 
+  group.addChild(new ld.Button('Add Channel', 'add')).addListener(() =>
+    updateConfig((c) => ({
+      ...c,
+      channels: { ...c.channels, [uuidv4()]: {} },
+    }))
+  );
+
   const channels: Map<
     string,
     {
@@ -88,6 +88,7 @@ export const createFixture = (
   > = new Map();
 
   return {
+    type: 'custom',
     group,
     defaultConfig: DEFAULT_CUSTOM_FIXTURE_CONFIG,
     setConfig: (newConfig) => {
@@ -174,7 +175,11 @@ export const createFixture = (
       if (config.rgb) {
         return [
           {
-            channels: config.rgb,
+            channels: {
+              r: config.rgb.r - 1,
+              g: config.rgb.g - 1,
+              b: config.rgb.b - 1,
+            },
             x: config.pos?.x ?? 0,
             y: config.pos?.y ?? 0,
           },

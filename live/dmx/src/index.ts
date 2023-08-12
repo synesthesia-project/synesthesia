@@ -21,17 +21,33 @@ import {
 } from './fixtures/custom';
 import { Fixture, FixturePixel } from './fixtures/types';
 import { validateChannel } from './util';
+import {
+  RGBStripFixtureConfig,
+  RGB_STRIP_FIXTURE_CONFIG,
+  createRGBStripFixture,
+} from './fixtures/rgb-strip';
+
+const SPECIFIC_FIXTURE_CONFIG = t.union([
+  CUSTOM_FIXTURE_CONFIG,
+  RGB_STRIP_FIXTURE_CONFIG,
+]);
+
+type FixtureType = t.TypeOf<typeof SPECIFIC_FIXTURE_CONFIG>['type'];
 
 const DMX_OUTPUT_CONFIG = t.type({
   universes: UNIVERSES_CONFIG,
   fixtures: t.record(
     t.string,
-    t.partial({
-      universe: t.number,
-      channel: t.number,
-      name: t.string,
-      config: CUSTOM_FIXTURE_CONFIG,
-    })
+    t.intersection([
+      t.type({
+        config: SPECIFIC_FIXTURE_CONFIG,
+      }),
+      t.partial({
+        universe: t.number,
+        channel: t.number,
+        name: t.string,
+      }),
+    ])
   ),
 });
 
@@ -41,7 +57,7 @@ type FixtureConfig = Config['fixtures'][number];
 
 type ActiveFixture = {
   config: FixtureConfig | null;
-  fixture: Fixture<CustomFixtureConfig>;
+  fixture: Fixture<CustomFixtureConfig> | Fixture<RGBStripFixtureConfig>;
   components: {
     group: ld.Group;
     patch: Record<'universe' | 'channel', ld.TextInput>;
@@ -65,13 +81,25 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
   const header = new ld.Group({ noBorder: true, direction: 'horizontal' });
   group.addChild(header);
 
-  const addFixture = new ld.Button('Add Fixture', 'add');
-  header.addChild(addFixture);
+  header
+    .addChild(new ld.Button('Add Custom Fixture', 'add'))
+    .addListener(() => {
+      context.saveConfig((existing) => ({
+        ...existing,
+        fixtures: {
+          ...existing.fixtures,
+          [uuidv4()]: { config: { type: 'custom' } },
+        },
+      }));
+    });
 
-  addFixture.addListener(() => {
+  header.addChild(new ld.Button('Add RGB Strip', 'add')).addListener(() => {
     context.saveConfig((existing) => ({
       ...existing,
-      fixtures: { ...existing.fixtures, [uuidv4()]: {} },
+      fixtures: {
+        ...existing.fixtures,
+        [uuidv4()]: { config: { type: 'rgb-strip' } },
+      },
     }));
   });
 
@@ -103,7 +131,34 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
 
   const fixtures = new Map<string, ActiveFixture>();
 
-  const createFixture = (fxId: string): ActiveFixture => {
+  const createSpecificFixture = (fxId: string, type: FixtureType) => {
+    switch (type) {
+      case 'custom':
+        return createCustomFixture((update) =>
+          updateFixtureConfig(fxId, (existing) => ({
+            ...existing,
+            config: update(
+              existing.config?.type === 'custom'
+                ? existing.config
+                : { type: 'custom' }
+            ),
+          }))
+        );
+      case 'rgb-strip':
+        return createRGBStripFixture((update) =>
+          updateFixtureConfig(fxId, (existing) => ({
+            ...existing,
+            config: update(
+              existing.config?.type === 'rgb-strip'
+                ? existing.config
+                : { type: 'rgb-strip' }
+            ),
+          }))
+        );
+    }
+  };
+
+  const createFixture = (fxId: string, type: FixtureType): ActiveFixture => {
     const group = new ld.Group(
       {
         direction: 'vertical',
@@ -148,12 +203,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
       }
     });
 
-    const fixture = createCustomFixture((update) =>
-      updateFixtureConfig(fxId, (existing) => ({
-        ...existing,
-        config: update(existing.config || { type: 'custom' }),
-      }))
-    );
+    const fixture = createSpecificFixture(fxId, type);
 
     group.addChild(fixture.group);
 
@@ -189,16 +239,28 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
     fixture.components.patch.universe.setValue(`${fxConfig.universe ?? ''}`);
     fixture.components.patch.channel.setValue(`${fxConfig.channel ?? ''}`);
 
-    fixture.fixture.setConfig(fxConfig.config || fixture.fixture.defaultConfig);
+    if (
+      fixture.fixture.type === 'custom' &&
+      fxConfig.config.type === 'custom'
+    ) {
+      fixture.fixture.setConfig(fxConfig.config);
+    } else if (
+      fixture.fixture.type === 'rgb-strip' &&
+      fxConfig.config.type === 'rgb-strip'
+    ) {
+      fixture.fixture.setConfig(fxConfig.config);
+    } else {
+      throw new Error(`Config Mismatch`);
+    }
   };
 
   const updateFixtures = (config: Config) => {
     // Add or update existing fixtures
     for (const [fxId, fx] of Object.entries(config.fixtures)) {
       if (!fixtures.has(fxId)) {
-        const fixture = createFixture(fxId);
+        const fixture = createFixture(fxId, fx.config.type);
         fixtures.set(fxId, fixture);
-        group.addChild(fixture.components.group);
+        fixtureGroup.addChild(fixture.components.group);
       }
       updateFixture(fxId, fx);
     }
@@ -207,6 +269,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
     for (const [fxId, fx] of fixtures.entries()) {
       if (!config.fixtures[fxId]) {
         fixtureGroup.removeChild(fx.components.group);
+        fixtures.delete(fxId);
       }
     }
   };
@@ -236,9 +299,9 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
           fxConfig?.universe !== undefined && buffers[fxConfig.universe];
         if (buffer && fxConfig.channel !== undefined) {
           const channelOffset = fxConfig.channel - 1;
-          buffer[channelOffset + pixel.channels.r - 1] = color.r * color.alpha;
-          buffer[channelOffset + pixel.channels.g - 1] = color.g * color.alpha;
-          buffer[channelOffset + pixel.channels.b - 1] = color.b * color.alpha;
+          buffer[channelOffset + pixel.channels.r] = color.r * color.alpha;
+          buffer[channelOffset + pixel.channels.g] = color.g * color.alpha;
+          buffer[channelOffset + pixel.channels.b] = color.b * color.alpha;
         }
       }
       const channelValues = context.getChannelValues();

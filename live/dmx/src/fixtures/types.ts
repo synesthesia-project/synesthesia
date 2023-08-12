@@ -5,7 +5,7 @@ export type FixturePixel = {
   y: number;
   /**
    * Which channels within the fixture is this pixel mapped to,
-   * Relative channels (starting from 1).
+   * Relative channels (starting from 0).
    */
   channels: Record<'r' | 'g' | 'b', number>;
 };
@@ -29,7 +29,8 @@ export type FixtureChannel = {
   override?: boolean;
 };
 
-export type Fixture<T> = {
+export type Fixture<T extends { type: string }> = {
+  type: T['type'];
   group: ld.Group;
   setConfig: (config: T) => void;
   defaultConfig: T;
