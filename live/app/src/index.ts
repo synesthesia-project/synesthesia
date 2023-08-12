@@ -30,5 +30,4 @@ process
   })
   .on('uncaughtException', (err) => {
     console.error(err, 'Uncaught Exception thrown');
-    process.exit(1);
   });

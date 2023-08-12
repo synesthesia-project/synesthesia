@@ -42,6 +42,10 @@ const StyledTextInput = styled(TextInput)`
   box-shadow: inset 0px 0px 8px 0px rgba(0, 0, 0, 0.3);
   color: ${(p) => p.theme.textNormal};
   text-shadow: 0 -1px rgba(0, 0, 0, 0.7);
+
+  @media (max-width: 500px) {
+    flex-basis: 100%;
+  }
 `;
 
 const TextInputWrapper: React.FunctionComponent<Omit<Props, 'sendMessage'>> = (

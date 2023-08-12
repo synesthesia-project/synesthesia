@@ -54,21 +54,19 @@ export class Universes {
   ) {
     this.updateConfig((c) => c);
 
-    this.group
-      .addHeaderButton(new ld.Button('Add Universe', 'add'))
-      .addListener(() => {
-        updateConfig((config) => [
-          ...config,
-          {
-            type: 'artnet',
-            universe: Math.max(0, ...config.map((u) => u.universe + 1)),
-            config: {},
-          },
-        ]);
-      });
+    this.group.addHeaderButton(new ld.Button(null, 'add')).addListener(() => {
+      updateConfig((config) => [
+        ...config,
+        {
+          type: 'artnet',
+          universe: Math.max(0, ...config.map((u) => u.universe + 1)),
+          config: {},
+        },
+      ]);
+    });
 
     this.group
-      .addHeaderButton(new ld.Button('Remove Universe', 'remove'))
+      .addHeaderButton(new ld.Button(null, 'remove'))
       .addListener(() => {
         updateConfig((config) => config.slice(0, config.length - 1));
       });
@@ -83,7 +81,7 @@ export class Universes {
     this.group.setTitle(`Universes (${config.length})`);
     config.map((uConfig, i) => {
       const uGroup = this.group.addChild(
-        new ld.Group({}, { editableTitle: true })
+        new ld.Group({ wrap: true }, { editableTitle: true })
       );
       uGroup.setTitle(uConfig.name || '');
       uGroup.setLabels([{ text: `Universe ${i}` }, { text: uConfig.type }]);

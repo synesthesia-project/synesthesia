@@ -109,7 +109,9 @@ export const Sequences = (options: {
 
   const deskGroup = new ld.Group({ direction: 'vertical', noBorder: true });
 
-  const header = configGroup.addChild(new ld.Group({ noBorder: true }));
+  const header = configGroup.addChild(
+    new ld.Group({ noBorder: true, wrap: true })
+  );
 
   header.addChild(new ld.Button('Add Group', 'add')).addListener(() =>
     updateConfig((c) => ({
@@ -146,7 +148,7 @@ export const Sequences = (options: {
         );
       for (const { cId, channel } of groupChannels) {
         const cGroup = group.channelsList.addChild(
-          new ld.Group({ noBorder: true })
+          new ld.Group({ noBorder: true, wrap: true })
         );
 
         cGroup.addChild(new ld.Button(null, 'delete')).addListener(() =>
@@ -196,7 +198,7 @@ export const Sequences = (options: {
     );
 
     const adderContainer = configComponent.addChild(
-      new ld.Group({ noBorder: true })
+      new ld.Group({ noBorder: true, wrap: true })
     );
 
     const channelsList = configComponent.addChild(
@@ -211,7 +213,7 @@ export const Sequences = (options: {
       new ld.Button('Add Channel', 'add')
     );
 
-    const channelAdder = new ld.Group({ noBorder: true });
+    const channelAdder = new ld.Group({ noBorder: true, wrap: true });
 
     const cancel = new ld.Button('Cancel', 'cancel');
     const label = new ld.Label('Add Channel:');

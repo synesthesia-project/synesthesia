@@ -38,7 +38,7 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
 
   const layers: Array<Input<OptionalKindAndConfig>> = [];
 
-  const header = group.addChild(new ld.Group({ noBorder: true }));
+  const header = group.addChild(new ld.Group({ noBorder: true, wrap: true }));
 
   const addLayer = header.addChild(new ld.Button('Add Stop', 'add'));
   addLayer.addListener(() => {

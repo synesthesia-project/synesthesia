@@ -36,11 +36,20 @@ const createFillInput = (context: InputContext<Config>): Input<Config> => {
   const rect = group.addChild(new ld.Rect());
 
   const sliders = {
-    r: group.addChild(new ld.SliderButton(0, 0, 255, 1, 'writeThrough')),
-    g: group.addChild(new ld.SliderButton(0, 0, 255, 1, 'writeThrough')),
-    b: group.addChild(new ld.SliderButton(0, 0, 255, 1, 'writeThrough')),
-    alpha: group.addChild(new ld.SliderButton(1, 0, 1, 0.01, 'writeThrough')),
+    r: new ld.SliderButton(0, 0, 255, 1, 'writeThrough'),
+    g: new ld.SliderButton(0, 0, 255, 1, 'writeThrough'),
+    b: new ld.SliderButton(0, 0, 255, 1, 'writeThrough'),
+    alpha: new ld.SliderButton(1, 0, 1, 0.01, 'writeThrough'),
   } as const;
+
+  group.addChildren(
+    new ld.Label('Color:'),
+    sliders.r,
+    sliders.g,
+    sliders.b,
+    new ld.Label('Alpha:'),
+    sliders.alpha
+  );
 
   const updateConfig = (config: Partial<Config>) =>
     state.config && context.saveConfig({ ...state.config, ...config });

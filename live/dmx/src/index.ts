@@ -78,7 +78,11 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
 
   group.addChild(universes.group);
 
-  const header = new ld.Group({ noBorder: true, direction: 'horizontal' });
+  const header = new ld.Group({
+    noBorder: true,
+    direction: 'horizontal',
+    wrap: true,
+  });
   group.addChild(header);
 
   header
@@ -177,7 +181,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
       .addHeaderButton(new ld.Button(null, 'delete'))
       .addListener(() => removeFixture(fxId));
 
-    const patch = group.addChild(new ld.Group({ noBorder: true }));
+    const patch = group.addChild(new ld.Group({ noBorder: true, wrap: true }));
 
     patch.addChild(new ld.Label('Universe + Channel:'));
     const [universe, channel, setUniverseChannel] = patch.addChildren(

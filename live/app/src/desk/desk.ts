@@ -32,7 +32,7 @@ export const createDesk = () => {
   );
 
   const compositorHeader = compositorTab.addChild(
-    new ld.Group({ noBorder: true })
+    new ld.Group({ noBorder: true, wrap: true })
   );
 
   const addCompositorCueButton = compositorHeader.addChild(
@@ -73,7 +73,7 @@ export const createDesk = () => {
     outputKinds: Array<OutputKind<unknown>>;
   }) => {
     for (const kind of options.outputKinds) {
-      const addButton = new ld.Button(`Add ${kind.kind} output`);
+      const addButton = new ld.Button(kind.kind, 'add');
       outputHeader.addChild(addButton);
       addButton.addListener(async () =>
         options.addOutput(kind, addOutputKey.getValue())

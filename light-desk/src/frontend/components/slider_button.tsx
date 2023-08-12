@@ -207,6 +207,10 @@ const StyledSliderButton = styled(SliderButton)`
   width: 100px;
   height: 30px;
 
+  @media (max-width: 500px) {
+    flex-basis: 100%;
+  }
+
   > .inner {
     position: absolute;
     display: flex;
@@ -215,7 +219,7 @@ const StyledSliderButton = styled(SliderButton)`
     left: 0;
     top: 0;
     bottom: 0;
-    width: 100px;
+    width: 100%;
     cursor: pointer;
     transition: all 200ms;
     border-radius: 3px;
