@@ -3,6 +3,7 @@ import * as ld from '@synesthesia-project/light-desk';
 import { createEventEmitter } from '@synesthesia-project/live-core/lib/events';
 import { z } from 'zod';
 import { createAction } from '@synesthesia-project/live-core/lib/actions';
+import { RGBAColor } from '@synesthesia-project/compositor/lib/color';
 
 const BEAT_EVENT_EMITTER = createEventEmitter<{ periodMs: number }>('beat');
 const STOP_BEAT_ACTION = createAction('beat.stop', z.unknown());
@@ -67,6 +68,8 @@ export const BPM_PLUGIN: Plugin = {
 
     group.setTitle('Beat');
 
+    const rect = group.addChild(new ld.Rect());
+
     group
       .addChild(new ld.Button('Stop'))
       .addListener(() => STOP_BEAT_ACTION.action.trigger(null));
@@ -74,8 +77,22 @@ export const BPM_PLUGIN: Plugin = {
       .addChild(new ld.Button('Beat'))
       .addListener(() => RECORD_BEAT_ACTION.action.trigger(null));
 
+    let rectFrameInterval: null | NodeJS.Timer = null;
+
     BEAT_EVENT_EMITTER.register.addEventListener(({ periodMs }) => {
-      console.log('BEAT_EVENT_EMITTER', periodMs);
+      rectFrameInterval && clearInterval(rectFrameInterval);
+      const beatStartMs = Date.now();
+
+      const frame = () => {
+        const v = Math.max(0, 1 - (Date.now() - beatStartMs) / periodMs);
+        rect.setColor(new RGBAColor(255 * v, 255 * v, 255 * v, 1));
+        if (v === 0) {
+          rectFrameInterval && clearInterval(rectFrameInterval);
+        }
+      };
+
+      rectFrameInterval = setInterval(frame, 20);
+      frame();
     });
   },
 };
