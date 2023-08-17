@@ -9,6 +9,8 @@ const BEAT_EVENT_EMITTER = createEventEmitter<{ periodMs: number }>('beat');
 const STOP_BEAT_ACTION = createAction('beat.stop', z.unknown());
 const RECORD_BEAT_ACTION = createAction('beat.record', z.unknown());
 
+export const BEAT_EVENT = BEAT_EVENT_EMITTER.register;
+
 let manualRecording: null | {
   firstBeat: number;
   count: number;
