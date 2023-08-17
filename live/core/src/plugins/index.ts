@@ -11,6 +11,7 @@ import { OptionalKindAndConfig } from '../config';
 export interface PluginContext {
   registerOutputKind<T>(outputKind: OutputKind<T>): void;
   registerInputKind<T>(inputKind: InputKind<T>): void;
+  registerDeskComponent(component: ld.Component): void;
 }
 
 export interface Plugin {

@@ -16,6 +16,10 @@ export const createDesk = () => {
     new ld.Group({ direction: 'vertical', noBorder: true })
   );
 
+  const pluginComponentsGroup = deskTab.addChild(
+    new ld.Group({ direction: 'vertical', noBorder: true })
+  );
+
   const compositorCueTriggers = deskTab.addChild(
     new ld.Group({ direction: 'vertical' })
   );
@@ -86,6 +90,7 @@ export const createDesk = () => {
     desk,
     outputsGroup,
     sequencesGroup,
+    pluginComponentsGroup,
     compositorCuesGroup,
     compositorCueTriggers,
     sequencesDesk,
