@@ -6,6 +6,7 @@ import { CHASE_INPUT_PLUGIN } from './plugins/chase-input';
 import { DMX_PLUGIN } from '@synesthesia-project/live-dmx';
 import { SCAN_INPUT_PLUGIN } from './plugins/scan-input';
 import { BPM_PLUGIN } from './plugins/bpm';
+import { BEAT_INPUT_PLUGIN } from './plugins/beat-input';
 
 const configPath = process.argv[2];
 
@@ -15,6 +16,7 @@ if (!configPath) {
 
 Stage(
   [
+    BEAT_INPUT_PLUGIN,
     BPM_PLUGIN,
     VIRTUAL_OUTPUT_PLUGIN,
     CHASE_INPUT_PLUGIN,
