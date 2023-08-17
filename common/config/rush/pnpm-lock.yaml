@@ -81,6 +81,7 @@ specifiers:
   uuid: ~9.0.0
   webpack: ~4.41.2
   ws: ^8.4.0
+  zod: ~3.22.1
 
 dependencies:
   '@rush-temp/balccon': file:projects/balccon.tgz
@@ -160,6 +161,7 @@ dependencies:
   uuid: 9.0.0
   webpack: 4.41.2
   ws: 8.13.0
+  zod: 3.22.1
 
 packages:
 
@@ -7482,6 +7484,10 @@ packages:
     engines: {node: '>=10'}
     dev: false
 
+  /zod/3.22.1:
+    resolution: {integrity: sha512-+qUhAMl414+Elh+fRNtpU+byrwjDFOS1N7NioLY+tSlcADTx4TkCUua/hxJvxwDXcV4397/nZ420jy4n4+3WUg==}
+    dev: false
+
   file:projects/balccon.tgz:
     resolution: {integrity: sha512-riy+eGtOwRcPa7afo8UMpnwVwybSorNnASo+0iLnaVJPNEwsmB/vO+bT958k+Aui2eex0BlvG8cAOneqNBlfEw==, tarball: file:projects/balccon.tgz}
     name: '@rush-temp/balccon'
@@ -7669,7 +7675,7 @@ packages:
     dev: false
 
   file:projects/live-app.tgz:
-    resolution: {integrity: sha512-AwCg43OAY791Y/EZbZjBNJXb6BtKlRU70c9bEFF/p4UY05hwvWBHSZ2FRoKb8K0IdQcgq+Afd1dSHhnl3x8HOQ==, tarball: file:projects/live-app.tgz}
+    resolution: {integrity: sha512-LmQp+t5hbZDsfPnKFQZeSYTbNTn54/TYYnCpC8ip2vyqark8SHKSpyTzzoWEA0SYqyvCY6LLP7Q/fPgOOuzXAw==, tarball: file:projects/live-app.tgz}
     name: '@rush-temp/live-app'
     version: 0.0.0
     dependencies:
@@ -7681,10 +7687,11 @@ packages:
       io-ts: 2.2.20_fp-ts@2.13.1
       lodash: 4.17.21
       uuid: 9.0.0
+      zod: 3.22.1
     dev: false
 
   file:projects/live-core.tgz:
-    resolution: {integrity: sha512-X7gAVCw/nJmr59itbBTV5xN/D0KhwUp/ruPvXdSYzJ0MmdgGtfXyX1rFmf+Bm1AiQav8PneuzKS5+1lixMacoA==, tarball: file:projects/live-core.tgz}
+    resolution: {integrity: sha512-RQo0vqT145Zr9lKp2cPWUHYbBb/65L/ZHMbIMj8HOMBJC70yaCR6qKvaDGy6H4CwlIpmYGFO7BDAw5wp7nSMJw==, tarball: file:projects/live-core.tgz}
     name: '@rush-temp/live-core'
     version: 0.0.0
     dependencies:
@@ -7693,6 +7700,7 @@ packages:
       gulp: 4.0.2
       io-ts: 2.2.20_fp-ts@2.13.1
       lodash: 4.17.21
+      zod: 3.22.1
     dev: false
 
   file:projects/live-dmx.tgz:
