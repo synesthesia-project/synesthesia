@@ -70,6 +70,10 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
         inputManager.addInputKind(kind as InputKind<unknown>),
       registerDeskComponent: (component) =>
         desk.pluginComponentsGroup.addChild(component),
+      registerEvent: (event) =>
+        console.log(`New event registered: ${event.getName()}`),
+      registerAction: (action) =>
+        console.log(`New action registered: ${action.getName()}`),
     });
   };
 

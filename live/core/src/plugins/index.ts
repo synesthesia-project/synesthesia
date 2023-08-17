@@ -7,11 +7,15 @@ import {
 } from '@synesthesia-project/compositor/lib/modules';
 import { RGBAColor } from '@synesthesia-project/compositor/lib/color';
 import { OptionalKindAndConfig } from '../config';
+import { EventRegister } from '../events';
+import { Action } from '../actions';
 
 export interface PluginContext {
   registerOutputKind<T>(outputKind: OutputKind<T>): void;
   registerInputKind<T>(inputKind: InputKind<T>): void;
   registerDeskComponent(component: ld.Component): void;
+  registerEvent<T>(event: EventRegister<T>): void;
+  registerAction<T>(action: Action<T>): void;
 }
 
 export interface Plugin {
