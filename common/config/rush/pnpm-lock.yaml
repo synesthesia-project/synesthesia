@@ -17,6 +17,7 @@ specifiers:
   '@rush-temp/live-app': file:./projects/live-app.tgz
   '@rush-temp/live-core': file:./projects/live-core.tgz
   '@rush-temp/live-dmx': file:./projects/live-dmx.tgz
+  '@rush-temp/live-midi': file:./projects/live-midi.tgz
   '@rush-temp/midi-consoles': file:./projects/midi-consoles.tgz
   '@rush-temp/openrazer': file:./projects/openrazer.tgz
   '@rush-temp/openrazer-examples': file:./projects/openrazer-examples.tgz
@@ -59,7 +60,7 @@ specifiers:
   jquery: ~3.5.0
   json-socket: ^0.3.0
   lodash: ^4.17.13
-  midi: ^1.0.0
+  midi: ^2.0.0
   mocha: ^6.1.4
   nyc: ~15.0.0
   plugin-error: ~1.0.1
@@ -97,6 +98,7 @@ dependencies:
   '@rush-temp/live-app': file:projects/live-app.tgz
   '@rush-temp/live-core': file:projects/live-core.tgz
   '@rush-temp/live-dmx': file:projects/live-dmx.tgz
+  '@rush-temp/live-midi': file:projects/live-midi.tgz
   '@rush-temp/midi-consoles': file:projects/midi-consoles.tgz
   '@rush-temp/openrazer': file:projects/openrazer.tgz
   '@rush-temp/openrazer-examples': file:projects/openrazer-examples.tgz_eslint@8.31.0
@@ -139,7 +141,7 @@ dependencies:
   jquery: 3.5.1
   json-socket: 0.3.0
   lodash: 4.17.15
-  midi: 1.0.0
+  midi: 2.0.0
   mocha: 6.2.2
   nyc: 15.0.0
   plugin-error: 1.0.1
@@ -4645,15 +4647,6 @@ packages:
       picomatch: 2.3.1
     dev: false
 
-  /midi/1.0.0:
-    resolution: {integrity: sha512-BL2xedtLEy2ExJujuvQQNs5Gz1aXv7/wpq3KKZ7FmmTvVfR3eC+OgiwtC+4+9IinsXfQnTNSOBrG2PAjMHi0ZQ==}
-    engines: {node: '>=0.8.0'}
-    requiresBuild: true
-    dependencies:
-      bindings: 1.5.0
-      nan: 2.14.0
-    dev: false
-
   /midi/2.0.0:
     resolution: {integrity: sha512-HyCLWa+ET8Aqfu/NxdNkxfCx0EfCJrcZgKuhrY4c9UgkfxRt3ChM7RP1oC5vJf7ALXyuAG47jqr5yUlvSodTPQ==}
     engines: {node: '>=10'}
@@ -4821,10 +4814,6 @@ packages:
   /mute-stdout/1.0.1:
     resolution: {integrity: sha512-kDcwXR4PS7caBpuRYYBUz9iVixUk3anO3f5OYFiIPwK/20vCzKCHyKoulbiDY1S53zD2bxUpxN/IJ+TnXjfvxg==}
     engines: {node: '>= 0.10'}
-    dev: false
-
-  /nan/2.14.0:
-    resolution: {integrity: sha512-INOFj37C7k3AfaNTtX8RhsTw7qRy7eLET14cROi9+5HAVbbHuIWUHEauBv5qT4Av2tWasiTY1Jw6puUNqRJXQg==}
     dev: false
 
   /nan/2.17.0:
@@ -7688,7 +7677,7 @@ packages:
     dev: false
 
   file:projects/live-app.tgz:
-    resolution: {integrity: sha512-LmQp+t5hbZDsfPnKFQZeSYTbNTn54/TYYnCpC8ip2vyqark8SHKSpyTzzoWEA0SYqyvCY6LLP7Q/fPgOOuzXAw==, tarball: file:projects/live-app.tgz}
+    resolution: {integrity: sha512-txv5d/rhCfolh+jYTfU1+uuKJTpPsFMFGFLqiu6K6+j5Gv4VMqPGG6MPTpGRUhcyHONvQzHngAZbvOuICIVPRg==, tarball: file:projects/live-app.tgz}
     name: '@rush-temp/live-app'
     version: 0.0.0
     dependencies:
@@ -7731,8 +7720,23 @@ packages:
       uuid: 9.0.0
     dev: false
 
+  file:projects/live-midi.tgz:
+    resolution: {integrity: sha512-vu4vQSz1GXQxvcTCM94ARHEm+HrioVclP21FkPTuw2APqOHfQ0UzIqzgoNPzzSgvlTkdyqGEGv5p5v+HqIz93w==, tarball: file:projects/live-midi.tgz}
+    name: '@rush-temp/live-midi'
+    version: 0.0.0
+    dependencies:
+      '@types/lodash': 4.14.149
+      '@types/uuid': 9.0.0
+      fp-ts: 2.13.1
+      gulp: 4.0.2
+      io-ts: 2.2.20_fp-ts@2.13.1
+      lodash: 4.17.21
+      midi: 2.0.0
+      uuid: 9.0.0
+    dev: false
+
   file:projects/midi-consoles.tgz:
-    resolution: {integrity: sha512-TbjbwuOo8/FDau/n48d71MZw5V3BUz501deut2r5kqpAzukU9XtE16cL6uMyraNk50txXdzgOXgYzoXdgxQzEQ==, tarball: file:projects/midi-consoles.tgz}
+    resolution: {integrity: sha512-PoJyODaOu4p+utJKTZ54aRCqHJXljr8hKzowxNlzBh9saG5yWnkKh7VIS5tCd4hCOTG4M3ZbysHQw5rEysud2w==, tarball: file:projects/midi-consoles.tgz}
     name: '@rush-temp/midi-consoles'
     version: 0.0.0
     dependencies:
