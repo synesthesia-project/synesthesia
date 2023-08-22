@@ -19,6 +19,7 @@ import { Config, CueConfig, loadConfig, saveConfig } from './config';
 import { createDesk } from './desk/desk';
 import { createInputManager } from './inputs';
 import { INIT_SEQUENCES_CONFIG, Sequences } from './sequences';
+import { createPluginConfigManager } from './config/plugins';
 
 type ActiveOutput<ConfigT> = {
   kind: string;
@@ -41,6 +42,13 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       leading: true,
       trailing: true,
     }
+  );
+
+  const pluginConfigManager = createPluginConfigManager((update) =>
+    updateConfig((current) => ({
+      ...current,
+      plugins: update(current.plugins),
+    }))
   );
 
   const outputKinds = new Map<string, OutputKind<unknown>>();
@@ -74,6 +82,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
         console.log(`New event registered: ${event.getName()}`),
       registerAction: (action) =>
         console.log(`New action registered: ${action.getName()}`),
+      createConfigSection: pluginConfigManager.createConfigSection,
     });
   };
 
@@ -95,6 +104,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
     // - update outputs
     updateOutputsFromConfig(prevConfig);
     updateInputsFromConfig();
+    pluginConfigManager.setConfig(newConfig.plugins);
     if (newConfig.sequences !== prevConfig.sequences) {
       sequences.setConfig(newConfig.sequences || INIT_SEQUENCES_CONFIG);
     }

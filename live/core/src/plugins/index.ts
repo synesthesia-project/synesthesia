@@ -16,6 +16,16 @@ export interface PluginContext {
   registerDeskComponent(component: ld.Component): void;
   registerEvent<T>(event: EventRegister<T>): void;
   registerAction<T>(action: Action<T>): void;
+  createConfigSection<T>(
+    name: string,
+    type: t.Type<T>,
+    defaultValue: T
+  ): ConfigSection<T>;
+}
+
+export interface ConfigSection<T> {
+  updateConfig(update: (current: T) => T): void;
+  addListener(listener: (config: T) => void): void;
 }
 
 export interface Plugin {
