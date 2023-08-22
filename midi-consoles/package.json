@@ -33,7 +33,7 @@
     "lib/**/*"
   ],
   "dependencies": {
-    "midi": "^1.0.0"
+    "midi": "^2.0.0"
   },
   "devDependencies": {
     "@synesthesia-project/gulp-util": "~0.0.1",

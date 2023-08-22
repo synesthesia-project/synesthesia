@@ -2979,7 +2979,7 @@ packages:
     deprecated: The v1 package contains DANGEROUS / INSECURE binaries. Upgrade to safe fsevents v2
     requiresBuild: true
     dependencies:
-      nan: 2.14.0
+      nan: 2.17.0
     dev: false
     optional: true
     bundledDependencies:
@@ -4654,6 +4654,15 @@ packages:
       nan: 2.14.0
     dev: false
 
+  /midi/2.0.0:
+    resolution: {integrity: sha512-HyCLWa+ET8Aqfu/NxdNkxfCx0EfCJrcZgKuhrY4c9UgkfxRt3ChM7RP1oC5vJf7ALXyuAG47jqr5yUlvSodTPQ==}
+    engines: {node: '>=10'}
+    requiresBuild: true
+    dependencies:
+      bindings: 1.5.0
+      nan: 2.17.0
+    dev: false
+
   /miller-rabin/4.0.1:
     resolution: {integrity: sha512-115fLhvZVqWwHPbClyntxEVfVDfl9DLLTuJvq3g2O/Oxi8AiNouAHvDSzHS0viUJc+V5vm3eq91Xwqn9dp4jRA==}
     hasBin: true
@@ -4816,6 +4825,10 @@ packages:
 
   /nan/2.14.0:
     resolution: {integrity: sha512-INOFj37C7k3AfaNTtX8RhsTw7qRy7eLET14cROi9+5HAVbbHuIWUHEauBv5qT4Av2tWasiTY1Jw6puUNqRJXQg==}
+    dev: false
+
+  /nan/2.17.0:
+    resolution: {integrity: sha512-2ZTgtl0nJsO0KQCjEpxcIr5D+Yv90plTitZt9JBfQvVJDS5seMl3FOvsh3+9CoYWXf/1l5OaZzzF6nDm4cagaQ==}
     dev: false
 
   /nanomatch/1.2.13:
@@ -7719,13 +7732,13 @@ packages:
     dev: false
 
   file:projects/midi-consoles.tgz:
-    resolution: {integrity: sha512-oIG+/hM1vyjMfwrYfI5IlQfZQmzk3y5NPvRMuJra41nRXMgMKoIXlB7xFPQmT/xOlhCmpBJp9gT59YWCY96JlA==, tarball: file:projects/midi-consoles.tgz}
+    resolution: {integrity: sha512-TbjbwuOo8/FDau/n48d71MZw5V3BUz501deut2r5kqpAzukU9XtE16cL6uMyraNk50txXdzgOXgYzoXdgxQzEQ==, tarball: file:projects/midi-consoles.tgz}
     name: '@rush-temp/midi-consoles'
     version: 0.0.0
     dependencies:
       '@types/node': 18.11.18
       gulp: 4.0.2
-      midi: 1.0.0
+      midi: 2.0.0
     dev: false
 
   file:projects/openrazer-examples.tgz_eslint@8.31.0:
