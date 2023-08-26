@@ -3,6 +3,7 @@ import * as ld from '@synesthesia-project/light-desk';
 import { MIDI_PLUGIN_CONFIG } from './config';
 import { getMIDIDevices } from '@synesthesia-project/midi-consoles';
 import { initializeControllers } from './controllers';
+import { initializePages } from './mappings/pages';
 
 export const MIDI_PLUGIN: Plugin = {
   init: (context) => {
@@ -14,6 +15,7 @@ export const MIDI_PLUGIN: Plugin = {
       MIDI_PLUGIN_CONFIG,
       {
         controllers: {},
+        pages: [],
       }
     );
 
@@ -46,12 +48,27 @@ export const MIDI_PLUGIN: Plugin = {
 
     tab.addChild(controllers.controllersGroup);
 
+    const pages = initializePages((update) =>
+      configSection.updateConfig((config) => ({
+        ...config,
+        pages: update(config.pages),
+      }))
+    );
+
+    tab.addChild(new ld.Button('Add Page')).addListener(() => {
+      pages.addPage();
+    });
+    tab.addChild(pages.pagesTabs);
+
     configSection.addListener((newConfig, oldConfig) => {
       if (oldConfig?.controllers !== newConfig.controllers) {
         controllers.applyConfig(
           newConfig.controllers,
           oldConfig?.controllers ?? null
         );
+      }
+      if (oldConfig?.pages !== newConfig.pages) {
+        pages.applyConfig(newConfig.pages, oldConfig?.pages ?? null);
       }
     });
   },
