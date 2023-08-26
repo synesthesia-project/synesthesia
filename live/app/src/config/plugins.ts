@@ -40,20 +40,20 @@ const createConfigSection = <T>(
   updateConfig: ConfigUpdater<unknown>
 ): ConfigSectionImplementation<T> => {
   let config: T = defaultValue;
-  const listeners = new Set<(config: T) => void>();
+  const listeners = new Set<ConfigApplyer<T>>();
 
   return {
     addListener: (listener) => {
       listeners.add(listener);
-      listener(config);
+      listener(config, null);
     },
     updateConfig: (update) =>
       updateConfig((current) => update(get(current, type))),
-    applyConfig: (newConfig) => {
+    applyConfig: (newConfig, oldConfig) => {
       if (newConfig !== config) {
         config = get(newConfig, type);
         for (const listener of listeners) {
-          listener(config);
+          listener(config, oldConfig ? get(oldConfig, type) : null);
         }
       }
     },

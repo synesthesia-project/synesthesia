@@ -27,7 +27,7 @@ export interface PluginContext {
 
 export interface ConfigSection<T> {
   updateConfig: ConfigUpdater<T>;
-  addListener(listener: (config: T) => void): void;
+  addListener(listener: ConfigApplyer<T>): void;
 }
 
 export interface Plugin {
