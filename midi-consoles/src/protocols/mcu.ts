@@ -123,7 +123,6 @@ export default class MCUProtocol extends Base {
   }
 
   private handleMidiMCU = (message: number[]) => {
-    console.log(message.map((n) => n.toString(16)));
     if (message.length < 3) return;
     const k = message[0];
 
@@ -337,7 +336,6 @@ export default class MCUProtocol extends Base {
   }
 
   private handleEvent<E extends EventType>(event: SpecificEvent<E>) {
-    console.log(event);
     (
       this.eventListeners[event.type] as Set<Listener<SpecificEvent<E>>>
     ).forEach((l) => l(event));

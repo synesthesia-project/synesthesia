@@ -53,10 +53,6 @@ export class Base {
   }
 
   public sendMidi(message: number[]) {
-    console.log(
-      'sending',
-      message.map((n) => n.toString(16))
-    );
     this.output.sendMessage(message);
   }
 }
