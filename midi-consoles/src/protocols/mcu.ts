@@ -26,7 +26,13 @@ export type FaderEvent = {
   value: number;
 };
 
-type ChannelButton = 'v-select' | 'rec' | 'solo' | 'mute' | 'select';
+type ChannelButton =
+  | 'v-select'
+  | 'rec'
+  | 'solo'
+  | 'mute'
+  | 'select'
+  | 'fader-touch';
 type ButtonState = 'pressed' | 'released';
 
 export type ChannelButtonEvent = {
@@ -165,9 +171,19 @@ export default class MCUProtocol extends Base {
           button,
           channel,
         });
+      } else if (b >= 0x68 && b <= 0x6f) {
+        const channel = b - 0x68;
+        if (!isChannel(channel))
+          throw new Error('internal error: invalid channel produced!');
+        this.handleEvent({
+          type: 'channel-button',
+          state,
+          button: 'fader-touch',
+          channel,
+        });
       } else {
         // TODO: implement
-        console.error('Other buttons not yet supported');
+        console.error('Other buttons not yet supported', b.toString(16));
       }
     }
 
@@ -231,6 +247,12 @@ export default class MCUProtocol extends Base {
         ? 0x18
         : 0x20) + channel;
     this.sendMidi([0x90, i, on ? 0x7f : 0]);
+  }
+
+  public setChannelLCD(channel: Channel, row: 'top' | 'bottom', text: string) {
+    checkChannel(channel);
+    const offset = channel * 7 + (row === 'top' ? 0 : 0x38);
+    this.setLCDText(offset, (text + '       ').substr(0, 7));
   }
 
   public setLCDText(offset: number, text: string) {
