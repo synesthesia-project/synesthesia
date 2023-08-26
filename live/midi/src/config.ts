@@ -1,16 +1,6 @@
 import * as t from 'io-ts';
-
-export const GENERIC_CONTROLLER_CONFIG = t.type({
-  type: t.literal('generic'),
-});
-
-export const MACKIE_MCU_CONTROLLER_CONFIG = t.type({
-  type: t.literal('mcu'),
-  /**
-   * Required if you want to set LCD text
-   */
-  deviceId: t.union([t.null, t.number]),
-});
+import { GENERIC_CONTROLLER_CONFIG } from './controllers/generic';
+import { MACKIE_MCU_CONTROLLER_CONFIG } from './controllers/mcu';
 
 export const CONTROLER_CONFIG = t.type({
   name: t.string,
