@@ -88,6 +88,7 @@ export const createDesk = () => {
 
   return {
     desk,
+    tabs,
     outputsGroup,
     sequencesGroup,
     pluginComponentsGroup,

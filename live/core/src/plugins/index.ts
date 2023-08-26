@@ -22,6 +22,7 @@ export interface PluginContext {
     type: t.Type<T>,
     defaultValue: T
   ): ConfigSection<T>;
+  createTab(name: string, component: ld.Component): void;
 }
 
 export interface ConfigSection<T> {

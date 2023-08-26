@@ -100,6 +100,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       registerAction: (action) =>
         console.log(`New action registered: ${action.getName()}`),
       createConfigSection: pluginConfigManager.createConfigSection,
+      createTab: (name, component) => desk.tabs.addTab(name, component),
     });
   };
 
