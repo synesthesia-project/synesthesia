@@ -22,16 +22,12 @@ const CHASE_INPUT_CONFIG = t.type({
 
 type Config = t.TypeOf<typeof CHASE_INPUT_CONFIG>;
 
-const createAddInput = (context: InputContext<Config>): Input<Config> => {
-  const state: {
-    config: Config;
-  } = {
-    config: {
-      advanceAmountPerSecond: 0.3,
-      sequence: [],
-    },
-  };
+const DEFAULT_CONFIG: Config = {
+  advanceAmountPerSecond: 0.3,
+  sequence: [],
+};
 
+const createAddInput = (context: InputContext<Config>): Input<Config> => {
   const group = new ld.Group({ direction: 'vertical', noBorder: true });
   const module = new TransitionModule(new FillModule(RGBA_TRANSPARENT));
   let chaseModule: ChaseModule | null = null;
@@ -41,20 +37,20 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
   const header = group.addChild(new ld.Group({ noBorder: true, wrap: true }));
 
   const addLayer = header.addChild(new ld.Button('Add Stop', 'add'));
-  addLayer.addListener(() => {
-    context.saveConfig({
-      ...state.config,
-      sequence: [...state.config.sequence, null],
-    });
-  });
+  addLayer.addListener(() =>
+    context.updateConfig((current) => ({
+      ...current,
+      sequence: [...current.sequence, null],
+    }))
+  );
 
   header.addChild(new ld.Label('Speed:'));
 
   const speedSlider = header.addChild(
-    new ld.SliderButton(state.config.advanceAmountPerSecond, 0, 10, 0.01)
+    new ld.SliderButton(DEFAULT_CONFIG.advanceAmountPerSecond, 0, 10, 0.01)
   );
   speedSlider.addListener((advanceAmountPerSecond) => {
-    context.saveConfig({ ...state.config, advanceAmountPerSecond });
+    context.updateConfig((c) => ({ ...c, advanceAmountPerSecond }));
   });
 
   const layersGroup = group.addChild(
@@ -62,65 +58,62 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
   );
 
   return {
-    setConfig: (newConfig) => {
-      const prevConfig = state.config ?? [];
-      state.config = newConfig;
+    applyConfig: (config, prevConfig) => {
       // Update settings
-      speedSlider.setValue(state.config.advanceAmountPerSecond);
-      chaseModule?.setAdvanceAmountPerSecond(
-        state.config.advanceAmountPerSecond
-      );
+      speedSlider.setValue(config.advanceAmountPerSecond);
+      chaseModule?.setAdvanceAmountPerSecond(config.advanceAmountPerSecond);
       // Add any missing layers
       for (
-        let i = prevConfig.sequence.length;
-        i < newConfig.sequence.length;
+        let i = prevConfig?.sequence.length ?? 0;
+        i < config.sequence.length;
         i++
       ) {
         const input = context.createInputSocket({
-          saveConfig: async (singleConfig) => {
-            if (state.config) {
-              context.saveConfig({
-                ...state.config,
-                sequence: [
-                  ...state.config.sequence.slice(0, i),
-                  singleConfig,
-                  ...state.config.sequence.slice(i + 1),
-                ],
-              });
-            }
-          },
+          updateConfig: async (update) =>
+            context.updateConfig((current) => ({
+              ...current,
+              sequence: [
+                ...current.sequence.slice(0, i),
+                update(current.sequence[i]),
+                ...current.sequence.slice(i + 1),
+              ],
+            })),
           groupConfig: {
             additionalButtons: [
-              new ld.Button(null, 'delete').addListener(() => {
-                const newSequence = [...state.config.sequence];
-                newSequence.splice(i, 1);
-                context.saveConfig({ ...state.config, sequence: newSequence });
-              }),
+              new ld.Button(null, 'delete').addListener(() =>
+                context.updateConfig((current) => ({
+                  ...current,
+                  sequence: [
+                    ...current.sequence.slice(0, i),
+                    ...current.sequence.slice(i + 1),
+                  ],
+                }))
+              ),
             ],
           },
         });
         layers[i] = input;
-        input.setConfig(newConfig.sequence[i]);
+        input.applyConfig(config.sequence[i], prevConfig?.sequence[i]);
         layersGroup.addChild(input.getLightDeskComponent());
       }
       // Remove any extra layers
-      layers.splice(newConfig.sequence.length).map((layer) => {
+      layers.splice(config.sequence.length).map((layer) => {
         layer.destroy();
         layersGroup.removeChild(layer.getLightDeskComponent());
       });
       // Update each layers' config
-      for (let i = 0; i < newConfig.sequence.length; i++) {
-        layers[i].setConfig(newConfig.sequence[i]);
+      for (let i = 0; i < config.sequence.length; i++) {
+        layers[i].applyConfig(config.sequence[i], prevConfig?.sequence[i]);
       }
       // If the number of layers has changed, transition to new module
-      if (prevConfig.sequence.length !== layers.length) {
+      if (prevConfig?.sequence.length !== layers.length) {
         chaseModule =
           layers.length === 0
             ? null
             : new ChaseModule(
                 layers.map((l) => l.getModlue()),
                 {
-                  advanceAmountPerSecond: state.config.advanceAmountPerSecond,
+                  advanceAmountPerSecond: config.advanceAmountPerSecond,
                 }
               );
         module.transition(chaseModule || new FillModule(RGBA_TRANSPARENT), 1);
@@ -137,10 +130,7 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
 export const CHASE_INPUT_KIND: InputKind<Config> = {
   kind: 'chase',
   config: CHASE_INPUT_CONFIG,
-  initialConfig: {
-    advanceAmountPerSecond: 0.3,
-    sequence: [],
-  },
+  initialConfig: DEFAULT_CONFIG,
   create: createAddInput,
 };
 

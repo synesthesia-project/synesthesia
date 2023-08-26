@@ -19,12 +19,6 @@ const ADD_INPUT_CONFIG = t.array(OPTIONAL_KIND_AND_CONFIG);
 type Config = t.TypeOf<typeof ADD_INPUT_CONFIG>;
 
 const createAddInput = (context: InputContext<Config>): Input<Config> => {
-  const state: {
-    config: Config | null;
-  } = {
-    config: null,
-  };
-
   const group = new ld.Group({ direction: 'vertical', noBorder: true });
   const module = new AddModule([new FillModule(RGBA_TRANSPARENT)]);
 
@@ -34,7 +28,7 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
 
   const addLayer = header.addChild(new ld.Button('Add Layer', 'add'));
   addLayer.addListener(() => {
-    context.saveConfig([...(state.config || []), null]);
+    context.updateConfig((current) => [...(current || []), null]);
   });
 
   const layersGroup = group.addChild(
@@ -42,43 +36,39 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
   );
 
   return {
-    setConfig: (newConfig) => {
-      const prevConfig = state.config ?? [];
-      state.config = newConfig;
+    applyConfig: (config, lastConfig) => {
       // Add any missing layers
-      for (let i = prevConfig.length; i < newConfig.length; i++) {
+      for (let i = lastConfig?.length ?? 0; i < config.length; i++) {
         const input = context.createInputSocket({
-          saveConfig: async (singleConfig) => {
-            if (state.config) {
-              context.saveConfig([
-                ...state.config.slice(0, i),
-                singleConfig,
-                ...state.config.slice(i + 1),
-              ]);
-            }
-          },
+          updateConfig: async (update) =>
+            context.updateConfig((current) => [
+              ...current.slice(0, i),
+              update(current[i]),
+              ...current.slice(i + 1),
+            ]),
           groupConfig: {
             additionalButtons: [
-              new ld.Button(null, 'delete').addListener(() => {
-                const newConfig = [...(state.config || [])];
-                newConfig.splice(i, 1);
-                context.saveConfig(newConfig);
-              }),
+              new ld.Button(null, 'delete').addListener(() =>
+                context.updateConfig((current) => [
+                  ...current.slice(0, i),
+                  ...current.slice(i + 1),
+                ])
+              ),
             ],
           },
         });
         layers[i] = input;
-        input.setConfig(newConfig[i]);
+        input.applyConfig(config[i], null);
         layersGroup.addChild(input.getLightDeskComponent());
       }
       // Remove any extra layers
-      layers.splice(newConfig.length).map((layer) => {
+      layers.splice(config.length).map((layer) => {
         layer.destroy();
         layersGroup.removeChild(layer.getLightDeskComponent());
       });
       // Update each layers' config
-      for (let i = 0; i < newConfig.length; i++) {
-        layers[i].setConfig(newConfig[i]);
+      for (let i = 0; i < config.length; i++) {
+        layers[i].applyConfig(config[i], lastConfig?.[i]);
       }
       // Update the module
       if (layers.length === 0) {

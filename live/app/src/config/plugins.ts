@@ -1,3 +1,7 @@
+import {
+  ConfigApplyer,
+  ConfigUpdater,
+} from '@synesthesia-project/live-core/lib/util';
 import { ConfigSection } from '@synesthesia-project/live-core/src/plugins';
 import { isRight } from 'fp-ts/lib/Either';
 import * as t from 'io-ts';
@@ -15,11 +19,11 @@ export type PluginConfigManager = {
     type: t.Type<T>,
     defaultValue: T
   ): ConfigSection<T>;
-  setConfig(config: PluginConfig | undefined): void;
+  applyConfig: ConfigApplyer<PluginConfig | undefined>;
 };
 
 interface ConfigSectionImplementation<T> extends ConfigSection<T> {
-  setConfig(config: unknown): void;
+  applyConfig: ConfigApplyer<unknown>;
 }
 
 const get = <T>(config: unknown, type: t.Type<T>): T => {
@@ -33,7 +37,7 @@ const get = <T>(config: unknown, type: t.Type<T>): T => {
 const createConfigSection = <T>(
   type: t.Type<T>,
   defaultValue: T,
-  saveConfig: (update: (current: unknown) => unknown) => void
+  updateConfig: ConfigUpdater<unknown>
 ): ConfigSectionImplementation<T> => {
   let config: T = defaultValue;
   const listeners = new Set<(config: T) => void>();
@@ -44,8 +48,8 @@ const createConfigSection = <T>(
       listener(config);
     },
     updateConfig: (update) =>
-      saveConfig((current) => update(get(current, type))),
-    setConfig: (newConfig) => {
+      updateConfig((current) => update(get(current, type))),
+    applyConfig: (newConfig) => {
       if (newConfig !== config) {
         config = get(newConfig, type);
         for (const listener of listeners) {
@@ -57,10 +61,8 @@ const createConfigSection = <T>(
 };
 
 export const createPluginConfigManager = (
-  saveConfig: (update: (current: PluginConfig) => PluginConfig) => void
+  updateConfig: ConfigUpdater<PluginConfig>
 ): PluginConfigManager => {
-  let config: PluginConfig | undefined = undefined;
-
   const sections = new Map<string, ConfigSectionImplementation<unknown>>();
 
   return {
@@ -68,29 +70,30 @@ export const createPluginConfigManager = (
       if (sections.has(name)) {
         throw new Error(`Config section ${name} already exists`);
       }
-      const saveSectionConfig = (update: (current: unknown) => unknown) => {
-        saveConfig((current) => ({
+      const updateSectionConfig: ConfigUpdater<unknown> = (update) =>
+        updateConfig((current) => ({
           ...current,
           [name]: update(current?.[name] ?? defaultValue),
         }));
-      };
       const section = createConfigSection(
         type,
         defaultValue,
-        saveSectionConfig
+        updateSectionConfig
       );
-      sections.set(name, section);
+      sections.set(name, section as ConfigSectionImplementation<unknown>);
       return section;
     },
-    setConfig: (newConfig) => {
-      if (config !== newConfig) {
+    applyConfig: (config, oldConfig) => {
+      if (oldConfig !== config) {
         for (const [sectionName, section] of sections.entries()) {
-          if (newConfig?.[sectionName] !== config?.[sectionName]) {
-            section.setConfig(newConfig?.[sectionName]);
+          if (config?.[sectionName] !== oldConfig?.[sectionName]) {
+            section.applyConfig(
+              config?.[sectionName],
+              oldConfig?.[sectionName]
+            );
           }
         }
       }
-      config = newConfig;
     },
   };
 };

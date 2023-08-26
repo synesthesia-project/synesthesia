@@ -4,12 +4,12 @@ import { TransitionModule } from '@synesthesia-project/compositor/lib/modules/tr
 import * as ld from '@synesthesia-project/light-desk';
 import type {
   Input,
-  InputContext,
   InputContextGroupConfig,
   InputKind,
   InputSocket,
 } from '@synesthesia-project/live-core/lib/plugins';
 import type { OptionalKindAndConfig } from '@synesthesia-project/live-core/lib/config';
+import { ConfigUpdater } from '@synesthesia-project/live-core/lib/util';
 
 const TRANSITION_DURATION = 1;
 
@@ -18,12 +18,10 @@ export const createInputManager = () => {
 
   const inputKindListeners = new Set<() => void>();
 
-  const createSocket = (
-    context: Pick<InputContext<OptionalKindAndConfig>, 'saveConfig'> & {
-      groupConfig?: InputContextGroupConfig;
-    }
-  ): InputSocket => {
-    let config: OptionalKindAndConfig = null;
+  const createSocket = (context: {
+    updateConfig: ConfigUpdater<OptionalKindAndConfig>;
+    groupConfig?: InputContextGroupConfig;
+  }): InputSocket => {
     let groupConfig: InputContextGroupConfig | null =
       context.groupConfig || null;
     let displayReplaceButton = false;
@@ -46,10 +44,10 @@ export const createInputManager = () => {
 
     const setInputKind = (kind: InputKind<unknown>) => {
       group.removeChild(createInputGroup);
-      context.saveConfig({
+      context.updateConfig(() => ({
         kind: kind.kind,
         config: kind.initialConfig,
-      });
+      }));
     };
 
     inputKindListeners.add(updateCreateInputButtons);
@@ -61,7 +59,7 @@ export const createInputManager = () => {
     } | null = null;
 
     const replaceButton = new ld.Button('replace', 'refresh');
-    replaceButton.addListener(() => context.saveConfig(null));
+    replaceButton.addListener(() => context.updateConfig(() => null));
 
     const updateGroupDisplay = () => {
       group.removeAllHeaderButtons();
@@ -81,12 +79,8 @@ export const createInputManager = () => {
     updateGroupDisplay();
 
     return {
-      setConfig: (newConfig) => {
-        config = newConfig;
-        if (
-          currentInput &&
-          (!newConfig || currentInput.kind !== newConfig.kind)
-        ) {
+      applyConfig: (config, oldConfig) => {
+        if (currentInput && (!config || currentInput.kind !== config.kind)) {
           // Disable existing input
           module.transition(
             new FillModule(RGBA_TRANSPARENT),
@@ -99,18 +93,18 @@ export const createInputManager = () => {
           updateGroupDisplay();
           currentInput = null;
         }
-        if (!newConfig) {
+        if (!config) {
           group.setLabels([]);
           group.addChild(createInputGroup);
         } else {
-          const kind = inputKinds.get(newConfig.kind);
+          const kind = inputKinds.get(config.kind);
           if (!kind) {
-            throw new Error(`Unknown input kind: ${newConfig.kind}`);
+            throw new Error(`Unknown input kind: ${config.kind}`);
           }
           // TODO: validate config type
           if (currentInput) {
             // Update existing input
-            currentInput.input.setConfig(newConfig.config);
+            currentInput.input.applyConfig(config.config, oldConfig?.config);
           } else {
             // Update header
             group.setLabels([{ text: kind.kind }]);
@@ -120,18 +114,15 @@ export const createInputManager = () => {
             currentInput = {
               kind: kind.kind,
               input: kind.create({
-                saveConfig: async (newConfig) => {
-                  if (config?.kind === kind.kind) {
-                    return context.saveConfig({
-                      kind: kind.kind,
-                      config: newConfig,
-                    });
-                  }
-                },
+                updateConfig: async (update) =>
+                  context.updateConfig(() => ({
+                    kind: kind.kind,
+                    config: update(config.config),
+                  })),
                 createInputSocket: createSocket,
               }),
             };
-            currentInput.input.setConfig(newConfig.config);
+            currentInput.input.applyConfig(config.config, null);
             group.addChild(currentInput.input.getLightDeskComponent());
             module.transition(
               currentInput.input.getModlue(),

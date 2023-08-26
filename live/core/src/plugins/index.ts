@@ -9,6 +9,7 @@ import { RGBAColor } from '@synesthesia-project/compositor/lib/color';
 import { OptionalKindAndConfig } from '../config';
 import { EventRegister } from '../events';
 import { Action } from '../actions';
+import { ConfigApplyer, ConfigUpdater } from '../util';
 
 export interface PluginContext {
   registerOutputKind<T>(outputKind: OutputKind<T>): void;
@@ -24,7 +25,7 @@ export interface PluginContext {
 }
 
 export interface ConfigSection<T> {
-  updateConfig(update: (current: T) => T): void;
+  updateConfig: ConfigUpdater<T>;
   addListener(listener: (config: T) => void): void;
 }
 
@@ -33,8 +34,7 @@ export interface Plugin {
 }
 
 export interface ModuleContext<ConfigT> {
-  // TODO: change this to take an updater function
-  saveConfig(config: ConfigT): Promise<void>;
+  updateConfig: ConfigUpdater<ConfigT>;
 }
 
 export interface Channel {
@@ -51,9 +51,7 @@ export interface Channel {
  * A handle given to any new output that can be used by the
  * output to interact with the stage and its context.
  */
-export interface OutputContext<ConfigT> {
-  // TODO remove this definition and extend ModuleContext instead
-  saveConfig(update: (existing: ConfigT) => ConfigT): Promise<void>;
+export interface OutputContext<ConfigT> extends ModuleContext<ConfigT> {
   render(pixelMap: PixelMap, pixels: Array<PixelInfo<unknown>>): RGBAColor[];
   getChannelValues(): Map<string, number>;
   /**
@@ -82,7 +80,7 @@ export interface InputSocket extends Input<OptionalKindAndConfig> {
 
 export interface InputContext<ConfigT> extends ModuleContext<ConfigT> {
   createInputSocket(context: {
-    saveConfig(config: OptionalKindAndConfig): Promise<void>;
+    updateConfig: ConfigUpdater<OptionalKindAndConfig>;
     groupConfig?: InputContextGroupConfig;
   }): InputSocket;
 }
@@ -92,7 +90,7 @@ export interface Module<ConfigT> {
    * Inform the output of a change to its config,
    * or load it for the first time.
    */
-  setConfig(config: ConfigT): unknown;
+  applyConfig: ConfigApplyer<ConfigT>;
   getLightDeskComponent(): ld.Component;
   /**
    * Inform the output that is about to be removed and should shut down

@@ -46,7 +46,7 @@ const createVirtualOutput = (
   update.addListener(async () => {
     const value = pixelsInput.getValue();
     if (PIXEL_COUNT_MATCH.test(value)) {
-      context.saveConfig(() => ({
+      context.updateConfig(() => ({
         pixels: parseInt(value),
       }));
     } else {
@@ -79,7 +79,7 @@ const createVirtualOutput = (
   const renderInterval = setInterval(render, 10);
 
   return {
-    setConfig: (config) => {
+    applyConfig: (config) => {
       group.removeChild(rects);
       rects = new ld.Group({ noBorder: true, wrap: true });
       pixels = {

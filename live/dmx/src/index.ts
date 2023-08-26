@@ -65,10 +65,8 @@ type ActiveFixture = {
 };
 
 const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
-  let lastConfig: unknown = null;
-
   const universes = new Universes((update) =>
-    context.saveConfig((existing) => ({
+    context.updateConfig((existing) => ({
       ...existing,
       universes: update(existing.universes),
     }))
@@ -88,7 +86,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
   header
     .addChild(new ld.Button('Add Custom Fixture', 'add'))
     .addListener(() => {
-      context.saveConfig((existing) => ({
+      context.updateConfig((existing) => ({
         ...existing,
         fixtures: {
           ...existing.fixtures,
@@ -98,7 +96,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
     });
 
   header.addChild(new ld.Button('Add RGB Strip', 'add')).addListener(() => {
-    context.saveConfig((existing) => ({
+    context.updateConfig((existing) => ({
       ...existing,
       fixtures: {
         ...existing.fixtures,
@@ -114,7 +112,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
     uuid: string,
     change: (current: FixtureConfig) => FixtureConfig
   ) =>
-    context.saveConfig((existing) => ({
+    context.updateConfig((existing) => ({
       ...existing,
       fixtures: {
         ...existing.fixtures,
@@ -123,7 +121,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
     }));
 
   const removeFixture = (uuid: string) => {
-    context.saveConfig((existing) => {
+    context.updateConfig((existing) => {
       const fixtures = { ...existing.fixtures };
       delete fixtures[uuid];
       return {
@@ -384,11 +382,10 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
   };
 
   return {
-    setConfig: (config) => {
+    applyConfig: (config, lastConfig) => {
       if (lastConfig === config) {
         return;
       }
-      lastConfig = config;
       universes.setConfig(config.universes);
       updateFixtures(config);
       updatePixelsFromFixtures();
