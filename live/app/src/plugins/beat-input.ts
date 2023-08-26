@@ -53,9 +53,7 @@ const createBeatFlashInput = (context: InputContext<Config>): Input<Config> => {
   const group = new ld.Group({ direction: 'vertical', noBorder: true });
 
   const input = context.createInputSocket({
-    saveConfig: async (singleConfig) => {
-      context.saveConfig(singleConfig);
-    },
+    updateConfig: context.updateConfig,
   });
 
   group.addChild(input.getLightDeskComponent());
@@ -74,9 +72,7 @@ const createBeatFlashInput = (context: InputContext<Config>): Input<Config> => {
   const module = new AlphaModule(input.getModlue(), getAlpha);
 
   return {
-    setConfig: (newConfig) => {
-      input.setConfig(newConfig);
-    },
+    applyConfig: input.applyConfig,
     getLightDeskComponent: () => group,
     destroy: () => {
       input.destroy();

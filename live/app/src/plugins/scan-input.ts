@@ -35,16 +35,9 @@ const DEFAULT_CONFIG: Config = {
 };
 
 const createScanInput = (context: InputContext<Config>): Input<Config> => {
-  const state: {
-    config: Config | null;
-    color: RGBAColor;
-  } = {
-    config: null,
-    color: RGBA_BLACK,
-  };
-
+  let color = RGBA_BLACK;
   const group = new ld.Group({ noBorder: true, wrap: true });
-  const module = new ScanModule(() => state.color);
+  const module = new ScanModule(() => color);
 
   const rect = group.addChild(new ld.Rect());
 
@@ -72,7 +65,7 @@ const createScanInput = (context: InputContext<Config>): Input<Config> => {
   );
 
   const updateConfig = (config: Partial<Config>) =>
-    state.config && context.saveConfig({ ...state.config, ...config });
+    context.updateConfig((current) => ({ ...current, ...config }));
 
   sliders.r.addListener((r) => updateConfig({ r }));
   sliders.g.addListener((g) => updateConfig({ g }));
@@ -84,24 +77,24 @@ const createScanInput = (context: InputContext<Config>): Input<Config> => {
   speed.addListener((speed) => updateConfig({ speed }));
 
   return {
-    setConfig: (c) => {
-      if (state.config === c) {
+    applyConfig: (config, prevConfig) => {
+      if (prevConfig === config) {
         return;
       }
-      const { r, g, b, alpha } = (state.config = c);
+      const { r, g, b, alpha } = config;
       sliders.r.setValue(r);
       sliders.g.setValue(g);
       sliders.b.setValue(b);
       sliders.alpha.setValue(alpha);
-      beamWidth.setValue(c.beamWidth);
-      delay.setValue(c.delay);
-      speed.setValue(c.speed);
-      state.color = new RGBAColor(r, g, b, alpha);
-      rect.setColor(state.color);
+      beamWidth.setValue(config.beamWidth);
+      delay.setValue(config.delay);
+      speed.setValue(config.speed);
+      color = new RGBAColor(r, g, b, alpha);
+      rect.setColor(color);
       module.setOptions({
-        beamWidth: c.beamWidth,
-        delay: c.delay,
-        speed: c.speed,
+        beamWidth: config.beamWidth,
+        delay: config.delay,
+        speed: config.speed,
       });
     },
     getLightDeskComponent: () => group,

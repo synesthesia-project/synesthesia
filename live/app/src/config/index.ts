@@ -7,6 +7,7 @@ import {
   OPTIONAL_KIND_AND_CONFIG,
   OUTPUT,
 } from '@synesthesia-project/live-core/lib/config';
+import { PLUGIN_CONFIG } from './plugins';
 
 const optionalRecord = <T extends t.Mixed>(type: T) =>
   t.record(t.string, t.union([t.undefined, type]));
@@ -49,6 +50,7 @@ export const CONFIG = t.partial({
     cues: optionalRecord(CUE_CONFIG),
   }),
   sequences: SEQUENCES_CONFIG,
+  plugins: PLUGIN_CONFIG,
 });
 
 export type Config = t.TypeOf<typeof CONFIG>;

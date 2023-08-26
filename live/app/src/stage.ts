@@ -12,13 +12,18 @@ import type {
   Channel,
   InputSocket,
 } from '@synesthesia-project/live-core/lib/plugins';
-import { isDefined } from '@synesthesia-project/live-core/lib/util';
+import {
+  ConfigUpdate,
+  ConfigUpdater,
+  isDefined,
+} from '@synesthesia-project/live-core/lib/util';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Config, CueConfig, loadConfig, saveConfig } from './config';
 import { createDesk } from './desk/desk';
 import { createInputManager } from './inputs';
 import { INIT_SEQUENCES_CONFIG, Sequences } from './sequences';
+import { createPluginConfigManager } from './config/plugins';
 
 type ActiveOutput<ConfigT> = {
   kind: string;
@@ -41,6 +46,13 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       leading: true,
       trailing: true,
     }
+  );
+
+  const pluginConfigManager = createPluginConfigManager((update) =>
+    updateConfig((current) => ({
+      ...current,
+      plugins: update(current.plugins),
+    }))
   );
 
   const outputKinds = new Map<string, OutputKind<unknown>>();
@@ -74,6 +86,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
         console.log(`New event registered: ${event.getName()}`),
       registerAction: (action) =>
         console.log(`New action registered: ${action.getName()}`),
+      createConfigSection: pluginConfigManager.createConfigSection,
     });
   };
 
@@ -94,7 +107,8 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
     // - deepfreeze values
     // - update outputs
     updateOutputsFromConfig(prevConfig);
-    updateInputsFromConfig();
+    updateInputsFromConfig(prevConfig);
+    pluginConfigManager.applyConfig(newConfig.plugins, prevConfig.plugins);
     if (newConfig.sequences !== prevConfig.sequences) {
       sequences.setConfig(newConfig.sequences || INIT_SEQUENCES_CONFIG);
     }
@@ -139,8 +153,8 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       kind: kind.kind,
       channels: {},
     };
-    outputs.set(key, activeOutput);
-    const saveConfig: OutputContext<ConfigT>['saveConfig'] = async (update) => {
+    outputs.set(key, activeOutput as ActiveOutput<unknown>);
+    const updateOutputConfig: ConfigUpdater<ConfigT> = async (update) => {
       const currentOutputConfig = config.outputs?.[key];
       if (currentOutputConfig) {
         await updateConfig((current) => ({
@@ -163,13 +177,13 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       sendChannelsToSequences();
     };
     activeOutput.output = kind.create({
-      saveConfig,
+      updateConfig: updateOutputConfig,
       render,
       setChannels,
       getChannelValues: sequences.getSequenceValues,
     });
     if (kind.config.is(initialConfig)) {
-      activeOutput.output.setConfig(initialConfig);
+      activeOutput.output.applyConfig(initialConfig, null);
     } else {
       console.error(
         `output ${key} given invalid config: ${JSON.stringify(
@@ -178,7 +192,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
           '  '
         )}`
       );
-      activeOutput.output.setConfig(kind.initialConfig);
+      activeOutput.output.applyConfig(kind.initialConfig, null);
     }
     const ldComponent = new ld.Group(
       {
@@ -269,7 +283,10 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
           }
         } else if (oldOutputConfig?.config !== newOutputConfig?.config) {
           if (kind.config.is(newOutputConfig.config)) {
-            output.output?.setConfig(newOutputConfig.config);
+            output.output?.applyConfig(
+              newOutputConfig.config,
+              oldOutputConfig?.config
+            );
           } else {
             console.error(
               `output ${key} given invalid config: ${JSON.stringify(
@@ -295,13 +312,14 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
     );
   };
 
-  const updateInputsFromConfig = () => {
+  const updateInputsFromConfig = (prev: Config) => {
     const cues = config.compositor?.cues || {};
     desk.compositorCueTriggers.removeAllChildren();
     for (const [cueId, cueConfig] of Object.entries(cues)) {
       if (cueConfig === undefined) continue;
+      const prevCueConfig = prev.compositor?.cues?.[cueId];
 
-      const updateCueConfig = (newCueConfig: Partial<CueConfig>) =>
+      const updateCueConfig = (update: ConfigUpdate<CueConfig>) =>
         updateConfig((current) => {
           const existing = current.compositor?.cues[cueId];
           return {
@@ -310,10 +328,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
               current: current.compositor?.current ?? null,
               cues: {
                 ...current.compositor?.cues,
-                [cueId]: existing && {
-                  ...existing,
-                  ...newCueConfig,
-                },
+                [cueId]: existing && update(existing),
               },
             },
           };
@@ -322,7 +337,11 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       let existing = compositor.cues.get(cueId);
       if (!existing) {
         existing = inputManager.createSocket({
-          saveConfig: (module) => updateCueConfig({ module }),
+          updateConfig: (update) =>
+            updateCueConfig((current) => ({
+              ...current,
+              module: update(current.module),
+            })),
           groupConfig: {
             additionalButtons: [
               new ld.Button(null, 'delete').addListener(() =>
@@ -342,14 +361,18 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
             ],
             title: {
               text: cueConfig?.name || '',
-              update: (name) => updateCueConfig({ name }),
+              update: (name) =>
+                updateCueConfig((current) => ({
+                  ...current,
+                  name,
+                })),
             },
           },
         });
         compositor.cues.set(cueId, existing);
         desk.compositorCuesGroup.addChild(existing.getLightDeskComponent());
       }
-      existing.setConfig(cueConfig.module);
+      existing.applyConfig(cueConfig.module, prevCueConfig?.module);
       // Add button for cue
       desk.compositorCueTriggers
         .addChild(new ld.Button(cueConfig.name || `Cue`, 'play_arrow'))

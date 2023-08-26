@@ -22,16 +22,9 @@ const FILL_INPUT_CONFIG = t.type({
 type Config = t.TypeOf<typeof FILL_INPUT_CONFIG>;
 
 const createFillInput = (context: InputContext<Config>): Input<Config> => {
-  const state: {
-    config: Config | null;
-    color: RGBAColor;
-  } = {
-    config: null,
-    color: RGBA_BLACK,
-  };
-
+  let color = RGBA_BLACK;
   const group = new ld.Group({ noBorder: true, wrap: true });
-  const module = new FillModule(() => state.color);
+  const module = new FillModule(() => color);
 
   const rect = group.addChild(new ld.Rect());
 
@@ -52,7 +45,7 @@ const createFillInput = (context: InputContext<Config>): Input<Config> => {
   );
 
   const updateConfig = (config: Partial<Config>) =>
-    state.config && context.saveConfig({ ...state.config, ...config });
+    context.updateConfig((current) => ({ ...current, ...config }));
 
   sliders.r.addListener((r) => updateConfig({ r }));
   sliders.g.addListener((g) => updateConfig({ g }));
@@ -60,14 +53,14 @@ const createFillInput = (context: InputContext<Config>): Input<Config> => {
   sliders.alpha.addListener((alpha) => updateConfig({ alpha }));
 
   return {
-    setConfig: (c) => {
-      const { r, g, b, alpha } = (state.config = c);
+    applyConfig: (c) => {
+      const { r, g, b, alpha } = c;
       sliders.r.setValue(r);
       sliders.g.setValue(g);
       sliders.b.setValue(b);
       sliders.alpha.setValue(alpha);
-      state.color = new RGBAColor(r, g, b, alpha);
-      rect.setColor(state.color);
+      color = new RGBAColor(r, g, b, alpha);
+      rect.setColor(color);
     },
     getLightDeskComponent: () => group,
     destroy: () => {
