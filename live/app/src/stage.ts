@@ -18,12 +18,16 @@ import {
   isDefined,
 } from '@synesthesia-project/live-core/lib/util';
 import { v4 as uuidv4 } from 'uuid';
+import * as WebSocket from 'ws';
+import * as http from 'http';
 
 import { Config, CueConfig, loadConfig, saveConfig } from './config';
 import { createDesk } from './desk/desk';
 import { createInputManager } from './inputs';
 import { INIT_SEQUENCES_CONFIG, Sequences } from './sequences';
 import { createPluginConfigManager } from './config/plugins';
+
+const PORT = 1338;
 
 type ActiveOutput<ConfigT> = {
   kind: string;
@@ -32,10 +36,19 @@ type ActiveOutput<ConfigT> = {
   channels: Record<string, Channel>;
 };
 
+type WebsocketHandler = {
+  handle: (ws: WebSocket) => void;
+};
+
 export const Stage = async (plugins: Plugin[], configPath: string) => {
   const desk = createDesk();
 
   let config: Config = {};
+
+  /**
+   * Map from websocket path to handler
+   */
+  const websocketHandlers = new Map<string, WebsocketHandler>();
 
   const saveCurrentConfig = throttle(
     () => {
@@ -449,7 +462,33 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
   });
 
   desk.desk.start({
-    mode: 'automatic',
-    port: 1338,
+    mode: 'manual',
+    setup: (server) => {
+      const httpServer = http.createServer(server.handleHttpRequest);
+      const wss = new WebSocket.Server({
+        server: httpServer,
+      });
+
+      wss.on('connection', (ws, req) => {
+        const path = req.url ? req.url.substring(1) : '';
+        if (path === '') {
+          server.handleWsConnection(ws);
+          return;
+        }
+
+        const handler = websocketHandlers.get(path);
+
+        if (handler) {
+          handler.handle(ws);
+        } else {
+          console.error(`No handler for websocket path: ${path}`);
+          ws.close();
+        }
+      });
+
+      httpServer.listen(PORT, () => {
+        console.log(`Started server: http://localhost:${PORT}`);
+      });
+    },
   });
 };

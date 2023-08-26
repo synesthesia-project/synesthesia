@@ -7677,19 +7677,24 @@ packages:
     dev: false
 
   file:projects/live-app.tgz:
-    resolution: {integrity: sha512-txv5d/rhCfolh+jYTfU1+uuKJTpPsFMFGFLqiu6K6+j5Gv4VMqPGG6MPTpGRUhcyHONvQzHngAZbvOuICIVPRg==, tarball: file:projects/live-app.tgz}
+    resolution: {integrity: sha512-XXOB2VrLJzVl6Q5XdRULX2x36HPA1qrXPORJugiIu6Bwgzssd7LN+87clJPH6atUswiqnq4pUL+OcclIB9RCQg==, tarball: file:projects/live-app.tgz}
     name: '@rush-temp/live-app'
     version: 0.0.0
     dependencies:
       '@types/lodash': 4.14.149
       '@types/uuid': 9.0.0
+      '@types/ws': 8.5.4
       artnet: 1.4.0
       fp-ts: 2.13.1
       gulp: 4.0.2
       io-ts: 2.2.20_fp-ts@2.13.1
       lodash: 4.17.21
       uuid: 9.0.0
+      ws: 8.13.0
       zod: 3.22.1
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
     dev: false
 
   file:projects/live-core.tgz:
