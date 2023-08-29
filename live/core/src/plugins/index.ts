@@ -6,10 +6,9 @@ import {
   PixelMap,
 } from '@synesthesia-project/compositor/lib/modules';
 import { RGBAColor } from '@synesthesia-project/compositor/lib/color';
-import { OptionalKindAndConfig } from '../config';
 import { EventRegister } from '../events';
 import { Action } from '../actions';
-import { ConfigApplyer, ConfigUpdater } from '../util';
+import { ConfigNode } from '../util';
 
 export interface PluginContext {
   registerOutputKind<T>(outputKind: OutputKind<T>): void;
@@ -21,12 +20,7 @@ export interface PluginContext {
     name: string,
     type: t.Type<T>,
     defaultValue: T
-  ): ConfigSection<T>;
-}
-
-export interface ConfigSection<T> {
-  updateConfig: ConfigUpdater<T>;
-  addListener(listener: (config: T) => void): void;
+  ): ConfigNode<T>;
 }
 
 export interface Plugin {
@@ -34,7 +28,7 @@ export interface Plugin {
 }
 
 export interface ModuleContext<ConfigT> {
-  updateConfig: ConfigUpdater<ConfigT>;
+  config: ConfigNode<ConfigT>;
 }
 
 export interface Channel {
@@ -74,33 +68,24 @@ export interface InputContextGroupConfig {
   };
 }
 
-export interface InputSocket extends Input<OptionalKindAndConfig> {
+export interface InputSocket extends Input {
   setGroupConfig(groupConfig: InputContextGroupConfig): void;
 }
 
 export interface InputContext<ConfigT> extends ModuleContext<ConfigT> {
   createInputSocket(context: {
-    updateConfig: ConfigUpdater<OptionalKindAndConfig>;
+    config: ConfigNode<ConfigT>;
     groupConfig?: InputContextGroupConfig;
   }): InputSocket;
 }
 
-export interface Module<ConfigT> {
-  /**
-   * Inform the output of a change to its config,
-   * or load it for the first time.
-   */
-  applyConfig: ConfigApplyer<ConfigT>;
+export interface Module {
   getLightDeskComponent(): ld.Component;
-  /**
-   * Inform the output that is about to be removed and should shut down
-   */
-  destroy(): void;
 }
 
-export type Output<ConfigT> = Module<ConfigT>;
+export type Output = Module;
 
-export interface Input<ConfigT> extends Module<ConfigT> {
+export interface Input extends Module {
   getModlue(): CompositorModule;
 }
 
@@ -111,9 +96,9 @@ export interface ModuleKind<ConfigT> {
 }
 
 export interface OutputKind<ConfigT> extends ModuleKind<ConfigT> {
-  create: (context: OutputContext<ConfigT>) => Output<ConfigT>;
+  create: (context: OutputContext<ConfigT>) => Output;
 }
 
 export interface InputKind<ConfigT> extends ModuleKind<ConfigT> {
-  create: (context: InputContext<ConfigT>) => Input<ConfigT>;
+  create: (context: InputContext<ConfigT>) => Input;
 }

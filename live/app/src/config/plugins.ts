@@ -1,8 +1,7 @@
 import {
-  ConfigApplyer,
+  ConfigNode,
   ConfigUpdater,
 } from '@synesthesia-project/live-core/lib/util';
-import { ConfigSection } from '@synesthesia-project/live-core/src/plugins';
 import { isRight } from 'fp-ts/lib/Either';
 import * as t from 'io-ts';
 
@@ -18,15 +17,10 @@ export type PluginConfigManager = {
     name: string,
     type: t.Type<T>,
     defaultValue: T
-  ): ConfigSection<T>;
-  applyConfig: ConfigApplyer<PluginConfig | undefined>;
+  ): ConfigNode<T>;
 };
 
-interface ConfigSectionImplementation<T> extends ConfigSection<T> {
-  applyConfig: ConfigApplyer<unknown>;
-}
-
-const get = <T>(config: unknown, type: t.Type<T>): T => {
+const getDecoded = <T>(config: unknown, type: t.Type<T>): T => {
   const decoded = type.decode(config);
   if (isRight(decoded)) {
     return decoded.right;
@@ -34,66 +28,32 @@ const get = <T>(config: unknown, type: t.Type<T>): T => {
   throw new Error(`Invalid config: ${JSON.stringify(decoded.left)}`);
 };
 
-const createConfigSection = <T>(
-  type: t.Type<T>,
-  defaultValue: T,
-  updateConfig: ConfigUpdater<unknown>
-): ConfigSectionImplementation<T> => {
-  let config: T = defaultValue;
-  const listeners = new Set<(config: T) => void>();
-
-  return {
-    addListener: (listener) => {
-      listeners.add(listener);
-      listener(config);
-    },
-    updateConfig: (update) =>
-      updateConfig((current) => update(get(current, type))),
-    applyConfig: (newConfig) => {
-      if (newConfig !== config) {
-        config = get(newConfig, type);
-        for (const listener of listeners) {
-          listener(config);
-        }
-      }
-    },
-  };
-};
-
 export const createPluginConfigManager = (
-  updateConfig: ConfigUpdater<PluginConfig>
+  config: ConfigNode<PluginConfig>
 ): PluginConfigManager => {
-  const sections = new Map<string, ConfigSectionImplementation<unknown>>();
+  const sections = new Map<string, ConfigNode<unknown>>();
 
   return {
-    createConfigSection: (name, type, defaultValue) => {
+    createConfigSection: <T>(name: string, type: t.Type<T>, defaultValue: T) => {
       if (sections.has(name)) {
         throw new Error(`Config section ${name} already exists`);
       }
-      const updateSectionConfig: ConfigUpdater<unknown> = (update) =>
-        updateConfig((current) => ({
+      const child = config.createChild({
+        get: (config) => getDecoded(config?.[name], type),
+        updateParentByChild: (current, updateChild) => ({
           ...current,
-          [name]: update(current?.[name] ?? defaultValue),
-        }));
-      const section = createConfigSection(
-        type,
-        defaultValue,
-        updateSectionConfig
-      );
-      sections.set(name, section as ConfigSectionImplementation<unknown>);
-      return section;
-    },
-    applyConfig: (config, oldConfig) => {
-      if (oldConfig !== config) {
-        for (const [sectionName, section] of sections.entries()) {
-          if (config?.[sectionName] !== oldConfig?.[sectionName]) {
-            section.applyConfig(
-              config?.[sectionName],
-              oldConfig?.[sectionName]
-            );
-          }
+          [name]: updateChild(current?.[name] as (T | undefined) ?? defaultValue),
+        }),
+        del: (current) => {
+          const newConfig = { ...current };
+          delete newConfig[name];
+          sections.delete(name);
+          return newConfig;
         }
-      }
+      })
+
+      sections.set(name, child as ConfigNode<unknown>);
+      return child;
     },
   };
 };

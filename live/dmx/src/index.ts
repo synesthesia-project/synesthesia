@@ -26,6 +26,7 @@ import {
   RGB_STRIP_FIXTURE_CONFIG,
   createRGBStripFixture,
 } from './fixtures/rgb-strip';
+import { CONFIG_DELETED } from '@synesthesia-project/live-core/lib/util';
 
 const SPECIFIC_FIXTURE_CONFIG = t.union([
   CUSTOM_FIXTURE_CONFIG,
@@ -64,13 +65,11 @@ type ActiveFixture = {
   };
 };
 
-const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
-  const universes = new Universes((update) =>
-    context.updateConfig((existing) => ({
-      ...existing,
-      universes: update(existing.universes),
-    }))
-  );
+const createDmxOutput = (context: OutputContext<Config>): Output => {
+  const universes = new Universes(context.config.createChild({
+    get: (c) => c.universes,
+    updateParentByChild: (c, u) => ({ ...c, universes: u(c.universes) }),
+  }));
 
   const group = new ld.Group({ noBorder: true, direction: 'vertical' });
 
@@ -86,7 +85,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
   header
     .addChild(new ld.Button('Add Custom Fixture', 'add'))
     .addListener(() => {
-      context.updateConfig((existing) => ({
+      context.config.update((existing) => ({
         ...existing,
         fixtures: {
           ...existing.fixtures,
@@ -96,7 +95,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
     });
 
   header.addChild(new ld.Button('Add RGB Strip', 'add')).addListener(() => {
-    context.updateConfig((existing) => ({
+    context.config.update((existing) => ({
       ...existing,
       fixtures: {
         ...existing.fixtures,
@@ -112,7 +111,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
     uuid: string,
     change: (current: FixtureConfig) => FixtureConfig
   ) =>
-    context.updateConfig((existing) => ({
+    context.config.update((existing) => ({
       ...existing,
       fixtures: {
         ...existing.fixtures,
@@ -121,7 +120,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
     }));
 
   const removeFixture = (uuid: string) => {
-    context.updateConfig((existing) => {
+    context.config.update((existing) => {
       const fixtures = { ...existing.fixtures };
       delete fixtures[uuid];
       return {
@@ -381,21 +380,18 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
     };
   };
 
-  return {
-    applyConfig: (config, lastConfig) => {
-      if (lastConfig === config) {
-        return;
-      }
-      universes.setConfig(config.universes);
-      updateFixtures(config);
-      updatePixelsFromFixtures();
-      updateContextChannels();
-      render();
-    },
-    destroy: () => {
+  context.config.addListener('change', (config) => {
+    if (config === CONFIG_DELETED) {
       clearInterval(renderInterval);
-      universes.destroy();
-    },
+      return;
+    }
+    updateFixtures(config);
+    updatePixelsFromFixtures();
+    updateContextChannels();
+    render();
+  });
+
+  return {
     getLightDeskComponent: () => group,
   };
 };
