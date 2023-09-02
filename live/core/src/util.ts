@@ -55,9 +55,19 @@ export type ConfigNode<T, InputT = T> = {
    */
   update: ConfigUpdater<T>;
   /**
-   * delete the current config.
+   * delete the current config from the parent config.
+   *
+   * This should eventually trigger the change event,
+   * once the change has propigated back to all children.
    */
   delete: () => void;
+  /**
+   * Unlink the current config from the parent config,
+   * without updating the parent config.
+   *
+   * This will still update the state of this config to be CONFIG_MISSING.
+   */
+  unlink: () => void;
   createChild: <ChildT>(
     params: CreateChildParams<T, ChildT>
   ) => ConfigNode<ChildT>;
@@ -78,6 +88,7 @@ const createChild = <ParentT, ChildT>(
     update: (childUpdate) =>
       update((current) => updateParentByChild(current, childUpdate)),
     del: del && (() => update((current) => del(current))),
+    unlink: () => listeners.delete(listener),
   });
 
   const listener: ConfigListener<ParentT> = (newConfig, oldConfig) => {
@@ -118,6 +129,7 @@ const createTypeCheckedChild = <ParentT, ChildT>(
     update: (childUpdate) =>
       update((current) => updateParentByChild(current, childUpdate)),
     del: del && (() => update((current) => del(current))),
+    unlink: () => listeners.delete(listener),
   });
 
   const listener: ConfigListener<ParentT> = (newConfig, oldConfig) => {
@@ -146,10 +158,12 @@ export const typeCheckedConfigNode = <T>({
   type,
   update,
   del,
+  unlink,
 }: {
   type: t.Type<T>;
   update: ConfigUpdater<unknown>;
   del?: () => void;
+  unlink?: () => void;
 }): ConfigNode<T, unknown> => {
   let currentConfig: T | typeof CONFIG_MISSING = CONFIG_MISSING;
   const listeners = new Set<ConfigListener<T>>();
@@ -164,6 +178,23 @@ export const typeCheckedConfigNode = <T>({
       }
     });
 
+  const apply = (newConfig: unknown) => {
+    if (newConfig !== currentConfig) {
+      if (newConfig === CONFIG_MISSING) {
+        listeners.forEach((l) => l(newConfig, currentConfig));
+        currentConfig = newConfig;
+      } else {
+        const validatedConfig = type.decode(newConfig);
+        if (isRight(validatedConfig)) {
+          listeners.forEach((l) => l(validatedConfig.right, currentConfig));
+          currentConfig = validatedConfig.right;
+        } else {
+          console.error(`Ignoring invalid config: ${validatedConfig.left}`);
+        }
+      }
+    }
+  };
+
   return {
     get: () => {
       if (currentConfig === CONFIG_MISSING)
@@ -174,22 +205,12 @@ export const typeCheckedConfigNode = <T>({
       if (!del) throw new Error('delete not supported');
       del();
     },
-    apply: (newConfig) => {
-      if (newConfig !== currentConfig) {
-        if (newConfig === CONFIG_MISSING) {
-          listeners.forEach((l) => l(newConfig, currentConfig));
-          currentConfig = newConfig;
-        } else {
-          const validatedConfig = type.decode(newConfig);
-          if (isRight(validatedConfig)) {
-            listeners.forEach((l) => l(validatedConfig.right, currentConfig));
-            currentConfig = validatedConfig.right;
-          } else {
-            console.error(`Ignoring invalid config: ${validatedConfig.left}`);
-          }
-        }
-      }
+    unlink: () => {
+      if (!unlink) throw new Error('unlink not supported');
+      unlink();
+      apply(CONFIG_MISSING);
     },
+    apply,
     update: doUpdate,
     createChild: (params) =>
       createChild(currentConfig, listeners, doUpdate, params),
@@ -207,12 +228,21 @@ export const typeCheckedConfigNode = <T>({
 export const configNode = <T>({
   update,
   del,
+  unlink,
 }: {
   update: ConfigUpdater<T>;
   del?: () => void;
+  unlink?: () => void;
 }): ConfigNode<T> => {
   let currentConfig: T | typeof CONFIG_MISSING = CONFIG_MISSING;
   const listeners = new Set<ConfigListener<T>>();
+
+  const apply = (newConfig: T | typeof CONFIG_MISSING) => {
+    if (newConfig !== currentConfig) {
+      listeners.forEach((l) => l(newConfig, currentConfig));
+      currentConfig = newConfig;
+    }
+  };
 
   return {
     get: () => {
@@ -224,12 +254,12 @@ export const configNode = <T>({
       if (!del) throw new Error('delete not supported');
       del();
     },
-    apply: (newConfig) => {
-      if (newConfig !== currentConfig) {
-        listeners.forEach((l) => l(newConfig, currentConfig));
-        currentConfig = newConfig;
-      }
+    unlink: () => {
+      if (!unlink) throw new Error('unlink not supported');
+      unlink();
+      apply(CONFIG_MISSING);
     },
+    apply,
     update: update,
     createChild: (params) =>
       createChild(currentConfig, listeners, update, params),

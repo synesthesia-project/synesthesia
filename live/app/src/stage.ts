@@ -15,6 +15,7 @@ import type {
 import {
   ConfigUpdate,
   ConfigUpdater,
+  configNode,
   isDefined,
 } from '@synesthesia-project/live-core/lib/util';
 import { v4 as uuidv4 } from 'uuid';
@@ -25,7 +26,7 @@ import { Config, CueConfig, loadConfig, saveConfig } from './config';
 import { createDesk } from './desk/desk';
 import { createInputManager } from './inputs';
 import { INIT_SEQUENCES_CONFIG, Sequences } from './sequences';
-import { createPluginConfigManager } from './config/plugins';
+import { PluginConfig, createPluginConfigManager } from './config/plugins';
 
 const PORT = 1338;
 
@@ -61,12 +62,15 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
     }
   );
 
-  const pluginConfigManager = createPluginConfigManager((update) =>
-    updateConfig((current) => ({
-      ...current,
-      plugins: update(current.plugins),
-    }))
-  );
+  const pluginConfig = configNode<PluginConfig>({
+    update: (update) =>
+      updateConfig((current) => ({
+        ...current,
+        plugins: update(current.plugins),
+      }))
+  })
+
+  const pluginConfigManager = createPluginConfigManager(pluginConfig);
 
   const outputKinds = new Map<string, OutputKind<unknown>>();
 
@@ -122,7 +126,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
     // - update outputs
     updateOutputsFromConfig(prevConfig);
     updateInputsFromConfig(prevConfig);
-    pluginConfigManager.applyConfig(newConfig.plugins, prevConfig.plugins);
+    pluginConfig.apply(newConfig.plugins);
     if (newConfig.sequences !== prevConfig.sequences) {
       sequences.setConfig(newConfig.sequences || INIT_SEQUENCES_CONFIG);
     }

@@ -39,37 +39,31 @@ export const MIDI_PLUGIN: Plugin = {
         }
       });
 
-    const controllers = initializeControllers((update) =>
-      configSection.updateConfig((config) => ({
-        ...config,
-        controllers: update(config.controllers),
-      }))
+    const controllers = initializeControllers(
+      configSection.createChild({
+        get: (config) => config.controllers,
+        updateParentByChild: (current, childUpdate) => ({
+          ...current,
+          controllers: childUpdate(current.controllers),
+        }),
+      })
     );
 
     tab.addChild(controllers.controllersGroup);
 
-    const pages = initializePages((update) =>
-      configSection.updateConfig((config) => ({
-        ...config,
-        pages: update(config.pages),
-      }))
+    const pages = initializePages(
+      configSection.createChild({
+        get: (config) => config.pages,
+        updateParentByChild: (current, childUpdate) => ({
+          ...current,
+          pages: childUpdate(current.pages),
+        }),
+      })
     );
 
     tab.addChild(new ld.Button('Add Page')).addListener(() => {
       pages.addPage();
     });
     tab.addChild(pages.pagesTabs);
-
-    configSection.addListener((newConfig, oldConfig) => {
-      if (oldConfig?.controllers !== newConfig.controllers) {
-        controllers.applyConfig(
-          newConfig.controllers,
-          oldConfig?.controllers ?? null
-        );
-      }
-      if (oldConfig?.pages !== newConfig.pages) {
-        pages.applyConfig(newConfig.pages, oldConfig?.pages ?? null);
-      }
-    });
   },
 };

@@ -1,13 +1,15 @@
 import * as ld from '@synesthesia-project/light-desk';
 import { ControllerConfig, ControllersConfig } from '../config';
 import {
+  CONFIG_MISSING,
   ConfigApplyer,
-  ConfigUpdater,
+  ConfigNode,
 } from '@synesthesia-project/live-core/lib/util';
 import { v4 as uuidv4 } from 'uuid';
 import { Controller } from './interface';
 import { GenericControllerConfig, createGenericController } from './generic';
 import { MackieMcuControllerConfig, createMackieMcuController } from './mcu';
+import { config } from 'process';
 
 export type ControllerSocket = {
   group: ld.Group;
@@ -27,7 +29,7 @@ type ActiveController =
   | null;
 
 export const initializeControllers = (
-  updateConfig: ConfigUpdater<ControllersConfig>
+  configNode: ConfigNode<ControllersConfig>
 ) => {
   const controllersGroup = new ld.Group({
     direction: 'vertical',
@@ -41,7 +43,7 @@ export const initializeControllers = (
     let activeController: ActiveController = null;
 
     group.addHeaderButton(new ld.Button(null, 'delete')).addListener(() => {
-      updateConfig((config) => {
+      configNode.update((config) => {
         const newConfig = { ...config };
         delete newConfig[cId];
         return newConfig;
@@ -52,7 +54,7 @@ export const initializeControllers = (
       'Change Type',
       'refresh'
     ).addListener(() => {
-      updateConfig((config) => ({
+      configNode.update((config) => ({
         ...config,
         [cId]: {
           ...config[cId],
@@ -76,7 +78,7 @@ export const initializeControllers = (
           group
             .addChild(new ld.Button('Generic Controller'))
             .addListener(() => {
-              updateConfig((config) => ({
+              configNode.update((config) => ({
                 ...config,
                 [cId]: {
                   ...config[cId],
@@ -90,7 +92,7 @@ export const initializeControllers = (
           group
             .addChild(new ld.Button('Mackie MCU Controller'))
             .addListener(() => {
-              updateConfig((config) => ({
+              configNode.update((config) => ({
                 ...config,
                 [cId]: {
                   ...config[cId],
@@ -170,7 +172,9 @@ export const initializeControllers = (
     };
   };
 
-  const applyConfig: ConfigApplyer<ControllersConfig> = (config, oldConfig) => {
+  configNode.addListener('change', (newConfig, oldConfig) => {
+    newConfig = newConfig === CONFIG_MISSING ? {} : { ...newConfig };
+    oldConfig = oldConfig === CONFIG_MISSING ? {} : { ...oldConfig };
     for (const [cId, cConfig] of Object.entries(config)) {
       if (!controllers[cId]) {
         controllers[cId] = createControllerSocket(cId);
@@ -179,16 +183,16 @@ export const initializeControllers = (
       controllers[cId].applyConfig(cConfig, oldConfig?.[cId] ?? null);
     }
     for (const [cId, controller] of Object.entries(controllers)) {
-      if (!config[cId]) {
+      if (!newConfig[cId]) {
         controller.destroy();
         controllersGroup.removeChild(controllers[cId].group);
         delete controllers[cId];
       }
     }
-  };
+  });
 
   const addController = (name: string) =>
-    updateConfig((config) => ({
+    configNode.update((config) => ({
       ...config,
       [uuidv4()]: {
         name,
@@ -198,7 +202,6 @@ export const initializeControllers = (
 
   return {
     controllersGroup,
-    applyConfig,
     addController,
   };
 };

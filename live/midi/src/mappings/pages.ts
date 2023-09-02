@@ -1,7 +1,7 @@
 import * as ld from '@synesthesia-project/light-desk/';
 import {
-  ConfigApplyer,
-  ConfigUpdater,
+  CONFIG_MISSING,
+  ConfigNode,
 } from '@synesthesia-project/live-core/lib/util';
 
 import { PageConfig, PagesConfig } from '../config';
@@ -9,69 +9,68 @@ import { initializeLights } from './lights';
 
 type Page = {
   tab: ld.Group;
-  applyConfig: ConfigApplyer<PageConfig>;
 };
 
-export const initializePages = (updateConfig: ConfigUpdater<PagesConfig>) => {
+export const initializePages = (config: ConfigNode<PagesConfig>) => {
   const pagesTabs = new ld.Tabs();
 
   const pages: Page[] = [];
 
   // TODO: add buttons to tabs, and move addPage button there
-  const addPage = () => updateConfig((config) => [...config, {}]);
+  const addPage = () => config.update((config) => [...config, {}]);
 
   // TODO: create buttons to cycle active page
 
-  const initializePage = (page: number): Page => {
+  const initializePage = (config: ConfigNode<PageConfig>): Page => {
     const tab = new ld.Group({ direction: 'vertical', noBorder: true });
 
-    tab.addChild(new ld.Button('Remove Page', 'remove')).addListener(() =>
-      updateConfig((config) => {
-        const newConfig = [...config];
-        newConfig.splice(page, 1);
-        return newConfig;
-      })
-    );
+    tab
+      .addChild(new ld.Button('Remove Page', 'remove'))
+      .addListener(config.delete);
 
-    const lights = initializeLights((update) =>
-      updateConfig((config) => {
-        const newConfig = [...config];
-        newConfig[page] = {
-          ...newConfig[page],
-          lights: update(newConfig[page]?.lights ?? []),
-        };
-        return newConfig;
+    const lights = initializeLights(
+      config.createChild({
+        get: (config) => config.lights,
+        updateParentByChild: (current, childUpdate) => ({
+          ...current,
+          lights: childUpdate(current.lights),
+        }),
       })
     );
 
     tab.addChild(lights.group);
 
-    const applyConfig: ConfigApplyer<PageConfig> = (newConfig, oldConfig) => {
-      lights.applyConfig(newConfig.lights ?? [], oldConfig?.lights ?? null);
-    };
-
-    return { tab, applyConfig };
+    return { tab };
   };
 
-  const applyConfig: ConfigApplyer<PagesConfig> = (newConfig, oldConfig) => {
+  config.addListener('change', (newConfig) => {
+    if (newConfig === CONFIG_MISSING) return;
     // Create pages that don't exist yet
     for (let i = pages.length; i < newConfig.length; i++) {
-      const page = initializePage(i);
+      const pageId = i;
+      const page = initializePage(
+        config.createChild({
+          get: (config) => config[i],
+          updateParentByChild: (current, childUpdate) => {
+            const newConfig = [...current];
+            newConfig[pageId] = childUpdate(newConfig[pageId]);
+            return newConfig;
+          },
+          del: (current) => [
+            ...current.slice(0, pageId),
+            ...current.slice(pageId + 1),
+          ],
+        })
+      );
       pagesTabs.addTab(`Page ${i}`, page.tab);
       pages.push(page);
     }
 
     // TODO: Remove pages that don't exist anymore
-
-    // Update config of each page
-    for (let i = 0; i < newConfig.length; i++) {
-      pages[i].applyConfig(newConfig[i], oldConfig?.[i] ?? null);
-    }
-  };
+  });
 
   return {
     pagesTabs,
     addPage,
-    applyConfig,
   };
 };
