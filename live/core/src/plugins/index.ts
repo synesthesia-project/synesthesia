@@ -9,7 +9,7 @@ import { RGBAColor } from '@synesthesia-project/compositor/lib/color';
 import { OptionalKindAndConfig } from '../config';
 import { EventRegister } from '../events';
 import { Action } from '../actions';
-import { ConfigApplyer, ConfigUpdater } from '../util';
+import { ConfigApplyer, ConfigUpdater, ConfigNode } from '../util';
 
 export interface PluginContext {
   registerOutputKind<T>(outputKind: OutputKind<T>): void;
@@ -21,13 +21,8 @@ export interface PluginContext {
     name: string,
     type: t.Type<T>,
     defaultValue: T
-  ): ConfigSection<T>;
+  ): ConfigNode<T>;
   createTab(name: string, component: ld.Component): void;
-}
-
-export interface ConfigSection<T> {
-  updateConfig: ConfigUpdater<T>;
-  addListener(listener: ConfigApplyer<T>): void;
 }
 
 export interface Plugin {
