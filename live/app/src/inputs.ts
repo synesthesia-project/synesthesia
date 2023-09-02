@@ -115,9 +115,9 @@ export const createInputManager = () => {
               kind: kind.kind,
               input: kind.create({
                 updateConfig: async (update) =>
-                  context.updateConfig(() => ({
+                  context.updateConfig((current) => ({
                     kind: kind.kind,
-                    config: update(config.config),
+                    config: update(current?.config),
                   })),
                 createInputSocket: createSocket,
               }),
