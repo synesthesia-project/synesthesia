@@ -21,6 +21,7 @@ specifiers:
   '@rush-temp/openrazer': file:./projects/openrazer.tgz
   '@rush-temp/openrazer-examples': file:./projects/openrazer-examples.tgz
   '@rush-temp/precise-audio': file:./projects/precise-audio.tgz
+  '@rush-temp/react-light-desk': file:./projects/react-light-desk.tgz
   '@rush-temp/server': file:./projects/server.tgz
   '@rush-temp/synesthesia-razer': file:./projects/synesthesia-razer.tgz
   '@types/chai': ^4.1.7
@@ -33,6 +34,7 @@ specifiers:
   '@types/node': ~18.11.18
   '@types/react': ^17.0.0
   '@types/react-dom': ^17.0.0
+  '@types/react-reconciler': ~0.26.0
   '@types/spotify-web-playback-sdk': ^0.1.1
   '@types/styled-components': ~5.1.26
   '@types/uuid': ~9.0.0
@@ -68,6 +70,7 @@ specifiers:
   react-dom: ^17.0.2
   react-icons: ^3.3.0
   react-is: ~18.2.0
+  react-reconciler: 0.26.0
   run-sequence: ^1.2.2
   soundbank-pitch-shift: ~1.0.3
   source-map-loader: ~0.2.4
@@ -101,6 +104,7 @@ dependencies:
   '@rush-temp/openrazer': file:projects/openrazer.tgz
   '@rush-temp/openrazer-examples': file:projects/openrazer-examples.tgz_eslint@8.31.0
   '@rush-temp/precise-audio': file:projects/precise-audio.tgz_typescript@4.9.4
+  '@rush-temp/react-light-desk': file:projects/react-light-desk.tgz
   '@rush-temp/server': file:projects/server.tgz
   '@rush-temp/synesthesia-razer': file:projects/synesthesia-razer.tgz
   '@types/chai': 4.2.5
@@ -113,6 +117,7 @@ dependencies:
   '@types/node': 18.11.18
   '@types/react': 17.0.58
   '@types/react-dom': 17.0.19
+  '@types/react-reconciler': 0.26.7
   '@types/spotify-web-playback-sdk': 0.1.7
   '@types/styled-components': 5.1.26
   '@types/uuid': 9.0.0
@@ -148,6 +153,7 @@ dependencies:
   react-dom: 17.0.2_react@17.0.2
   react-icons: 3.8.0_react@17.0.2
   react-is: 18.2.0
+  react-reconciler: 0.26.0_react@17.0.2
   run-sequence: 1.2.2
   soundbank-pitch-shift: 1.0.3
   source-map-loader: 0.2.4
@@ -544,6 +550,12 @@ packages:
 
   /@types/react-dom/17.0.19:
     resolution: {integrity: sha512-PiYG40pnQRdPHnlf7tZnp0aQ6q9tspYr72vD61saO6zFCybLfMqwUCN0va1/P+86DXn18ZWeW30Bk7xlC5eEAQ==}
+    dependencies:
+      '@types/react': 17.0.58
+    dev: false
+
+  /@types/react-reconciler/0.26.7:
+    resolution: {integrity: sha512-mBDYl8x+oyPX/VBb3E638N0B7xG+SPk/EAMcVPeexqus/5aTpTphQi0curhhshOqRrc9t6OPoJfEUkbymse/lQ==}
     dependencies:
       '@types/react': 17.0.58
     dev: false
@@ -5629,6 +5641,18 @@ packages:
     resolution: {integrity: sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==}
     dev: false
 
+  /react-reconciler/0.26.0_react@17.0.2:
+    resolution: {integrity: sha512-n2FJE9vPSiZ0Dn/jaV/iOAO6rXepnk74QGRcgwPSgmN/2syUJnbfEz7Bw5yodBfJhjA3L7cu1YdImYISTj4KZQ==}
+    engines: {node: '>=0.10.0'}
+    peerDependencies:
+      react: ^17.0.0
+    dependencies:
+      loose-envify: 1.4.0
+      object-assign: 4.1.1
+      react: 17.0.2
+      scheduler: 0.20.2
+    dev: false
+
   /react/17.0.2:
     resolution: {integrity: sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA==}
     engines: {node: '>=0.10.0'}
@@ -7773,6 +7797,18 @@ packages:
       webpack: 4.41.6
     transitivePeerDependencies:
       - typescript
+    dev: false
+
+  file:projects/react-light-desk.tgz:
+    resolution: {integrity: sha512-HfAvriemu8wOaN8umAnEGiloxs1ubOdbCJ9XaMato3uAdqHMUNCY0gVtShzpxrvX7irLbxI8YMkEuPjnIvlrBw==, tarball: file:projects/react-light-desk.tgz}
+    name: '@rush-temp/react-light-desk'
+    version: 0.0.0
+    dependencies:
+      '@types/react': 17.0.58
+      '@types/react-reconciler': 0.26.7
+      gulp: 4.0.2
+      react: 17.0.2
+      react-reconciler: 0.26.0_react@17.0.2
     dev: false
 
   file:projects/server.tgz:
