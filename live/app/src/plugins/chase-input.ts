@@ -36,7 +36,9 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
 
   const header = group.addChild(new ld.Group({ noBorder: true, wrap: true }));
 
-  const addLayer = header.addChild(new ld.Button('Add Stop', 'add'));
+  const addLayer = header.addChild(
+    new ld.Button({ text: 'Add Stop', icon: 'add' })
+  );
   addLayer.addListener(() =>
     context.updateConfig((current) => ({
       ...current,
@@ -44,10 +46,15 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
     }))
   );
 
-  header.addChild(new ld.Label('Speed:'));
+  header.addChild(new ld.Label({ text: 'Speed:' }));
 
   const speedSlider = header.addChild(
-    new ld.SliderButton(DEFAULT_CONFIG.advanceAmountPerSecond, 0, 10, 0.01)
+    new ld.SliderButton({
+      value: DEFAULT_CONFIG.advanceAmountPerSecond,
+      min: 0,
+      max: 10,
+      step: 0.01,
+    })
   );
   speedSlider.addListener((advanceAmountPerSecond) => {
     context.updateConfig((c) => ({ ...c, advanceAmountPerSecond }));
@@ -80,7 +87,7 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
             })),
           groupConfig: {
             additionalButtons: [
-              new ld.Button(null, 'delete').addListener(() =>
+              new ld.Button({ icon: 'delete' }).addListener(() =>
                 context.updateConfig((current) => ({
                   ...current,
                   sequence: [

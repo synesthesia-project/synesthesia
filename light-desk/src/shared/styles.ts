@@ -40,10 +40,3 @@ export interface LabelComponentStyle {
    */
   bold?: boolean;
 }
-
-/**
- * Default [[LabelComponentStyle]] for the [[Label]] component.
- */
-export const LABEL_DEFAULT_STYLE: LabelComponentStyle = {
-  bold: false,
-};

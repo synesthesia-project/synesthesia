@@ -49,12 +49,12 @@ export const createFixture = (
 
   const header = group.addChild(new ld.Group({ noBorder: true, wrap: true }));
 
-  header.addChild(new ld.Label('RGB Channels:'));
+  header.addChild(new ld.Label({ text: 'RGB Channels:' }));
   const [ri, gi, bi, setColorChannels] = header.addChildren(
-    new ld.TextInput(''),
-    new ld.TextInput(''),
-    new ld.TextInput(''),
-    new ld.Button('Set', 'save')
+    new ld.TextInput(),
+    new ld.TextInput(),
+    new ld.TextInput(),
+    new ld.Button({ text: 'Set', icon: 'save' })
   );
   setColorChannels.addListener(() => {
     const rgb = [ri, gi, bi].map((t) => t.getValidatedValue(validateChannel));
@@ -70,12 +70,14 @@ export const createFixture = (
     }
   });
 
-  group.addChild(new ld.Button('Add Channel', 'add')).addListener(() =>
-    updateConfig((c) => ({
-      ...c,
-      channels: { ...c.channels, [uuidv4()]: {} },
-    }))
-  );
+  group
+    .addChild(new ld.Button({ text: 'Add Channel', icon: 'add' }))
+    .addListener(() =>
+      updateConfig((c) => ({
+        ...c,
+        channels: { ...c.channels, [uuidv4()]: {} },
+      }))
+    );
 
   const channels: Map<
     string,
@@ -120,25 +122,33 @@ export const createFixture = (
             }));
 
           const slider = chGroup.addChild(
-            new ld.SliderButton(0, 0, MAX_CHANNEL_VALUE, 1)
+            new ld.SliderButton({
+              value: 0,
+              min: 0,
+              max: MAX_CHANNEL_VALUE,
+              step: 1,
+            })
           );
           slider.addListener((value) =>
             updateChannel({ value: Math.round(value) })
           );
 
-          chGroup.addChild(new ld.Label('Name:'));
-          const name = chGroup.addChild(new ld.TextInput(''));
-          chGroup.addChild(new ld.Label('Channel:'));
-          const channel = chGroup.addChild(new ld.TextInput(''));
+          chGroup.addChild(new ld.Label({ text: 'Name:' }));
+          const name = chGroup.addChild(new ld.TextInput());
+          chGroup.addChild(new ld.Label({ text: 'Channel:' }));
+          const channel = chGroup.addChild(new ld.TextInput());
 
-          chGroup.addChild(new ld.Button('Set', 'save')).addListener(() =>
-            updateChannel({
-              name: name.getValidatedValue((t) => t) ?? undefined,
-              channel: channel.getValidatedValue(validateChannel) ?? undefined,
-            })
-          );
+          chGroup
+            .addChild(new ld.Button({ text: 'Set', icon: 'save' }))
+            .addListener(() =>
+              updateChannel({
+                name: name.getValidatedValue((t) => t) ?? undefined,
+                channel:
+                  channel.getValidatedValue(validateChannel) ?? undefined,
+              })
+            );
 
-          chGroup.addChild(new ld.Button(null, 'delete')).addListener(() =>
+          chGroup.addChild(new ld.Button({ icon: 'delete' })).addListener(() =>
             updateConfig((c) => {
               const channels = { ...c.channels };
               delete channels[chId];

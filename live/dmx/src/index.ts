@@ -84,7 +84,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
   group.addChild(header);
 
   header
-    .addChild(new ld.Button('Add Custom Fixture', 'add'))
+    .addChild(new ld.Button({ text: 'Add Custom Fixture', icon: 'add' }))
     .addListener(() => {
       context.updateConfig((existing) => ({
         ...existing,
@@ -95,15 +95,17 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
       }));
     });
 
-  header.addChild(new ld.Button('Add RGB Strip', 'add')).addListener(() => {
-    context.updateConfig((existing) => ({
-      ...existing,
-      fixtures: {
-        ...existing.fixtures,
-        [uuidv4()]: { config: { type: 'rgb-strip' } },
-      },
-    }));
-  });
+  header
+    .addChild(new ld.Button({ text: 'Add RGB Strip', icon: 'add' }))
+    .addListener(() => {
+      context.updateConfig((existing) => ({
+        ...existing,
+        fixtures: {
+          ...existing.fixtures,
+          [uuidv4()]: { config: { type: 'rgb-strip' } },
+        },
+      }));
+    });
 
   const fixtureGroup = new ld.Group({ noBorder: true, direction: 'vertical' });
   group.addChild(fixtureGroup);
@@ -161,31 +163,27 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
   };
 
   const createFixture = (fxId: string, type: FixtureType): ActiveFixture => {
-    const group = new ld.Group(
-      {
-        direction: 'vertical',
-      },
-      {
-        editableTitle: true,
-        defaultCollapsibleState: 'auto',
-      }
-    );
+    const group = new ld.Group({
+      direction: 'vertical',
+      editableTitle: true,
+      defaultCollapsibleState: 'auto',
+    });
 
     group.addListener('title-changed', (name) =>
       updateFixtureConfig(fxId, (c) => ({ ...c, name }))
     );
 
     group
-      .addHeaderButton(new ld.Button(null, 'delete'))
+      .addHeaderButton(new ld.Button({ icon: 'delete' }))
       .addListener(() => removeFixture(fxId));
 
     const patch = group.addChild(new ld.Group({ noBorder: true, wrap: true }));
 
-    patch.addChild(new ld.Label('Universe + Channel:'));
+    patch.addChild(new ld.Label({ text: 'Universe + Channel:' }));
     const [universe, channel, setUniverseChannel] = patch.addChildren(
-      new ld.TextInput(''),
-      new ld.TextInput(''),
-      new ld.Button('Set', 'save')
+      new ld.TextInput(),
+      new ld.TextInput(),
+      new ld.Button({ text: 'Set', icon: 'save' })
     );
     setUniverseChannel.addListener(() => {
       const u = universe.getValidatedValue(universes.validateUniverse);

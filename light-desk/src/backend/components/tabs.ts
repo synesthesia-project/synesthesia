@@ -8,12 +8,16 @@ type Tab = {
   component: Component;
 };
 
-export class Tabs extends BaseParent {
+type InternalProps = Record<never, never>;
+
+export type Props = InternalProps;
+
+export class Tabs extends BaseParent<InternalProps> {
   /** @hidden */
   private readonly tabs: Tab[] = [];
 
-  public constructor() {
-    super();
+  public constructor(props?: Props) {
+    super({}, { ...props });
   }
 
   public addTabs(...tabs: Tab[]) {
@@ -59,8 +63,7 @@ export class Tabs extends BaseParent {
     };
   }
 
-  /** @hidden */
-  getAllChildren(): Iterable<Component> {
+  getAllChildren() {
     return this.tabs.map((t) => t.component);
   }
 }

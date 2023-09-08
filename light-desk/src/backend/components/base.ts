@@ -1,9 +1,57 @@
 import * as proto from '../../shared/proto';
 import { IDMap } from '../util/id-map';
 
-export abstract class Component {
+export interface Component {
+  getProtoInfo(idMap: IDMap): proto.Component;
+
+  handleMessage(message: proto.ClientComponentMessage): void;
+
+  routeMessage(idMap: IDMap, message: proto.ClientComponentMessage): void;
+
+  setParent(parent: Parent | null): void;
+}
+
+export abstract class Base<Props> implements Component {
   /** @hidden */
   private parent: Parent | null = null;
+
+  /** @hidden */
+  private readonly defaultProps: Props;
+
+  /** @hidden */
+  private _props: Props;
+
+  public constructor(defaultProps: Props, props?: Partial<Props>) {
+    this.defaultProps = defaultProps;
+    this._props = Object.freeze({
+      ...defaultProps,
+      ...props,
+    });
+  }
+
+  public get props(): Props {
+    return this._props;
+  }
+
+  public set props(props: Partial<Props>) {
+    this.setProps(props);
+  }
+
+  public setProps = (props: Partial<Props>) => {
+    this._props = Object.freeze({
+      ...this.defaultProps,
+      ...props,
+    });
+    this.updateTree();
+  };
+
+  public updateProps = (updates: Partial<Props>) => {
+    this._props = Object.freeze({
+      ...this._props,
+      ...updates,
+    });
+    this.updateTree();
+  };
 
   /** @hidden */
   public setParent(parent: Parent | null) {
@@ -40,11 +88,13 @@ export interface Parent {
   removeChild(component: Component): void;
 }
 
-export abstract class BaseParent extends Component implements Parent {
+export abstract class BaseParent<T> extends Base<T> implements Parent {
   abstract removeChild(component: Component): void;
 
   /**
    * Return all children components that messages need to be routed to
+   *
+   * Use never to disallow the use of the child-specific property functions;
    */
   abstract getAllChildren(): Iterable<Component>;
 
@@ -66,6 +116,10 @@ export abstract class BaseParent extends Component implements Parent {
         }
       }
     }
+  }
+
+  public insertBefore(_child: Component, _beforeChild: Component) {
+    throw new Error('TODO');
   }
 }
 

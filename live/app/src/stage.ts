@@ -194,15 +194,11 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       );
       activeOutput.output.applyConfig(kind.initialConfig, null);
     }
-    const ldComponent = new ld.Group(
-      {
-        direction: 'vertical',
-      },
-      {
-        editableTitle: true,
-        defaultCollapsibleState: 'auto',
-      }
-    );
+    const ldComponent = new ld.Group({
+      direction: 'vertical',
+      editableTitle: true,
+      defaultCollapsibleState: 'auto',
+    });
     activeOutput.ldComponent = ldComponent;
     ldComponent.addLabel({ text: kind.kind });
     ldComponent.setTitle(config.outputs?.[key].name ?? '');
@@ -223,7 +219,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
     );
 
     const deleteButton = ldComponent.addHeaderButton(
-      new ld.Button('Delete', 'delete')
+      new ld.Button({ text: 'Delete', icon: 'delete' })
     );
 
     deleteButton.addListener(() =>
@@ -344,7 +340,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
             })),
           groupConfig: {
             additionalButtons: [
-              new ld.Button(null, 'delete').addListener(() =>
+              new ld.Button({ icon: 'delete' }).addListener(() =>
                 updateConfig((current) => {
                   return {
                     ...current,
@@ -375,7 +371,9 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       existing.applyConfig(cueConfig.module, prevCueConfig?.module);
       // Add button for cue
       desk.compositorCueTriggers
-        .addChild(new ld.Button(cueConfig.name || `Cue`, 'play_arrow'))
+        .addChild(
+          new ld.Button({ text: cueConfig.name || `Cue`, icon: 'play_arrow' })
+        )
         .addListener(() =>
           updateConfig((config) => ({
             ...config,

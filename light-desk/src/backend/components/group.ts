@@ -1,5 +1,3 @@
-import { extend } from 'lodash';
-
 import * as proto from '../../shared/proto';
 import { GroupComponentStyle, GROUP_DEFAULT_STYLE } from '../../shared/styles';
 import { IDMap } from '../util/id-map';
@@ -18,6 +16,22 @@ type Events = {
   'title-changed': (title: string) => void;
 };
 
+export type InternalProps = GroupComponentStyle &
+  GroupOptions & {
+    title: string | null;
+    labels: Label[] | null;
+    headerButtons: Button[] | null;
+  };
+
+export type Props = Partial<InternalProps>;
+
+const DEFAULT_PROPS: InternalProps = {
+  ...GROUP_DEFAULT_STYLE,
+  title: null,
+  labels: null,
+  headerButtons: null,
+};
+
 /**
  * A collection of components, grouped in either a row or column. Can contain
  * further groups as children to organize components however you wish, and have
@@ -25,35 +39,18 @@ type Events = {
  *
  * ![](media://images/group_screenshot.png)
  */
-export class Group extends BaseParent implements Listenable<Events> {
+export class Group
+  extends BaseParent<InternalProps>
+  implements Listenable<Events>
+{
   /** @hidden */
   private readonly events = new EventEmitter<Events>();
   /** @hidden */
   private readonly children: Component[] = [];
-  /** @hidden */
-  private readonly style: GroupComponentStyle;
-  /** @hidden */
-  private title: string | undefined = undefined;
-  /** @hidden */
-  private labels?: Label[];
-  /** @hidden */
-  private headerButtons?: Button[];
-  /** @hidden */
-  private options: GroupOptions;
 
-  public constructor(
-    style: Partial<GroupComponentStyle> = {},
-    opts?: GroupOptions
-  ) {
-    super();
-    this.style = extend({}, GROUP_DEFAULT_STYLE, style);
-    this.options = opts || {};
+  public constructor(props?: Props) {
+    super(DEFAULT_PROPS, props);
   }
-
-  public setOptions = (options: GroupOptions) => {
-    this.options = options;
-    this.updateTree();
-  };
 
   addListener = this.events.addListener;
   removeListener = this.events.removeListener;
@@ -89,42 +86,55 @@ export class Group extends BaseParent implements Listenable<Events> {
     this.updateTree();
   }
 
+  public setOptions = (options: GroupOptions) => {
+    this.updateProps(options);
+  };
+
   public setTitle(title: string) {
-    this.title = title;
-    this.updateTree();
+    this.updateProps({ title });
   }
 
   public addLabel = (label: Label) => {
-    this.labels = [...(this.labels || []), label];
-    this.updateTree();
+    this.updateProps({ labels: [...(this.props.labels || []), label] });
   };
 
   public setLabels = (labels: Label[]) => {
-    this.labels = labels;
-    this.updateTree();
+    this.updateProps({ labels });
   };
 
   public addHeaderButton = (button: Button): Button => {
-    this.headerButtons = [...(this.headerButtons || []), button];
     button.setParent(this);
+    this.updateProps({
+      headerButtons: [...(this.props.headerButtons || []), button],
+    });
     this.updateTree();
     return button;
   };
 
   public removeHeaderButton = (button: Component) => {
-    if (this.headerButtons) {
-      const match = this.headerButtons.findIndex((c) => c === button);
+    const buttons = this.props.headerButtons;
+    if (buttons) {
+      const match = buttons.findIndex((c) => c === button);
       if (match >= 0) {
-        const removed = this.headerButtons.splice(match, 1);
-        removed.map((c) => c.setParent(null));
-        this.updateTree();
+        const matchingButton = buttons[match];
+        this.updateProps({
+          headerButtons: [
+            ...buttons.slice(0, match),
+            ...buttons.slice(match + 1),
+          ],
+        });
+        // Remove parent form button _after_ removing button from parent
+        // to prevent loop
+        matchingButton.setParent(null);
       }
     }
   };
 
   public removeAllHeaderButtons = () => {
-    this.headerButtons?.map((c) => c.setParent(null));
-    this.headerButtons = undefined;
+    this.props.headerButtons?.map((c) => c.setParent(null));
+    this.updateProps({
+      headerButtons: [],
+    });
     this.updateTree();
   };
 
@@ -133,19 +143,25 @@ export class Group extends BaseParent implements Listenable<Events> {
     return {
       component: 'group',
       key: idMap.getId(this),
-      title: this.title,
-      style: this.style,
+      title: this.props.title ?? undefined,
+      style: {
+        direction: this.props.direction,
+        noBorder: this.props.noBorder,
+        wrap: this.props.wrap,
+      },
       children: this.children.map((c) => c.getProtoInfo(idMap)),
-      labels: this.labels,
-      headerButtons: this.headerButtons?.map((c) => c.getProtoInfo(idMap)),
-      editableTitle: this.options.editableTitle || false,
-      defaultCollapsibleState: this.options.defaultCollapsibleState,
+      labels: this.props.labels ?? undefined,
+      headerButtons:
+        this.props.headerButtons?.map((c) => c.getProtoInfo(idMap)) ??
+        undefined,
+      editableTitle: this.props.editableTitle || false,
+      defaultCollapsibleState: this.props.defaultCollapsibleState,
     };
   }
 
   /** @hidden */
   getAllChildren(): Iterable<Component> {
-    return [...this.children, ...(this.headerButtons || [])];
+    return [...this.children, ...(this.props.headerButtons || [])];
   }
 
   /** @hidden */

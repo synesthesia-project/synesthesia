@@ -1,11 +1,32 @@
 import * as proto from '../../shared/proto';
 import { IDMap } from '../util/id-map';
 
-import { Component } from './base';
+import { Base } from './base';
 
 type Listener = (value: number) => void;
 
 export type SliderMode = 'writeThrough' | 'writeBack';
+
+type InternalProps = {
+  min: number;
+  max: number;
+  step: number;
+  value: number | null;
+  mode: SliderMode;
+};
+
+type RequiredProps = 'value';
+
+export type Props = Pick<InternalProps, RequiredProps> &
+  Partial<Omit<InternalProps, RequiredProps>>;
+
+const DEFAULT_PROPS: InternalProps = {
+  value: null,
+  min: 0,
+  max: 255,
+  step: 5,
+  mode: 'writeBack',
+};
 
 /**
  * A button that when "pressed" or "touched" expands to reveal a slider that
@@ -15,34 +36,12 @@ export type SliderMode = 'writeThrough' | 'writeBack';
  *
  * ![](media://images/sliderbutton_screenshot.png)
  */
-export class SliderButton extends Component {
-  /** @hidden */
-  private min: number;
-  /** @hidden */
-  private max: number;
-  /** @hidden */
-  private step: number;
-  /** @hidden */
-  private value: number | null;
-  /** @hidden */
-  private mode: SliderMode;
-
+export class SliderButton extends Base<InternalProps> {
   /** @hidden */
   private readonly listeners = new Set<Listener>();
 
-  public constructor(
-    value: number,
-    min = 0,
-    max = 255,
-    step = 5,
-    mode: SliderMode = 'writeBack'
-  ) {
-    super();
-    this.min = min;
-    this.max = max;
-    this.step = step;
-    this.value = value;
-    this.mode = mode;
+  public constructor(props?: Props) {
+    super(DEFAULT_PROPS, props);
   }
 
   /** @hidden */
@@ -50,10 +49,10 @@ export class SliderButton extends Component {
     return {
       component: 'slider_button',
       key: idMap.getId(this),
-      min: this.min,
-      max: this.max,
-      step: this.step,
-      value: this.value,
+      min: this.props.min,
+      max: this.props.max,
+      step: this.props.step,
+      value: this.props.value,
     };
   }
 
@@ -61,12 +60,13 @@ export class SliderButton extends Component {
   public handleMessage(message: proto.ClientComponentMessage) {
     if (message.component !== 'slider_button') return;
     const newValue = this.sanitizeNumber(message.value);
-    if (this.value === newValue) return;
-    if (this.mode === 'writeBack') this.value = newValue;
+    if (this.props.value === newValue) return;
+    if (this.props.mode === 'writeBack') {
+      this.updateProps({ value: newValue });
+    }
     for (const l of this.listeners) {
       l(newValue);
     }
-    this.updateTree();
   }
 
   public addListener(listener: Listener) {
@@ -75,18 +75,18 @@ export class SliderButton extends Component {
 
   public setValue(value: number) {
     const newValue = this.sanitizeNumber(value);
-    if (newValue === this.value) return;
-    this.value = newValue;
+    if (newValue === this.props.value) return;
+    this.updateProps({ value });
     this.updateTree();
   }
 
   private sanitizeNumber(value: number) {
     // Return the closest number according to the min, max and step values
     // allowedValue = min + step * i (for some integer i)
-    const i = Math.round((value - this.min) / this.step);
-    const v = i * this.step + this.min;
+    const i = Math.round((value - this.props.min) / this.props.step);
+    const v = i * this.props.step + this.props.min;
     // map value to an integer index
-    const clampedValue = Math.max(this.min, Math.min(this.max, v));
+    const clampedValue = Math.max(this.props.min, Math.min(this.props.max, v));
     return clampedValue;
   }
 }

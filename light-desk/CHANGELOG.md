@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Introduce new color constant `COLOR_RGB_BLACK`
 - Fixed bugs that would occur when a child added to a group multiple times
 - [breaking]: start using Color utilities from `@synesthesia-project/compositor`
+- [breaking]: rework backend interfaces to unify defining and mutating props
 
 ## [2.1.1] - 2022-01-11
 

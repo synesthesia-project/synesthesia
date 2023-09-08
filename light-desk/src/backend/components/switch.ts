@@ -1,25 +1,31 @@
 import * as proto from '../../shared/proto';
 import { IDMap } from '../util/id-map';
 
-import { Component } from './base';
+import { Base } from './base';
 
 type Listener = (state: 'on' | 'off') => void;
+
+type InternalProps = {
+  state: 'on' | 'off';
+};
+
+export type Props = Partial<InternalProps>;
+
+const DEFAULT_PROPS: InternalProps = {
+  state: 'off',
+};
 
 /**
  * A component that allows you to switch between an "on" and "off" state.
  *
  * ![](media://images/switch_screenshot.png)
  */
-export class Switch extends Component {
-  /** @hidden */
-  private state: 'on' | 'off';
-
+export class Switch extends Base<InternalProps> {
   /** @hidden */
   private readonly listeners = new Set<Listener>();
 
-  public constructor(state: 'on' | 'off') {
-    super();
-    this.state = state;
+  public constructor(props?: Props) {
+    super(DEFAULT_PROPS, props);
   }
 
   /** @hidden */
@@ -27,18 +33,19 @@ export class Switch extends Component {
     return {
       component: 'switch',
       key: idMap.getId(this),
-      state: this.state,
+      state: this.props.state,
     };
   }
 
   /** @hidden */
   public handleMessage(message: proto.ClientComponentMessage) {
     if (message.component === 'switch') {
-      this.state = this.state === 'on' ? 'off' : 'on';
+      // Toggle state value
+      const state = this.props.state === 'on' ? 'off' : 'on';
+      this.updateProps({ state });
       for (const l of this.listeners) {
-        l(this.state);
+        l(state);
       }
-      this.updateTree();
     }
   }
 
@@ -48,8 +55,7 @@ export class Switch extends Component {
   }
 
   public setValue(state: 'on' | 'off') {
-    if (state === this.state) return;
-    this.state = state;
-    this.updateTree();
+    if (state === this.props.state) return;
+    this.updateProps({ state });
   }
 }

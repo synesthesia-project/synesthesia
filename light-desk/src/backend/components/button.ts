@@ -1,11 +1,27 @@
 import * as proto from '../../shared/proto';
 import { IDMap } from '../util/id-map';
 
-import { Component } from './base';
+import { Base } from './base';
 
 type Listener = () => void | Promise<void>;
 
 export type ButtonMode = 'normal' | 'pressed';
+
+export type InternalProps = {
+  text: string | null;
+  icon: string | null;
+  mode: ButtonMode;
+  error: string | null;
+};
+
+export type Props = Partial<InternalProps>;
+
+const DEFAULT_PROPS: InternalProps = {
+  text: null,
+  icon: null,
+  mode: 'normal',
+  error: null,
+};
 
 /**
  * A simple component that can be "pressed" to trigger things.
@@ -30,40 +46,27 @@ export type ButtonMode = 'normal' | 'pressed';
  *
  * ![](media://images/button_screenshot.png)
  */
-export class Button extends Component {
-  /** @hidden */
-  private text: string;
-  private icon?: string;
-  private mode: ButtonMode = 'normal';
-  private state: proto.ButtonComponent['state'] = {
-    state: this.mode,
-  };
-
+export class Button extends Base<InternalProps> {
   /** @hidden */
   private readonly listeners = new Set<Listener>();
 
-  public constructor(text: string | null, icon?: string) {
-    super();
-    this.text = text || '';
-    this.icon = icon;
+  public constructor(props?: Props) {
+    super(DEFAULT_PROPS, props);
   }
 
   public setText = (text: string | null) => {
-    this.text = text || '';
-    this.updateTree();
+    this.updateProps({ text });
   };
 
-  public setIcon = (icon: string | undefined) => {
-    this.icon = icon;
-    this.updateTree();
+  public setIcon = (icon: string | undefined | null) => {
+    this.updateProps({ icon: icon ?? null });
   };
 
   public setMode = (mode: ButtonMode) => {
-    this.mode = mode;
-    this.state = {
-      state: this.mode,
-    };
-    this.updateTree();
+    this.updateProps({
+      mode,
+      error: null,
+    });
   };
 
   /** @hidden */
@@ -71,9 +74,11 @@ export class Button extends Component {
     return {
       component: 'button',
       key: idMap.getId(this),
-      text: this.text,
-      state: this.state,
-      icon: this.icon,
+      text: this.props.text || '',
+      state: this.props.error
+        ? { state: 'error', error: this.props.error }
+        : { state: this.props.mode },
+      icon: this.props.icon ?? undefined,
     };
   }
 
@@ -93,19 +98,16 @@ export class Button extends Component {
         )
       )
         .then(() => {
-          if (this.state.state !== 'normal') {
-            this.state = {
-              state: this.mode,
-            };
-            this.updateTree();
+          if (this.props.error) {
+            this.updateProps({
+              error: null,
+            });
           }
         })
         .catch((e) => {
-          this.state = {
-            state: 'error',
+          this.updateProps({
             error: `${e}`,
-          };
-          this.updateTree();
+          });
         });
     }
   }

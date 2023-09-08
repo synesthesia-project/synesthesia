@@ -26,7 +26,9 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
 
   const header = group.addChild(new ld.Group({ noBorder: true, wrap: true }));
 
-  const addLayer = header.addChild(new ld.Button('Add Layer', 'add'));
+  const addLayer = header.addChild(
+    new ld.Button({ text: 'Add Layer', icon: 'add' })
+  );
   addLayer.addListener(() => {
     context.updateConfig((current) => [...(current || []), null]);
   });
@@ -48,7 +50,7 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
             ]),
           groupConfig: {
             additionalButtons: [
-              new ld.Button(null, 'delete').addListener(() =>
+              new ld.Button({ icon: 'delete' }).addListener(() =>
                 context.updateConfig((current) => [
                   ...current.slice(0, i),
                   ...current.slice(i + 1),
