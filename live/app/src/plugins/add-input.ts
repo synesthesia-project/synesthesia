@@ -29,7 +29,7 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
   const addLayer = header.addChild(
     new ld.Button({ text: 'Add Layer', icon: 'add' })
   );
-  addLayer.addListener(() => {
+  addLayer.addListener('click', () => {
     context.updateConfig((current) => [...(current || []), null]);
   });
 
@@ -41,6 +41,13 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
     applyConfig: (config, lastConfig) => {
       // Add any missing layers
       for (let i = lastConfig?.length ?? 0; i < config.length; i++) {
+        const deleteButton = new ld.Button({ icon: 'delete' });
+        deleteButton.addListener('click', () =>
+          context.updateConfig((current) => [
+            ...current.slice(0, i),
+            ...current.slice(i + 1),
+          ])
+        );
         const input = context.createInputSocket({
           updateConfig: async (update) =>
             context.updateConfig((current) => [
@@ -49,14 +56,7 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
               ...current.slice(i + 1),
             ]),
           groupConfig: {
-            additionalButtons: [
-              new ld.Button({ icon: 'delete' }).addListener(() =>
-                context.updateConfig((current) => [
-                  ...current.slice(0, i),
-                  ...current.slice(i + 1),
-                ])
-              ),
-            ],
+            additionalButtons: [deleteButton],
           },
         });
         layers[i] = input;

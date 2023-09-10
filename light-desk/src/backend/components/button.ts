@@ -1,9 +1,11 @@
 import * as proto from '../../shared/proto';
 import { IDMap } from '../util/id-map';
 
-import { Base } from './base';
+import { Base, EventEmitter, Listenable } from './base';
 
-type Listener = () => void | Promise<void>;
+type Events = {
+  click: () => void | Promise<void>;
+};
 
 export type ButtonMode = 'normal' | 'pressed';
 
@@ -46,20 +48,25 @@ const DEFAULT_PROPS: InternalProps = {
  *
  * ![](media://images/button_screenshot.png)
  */
-export class Button extends Base<InternalProps> {
+export class Button extends Base<InternalProps> implements Listenable<Events> {
   /** @hidden */
-  private readonly listeners = new Set<Listener>();
+  private readonly events = new EventEmitter<Events>();
 
   public constructor(props?: Props) {
     super(DEFAULT_PROPS, props);
   }
 
+  addListener = this.events.addListener;
+  removeListener = this.events.removeListener;
+
   public setText = (text: string | null) => {
     this.updateProps({ text });
+    return this;
   };
 
   public setIcon = (icon: string | undefined | null) => {
     this.updateProps({ icon: icon ?? null });
+    return this;
   };
 
   public setMode = (mode: ButtonMode) => {
@@ -67,6 +74,7 @@ export class Button extends Base<InternalProps> {
       mode,
       error: null,
     });
+    return this;
   };
 
   /** @hidden */
@@ -85,18 +93,8 @@ export class Button extends Base<InternalProps> {
   /** @hidden */
   public handleMessage(message: proto.ClientComponentMessage) {
     if (message.component === 'button') {
-      Promise.all(
-        [...this.listeners].map(
-          (l) =>
-            new Promise((resolve, reject) => {
-              try {
-                resolve(l());
-              } catch (e) {
-                reject(e);
-              }
-            })
-        )
-      )
+      this.events
+        .emit('click')
         .then(() => {
           if (this.props.error) {
             this.updateProps({
@@ -110,10 +108,5 @@ export class Button extends Base<InternalProps> {
           });
         });
     }
-  }
-
-  public addListener(listener: Listener): Button {
-    this.listeners.add(listener);
-    return this;
   }
 }

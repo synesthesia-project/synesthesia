@@ -37,7 +37,7 @@ export const createInputManager = () => {
       createInputGroup.addChild(new ld.Label({ text: 'Select Module:' }));
       for (const kind of inputKinds.values()) {
         const inputButton = new ld.Button({ text: kind.kind, icon: 'add' });
-        inputButton.addListener(() => setInputKind(kind));
+        inputButton.addListener('click', () => setInputKind(kind));
         createInputGroup.addChild(inputButton);
       }
     };
@@ -59,7 +59,7 @@ export const createInputManager = () => {
     } | null = null;
 
     const replaceButton = new ld.Button({ text: 'replace', icon: 'refresh' });
-    replaceButton.addListener(() => context.updateConfig(() => null));
+    replaceButton.addListener('click', () => context.updateConfig(() => null));
 
     const updateGroupDisplay = () => {
       group.removeAllHeaderButtons();

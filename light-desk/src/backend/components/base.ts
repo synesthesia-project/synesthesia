@@ -154,7 +154,21 @@ export class EventEmitter<Map extends Record<string, (...args: any[]) => void>>
     this.listeners.get(type)?.delete(listener);
   };
 
-  emit = <T extends keyof Map>(type: T, ...args: Parameters<Map[T]>) => {
-    this.listeners.get(type)?.forEach((l) => l(...args));
+  emit = <T extends keyof Map>(
+    type: T,
+    ...args: Parameters<Map[T]>
+  ): Promise<unknown> => {
+    return Promise.all(
+      [...(this.listeners.get(type) || [])].map(
+        (l) =>
+          new Promise((resolve, reject) => {
+            try {
+              resolve(l(...args));
+            } catch (e) {
+              reject(e);
+            }
+          })
+      )
+    );
   };
 }

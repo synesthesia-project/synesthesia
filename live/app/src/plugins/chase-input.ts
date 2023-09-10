@@ -39,7 +39,7 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
   const addLayer = header.addChild(
     new ld.Button({ text: 'Add Stop', icon: 'add' })
   );
-  addLayer.addListener(() =>
+  addLayer.addListener('click', () =>
     context.updateConfig((current) => ({
       ...current,
       sequence: [...current.sequence, null],
@@ -56,7 +56,7 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
       step: 0.01,
     })
   );
-  speedSlider.addListener((advanceAmountPerSecond) => {
+  speedSlider.addListener('change', (advanceAmountPerSecond) => {
     context.updateConfig((c) => ({ ...c, advanceAmountPerSecond }));
   });
 
@@ -75,6 +75,16 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
         i < config.sequence.length;
         i++
       ) {
+        const deleteButton = new ld.Button({ icon: 'delete' });
+        deleteButton.addListener('click', () =>
+          context.updateConfig((current) => ({
+            ...current,
+            sequence: [
+              ...current.sequence.slice(0, i),
+              ...current.sequence.slice(i + 1),
+            ],
+          }))
+        );
         const input = context.createInputSocket({
           updateConfig: async (update) =>
             context.updateConfig((current) => ({
@@ -86,17 +96,7 @@ const createAddInput = (context: InputContext<Config>): Input<Config> => {
               ],
             })),
           groupConfig: {
-            additionalButtons: [
-              new ld.Button({ icon: 'delete' }).addListener(() =>
-                context.updateConfig((current) => ({
-                  ...current,
-                  sequence: [
-                    ...current.sequence.slice(0, i),
-                    ...current.sequence.slice(i + 1),
-                  ],
-                }))
-              ),
-            ],
+            additionalButtons: [deleteButton],
           },
         });
         layers[i] = input;

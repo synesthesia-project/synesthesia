@@ -115,7 +115,7 @@ export const Sequences = (options: {
 
   header
     .addChild(new ld.Button({ text: 'Add Group', icon: 'add' }))
-    .addListener(() =>
+    .addListener('click', () =>
       updateConfig((c) => ({
         ...c,
         groups: {
@@ -153,12 +153,14 @@ export const Sequences = (options: {
           new ld.Group({ noBorder: true, wrap: true })
         );
 
-        cGroup.addChild(new ld.Button({ icon: 'delete' })).addListener(() =>
-          updateGroupConfig(gId, (c) => ({
-            ...c,
-            channels: c.channels.filter((chId) => chId != cId),
-          }))
-        );
+        cGroup
+          .addChild(new ld.Button({ icon: 'delete' }))
+          .addListener('click', () =>
+            updateGroupConfig(gId, (c) => ({
+              ...c,
+              channels: c.channels.filter((chId) => chId != cId),
+            }))
+          );
 
         cGroup.addChild(
           new ld.Label({
@@ -228,7 +230,7 @@ export const Sequences = (options: {
       adderContainer.addChildren(channelAdder);
     };
 
-    addChannel.addListener(() => {
+    addChannel.addListener('click', () => {
       closeAllAdders();
       selector.selectFrom(getUnassignedChannels(), (id) => {
         updateGroupConfig(gId, (c) => ({
@@ -241,13 +243,13 @@ export const Sequences = (options: {
       openAdder();
     });
 
-    cancel.addListener(closeAllAdders);
+    cancel.addListener('click', closeAllAdders);
 
     configComponent
       .addHeaderButton(
         new ld.Button({ text: 'Add Sequence', icon: 'animation' })
       )
-      .addListener(() =>
+      .addListener('click', () =>
         updateGroupConfig(gId, (c) => ({
           ...c,
           sequences: {
@@ -262,7 +264,7 @@ export const Sequences = (options: {
 
     configComponent
       .addHeaderButton(new ld.Button({ icon: 'delete' }))
-      .addListener(() => updateGroupConfig(gId, () => undefined));
+      .addListener('click', () => updateGroupConfig(gId, () => undefined));
 
     return {
       lastConfig: undefined,
@@ -287,7 +289,7 @@ export const Sequences = (options: {
 
     const deskButton = new ld.Button();
 
-    deskButton.addListener(() => {
+    deskButton.addListener('click', () => {
       updateGroupConfig(gId, (c) => ({
         ...c,
         selectedSequence: sqId,
@@ -296,7 +298,9 @@ export const Sequences = (options: {
 
     configComponent
       .addHeaderButton(new ld.Button({ icon: 'delete' }))
-      .addListener(() => updateSequenceConfig(gId, sqId, () => undefined));
+      .addListener('click', () =>
+        updateSequenceConfig(gId, sqId, () => undefined)
+      );
 
     return {
       configComponent,
@@ -339,7 +343,7 @@ export const Sequences = (options: {
             const input = deskGroup.addChild(new ld.TextInput());
             deskGroup
               .addChild(new ld.Button({ text: 'Set', icon: 'save' }))
-              .addListener(() =>
+              .addListener('click', () =>
                 updateSequenceChannel(gId, sqId, chId, input.getValue() ?? '')
               );
             sequence.channels.set(

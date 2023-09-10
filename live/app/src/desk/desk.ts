@@ -79,11 +79,11 @@ export const createDesk = () => {
     for (const kind of options.outputKinds) {
       const addButton = new ld.Button({ text: kind.kind, icon: 'add' });
       outputHeader.addChild(addButton);
-      addButton.addListener(async () =>
+      addButton.addListener('click', () =>
         options.addOutput(kind, addOutputKey.getValue() || '')
       );
     }
-    addCompositorCueButton.addListener(options.addCompositorCue);
+    addCompositorCueButton.addListener('click', options.addCompositorCue);
   };
 
   return {

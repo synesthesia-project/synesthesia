@@ -1,9 +1,11 @@
 import * as proto from '../../shared/proto';
 import { IDMap } from '../util/id-map';
 
-import { Base } from './base';
+import { Base, EventEmitter, Listenable } from './base';
 
-type Listener = (state: 'on' | 'off') => void;
+type Events = {
+  change: (state: 'on' | 'off') => void | Promise<void>;
+};
 
 type InternalProps = {
   state: 'on' | 'off';
@@ -20,13 +22,16 @@ const DEFAULT_PROPS: InternalProps = {
  *
  * ![](media://images/switch_screenshot.png)
  */
-export class Switch extends Base<InternalProps> {
+export class Switch extends Base<InternalProps> implements Listenable<Events> {
   /** @hidden */
-  private readonly listeners = new Set<Listener>();
+  private readonly events = new EventEmitter<Events>();
 
   public constructor(props?: Props) {
     super(DEFAULT_PROPS, props);
   }
+
+  addListener = this.events.addListener;
+  removeListener = this.events.removeListener;
 
   /** @hidden */
   public getProtoInfo(idMap: IDMap): proto.Component {
@@ -43,15 +48,8 @@ export class Switch extends Base<InternalProps> {
       // Toggle state value
       const state = this.props.state === 'on' ? 'off' : 'on';
       this.updateProps({ state });
-      for (const l of this.listeners) {
-        l(state);
-      }
+      this.events.emit('change', state);
     }
-  }
-
-  public addListener(listener: Listener): Switch {
-    this.listeners.add(listener);
-    return this;
   }
 
   public setValue(state: 'on' | 'off') {

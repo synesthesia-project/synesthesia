@@ -74,10 +74,10 @@ export const BPM_PLUGIN: Plugin = {
 
     group
       .addChild(new ld.Button({ text: 'Stop' }))
-      .addListener(() => STOP_BEAT_ACTION.action.trigger(null));
+      .addListener('click', () => STOP_BEAT_ACTION.action.trigger(null));
     group
       .addChild(new ld.Button({ text: 'Beat' }))
-      .addListener(() => RECORD_BEAT_ACTION.action.trigger(null));
+      .addListener('click', () => RECORD_BEAT_ACTION.action.trigger(null));
 
     let rectFrameInterval: null | NodeJS.Timer = null;
 

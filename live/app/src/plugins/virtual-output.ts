@@ -45,7 +45,7 @@ const createVirtualOutput = (
     map: PixelMap;
   } | null = null;
 
-  update.addListener(async () => {
+  update.addListener('click', () => {
     const value = pixelsInput.getValue() ?? '';
     if (PIXEL_COUNT_MATCH.test(value)) {
       context.updateConfig(() => ({

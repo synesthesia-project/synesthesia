@@ -71,10 +71,10 @@ const createFillInput = (context: InputContext<Config>): Input<Config> => {
   const updateConfig = (config: Partial<Config>) =>
     context.updateConfig((current) => ({ ...current, ...config }));
 
-  sliders.r.addListener((r) => updateConfig({ r }));
-  sliders.g.addListener((g) => updateConfig({ g }));
-  sliders.b.addListener((b) => updateConfig({ b }));
-  sliders.alpha.addListener((alpha) => updateConfig({ alpha }));
+  sliders.r.addListener('change', (r) => updateConfig({ r }));
+  sliders.g.addListener('change', (g) => updateConfig({ g }));
+  sliders.b.addListener('change', (b) => updateConfig({ b }));
+  sliders.alpha.addListener('change', (alpha) => updateConfig({ alpha }));
 
   return {
     applyConfig: (c) => {

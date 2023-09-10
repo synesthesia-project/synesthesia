@@ -85,7 +85,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
 
   header
     .addChild(new ld.Button({ text: 'Add Custom Fixture', icon: 'add' }))
-    .addListener(() => {
+    .addListener('click', () => {
       context.updateConfig((existing) => ({
         ...existing,
         fixtures: {
@@ -97,7 +97,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
 
   header
     .addChild(new ld.Button({ text: 'Add RGB Strip', icon: 'add' }))
-    .addListener(() => {
+    .addListener('click', () => {
       context.updateConfig((existing) => ({
         ...existing,
         fixtures: {
@@ -175,7 +175,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
 
     group
       .addHeaderButton(new ld.Button({ icon: 'delete' }))
-      .addListener(() => removeFixture(fxId));
+      .addListener('click', () => removeFixture(fxId));
 
     const patch = group.addChild(new ld.Group({ noBorder: true, wrap: true }));
 
@@ -185,7 +185,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
       new ld.TextInput(),
       new ld.Button({ text: 'Set', icon: 'save' })
     );
-    setUniverseChannel.addListener(() => {
+    setUniverseChannel.addListener('click', () => {
       const u = universe.getValidatedValue(universes.validateUniverse);
       const c = channel.getValidatedValue(validateChannel);
       if (u !== null && c !== null) {

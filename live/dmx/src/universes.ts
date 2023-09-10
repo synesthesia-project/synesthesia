@@ -56,7 +56,7 @@ export class Universes {
 
     this.group
       .addHeaderButton(new ld.Button({ icon: 'add' }))
-      .addListener(() => {
+      .addListener('click', () => {
         updateConfig((config) => [
           ...config,
           {
@@ -69,7 +69,7 @@ export class Universes {
 
     this.group
       .addHeaderButton(new ld.Button({ icon: 'remove' }))
-      .addListener(() => {
+      .addListener('click', () => {
         updateConfig((config) => config.slice(0, config.length - 1));
       });
   }
@@ -107,7 +107,7 @@ export class Universes {
         new ld.TextInput({ value: uConfig.universe.toString() })
       );
 
-      universe.addListener((value) => {
+      universe.addListener('change', (value) => {
         if (!INTEGER_REGEX.exec(value)) {
           throw new Error(`Universe value must be a positive integer`);
         }
@@ -122,7 +122,7 @@ export class Universes {
       const sendAll = uGroup.addChild(
         new ld.Switch({ state: uConfig.config.sendAll ?? true ? 'on' : 'off' })
       );
-      sendAll.addListener((value) => {
+      sendAll.addListener('change', (value) => {
         updateConfig((current) => ({
           ...current,
           config: { ...current.config, sendAll: value === 'on' },
@@ -133,7 +133,7 @@ export class Universes {
       const host = uGroup.addChild(
         new ld.TextInput({ value: uConfig.config.host ?? '' })
       );
-      host.addListener((value) => {
+      host.addListener('change', (value) => {
         updateConfig((current) => ({
           ...current,
           config: { ...current.config, host: value || undefined },
@@ -144,7 +144,7 @@ export class Universes {
       const port = uGroup.addChild(
         new ld.TextInput({ value: uConfig.config.port?.toString() ?? '' })
       );
-      port.addListener((value) => {
+      port.addListener('change', (value) => {
         if (!value) {
           updateConfig((current) => ({
             ...current,
@@ -164,7 +164,7 @@ export class Universes {
       const iface = uGroup.addChild(
         new ld.TextInput({ value: uConfig.config.iface ?? '' })
       );
-      iface.addListener((value) => {
+      iface.addListener('change', (value) => {
         updateConfig((current) => ({
           ...current,
           config: { ...current.config, iface: value || undefined },
@@ -175,7 +175,7 @@ export class Universes {
       const refresh = uGroup.addChild(
         new ld.TextInput({ value: uConfig.config.refresh?.toString() ?? '' })
       );
-      refresh.addListener((value) => {
+      refresh.addListener('change', (value) => {
         if (!value) {
           updateConfig((current) => ({
             ...current,

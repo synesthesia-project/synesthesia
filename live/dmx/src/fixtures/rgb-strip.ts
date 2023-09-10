@@ -50,7 +50,7 @@ export const createRGBStripFixture = (
   const endY = group.addChild(new ld.TextInput());
 
   // Input Listeners
-  pixels.addListener(() => {
+  pixels.addListener('change', () => {
     try {
       const value = pixels.getValidatedValue((v) => {
         if (!INTEGER_REGEX.exec(v)) {
@@ -73,28 +73,28 @@ export const createRGBStripFixture = (
     }
   });
 
-  startX.addListener(() =>
+  startX.addListener('change', () =>
     updateConfig((current) => ({
       ...current,
       startX: startX.getValidatedValue(validateNumber) ?? undefined,
     }))
   );
 
-  startY.addListener(() =>
+  startY.addListener('change', () =>
     updateConfig((current) => ({
       ...current,
       startY: startY.getValidatedValue(validateNumber) ?? undefined,
     }))
   );
 
-  endX.addListener(() =>
+  endX.addListener('change', () =>
     updateConfig((current) => ({
       ...current,
       endX: endX.getValidatedValue(validateNumber) ?? undefined,
     }))
   );
 
-  endY.addListener(() =>
+  endY.addListener('change', () =>
     updateConfig((current) => ({
       ...current,
       endY: endY.getValidatedValue(validateNumber) ?? undefined,

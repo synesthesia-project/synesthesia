@@ -56,7 +56,7 @@ export const createFixture = (
     new ld.TextInput(),
     new ld.Button({ text: 'Set', icon: 'save' })
   );
-  setColorChannels.addListener(() => {
+  setColorChannels.addListener('click', () => {
     const rgb = [ri, gi, bi].map((t) => t.getValidatedValue(validateChannel));
     if (!rgb.some((c) => c !== null)) {
       // No values set, remove colors
@@ -72,7 +72,7 @@ export const createFixture = (
 
   group
     .addChild(new ld.Button({ text: 'Add Channel', icon: 'add' }))
-    .addListener(() =>
+    .addListener('click', () =>
       updateConfig((c) => ({
         ...c,
         channels: { ...c.channels, [uuidv4()]: {} },
@@ -129,7 +129,7 @@ export const createFixture = (
               step: 1,
             })
           );
-          slider.addListener((value) =>
+          slider.addListener('change', (value) =>
             updateChannel({ value: Math.round(value) })
           );
 
@@ -140,7 +140,7 @@ export const createFixture = (
 
           chGroup
             .addChild(new ld.Button({ text: 'Set', icon: 'save' }))
-            .addListener(() =>
+            .addListener('click', () =>
               updateChannel({
                 name: name.getValidatedValue((t) => t) ?? undefined,
                 channel:
@@ -148,16 +148,18 @@ export const createFixture = (
               })
             );
 
-          chGroup.addChild(new ld.Button({ icon: 'delete' })).addListener(() =>
-            updateConfig((c) => {
-              const channels = { ...c.channels };
-              delete channels[chId];
-              return {
-                ...c,
-                channels,
-              };
-            })
-          );
+          chGroup
+            .addChild(new ld.Button({ icon: 'delete' }))
+            .addListener('click', () =>
+              updateConfig((c) => {
+                const channels = { ...c.channels };
+                delete channels[chId];
+                return {
+                  ...c,
+                  channels,
+                };
+              })
+            );
 
           channels.set(
             chId,

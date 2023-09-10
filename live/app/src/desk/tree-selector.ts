@@ -21,7 +21,7 @@ export const createTreeSelector = () => {
         // Go Back
         ldComponent
           .addChild(new ld.Button({ icon: 'backspace' }))
-          .addListener(() => {
+          .addListener('click', () => {
             path.splice(path.length - 1);
             updateComponents();
           });
@@ -50,7 +50,7 @@ export const createTreeSelector = () => {
           if (option.pathComponent === '') {
             ldComponent
               .addChild(new ld.Button({ text: 'Select', icon: 'check_circle' }))
-              .addListener(() => {
+              .addListener('click', () => {
                 select(option.id);
                 ldComponent.removeAllChildren();
               });
@@ -62,7 +62,7 @@ export const createTreeSelector = () => {
                   icon: 'chevron_right',
                 })
               )
-              .addListener(() => {
+              .addListener('click', () => {
                 path.push(option.pathComponent);
                 updateComponents();
               });

@@ -117,14 +117,14 @@ const createScanInput = (context: InputContext<Config>): Input<Config> => {
   const updateConfig = (config: Partial<Config>) =>
     context.updateConfig((current) => ({ ...current, ...config }));
 
-  sliders.r.addListener((r) => updateConfig({ r }));
-  sliders.g.addListener((g) => updateConfig({ g }));
-  sliders.b.addListener((b) => updateConfig({ b }));
-  sliders.alpha.addListener((alpha) => updateConfig({ alpha }));
+  sliders.r.addListener('change', (r) => updateConfig({ r }));
+  sliders.g.addListener('change', (g) => updateConfig({ g }));
+  sliders.b.addListener('change', (b) => updateConfig({ b }));
+  sliders.alpha.addListener('change', (alpha) => updateConfig({ alpha }));
 
-  beamWidth.addListener((beamWidth) => updateConfig({ beamWidth }));
-  delay.addListener((delay) => updateConfig({ delay }));
-  speed.addListener((speed) => updateConfig({ speed }));
+  beamWidth.addListener('change', (beamWidth) => updateConfig({ beamWidth }));
+  delay.addListener('change', (delay) => updateConfig({ delay }));
+  speed.addListener('change', (speed) => updateConfig({ speed }));
 
   return {
     applyConfig: (config, prevConfig) => {

@@ -1,9 +1,11 @@
 import * as proto from '../../shared/proto';
 import { IDMap } from '../util/id-map';
 
-import { Base } from './base';
+import { Base, EventEmitter, Listenable } from './base';
 
-type Listener = (value: string) => void;
+type Events = {
+  change: (value: string) => void | Promise<void>;
+};
 
 type InternalProps = {
   value: string | null;
@@ -15,13 +17,19 @@ const DEFAULT_PROPS: InternalProps = {
   value: null,
 };
 
-export class TextInput extends Base<InternalProps> {
+export class TextInput
+  extends Base<InternalProps>
+  implements Listenable<Events>
+{
   /** @hidden */
-  private readonly listeners = new Set<Listener>();
+  private readonly events = new EventEmitter<Events>();
 
   public constructor(props?: Props) {
     super(DEFAULT_PROPS, props);
   }
+
+  addListener = this.events.addListener;
+  removeListener = this.events.removeListener;
 
   /** @hidden */
   public getProtoInfo = (idMap: IDMap): proto.Component => {
@@ -37,16 +45,9 @@ export class TextInput extends Base<InternalProps> {
     if (message.component === 'text-input') {
       if (this.props.value !== message.value) {
         this.updateProps({ value: message.value });
-        for (const l of this.listeners) {
-          l(message.value);
-        }
+        this.events.emit('change', message.value);
       }
     }
-  };
-
-  public addListener = (listener: Listener): TextInput => {
-    this.listeners.add(listener);
-    return this;
   };
 
   public getValue = () => this.props.value;

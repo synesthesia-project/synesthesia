@@ -1,9 +1,11 @@
 import * as proto from '../../shared/proto';
 import { IDMap } from '../util/id-map';
 
-import { Base } from './base';
+import { Base, EventEmitter, Listenable } from './base';
 
-type Listener = (value: number) => void;
+type Events = {
+  change: (value: number) => void | Promise<void>;
+};
 
 export type SliderMode = 'writeThrough' | 'writeBack';
 
@@ -36,13 +38,19 @@ const DEFAULT_PROPS: InternalProps = {
  *
  * ![](media://images/sliderbutton_screenshot.png)
  */
-export class SliderButton extends Base<InternalProps> {
+export class SliderButton
+  extends Base<InternalProps>
+  implements Listenable<Events>
+{
   /** @hidden */
-  private readonly listeners = new Set<Listener>();
+  private readonly events = new EventEmitter<Events>();
 
   public constructor(props?: Props) {
     super(DEFAULT_PROPS, props);
   }
+
+  addListener = this.events.addListener;
+  removeListener = this.events.removeListener;
 
   /** @hidden */
   public getProtoInfo(idMap: IDMap): proto.Component {
@@ -64,13 +72,7 @@ export class SliderButton extends Base<InternalProps> {
     if (this.props.mode === 'writeBack') {
       this.updateProps({ value: newValue });
     }
-    for (const l of this.listeners) {
-      l(newValue);
-    }
-  }
-
-  public addListener(listener: Listener) {
-    this.listeners.add(listener);
+    this.events.emit('change', newValue);
   }
 
   public setValue(value: number) {
