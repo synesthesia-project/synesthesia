@@ -12,7 +12,7 @@ type GroupOptions = {
   defaultCollapsibleState?: proto.GroupComponent['defaultCollapsibleState'];
 };
 
-type Events = {
+export type Events = {
   'title-changed': (title: string) => void;
 };
 

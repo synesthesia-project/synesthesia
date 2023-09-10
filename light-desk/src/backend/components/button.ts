@@ -3,7 +3,7 @@ import { IDMap } from '../util/id-map';
 
 import { Base, EventEmitter, Listenable } from './base';
 
-type Events = {
+export type Events = {
   click: () => void | Promise<void>;
 };
 

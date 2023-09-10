@@ -3,7 +3,7 @@ import { IDMap } from '../util/id-map';
 
 import { Base, EventEmitter, Listenable } from './base';
 
-type Events = {
+export type Events = {
   change: (state: 'on' | 'off') => void | Promise<void>;
 };
 
