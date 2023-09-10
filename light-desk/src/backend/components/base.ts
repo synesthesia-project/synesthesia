@@ -115,7 +115,7 @@ export abstract class BaseParent<T> extends Base<T> implements Parent {
   public removeChild = (component: Component) => {
     const match = this.children.findIndex((c) => c === component);
     if (match >= 0) {
-      const removingChild = this.children[0];
+      const removingChild = this.children[match];
       const newChildren = [
         ...this.children.slice(0, match),
         ...this.children.slice(match + 1),

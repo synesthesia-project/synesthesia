@@ -141,10 +141,10 @@ export class LightDesk implements Parent {
 export { Component } from './components/base';
 
 export { Button } from './components/button';
-export { Group } from './components/group';
+export { Group, GroupHeader } from './components/group';
 export { Label } from './components/label';
 export { Rect } from './components/rect';
 export { SliderButton } from './components/slider_button';
 export { Switch } from './components/switch';
-export { Tabs } from './components/tabs';
+export { Tabs, Tab } from './components/tabs';
 export { TextInput } from './components/text-input';
