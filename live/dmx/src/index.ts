@@ -174,7 +174,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
     );
 
     group
-      .addHeaderButton(new ld.Button({ icon: 'delete' }))
+      .addHeaderChild(new ld.Button({ icon: 'delete' }))
       .addListener('click', () => removeFixture(fxId));
 
     const patch = group.addChild(new ld.Group({ noBorder: true, wrap: true }));

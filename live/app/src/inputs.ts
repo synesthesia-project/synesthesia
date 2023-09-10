@@ -63,8 +63,8 @@ export const createInputManager = () => {
 
     const updateGroupDisplay = () => {
       group.removeAllHeaderButtons();
-      if (displayReplaceButton) group.addHeaderButton(replaceButton);
-      groupConfig?.additionalButtons?.map((b) => group.addHeaderButton(b));
+      if (displayReplaceButton) group.addHeaderChild(replaceButton);
+      groupConfig?.additionalButtons?.map((b) => group.addHeaderChild(b));
       group.setTitle(groupConfig?.title?.text || '');
       group.setOptions({
         editableTitle: !!groupConfig?.title?.update,

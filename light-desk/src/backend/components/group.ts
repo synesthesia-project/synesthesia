@@ -32,6 +32,19 @@ const DEFAULT_PROPS: InternalProps = {
   headerButtons: null,
 };
 
+export class GroupHeader extends BaseParent<Record<never, never>> {
+  public validateChildren = () => {
+    // All children are valid
+  };
+
+  /** @hidden */
+  public getProtoInfo = (idMap: IDMap): proto.GroupHeaderComponent => ({
+    component: 'group-header',
+    key: idMap.getId(this),
+    children: this.getChildren().map((c) => c.getProtoInfo(idMap)),
+  });
+}
+
 /**
  * A collection of components, grouped in either a row or column. Can contain
  * further groups as children to organize components however you wish, and have
@@ -45,8 +58,6 @@ export class Group
 {
   /** @hidden */
   private readonly events = new EventEmitter<Events>();
-  /** @hidden */
-  private readonly children: Component[] = [];
 
   public constructor(props?: Props) {
     super(DEFAULT_PROPS, props);
@@ -55,36 +66,9 @@ export class Group
   addListener = this.events.addListener;
   removeListener = this.events.removeListener;
 
-  public addChildren<CS extends Component[]>(...children: CS): CS {
-    for (const c of children) {
-      if (!this.children.includes(c)) {
-        this.children.push(c);
-        c.setParent(this);
-      }
-    }
-    this.updateTree();
-    return children;
-  }
-
-  public addChild<C extends Component>(child: C): C {
-    this.addChildren(child);
-    return child;
-  }
-
-  public removeChild(component: Component) {
-    const match = this.children.findIndex((c) => c === component);
-    if (match >= 0) {
-      const removed = this.children.splice(match, 1);
-      removed.map((c) => c.setParent(null));
-      this.updateTree();
-    }
-    this.removeHeaderButton(component);
-  }
-
-  public removeAllChildren() {
-    this.children.splice(0, this.children.length).map((c) => c.setParent(null));
-    this.updateTree();
-  }
+  public validateChildren = () => {
+    // All children are valid
+  };
 
   public setOptions = (options: GroupOptions) => {
     this.updateProps(options);
@@ -102,44 +86,41 @@ export class Group
     this.updateProps({ labels });
   };
 
-  public addHeaderButton = (button: Button): Button => {
-    button.setParent(this);
-    this.updateProps({
-      headerButtons: [...(this.props.headerButtons || []), button],
-    });
-    this.updateTree();
-    return button;
+  public addHeaderChild = (child: Button): Button => {
+    const header = new GroupHeader({});
+    header.addChild(child);
+    this.addChild(header);
+    return child;
   };
 
   public removeHeaderButton = (button: Component) => {
-    const buttons = this.props.headerButtons;
-    if (buttons) {
-      const match = buttons.findIndex((c) => c === button);
-      if (match >= 0) {
-        const matchingButton = buttons[match];
-        this.updateProps({
-          headerButtons: [
-            ...buttons.slice(0, match),
-            ...buttons.slice(match + 1),
-          ],
-        });
-        // Remove parent form button _after_ removing button from parent
-        // to prevent loop
-        matchingButton.setParent(null);
+    for (const child of this.getChildren()) {
+      if (child instanceof GroupHeader) {
+        child.removeChild(button);
       }
     }
   };
 
   public removeAllHeaderButtons = () => {
-    this.props.headerButtons?.map((c) => c.setParent(null));
-    this.updateProps({
-      headerButtons: [],
-    });
-    this.updateTree();
+    for (const child of this.getChildren()) {
+      if (child instanceof GroupHeader) {
+        child.removeAllChildren();
+      }
+    }
   };
 
   /** @hidden */
   public getProtoInfo(idMap: IDMap): proto.GroupComponent {
+    const children: proto.Component[] = [];
+    const headers: proto.GroupHeaderComponent[] = [];
+    for (const c of this.getChildren()) {
+      const childProto = c.getProtoInfo(idMap);
+      if (childProto.component === 'group-header') {
+        headers.push(childProto);
+      } else {
+        children.push(childProto);
+      }
+    }
     return {
       component: 'group',
       key: idMap.getId(this),
@@ -149,19 +130,12 @@ export class Group
         noBorder: this.props.noBorder,
         wrap: this.props.wrap,
       },
-      children: this.children.map((c) => c.getProtoInfo(idMap)),
+      children,
+      headers: headers.length > 0 ? headers : undefined,
       labels: this.props.labels ?? undefined,
-      headerButtons:
-        this.props.headerButtons?.map((c) => c.getProtoInfo(idMap)) ??
-        undefined,
       editableTitle: this.props.editableTitle || false,
       defaultCollapsibleState: this.props.defaultCollapsibleState,
     };
-  }
-
-  /** @hidden */
-  getAllChildren(): Iterable<Component> {
-    return [...this.children, ...(this.props.headerButtons || [])];
   }
 
   /** @hidden */

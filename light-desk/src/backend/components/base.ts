@@ -89,14 +89,54 @@ export interface Parent {
 }
 
 export abstract class BaseParent<T> extends Base<T> implements Parent {
-  abstract removeChild(component: Component): void;
+  /** @hidden */
+  private children: readonly Component[] = [];
+
+  public abstract validateChildren(children: Component[]): void;
+
+  public addChildren = <CS extends Component[]>(...children: CS): CS => {
+    for (const c of children) {
+      if (!this.children.includes(c)) {
+        const newChildren = [...this.children, c];
+        this.validateChildren(newChildren);
+        this.children = Object.freeze(newChildren);
+        c.setParent(this);
+      }
+    }
+    this.updateTree();
+    return children;
+  };
+
+  public addChild = <C extends Component>(child: C): C => {
+    this.addChildren(child);
+    return child;
+  };
+
+  public removeChild = (component: Component) => {
+    const match = this.children.findIndex((c) => c === component);
+    if (match >= 0) {
+      const removingChild = this.children[0];
+      const newChildren = [
+        ...this.children.slice(0, match),
+        ...this.children.slice(match + 1),
+      ];
+      this.validateChildren(newChildren);
+      this.children = Object.freeze(newChildren);
+      removingChild.setParent(null);
+      this.updateTree();
+    }
+  };
+
+  public removeAllChildren = () => {
+    this.children.map((c) => c.setParent(null));
+    this.children = Object.freeze([]);
+    this.updateTree();
+  };
 
   /**
    * Return all children components that messages need to be routed to
-   *
-   * Use never to disallow the use of the child-specific property functions;
    */
-  abstract getAllChildren(): Iterable<Component>;
+  public getChildren = (): readonly Component[] => this.children;
 
   /**
    * TODO: we can do this better, right now it broadcasts the message to all
@@ -108,7 +148,7 @@ export abstract class BaseParent<T> extends Base<T> implements Parent {
     if (idMap.getId(this) === message.componentKey) {
       this.handleMessage(message);
     } else {
-      for (const c of this.getAllChildren()) {
+      for (const c of this.children) {
         if (idMap.getId(c) === message.componentKey) {
           c.handleMessage(message);
         } else {

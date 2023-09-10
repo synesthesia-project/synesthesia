@@ -218,7 +218,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       }))
     );
 
-    const deleteButton = ldComponent.addHeaderButton(
+    const deleteButton = ldComponent.addHeaderChild(
       new ld.Button({ text: 'Delete', icon: 'delete' })
     );
 

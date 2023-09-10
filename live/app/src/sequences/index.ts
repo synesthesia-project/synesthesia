@@ -210,7 +210,7 @@ export const Sequences = (options: {
     );
     channelsList.setTitle('Channels');
 
-    const addChannel = configComponent.addHeaderButton(
+    const addChannel = configComponent.addHeaderChild(
       new ld.Button({ text: 'Add Channel', icon: 'add' })
     );
 
@@ -246,7 +246,7 @@ export const Sequences = (options: {
     cancel.addListener('click', closeAllAdders);
 
     configComponent
-      .addHeaderButton(
+      .addHeaderChild(
         new ld.Button({ text: 'Add Sequence', icon: 'animation' })
       )
       .addListener('click', () =>
@@ -263,7 +263,7 @@ export const Sequences = (options: {
       );
 
     configComponent
-      .addHeaderButton(new ld.Button({ icon: 'delete' }))
+      .addHeaderChild(new ld.Button({ icon: 'delete' }))
       .addListener('click', () => updateGroupConfig(gId, () => undefined));
 
     return {
@@ -297,7 +297,7 @@ export const Sequences = (options: {
     });
 
     configComponent
-      .addHeaderButton(new ld.Button({ icon: 'delete' }))
+      .addHeaderChild(new ld.Button({ icon: 'delete' }))
       .addListener('click', () =>
         updateSequenceConfig(gId, sqId, () => undefined)
       );

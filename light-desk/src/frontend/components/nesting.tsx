@@ -19,7 +19,7 @@ const LastNestedColor = React.createContext<GroupColor>('dark');
 
 type NestContentProps = {
   className?: string;
-  children: JSX.Element | JSX.Element[];
+  children?: JSX.Element | JSX.Element[];
 };
 
 const NestedContent: React.FunctionComponent<NestContentProps> = ({

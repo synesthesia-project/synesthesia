@@ -55,7 +55,7 @@ export class Universes {
     this.updateConfig((c) => c);
 
     this.group
-      .addHeaderButton(new ld.Button({ icon: 'add' }))
+      .addHeaderChild(new ld.Button({ icon: 'add' }))
       .addListener('click', () => {
         updateConfig((config) => [
           ...config,
@@ -68,7 +68,7 @@ export class Universes {
       });
 
     this.group
-      .addHeaderButton(new ld.Button({ icon: 'remove' }))
+      .addHeaderChild(new ld.Button({ icon: 'remove' }))
       .addListener('click', () => {
         updateConfig((config) => config.slice(0, config.length - 1));
       });
