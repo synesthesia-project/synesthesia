@@ -84,7 +84,7 @@ const Tabs: React.FunctionComponent<Props> = (props) => {
           </TabItem>
         ))}
       </TabList>
-      <NestedContent>{tab && renderComponent(tab.component)}</NestedContent>
+      <NestedContent>{tab?.child && renderComponent(tab.child)}</NestedContent>
     </Wrapper>
   );
 };

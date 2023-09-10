@@ -34,15 +34,20 @@ export type GroupCollapsedState = 'open' | 'closed';
 
 export type DefaultGroupCollapsedState = GroupCollapsedState | 'auto';
 
+export interface GroupHeaderComponent extends BaseComponent {
+  component: 'group-header';
+  children: Component[];
+}
+
 export interface GroupComponent extends BaseComponent {
   component: 'group';
   title?: string;
   style: styles.GroupComponentStyle;
   children: Component[];
+  headers?: GroupHeaderComponent[];
   labels?: Array<{
     text: string;
   }>;
-  headerButtons?: ButtonComponent[];
   editableTitle: boolean;
   /**
    * If set, allows the group to be collapsed,
@@ -75,12 +80,15 @@ export interface SwitchComponent extends BaseComponent {
   state: 'on' | 'off';
 }
 
+export interface TabComponent extends BaseComponent {
+  component: 'tab';
+  name: string;
+  child?: Component;
+}
+
 export interface TabsComponent extends BaseComponent {
   component: 'tabs';
-  tabs: Array<{
-    name: string;
-    component: Component;
-  }>;
+  tabs: TabComponent[];
 }
 
 export interface TextInputComponent extends BaseComponent {
@@ -90,11 +98,13 @@ export interface TextInputComponent extends BaseComponent {
 
 export type Component =
   | ButtonComponent
+  | GroupHeaderComponent
   | GroupComponent
   | LabelComponent
   | RectComponent
   | SliderButtonComponent
   | SwitchComponent
+  | TabComponent
   | TabsComponent
   | TextInputComponent;
 

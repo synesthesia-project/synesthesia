@@ -1,56 +1,61 @@
 import * as proto from '../../shared/proto';
 import { IDMap } from '../util/id-map';
 
-import { Component } from './base';
+import { Base, EventEmitter, Listenable } from './base';
 
-type Listener = (value: string) => void;
+type Events = {
+  change: (value: string) => void | Promise<void>;
+};
 
-export class TextInput extends Component {
+type InternalProps = {
+  value: string | null;
+};
+
+export type Props = Partial<InternalProps>;
+
+const DEFAULT_PROPS: InternalProps = {
+  value: null,
+};
+
+export class TextInput
+  extends Base<InternalProps>
+  implements Listenable<Events>
+{
   /** @hidden */
-  private value: string;
+  private readonly events = new EventEmitter<Events>();
 
-  /** @hidden */
-  private readonly listeners = new Set<Listener>();
-
-  public constructor(value: string) {
-    super();
-    this.value = value;
+  public constructor(props?: Props) {
+    super(DEFAULT_PROPS, props);
   }
+
+  addListener = this.events.addListener;
+  removeListener = this.events.removeListener;
 
   /** @hidden */
   public getProtoInfo = (idMap: IDMap): proto.Component => {
     return {
       component: 'text-input',
       key: idMap.getId(this),
-      value: this.value,
+      value: this.props.value ?? '',
     };
   };
 
   /** @hidden */
   public handleMessage = (message: proto.ClientComponentMessage) => {
     if (message.component === 'text-input') {
-      if (this.value !== message.value) {
-        this.value = message.value;
-        for (const l of this.listeners) {
-          l(this.value);
-        }
-        this.updateTree();
+      if (this.props.value !== message.value) {
+        this.updateProps({ value: message.value });
+        this.events.emit('change', message.value);
       }
     }
   };
 
-  public addListener = (listener: Listener): TextInput => {
-    this.listeners.add(listener);
-    return this;
-  };
-
-  public getValue = () => this.value;
+  public getValue = () => this.props.value;
 
   public getValidatedValue = <T>(validator: (text: string) => T): null | T =>
-    this.value === '' ? null : validator(this.value);
+    this.props.value === '' ? null : validator(this.props.value || '');
 
   public setValue = (value: string) => {
-    this.value = value;
-    this.updateTree();
+    this.updateProps({ value });
   };
 }

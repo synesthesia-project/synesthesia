@@ -3,27 +3,58 @@ import { IDMap } from '../util/id-map';
 
 import { BaseParent, Component } from './base';
 
-type Tab = {
+type TabDefinition = {
   name: string;
   component: Component;
 };
 
-export class Tabs extends BaseParent {
+type InternalTabProps = {
+  name: string;
+};
+
+export type TabProps = InternalTabsProps;
+
+export class Tab extends BaseParent<InternalTabProps> {
+  public validateChildren = (children: Component[]) => {
+    if (children.length > 1) {
+      throw new Error('Tab can only have one child');
+    }
+  };
+
   /** @hidden */
-  private readonly tabs: Tab[] = [];
+  public getProtoInfo = (idMap: IDMap): proto.TabComponent => ({
+    component: 'tab',
+    key: idMap.getId(this),
+    name: this.props.name,
+    child: this.getChildren()
+      .slice(0, 1)
+      .map((c) => c.getProtoInfo(idMap))[0],
+  });
+}
 
-  public constructor() {
-    super();
-  }
+type InternalTabsProps = Record<never, never>;
 
-  public addTabs(...tabs: Tab[]) {
-    for (const t of tabs) {
-      if (!this.tabs.some((existing) => existing.component === t.component)) {
-        this.tabs.push(t);
-        t.component.setParent(this);
+export type TabsProps = InternalTabsProps;
+
+export class Tabs extends BaseParent<InternalTabsProps> {
+  public validateChildren = (children: Component[]) => {
+    for (const child of children) {
+      if (!(child instanceof Tab)) {
+        throw new Error('Tabs can only have Tab children');
       }
     }
-    this.updateTree();
+  };
+
+  public constructor(props?: TabsProps) {
+    super({}, { ...props });
+  }
+
+  public addTabs(...tabs: TabDefinition[]) {
+    for (const t of tabs) {
+      const tab = new Tab({ name: t.name });
+      tab.addChildren(t.component);
+      this.addChild(tab);
+    }
   }
 
   public addTab<C extends Component>(name: string, component: C): C {
@@ -31,36 +62,12 @@ export class Tabs extends BaseParent {
     return component;
   }
 
-  public removeChild(component: Component) {
-    const match = this.tabs.findIndex((t) => t.component === component);
-    if (match >= 0) {
-      const removed = this.tabs.splice(match, 1);
-      removed.map((t) => t.component.setParent(null));
-      this.updateTree();
-    }
-  }
-
-  public removeAllChildren() {
-    this.tabs
-      .splice(0, this.tabs.length)
-      .map((t) => t.component.setParent(null));
-    this.updateTree();
-  }
-
   /** @hidden */
   public getProtoInfo(idMap: IDMap): proto.TabsComponent {
     return {
       component: 'tabs',
       key: idMap.getId(this),
-      tabs: this.tabs.map((t) => ({
-        name: t.name,
-        component: t.component.getProtoInfo(idMap),
-      })),
+      tabs: this.getChildren().map((c) => (c as Tab).getProtoInfo(idMap)),
     };
-  }
-
-  /** @hidden */
-  getAllChildren(): Iterable<Component> {
-    return this.tabs.map((t) => t.component);
   }
 }

@@ -29,28 +29,52 @@ const createFillInput = (context: InputContext<Config>): Input<Config> => {
   const rect = group.addChild(new ld.Rect());
 
   const sliders = {
-    r: new ld.SliderButton(0, 0, 255, 1, 'writeThrough'),
-    g: new ld.SliderButton(0, 0, 255, 1, 'writeThrough'),
-    b: new ld.SliderButton(0, 0, 255, 1, 'writeThrough'),
-    alpha: new ld.SliderButton(1, 0, 1, 0.01, 'writeThrough'),
+    r: new ld.SliderButton({
+      value: 0,
+      min: 0,
+      max: 255,
+      step: 1,
+      mode: 'writeThrough',
+    }),
+    g: new ld.SliderButton({
+      value: 0,
+      min: 0,
+      max: 255,
+      step: 1,
+      mode: 'writeThrough',
+    }),
+    b: new ld.SliderButton({
+      value: 0,
+      min: 0,
+      max: 255,
+      step: 1,
+      mode: 'writeThrough',
+    }),
+    alpha: new ld.SliderButton({
+      value: 1,
+      min: 0,
+      max: 1,
+      step: 0.01,
+      mode: 'writeThrough',
+    }),
   } as const;
 
   group.addChildren(
-    new ld.Label('Color:'),
+    new ld.Label({ text: 'Color:' }),
     sliders.r,
     sliders.g,
     sliders.b,
-    new ld.Label('Alpha:'),
+    new ld.Label({ text: 'Alpha:' }),
     sliders.alpha
   );
 
   const updateConfig = (config: Partial<Config>) =>
     context.updateConfig((current) => ({ ...current, ...config }));
 
-  sliders.r.addListener((r) => updateConfig({ r }));
-  sliders.g.addListener((g) => updateConfig({ g }));
-  sliders.b.addListener((b) => updateConfig({ b }));
-  sliders.alpha.addListener((alpha) => updateConfig({ alpha }));
+  sliders.r.addListener('change', (r) => updateConfig({ r }));
+  sliders.g.addListener('change', (g) => updateConfig({ g }));
+  sliders.b.addListener('change', (b) => updateConfig({ b }));
+  sliders.alpha.addListener('change', (alpha) => updateConfig({ alpha }));
 
   return {
     applyConfig: (c) => {

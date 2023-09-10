@@ -194,15 +194,11 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       );
       activeOutput.output.applyConfig(kind.initialConfig, null);
     }
-    const ldComponent = new ld.Group(
-      {
-        direction: 'vertical',
-      },
-      {
-        editableTitle: true,
-        defaultCollapsibleState: 'auto',
-      }
-    );
+    const ldComponent = new ld.Group({
+      direction: 'vertical',
+      editableTitle: true,
+      defaultCollapsibleState: 'auto',
+    });
     activeOutput.ldComponent = ldComponent;
     ldComponent.addLabel({ text: kind.kind });
     ldComponent.setTitle(config.outputs?.[key].name ?? '');
@@ -222,11 +218,11 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       }))
     );
 
-    const deleteButton = ldComponent.addHeaderButton(
-      new ld.Button('Delete', 'delete')
+    const deleteButton = ldComponent.addHeaderChild(
+      new ld.Button({ text: 'Delete', icon: 'delete' })
     );
 
-    deleteButton.addListener(() =>
+    deleteButton.addListener('click', () =>
       updateConfig((current) => ({
         ...current,
         outputs: Object.fromEntries(
@@ -336,6 +332,21 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
 
       let existing = compositor.cues.get(cueId);
       if (!existing) {
+        const deleteButton = new ld.Button({ icon: 'delete' });
+        deleteButton.addListener('click', () =>
+          updateConfig((current) => {
+            return {
+              ...current,
+              compositor: {
+                current: current.compositor?.current ?? null,
+                cues: {
+                  ...current.compositor?.cues,
+                  [cueId]: undefined,
+                },
+              },
+            };
+          })
+        );
         existing = inputManager.createSocket({
           updateConfig: (update) =>
             updateCueConfig((current) => ({
@@ -343,22 +354,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
               module: update(current.module),
             })),
           groupConfig: {
-            additionalButtons: [
-              new ld.Button(null, 'delete').addListener(() =>
-                updateConfig((current) => {
-                  return {
-                    ...current,
-                    compositor: {
-                      current: current.compositor?.current ?? null,
-                      cues: {
-                        ...current.compositor?.cues,
-                        [cueId]: undefined,
-                      },
-                    },
-                  };
-                })
-              ),
-            ],
+            additionalButtons: [deleteButton],
             title: {
               text: cueConfig?.name || '',
               update: (name) =>
@@ -375,8 +371,14 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       existing.applyConfig(cueConfig.module, prevCueConfig?.module);
       // Add button for cue
       desk.compositorCueTriggers
-        .addChild(new ld.Button(cueConfig.name || `Cue`, 'play_arrow'))
-        .addListener(() =>
+        .addChild(
+          new ld.Button({
+            text: cueConfig.name || `Cue`,
+            icon: 'play_arrow',
+            mode: cueId === config.compositor?.current ? 'pressed' : 'normal',
+          })
+        )
+        .addListener('click', () =>
           updateConfig((config) => ({
             ...config,
             compositor: {
@@ -384,8 +386,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
               cues: config.compositor?.cues || {},
             },
           }))
-        )
-        .setMode(cueId === config.compositor?.current ? 'pressed' : 'normal');
+        );
     }
     // Remove any deleted inputs
     for (const [cueId, cue] of compositor.cues.entries()) {

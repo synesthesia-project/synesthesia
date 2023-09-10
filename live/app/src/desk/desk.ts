@@ -40,7 +40,7 @@ export const createDesk = () => {
   );
 
   const addCompositorCueButton = compositorHeader.addChild(
-    new ld.Button(`Add Cue`, 'add')
+    new ld.Button({ text: `Add Cue`, icon: 'add' })
   );
 
   const compositorCuesGroup = compositorTab.addChild(
@@ -63,9 +63,9 @@ export const createDesk = () => {
 
   const outputHeader = outputsTab.addChild(new ld.Group({ noBorder: true }));
 
-  outputHeader.addChild(new ld.Label(`Output Name:`));
+  outputHeader.addChild(new ld.Label({ text: `Output Name:` }));
 
-  const addOutputKey = outputHeader.addChild(new ld.TextInput(''));
+  const addOutputKey = outputHeader.addChild(new ld.TextInput());
 
   const outputsGroup = outputsTab.addChild(
     new ld.Group({ direction: 'vertical', noBorder: true })
@@ -77,13 +77,13 @@ export const createDesk = () => {
     outputKinds: Array<OutputKind<unknown>>;
   }) => {
     for (const kind of options.outputKinds) {
-      const addButton = new ld.Button(kind.kind, 'add');
+      const addButton = new ld.Button({ text: kind.kind, icon: 'add' });
       outputHeader.addChild(addButton);
-      addButton.addListener(async () =>
-        options.addOutput(kind, addOutputKey.getValue())
+      addButton.addListener('click', () =>
+        options.addOutput(kind, addOutputKey.getValue() || '')
       );
     }
-    addCompositorCueButton.addListener(options.addCompositorCue);
+    addCompositorCueButton.addListener('click', options.addCompositorCue);
   };
 
   return {

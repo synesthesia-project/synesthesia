@@ -28,11 +28,13 @@ const createVirtualOutput = (
   context: OutputContext<Config>
 ): Output<Config> => {
   const group = new ld.Group({ noBorder: true, wrap: true });
-  group.addChild(new ld.Label(`pixels:`));
+  group.addChild(new ld.Label({ text: `pixels:` }));
 
-  const pixelsInput = group.addChild(new ld.TextInput(''));
+  const pixelsInput = group.addChild(new ld.TextInput());
 
-  const update = group.addChild(new ld.Button('Update', 'save'));
+  const update = group.addChild(
+    new ld.Button({ text: 'Update', icon: 'save' })
+  );
 
   let pixels: {
     px: Array<{
@@ -43,8 +45,8 @@ const createVirtualOutput = (
     map: PixelMap;
   } | null = null;
 
-  update.addListener(async () => {
-    const value = pixelsInput.getValue();
+  update.addListener('click', () => {
+    const value = pixelsInput.getValue() ?? '';
     if (PIXEL_COUNT_MATCH.test(value)) {
       context.updateConfig(() => ({
         pixels: parseInt(value),

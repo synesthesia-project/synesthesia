@@ -17,11 +17,11 @@ export const createTreeSelector = () => {
 
       if (path.length > 0) {
         // Add breadcrumbs for path so far
-        ldComponent.addChild(new ld.Label(path.join(' > ')));
+        ldComponent.addChild(new ld.Label({ text: path.join(' > ') }));
         // Go Back
         ldComponent
-          .addChild(new ld.Button(null, 'backspace'))
-          .addListener(() => {
+          .addChild(new ld.Button({ icon: 'backspace' }))
+          .addListener('click', () => {
             path.splice(path.length - 1);
             updateComponents();
           });
@@ -49,15 +49,20 @@ export const createTreeSelector = () => {
         if (!addedOptions.has(option.pathComponent)) {
           if (option.pathComponent === '') {
             ldComponent
-              .addChild(new ld.Button('Select', 'check_circle'))
-              .addListener(() => {
+              .addChild(new ld.Button({ text: 'Select', icon: 'check_circle' }))
+              .addListener('click', () => {
                 select(option.id);
                 ldComponent.removeAllChildren();
               });
           } else {
             optionsGroup
-              .addChild(new ld.Button(option.pathComponent, 'chevron_right'))
-              .addListener(() => {
+              .addChild(
+                new ld.Button({
+                  text: option.pathComponent,
+                  icon: 'chevron_right',
+                })
+              )
+              .addListener('click', () => {
                 path.push(option.pathComponent);
                 updateComponents();
               });

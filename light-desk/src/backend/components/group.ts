@@ -1,5 +1,3 @@
-import { extend } from 'lodash';
-
 import * as proto from '../../shared/proto';
 import { GroupComponentStyle, GROUP_DEFAULT_STYLE } from '../../shared/styles';
 import { IDMap } from '../util/id-map';
@@ -18,6 +16,35 @@ type Events = {
   'title-changed': (title: string) => void;
 };
 
+export type InternalProps = GroupComponentStyle &
+  GroupOptions & {
+    title: string | null;
+    labels: Label[] | null;
+    headerButtons: Button[] | null;
+  };
+
+export type Props = Partial<InternalProps>;
+
+const DEFAULT_PROPS: InternalProps = {
+  ...GROUP_DEFAULT_STYLE,
+  title: null,
+  labels: null,
+  headerButtons: null,
+};
+
+export class GroupHeader extends BaseParent<Record<never, never>> {
+  public validateChildren = () => {
+    // All children are valid
+  };
+
+  /** @hidden */
+  public getProtoInfo = (idMap: IDMap): proto.GroupHeaderComponent => ({
+    component: 'group-header',
+    key: idMap.getId(this),
+    children: this.getChildren().map((c) => c.getProtoInfo(idMap)),
+  });
+}
+
 /**
  * A collection of components, grouped in either a row or column. Can contain
  * further groups as children to organize components however you wish, and have
@@ -25,127 +52,90 @@ type Events = {
  *
  * ![](media://images/group_screenshot.png)
  */
-export class Group extends BaseParent implements Listenable<Events> {
+export class Group
+  extends BaseParent<InternalProps>
+  implements Listenable<Events>
+{
   /** @hidden */
   private readonly events = new EventEmitter<Events>();
-  /** @hidden */
-  private readonly children: Component[] = [];
-  /** @hidden */
-  private readonly style: GroupComponentStyle;
-  /** @hidden */
-  private title: string | undefined = undefined;
-  /** @hidden */
-  private labels?: Label[];
-  /** @hidden */
-  private headerButtons?: Button[];
-  /** @hidden */
-  private options: GroupOptions;
 
-  public constructor(
-    style: Partial<GroupComponentStyle> = {},
-    opts?: GroupOptions
-  ) {
-    super();
-    this.style = extend({}, GROUP_DEFAULT_STYLE, style);
-    this.options = opts || {};
+  public constructor(props?: Props) {
+    super(DEFAULT_PROPS, props);
   }
-
-  public setOptions = (options: GroupOptions) => {
-    this.options = options;
-    this.updateTree();
-  };
 
   addListener = this.events.addListener;
   removeListener = this.events.removeListener;
 
-  public addChildren<CS extends Component[]>(...children: CS): CS {
-    for (const c of children) {
-      if (!this.children.includes(c)) {
-        this.children.push(c);
-        c.setParent(this);
-      }
-    }
-    this.updateTree();
-    return children;
-  }
+  public validateChildren = () => {
+    // All children are valid
+  };
 
-  public addChild<C extends Component>(child: C): C {
-    this.addChildren(child);
-    return child;
-  }
-
-  public removeChild(component: Component) {
-    const match = this.children.findIndex((c) => c === component);
-    if (match >= 0) {
-      const removed = this.children.splice(match, 1);
-      removed.map((c) => c.setParent(null));
-      this.updateTree();
-    }
-    this.removeHeaderButton(component);
-  }
-
-  public removeAllChildren() {
-    this.children.splice(0, this.children.length).map((c) => c.setParent(null));
-    this.updateTree();
-  }
+  public setOptions = (options: GroupOptions) => {
+    this.updateProps(options);
+  };
 
   public setTitle(title: string) {
-    this.title = title;
-    this.updateTree();
+    this.updateProps({ title });
   }
 
   public addLabel = (label: Label) => {
-    this.labels = [...(this.labels || []), label];
-    this.updateTree();
+    this.updateProps({ labels: [...(this.props.labels || []), label] });
   };
 
   public setLabels = (labels: Label[]) => {
-    this.labels = labels;
-    this.updateTree();
+    this.updateProps({ labels });
   };
 
-  public addHeaderButton = (button: Button): Button => {
-    this.headerButtons = [...(this.headerButtons || []), button];
-    button.setParent(this);
-    this.updateTree();
-    return button;
+  public addHeaderChild = (child: Button): Button => {
+    const header = new GroupHeader({});
+    header.addChild(child);
+    this.addChild(header);
+    return child;
   };
 
   public removeHeaderButton = (button: Component) => {
-    if (this.headerButtons) {
-      const match = this.headerButtons.findIndex((c) => c === button);
-      if (match >= 0) {
-        const removed = this.headerButtons.splice(match, 1);
-        removed.map((c) => c.setParent(null));
-        this.updateTree();
+    for (const child of this.getChildren()) {
+      if (child instanceof GroupHeader) {
+        child.removeChild(button);
       }
     }
   };
 
   public removeAllHeaderButtons = () => {
-    this.headerButtons?.map((c) => c.setParent(null));
-    this.headerButtons = undefined;
-    this.updateTree();
+    for (const child of this.getChildren()) {
+      if (child instanceof GroupHeader) {
+        child.removeAllChildren();
+      }
+    }
   };
 
   /** @hidden */
   public getProtoInfo(idMap: IDMap): proto.GroupComponent {
+    const children: proto.Component[] = [];
+    const headers: proto.GroupHeaderComponent[] = [];
+    for (const c of this.getChildren()) {
+      const childProto = c.getProtoInfo(idMap);
+      if (childProto.component === 'group-header') {
+        headers.push(childProto);
+      } else {
+        children.push(childProto);
+      }
+    }
     return {
       component: 'group',
       key: idMap.getId(this),
-      title: this.title,
-      style: this.style,
-      children: this.children.map((c) => c.getProtoInfo(idMap)),
-      labels: this.labels,
-      headerButtons: this.headerButtons?.map((c) => c.getProtoInfo(idMap)),
-      editableTitle: this.options.editableTitle || false,
-      defaultCollapsibleState: this.options.defaultCollapsibleState,
+      title: this.props.title ?? undefined,
+      style: {
+        direction: this.props.direction,
+        noBorder: this.props.noBorder,
+        wrap: this.props.wrap,
+      },
+      children,
+      headers: headers.length > 0 ? headers : undefined,
+      labels: this.props.labels ?? undefined,
+      editableTitle: this.props.editableTitle || false,
+      defaultCollapsibleState: this.props.defaultCollapsibleState,
     };
-  }
-
-  /** @hidden */
-  getAllChildren(): Iterable<Component> {
-    return [...this.children, ...(this.headerButtons || [])];
   }
 
   /** @hidden */

@@ -40,10 +40,10 @@ type ActiveUniverse = {
 
 export class Universes {
   private lastConfig: UniversesConfig = [];
-  public readonly group: ld.Group = new ld.Group(
-    { direction: 'vertical' },
-    { defaultCollapsibleState: 'closed' }
-  );
+  public readonly group: ld.Group = new ld.Group({
+    direction: 'vertical',
+    defaultCollapsibleState: 'closed',
+  });
 
   private readonly universes: ActiveUniverse[] = [];
 
@@ -54,20 +54,22 @@ export class Universes {
   ) {
     this.updateConfig((c) => c);
 
-    this.group.addHeaderButton(new ld.Button(null, 'add')).addListener(() => {
-      updateConfig((config) => [
-        ...config,
-        {
-          type: 'artnet',
-          universe: Math.max(0, ...config.map((u) => u.universe + 1)),
-          config: {},
-        },
-      ]);
-    });
+    this.group
+      .addHeaderChild(new ld.Button({ icon: 'add' }))
+      .addListener('click', () => {
+        updateConfig((config) => [
+          ...config,
+          {
+            type: 'artnet',
+            universe: Math.max(0, ...config.map((u) => u.universe + 1)),
+            config: {},
+          },
+        ]);
+      });
 
     this.group
-      .addHeaderButton(new ld.Button(null, 'remove'))
-      .addListener(() => {
+      .addHeaderChild(new ld.Button({ icon: 'remove' }))
+      .addListener('click', () => {
         updateConfig((config) => config.slice(0, config.length - 1));
       });
   }
@@ -81,7 +83,7 @@ export class Universes {
     this.group.setTitle(`Universes (${config.length})`);
     config.map((uConfig, i) => {
       const uGroup = this.group.addChild(
-        new ld.Group({ wrap: true }, { editableTitle: true })
+        new ld.Group({ wrap: true, editableTitle: true })
       );
       uGroup.setTitle(uConfig.name || '');
       uGroup.setLabels([{ text: `Universe ${i}` }, { text: uConfig.type }]);
@@ -100,12 +102,12 @@ export class Universes {
         updateConfig((current) => ({ ...current, name: title }));
       });
 
-      uGroup.addChild(new ld.Label('Universe:'));
+      uGroup.addChild(new ld.Label({ text: 'Universe:' }));
       const universe = uGroup.addChild(
-        new ld.TextInput(uConfig.universe.toString())
+        new ld.TextInput({ value: uConfig.universe.toString() })
       );
 
-      universe.addListener((value) => {
+      universe.addListener('change', (value) => {
         if (!INTEGER_REGEX.exec(value)) {
           throw new Error(`Universe value must be a positive integer`);
         }
@@ -116,31 +118,33 @@ export class Universes {
         updateConfig((current) => ({ ...current, universe: artnetUniverse }));
       });
 
-      uGroup.addChild(new ld.Label('SendAll:'));
+      uGroup.addChild(new ld.Label({ text: 'SendAll:' }));
       const sendAll = uGroup.addChild(
-        new ld.Switch(uConfig.config.sendAll ?? true ? 'on' : 'off')
+        new ld.Switch({ state: uConfig.config.sendAll ?? true ? 'on' : 'off' })
       );
-      sendAll.addListener((value) => {
+      sendAll.addListener('change', (value) => {
         updateConfig((current) => ({
           ...current,
           config: { ...current.config, sendAll: value === 'on' },
         }));
       });
 
-      uGroup.addChild(new ld.Label('Host:'));
-      const host = uGroup.addChild(new ld.TextInput(uConfig.config.host ?? ''));
-      host.addListener((value) => {
+      uGroup.addChild(new ld.Label({ text: 'Host:' }));
+      const host = uGroup.addChild(
+        new ld.TextInput({ value: uConfig.config.host ?? '' })
+      );
+      host.addListener('change', (value) => {
         updateConfig((current) => ({
           ...current,
           config: { ...current.config, host: value || undefined },
         }));
       });
 
-      uGroup.addChild(new ld.Label('Port:'));
+      uGroup.addChild(new ld.Label({ text: 'Port:' }));
       const port = uGroup.addChild(
-        new ld.TextInput(uConfig.config.port?.toString() ?? '')
+        new ld.TextInput({ value: uConfig.config.port?.toString() ?? '' })
       );
-      port.addListener((value) => {
+      port.addListener('change', (value) => {
         if (!value) {
           updateConfig((current) => ({
             ...current,
@@ -156,22 +160,22 @@ export class Universes {
         }));
       });
 
-      uGroup.addChild(new ld.Label('Interface:'));
+      uGroup.addChild(new ld.Label({ text: 'Interface:' }));
       const iface = uGroup.addChild(
-        new ld.TextInput(uConfig.config.iface ?? '')
+        new ld.TextInput({ value: uConfig.config.iface ?? '' })
       );
-      iface.addListener((value) => {
+      iface.addListener('change', (value) => {
         updateConfig((current) => ({
           ...current,
           config: { ...current.config, iface: value || undefined },
         }));
       });
 
-      uGroup.addChild(new ld.Label('Refresh:'));
+      uGroup.addChild(new ld.Label({ text: 'Refresh:' }));
       const refresh = uGroup.addChild(
-        new ld.TextInput(uConfig.config.refresh?.toString() ?? '')
+        new ld.TextInput({ value: uConfig.config.refresh?.toString() ?? '' })
       );
-      refresh.addListener((value) => {
+      refresh.addListener('change', (value) => {
         if (!value) {
           updateConfig((current) => ({
             ...current,

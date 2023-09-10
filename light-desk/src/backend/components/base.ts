@@ -1,9 +1,57 @@
 import * as proto from '../../shared/proto';
 import { IDMap } from '../util/id-map';
 
-export abstract class Component {
+export interface Component {
+  getProtoInfo(idMap: IDMap): proto.Component;
+
+  handleMessage(message: proto.ClientComponentMessage): void;
+
+  routeMessage(idMap: IDMap, message: proto.ClientComponentMessage): void;
+
+  setParent(parent: Parent | null): void;
+}
+
+export abstract class Base<Props> implements Component {
   /** @hidden */
   private parent: Parent | null = null;
+
+  /** @hidden */
+  private readonly defaultProps: Props;
+
+  /** @hidden */
+  private _props: Props;
+
+  public constructor(defaultProps: Props, props?: Partial<Props>) {
+    this.defaultProps = defaultProps;
+    this._props = Object.freeze({
+      ...defaultProps,
+      ...props,
+    });
+  }
+
+  public get props(): Props {
+    return this._props;
+  }
+
+  public set props(props: Partial<Props>) {
+    this.setProps(props);
+  }
+
+  public setProps = (props: Partial<Props>) => {
+    this._props = Object.freeze({
+      ...this.defaultProps,
+      ...props,
+    });
+    this.updateTree();
+  };
+
+  public updateProps = (updates: Partial<Props>) => {
+    this._props = Object.freeze({
+      ...this._props,
+      ...updates,
+    });
+    this.updateTree();
+  };
 
   /** @hidden */
   public setParent(parent: Parent | null) {
@@ -40,13 +88,55 @@ export interface Parent {
   removeChild(component: Component): void;
 }
 
-export abstract class BaseParent extends Component implements Parent {
-  abstract removeChild(component: Component): void;
+export abstract class BaseParent<T> extends Base<T> implements Parent {
+  /** @hidden */
+  private children: readonly Component[] = [];
+
+  public abstract validateChildren(children: Component[]): void;
+
+  public addChildren = <CS extends Component[]>(...children: CS): CS => {
+    for (const c of children) {
+      if (!this.children.includes(c)) {
+        const newChildren = [...this.children, c];
+        this.validateChildren(newChildren);
+        this.children = Object.freeze(newChildren);
+        c.setParent(this);
+      }
+    }
+    this.updateTree();
+    return children;
+  };
+
+  public addChild = <C extends Component>(child: C): C => {
+    this.addChildren(child);
+    return child;
+  };
+
+  public removeChild = (component: Component) => {
+    const match = this.children.findIndex((c) => c === component);
+    if (match >= 0) {
+      const removingChild = this.children[0];
+      const newChildren = [
+        ...this.children.slice(0, match),
+        ...this.children.slice(match + 1),
+      ];
+      this.validateChildren(newChildren);
+      this.children = Object.freeze(newChildren);
+      removingChild.setParent(null);
+      this.updateTree();
+    }
+  };
+
+  public removeAllChildren = () => {
+    this.children.map((c) => c.setParent(null));
+    this.children = Object.freeze([]);
+    this.updateTree();
+  };
 
   /**
    * Return all children components that messages need to be routed to
    */
-  abstract getAllChildren(): Iterable<Component>;
+  public getChildren = (): readonly Component[] => this.children;
 
   /**
    * TODO: we can do this better, right now it broadcasts the message to all
@@ -58,7 +148,7 @@ export abstract class BaseParent extends Component implements Parent {
     if (idMap.getId(this) === message.componentKey) {
       this.handleMessage(message);
     } else {
-      for (const c of this.getAllChildren()) {
+      for (const c of this.children) {
         if (idMap.getId(c) === message.componentKey) {
           c.handleMessage(message);
         } else {
@@ -66,6 +156,10 @@ export abstract class BaseParent extends Component implements Parent {
         }
       }
     }
+  }
+
+  public insertBefore(_child: Component, _beforeChild: Component) {
+    throw new Error('TODO');
   }
 }
 
@@ -100,7 +194,21 @@ export class EventEmitter<Map extends Record<string, (...args: any[]) => void>>
     this.listeners.get(type)?.delete(listener);
   };
 
-  emit = <T extends keyof Map>(type: T, ...args: Parameters<Map[T]>) => {
-    this.listeners.get(type)?.forEach((l) => l(...args));
+  emit = <T extends keyof Map>(
+    type: T,
+    ...args: Parameters<Map[T]>
+  ): Promise<unknown> => {
+    return Promise.all(
+      [...(this.listeners.get(type) || [])].map(
+        (l) =>
+          new Promise((resolve, reject) => {
+            try {
+              resolve(l(...args));
+            } catch (e) {
+              reject(e);
+            }
+          })
+      )
+    );
   };
 }

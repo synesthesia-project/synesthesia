@@ -113,20 +113,22 @@ export const Sequences = (options: {
     new ld.Group({ noBorder: true, wrap: true })
   );
 
-  header.addChild(new ld.Button('Add Group', 'add')).addListener(() =>
-    updateConfig((c) => ({
-      ...c,
-      groups: {
-        ...c.groups,
-        [uuidv4()]: {
-          name: '',
-          selectedSequence: undefined,
-          channels: [],
-          sequences: {},
+  header
+    .addChild(new ld.Button({ text: 'Add Group', icon: 'add' }))
+    .addListener('click', () =>
+      updateConfig((c) => ({
+        ...c,
+        groups: {
+          ...c.groups,
+          [uuidv4()]: {
+            name: '',
+            selectedSequence: undefined,
+            channels: [],
+            sequences: {},
+          },
         },
-      },
-    }))
-  );
+      }))
+    );
 
   const closeAllAdders = () => {
     for (const group of groups.values()) {
@@ -151,15 +153,19 @@ export const Sequences = (options: {
           new ld.Group({ noBorder: true, wrap: true })
         );
 
-        cGroup.addChild(new ld.Button(null, 'delete')).addListener(() =>
-          updateGroupConfig(gId, (c) => ({
-            ...c,
-            channels: c.channels.filter((chId) => chId != cId),
-          }))
-        );
+        cGroup
+          .addChild(new ld.Button({ icon: 'delete' }))
+          .addListener('click', () =>
+            updateGroupConfig(gId, (c) => ({
+              ...c,
+              channels: c.channels.filter((chId) => chId != cId),
+            }))
+          );
 
         cGroup.addChild(
-          new ld.Label(channel ? channel.name.join(' > ') : 'Unknown Channel')
+          new ld.Label({
+            text: channel ? channel.name.join(' > ') : 'Unknown Channel',
+          })
         );
       }
     }
@@ -180,13 +186,11 @@ export const Sequences = (options: {
 
   const createGroup = (gId: string): Group => {
     const configComponent = configGroup.addChild(
-      new ld.Group(
-        { direction: 'vertical' },
-        {
-          editableTitle: true,
-          defaultCollapsibleState: 'auto',
-        }
-      )
+      new ld.Group({
+        direction: 'vertical',
+        editableTitle: true,
+        defaultCollapsibleState: 'auto',
+      })
     );
 
     const deskComponent = deskGroup.addChild(
@@ -202,21 +206,18 @@ export const Sequences = (options: {
     );
 
     const channelsList = configComponent.addChild(
-      new ld.Group(
-        { direction: 'vertical' },
-        { defaultCollapsibleState: 'auto' }
-      )
+      new ld.Group({ direction: 'vertical', defaultCollapsibleState: 'auto' })
     );
     channelsList.setTitle('Channels');
 
-    const addChannel = configComponent.addHeaderButton(
-      new ld.Button('Add Channel', 'add')
+    const addChannel = configComponent.addHeaderChild(
+      new ld.Button({ text: 'Add Channel', icon: 'add' })
     );
 
     const channelAdder = new ld.Group({ noBorder: true, wrap: true });
 
-    const cancel = new ld.Button('Cancel', 'cancel');
-    const label = new ld.Label('Add Channel:');
+    const cancel = new ld.Button({ text: 'Cancel', icon: 'cancel' });
+    const label = new ld.Label({ text: 'Add Channel:' });
     const selector = createTreeSelector();
 
     channelAdder.addChildren(cancel, label, selector.ldComponent);
@@ -229,7 +230,7 @@ export const Sequences = (options: {
       adderContainer.addChildren(channelAdder);
     };
 
-    addChannel.addListener(() => {
+    addChannel.addListener('click', () => {
       closeAllAdders();
       selector.selectFrom(getUnassignedChannels(), (id) => {
         updateGroupConfig(gId, (c) => ({
@@ -242,11 +243,13 @@ export const Sequences = (options: {
       openAdder();
     });
 
-    cancel.addListener(closeAllAdders);
+    cancel.addListener('click', closeAllAdders);
 
     configComponent
-      .addHeaderButton(new ld.Button('Add Sequence', 'animation'))
-      .addListener(() =>
+      .addHeaderChild(
+        new ld.Button({ text: 'Add Sequence', icon: 'animation' })
+      )
+      .addListener('click', () =>
         updateGroupConfig(gId, (c) => ({
           ...c,
           sequences: {
@@ -260,8 +263,8 @@ export const Sequences = (options: {
       );
 
     configComponent
-      .addHeaderButton(new ld.Button(null, 'delete'))
-      .addListener(() => updateGroupConfig(gId, () => undefined));
+      .addHeaderChild(new ld.Button({ icon: 'delete' }))
+      .addListener('click', () => updateGroupConfig(gId, () => undefined));
 
     return {
       lastConfig: undefined,
@@ -274,21 +277,19 @@ export const Sequences = (options: {
   };
 
   const createSequence = (gId: string, sqId: string): Sequence => {
-    const configComponent = new ld.Group(
-      { direction: 'vertical' },
-      {
-        editableTitle: true,
-        defaultCollapsibleState: 'auto',
-      }
-    );
+    const configComponent = new ld.Group({
+      direction: 'vertical',
+      editableTitle: true,
+      defaultCollapsibleState: 'auto',
+    });
 
     configComponent.addListener('title-changed', (title) =>
       updateSequenceConfig(gId, sqId, (c) => ({ ...c, name: title }))
     );
 
-    const deskButton = new ld.Button(null);
+    const deskButton = new ld.Button();
 
-    deskButton.addListener(() => {
+    deskButton.addListener('click', () => {
       updateGroupConfig(gId, (c) => ({
         ...c,
         selectedSequence: sqId,
@@ -296,8 +297,10 @@ export const Sequences = (options: {
     });
 
     configComponent
-      .addHeaderButton(new ld.Button(null, 'delete'))
-      .addListener(() => updateSequenceConfig(gId, sqId, () => undefined));
+      .addHeaderChild(new ld.Button({ icon: 'delete' }))
+      .addListener('click', () =>
+        updateSequenceConfig(gId, sqId, () => undefined)
+      );
 
     return {
       configComponent,
@@ -336,12 +339,12 @@ export const Sequences = (options: {
             const deskGroup = sequence.configComponent.addChild(
               new ld.Group({ noBorder: true })
             );
-            const label = deskGroup.addChild(new ld.Label(''));
-            const input = deskGroup.addChild(new ld.TextInput(''));
+            const label = deskGroup.addChild(new ld.Label({ text: '' }));
+            const input = deskGroup.addChild(new ld.TextInput());
             deskGroup
-              .addChild(new ld.Button('Set', 'save'))
-              .addListener(() =>
-                updateSequenceChannel(gId, sqId, chId, input.getValue())
+              .addChild(new ld.Button({ text: 'Set', icon: 'save' }))
+              .addListener('click', () =>
+                updateSequenceChannel(gId, sqId, chId, input.getValue() ?? '')
               );
             sequence.channels.set(
               chId,

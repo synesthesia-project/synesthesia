@@ -14,7 +14,6 @@ import * as proto from '../../shared/proto';
 import { calculateClass } from '../util/react';
 import { StageContext } from './context';
 import { NestedContent } from './nesting';
-import { Button } from './button';
 import { Icon } from './icon';
 import { usePressable } from '../util/touch';
 
@@ -191,7 +190,7 @@ const Group: FunctionComponent<Props> = (props) => {
   const displayHeader = [
     showTitle,
     props.info.labels?.length,
-    props.info.headerButtons,
+    props.info.headers?.length,
     collapsible,
   ].some((v) => v);
 
@@ -264,9 +263,9 @@ const Group: FunctionComponent<Props> = (props) => {
           ) : (
             <Grow />
           )}
-          {props.info.headerButtons?.map((b) => (
-            <Button info={b} />
-          ))}
+          {props.info.headers?.map((h) =>
+            h.children.map((c) => renderComponent(c))
+          )}
         </Header>
       ) : null}
       {collapsible && collapsed ? null : childrenElements}

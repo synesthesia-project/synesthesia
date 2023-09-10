@@ -41,6 +41,11 @@ const renderComponent = (info: proto.Component): JSX.Element => {
       return <Tabs key={info.key} info={info} />;
     case 'text-input':
       return <TextInput key={info.key} info={info} />;
+    case 'group-header':
+    case 'tab':
+      throw new Error(
+        `Cannot render ${info.component} outside of expected parents`
+      );
   }
 };
 

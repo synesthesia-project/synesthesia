@@ -41,40 +41,90 @@ const createScanInput = (context: InputContext<Config>): Input<Config> => {
 
   const rect = group.addChild(new ld.Rect());
 
-  group.addChild(new ld.Label('Color:'));
+  group.addChild(new ld.Label({ text: 'Color:' }));
   const sliders = {
-    r: group.addChild(new ld.SliderButton(0, 0, 255, 1, 'writeThrough')),
-    g: group.addChild(new ld.SliderButton(0, 0, 255, 1, 'writeThrough')),
-    b: group.addChild(new ld.SliderButton(0, 0, 255, 1, 'writeThrough')),
-    alpha: group.addChild(new ld.SliderButton(1, 0, 1, 0.01, 'writeThrough')),
+    r: group.addChild(
+      new ld.SliderButton({
+        value: 0,
+        min: 0,
+        max: 255,
+        step: 1,
+        mode: 'writeThrough',
+      })
+    ),
+    g: group.addChild(
+      new ld.SliderButton({
+        value: 0,
+        min: 0,
+        max: 255,
+        step: 1,
+        mode: 'writeThrough',
+      })
+    ),
+    b: group.addChild(
+      new ld.SliderButton({
+        value: 0,
+        min: 0,
+        max: 255,
+        step: 1,
+        mode: 'writeThrough',
+      })
+    ),
+    alpha: group.addChild(
+      new ld.SliderButton({
+        value: 1,
+        min: 0,
+        max: 1,
+        step: 0.01,
+        mode: 'writeThrough',
+      })
+    ),
   } as const;
 
-  group.addChild(new ld.Label('Beam Width:'));
+  group.addChild(new ld.Label({ text: 'Beam Width:' }));
   const beamWidth = group.addChild(
-    new ld.SliderButton(DEFAULT_CONFIG.beamWidth, 0, 1, 0.01, 'writeThrough')
+    new ld.SliderButton({
+      value: DEFAULT_CONFIG.beamWidth,
+      min: 0,
+      max: 1,
+      step: 0.01,
+      mode: 'writeThrough',
+    })
   );
 
-  group.addChild(new ld.Label('Delay:'));
+  group.addChild(new ld.Label({ text: 'Delay:' }));
   const delay = group.addChild(
-    new ld.SliderButton(DEFAULT_CONFIG.delay, 0, 40, 0.01, 'writeThrough')
+    new ld.SliderButton({
+      value: DEFAULT_CONFIG.delay,
+      min: 0,
+      max: 40,
+      step: 0.01,
+      mode: 'writeThrough',
+    })
   );
 
-  group.addChild(new ld.Label('Speed:'));
+  group.addChild(new ld.Label({ text: 'Speed:' }));
   const speed = group.addChild(
-    new ld.SliderButton(DEFAULT_CONFIG.speed, -10, 10, 0.01, 'writeThrough')
+    new ld.SliderButton({
+      value: DEFAULT_CONFIG.speed,
+      min: -10,
+      max: 10,
+      step: 0.01,
+      mode: 'writeThrough',
+    })
   );
 
   const updateConfig = (config: Partial<Config>) =>
     context.updateConfig((current) => ({ ...current, ...config }));
 
-  sliders.r.addListener((r) => updateConfig({ r }));
-  sliders.g.addListener((g) => updateConfig({ g }));
-  sliders.b.addListener((b) => updateConfig({ b }));
-  sliders.alpha.addListener((alpha) => updateConfig({ alpha }));
+  sliders.r.addListener('change', (r) => updateConfig({ r }));
+  sliders.g.addListener('change', (g) => updateConfig({ g }));
+  sliders.b.addListener('change', (b) => updateConfig({ b }));
+  sliders.alpha.addListener('change', (alpha) => updateConfig({ alpha }));
 
-  beamWidth.addListener((beamWidth) => updateConfig({ beamWidth }));
-  delay.addListener((delay) => updateConfig({ delay }));
-  speed.addListener((speed) => updateConfig({ speed }));
+  beamWidth.addListener('change', (beamWidth) => updateConfig({ beamWidth }));
+  delay.addListener('change', (delay) => updateConfig({ delay }));
+  speed.addListener('change', (speed) => updateConfig({ speed }));
 
   return {
     applyConfig: (config, prevConfig) => {
