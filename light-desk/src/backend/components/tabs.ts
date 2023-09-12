@@ -12,7 +12,7 @@ type InternalTabProps = {
   name: string;
 };
 
-export type TabProps = InternalTabsProps;
+export type TabProps = InternalTabProps;
 
 export class Tab extends BaseParent<InternalTabProps> {
   public validateChildren = (children: Component[]) => {
