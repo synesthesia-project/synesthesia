@@ -1,0 +1,36 @@
+{
+  "name": "@synesthesia-project/react-light-desk",
+  "version": "0.0.1",
+  "description": "Core synesthesia libraries, type definitions & protocols",
+  "license": "MIT",
+  "main": "index.js",
+  "types": "index.d.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/synesthesia-project/synesthesia"
+  },
+  "scripts": {
+    "clean": "gulp clean",
+    "build": "gulp",
+    "lint": "gulp lint",
+    "lint:fix": "gulp lint:fix"
+  },
+  "files": [
+    "lib/**/*",
+    "index.d.ts",
+    "index.js",
+    "README.md"
+  ],
+  "dependencies": {
+    "@synesthesia-project/compositor": "^0.0.1",
+    "@synesthesia-project/light-desk": "^2.1.1",
+    "react-reconciler": "0.26.0"
+  },
+  "devDependencies": {
+    "@synesthesia-project/gulp-util": "~0.0.1",
+    "@types/react": "^17.0.0",
+    "@types/react-reconciler": "~0.26.0",
+    "react": "^17.0.2",
+    "gulp": "~4.0.2"
+  }
+}

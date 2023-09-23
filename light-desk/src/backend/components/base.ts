@@ -94,23 +94,31 @@ export abstract class BaseParent<T> extends Base<T> implements Parent {
 
   public abstract validateChildren(children: Component[]): void;
 
-  public addChildren = <CS extends Component[]>(...children: CS): CS => {
+  public appendChildren = <CS extends Component[]>(...children: CS): CS => {
     for (const c of children) {
-      if (!this.children.includes(c)) {
-        const newChildren = [...this.children, c];
-        this.validateChildren(newChildren);
-        this.children = Object.freeze(newChildren);
-        c.setParent(this);
-      }
+      const newChildren = [...this.children.filter((ch) => ch !== c), c];
+      this.validateChildren(newChildren);
+      this.children = Object.freeze(newChildren);
+      c.setParent(this);
     }
     this.updateTree();
     return children;
   };
 
-  public addChild = <C extends Component>(child: C): C => {
-    this.addChildren(child);
+  /**
+   * @deprecated use appendChildren instead
+   */
+  public addChildren = this.appendChildren;
+
+  public appendChild = <C extends Component>(child: C): C => {
+    this.appendChildren(child);
     return child;
   };
+
+  /**
+   * @deprecated use appendChild instead
+   */
+  public addChild = this.appendChild;
 
   public removeChild = (component: Component) => {
     const match = this.children.findIndex((c) => c === component);
@@ -158,8 +166,25 @@ export abstract class BaseParent<T> extends Base<T> implements Parent {
     }
   }
 
-  public insertBefore(_child: Component, _beforeChild: Component) {
-    throw new Error('TODO');
+  public insertBefore(child: Component, beforeChild: Component) {
+    // Remove child from current parent (if it exists)
+    const filteredChildren = this.children.filter((c) => c !== child);
+    // Find position of beforeChild
+    let match = filteredChildren.findIndex((c) => c === beforeChild);
+    console.log('match', match);
+    if (match === -1) {
+      // If beforeChild is not found, insert at the end
+      match = filteredChildren.length;
+    }
+    const newChildren = [
+      ...filteredChildren.slice(0, match),
+      child,
+      ...filteredChildren.slice(match),
+    ];
+    this.validateChildren(newChildren);
+    this.children = Object.freeze(newChildren);
+    child.setParent(this);
+    this.updateTree();
   }
 }
 
