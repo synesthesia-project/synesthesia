@@ -36,6 +36,7 @@
     "@synesthesia-project/compositor": "^0.0.1",
     "@synesthesia-project/gulp-util": "~0.0.1",
     "@synesthesia-project/light-desk": "^2.1.1",
+    "@synesthesia-project/react-light-desk": "^0.0.1",
     "@types/lodash": "^4.14.120",
     "gulp": "~4.0.2"
   }

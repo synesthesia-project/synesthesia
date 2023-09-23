@@ -24,6 +24,7 @@
     "@synesthesia-project/light-desk": "^2.1.1",
     "@synesthesia-project/live-core": "^0.0.1",
     "@synesthesia-project/live-dmx": "^0.0.1",
+    "@synesthesia-project/react-light-desk": "^0.0.1",
     "artnet": "^1.4.0",
     "fp-ts": "~2.13.1",
     "io-ts": "~2.2.20",
