@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "description": "Core synesthesia libraries, type definitions & protocols",
   "license": "MIT",
-  "main": "index.js",
-  "types": "index.d.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/synesthesia-project/synesthesia"
