@@ -28,6 +28,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [breaking]: rework backend interfaces to unify defining and mutating props,
   adding / removing listeners, and child-parent relationships.
 
+Deprecations, to remove before releases:
+- `.addChild()` and `addChildren()` functions
+
 ## [2.1.1] - 2022-01-11
 
 - Update ws and @types/ws
