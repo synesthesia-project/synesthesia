@@ -7699,46 +7699,52 @@ packages:
     dev: false
 
   file:projects/live-app.tgz:
-    resolution: {integrity: sha512-LmQp+t5hbZDsfPnKFQZeSYTbNTn54/TYYnCpC8ip2vyqark8SHKSpyTzzoWEA0SYqyvCY6LLP7Q/fPgOOuzXAw==, tarball: file:projects/live-app.tgz}
+    resolution: {integrity: sha512-q/H0qFvJIE1vltJ0G132dRHHoztrFfOi0Ri4zAbxfPaiUB8U/hyfNSd89oHujOnYy0CAVJQism5I3pwu6uv3mg==, tarball: file:projects/live-app.tgz}
     name: '@rush-temp/live-app'
     version: 0.0.0
     dependencies:
       '@types/lodash': 4.14.149
+      '@types/react': 17.0.58
       '@types/uuid': 9.0.0
       artnet: 1.4.0
       fp-ts: 2.13.1
       gulp: 4.0.2
       io-ts: 2.2.20_fp-ts@2.13.1
       lodash: 4.17.21
+      react: 17.0.2
       uuid: 9.0.0
       zod: 3.22.1
     dev: false
 
   file:projects/live-core.tgz:
-    resolution: {integrity: sha512-RQo0vqT145Zr9lKp2cPWUHYbBb/65L/ZHMbIMj8HOMBJC70yaCR6qKvaDGy6H4CwlIpmYGFO7BDAw5wp7nSMJw==, tarball: file:projects/live-core.tgz}
+    resolution: {integrity: sha512-b2fLUd0Pge+herIBzjdWOlV0VX0fpRL0BMWQIpCL71CKZRUVG5QrssYZdYo5oWgAzj2Ku3ssBmMz5hZtKeM/GQ==, tarball: file:projects/live-core.tgz}
     name: '@rush-temp/live-core'
     version: 0.0.0
     dependencies:
       '@types/lodash': 4.14.149
+      '@types/react': 17.0.58
       fp-ts: 2.13.1
       gulp: 4.0.2
       io-ts: 2.2.20_fp-ts@2.13.1
       lodash: 4.17.21
+      react: 17.0.2
       zod: 3.22.1
     dev: false
 
   file:projects/live-dmx.tgz:
-    resolution: {integrity: sha512-D1fcqzU/n/RRDv93zv1xawRb2n37kyc9qpVuPYOiMipgMrfdfLM8m8mH0BacpvQ2iuE+ijNDL7kI34/GEaSPAQ==, tarball: file:projects/live-dmx.tgz}
+    resolution: {integrity: sha512-CBogOJkuNDxYiFBi8di2mclAYyVF50ZWBpVaGmrCiCC7LFgCOeirkgKXHYoVX2wAXsXJBes6nrCgCqN1v/mENg==, tarball: file:projects/live-dmx.tgz}
     name: '@rush-temp/live-dmx'
     version: 0.0.0
     dependencies:
       '@types/lodash': 4.14.149
+      '@types/react': 17.0.58
       '@types/uuid': 9.0.0
       artnet: 1.4.0
       fp-ts: 2.13.1
       gulp: 4.0.2
       io-ts: 2.2.20_fp-ts@2.13.1
       lodash: 4.17.21
+      react: 17.0.2
       uuid: 9.0.0
     dev: false
 

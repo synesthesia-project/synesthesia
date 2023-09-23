@@ -29,6 +29,7 @@
     "fp-ts": "~2.13.1",
     "io-ts": "~2.2.20",
     "lodash": "^4.17.13",
+    "react": "^17.0.2",
     "uuid": "~9.0.0",
     "@types/uuid": "~9.0.0",
     "zod": "~3.22.1"
@@ -36,6 +37,7 @@
   "devDependencies": {
     "@synesthesia-project/gulp-util": "~0.0.1",
     "@types/lodash": "^4.14.120",
+    "@types/react": "^17.0.0",
     "gulp": "~4.0.2"
   }
 }
