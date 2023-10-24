@@ -237,6 +237,9 @@ const createFilterInput = (context: InputContext<Config>): Input<Config> => {
       for (let i = 0; i < config.length; i++) {
         options[i].config = config[i];
         options[i].input.applyConfig(config[i]?.input, lastConfig?.[i]?.input);
+        options[i].components.group.setLabels(
+          Object.entries(options[i].config.filter).map(([prop, val]) => ({ text: `${prop}: ${val}`}))
+        )
         updateFilters(i);
       }
       // Clear the cache

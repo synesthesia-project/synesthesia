@@ -62,6 +62,7 @@ type ActiveFixture = {
   components: {
     group: ld.Group;
     patch: Record<'universe' | 'channel', ld.TextInput>;
+    properties: ld.Group;
     propertiesList: ld.Group;
   };
 };
@@ -266,6 +267,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
       components: {
         group,
         patch: { universe, channel },
+        properties,
         propertiesList
       },
     };
@@ -316,6 +318,9 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
     fixture.components.patch.universe.setValue(`${fxConfig.universe ?? ''}`);
     fixture.components.patch.channel.setValue(`${fxConfig.channel ?? ''}`);
 
+    fixture.components.properties.setLabels(
+      Object.entries(fxConfig.properties || {}).map(([prop, val]) => ({ text: `${prop}: ${val}`}))
+    )
     updatePropertiesList(fxId, fixture.components.propertiesList, fixture.config);
   };
 
