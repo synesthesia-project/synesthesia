@@ -60,6 +60,12 @@ const createFilterInput = (context: InputContext<Config>): Input<Config> => {
     context.updateConfig((current) => [...(current || []), {filter: {}, input: null}]);
   });
 
+  // TODO: fire an event when properties are changed,
+  // and add a listener to auto refresh properties here when that happens
+  header.addChild(
+    new ld.Button({ text: 'Refresh Properties', icon: 'refresh' })
+  ).addListener('click', () => { knownProperties = null; });
+
   const layersGroup = group.addChild(
     new ld.Group({ direction: 'vertical', noBorder: true })
   );
