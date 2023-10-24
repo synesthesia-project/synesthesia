@@ -46,7 +46,7 @@ const DMX_OUTPUT_CONFIG = t.type({
         universe: t.number,
         channel: t.number,
         name: t.string,
-        properties: t.record(t.string, t.string)
+        properties: t.record(t.string, t.string),
       }),
     ])
   ),
@@ -165,23 +165,27 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
     }
   };
 
-  const updatePropertiesList = (fxId: string, group: ld.Group, config: FixtureConfig) => {
+  const updatePropertiesList = (
+    fxId: string,
+    group: ld.Group,
+    config: FixtureConfig
+  ) => {
     group.removeAllChildren();
     for (const [key, val] of Object.entries(config.properties || {})) {
       const prop = group.addChild(new ld.Group({ noBorder: true }));
-      prop.addChild(
-        new ld.Button({ icon: 'delete', text: 'Delete'})
-      ).addListener('click', () =>
-        updateFixtureConfig(fxId, (c) => ({
-          ...c,
-          properties: Object.fromEntries(Object.entries(c.properties || {}).filter(([k]) => k !== key))
-        }))
-      );
-      prop.addChild(
-        new ld.Label({ text: `${key}: ${val}`})
-      );
+      prop
+        .addChild(new ld.Button({ icon: 'delete', text: 'Delete' }))
+        .addListener('click', () =>
+          updateFixtureConfig(fxId, (c) => ({
+            ...c,
+            properties: Object.fromEntries(
+              Object.entries(c.properties || {}).filter(([k]) => k !== key)
+            ),
+          }))
+        );
+      prop.addChild(new ld.Label({ text: `${key}: ${val}` }));
     }
-  }
+  };
 
   const createFixture = (fxId: string, type: FixtureType): ActiveFixture => {
     const group = new ld.Group({
@@ -224,38 +228,45 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
       }
     });
 
-    const properties = group.addChild(new ld.Group({
-      title: 'Properties',
-      defaultCollapsibleState: 'closed',
-      direction: 'vertical'
-    }));
+    const properties = group.addChild(
+      new ld.Group({
+        title: 'Properties',
+        defaultCollapsibleState: 'closed',
+        direction: 'vertical',
+      })
+    );
 
-    const addPropertyGroup = properties.addChild(new ld.Group({
-      direction: 'horizontal',
-      noBorder: true
-    }));
+    const addPropertyGroup = properties.addChild(
+      new ld.Group({
+        direction: 'horizontal',
+        noBorder: true,
+      })
+    );
 
-    addPropertyGroup.addChild(new ld.Label({ text: 'Set Property: '}));
-    addPropertyGroup.addChild(new ld.Label({ text: 'Key: '}));
+    addPropertyGroup.addChild(new ld.Label({ text: 'Set Property: ' }));
+    addPropertyGroup.addChild(new ld.Label({ text: 'Key: ' }));
     const newPropertyName = addPropertyGroup.addChild(new ld.TextInput());
-    addPropertyGroup.addChild(new ld.Label({ text: 'Val: '}));
+    addPropertyGroup.addChild(new ld.Label({ text: 'Val: ' }));
     const newPropertyVal = addPropertyGroup.addChild(new ld.TextInput());
 
-    addPropertyGroup.addChild(new ld.Button({icon: 'save', text: 'Save'}))
-      .addListener('click', () => 
+    addPropertyGroup
+      .addChild(new ld.Button({ icon: 'save', text: 'Save' }))
+      .addListener('click', () =>
         updateFixtureConfig(fxId, (config) => ({
           ...config,
           properties: {
             ...config.properties,
-            [newPropertyName.getValue() || '']: newPropertyVal.getValue() || ''
-          }
+            [newPropertyName.getValue() || '']: newPropertyVal.getValue() || '',
+          },
         }))
       );
 
-    const propertiesList = properties.addChild(new ld.Group({
-      direction: 'vertical',
-      noBorder: true
-    }));
+    const propertiesList = properties.addChild(
+      new ld.Group({
+        direction: 'vertical',
+        noBorder: true,
+      })
+    );
 
     const fixture = createSpecificFixture(fxId, type);
 
@@ -268,7 +279,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
         group,
         patch: { universe, channel },
         properties,
-        propertiesList
+        propertiesList,
       },
     };
   };
@@ -319,9 +330,15 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
     fixture.components.patch.channel.setValue(`${fxConfig.channel ?? ''}`);
 
     fixture.components.properties.setLabels(
-      Object.entries(fxConfig.properties || {}).map(([prop, val]) => ({ text: `${prop}: ${val}`}))
-    )
-    updatePropertiesList(fxId, fixture.components.propertiesList, fixture.config);
+      Object.entries(fxConfig.properties || {}).map(([prop, val]) => ({
+        text: `${prop}: ${val}`,
+      }))
+    );
+    updatePropertiesList(
+      fxId,
+      fixture.components.propertiesList,
+      fixture.config
+    );
   };
 
   const updateFixtures = (config: Config) => {
@@ -351,7 +368,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
   let pixels: {
     fixturePixels: EnhancedFixturePixel[];
     map: PixelMap;
-    pixelInfo: Array<PixelInfo<{properties: Record<string, string>}>>;
+    pixelInfo: Array<PixelInfo<{ properties: Record<string, string> }>>;
   } | null;
 
   const render = () => {
@@ -435,8 +452,8 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
       pixelInfo: fixturePixels.map((f) => ({
         data: {
           properties: {
-            ...f.fixtureConfig.properties
-          }
+            ...f.fixtureConfig.properties,
+          },
         },
         x: f.x,
         y: f.y,

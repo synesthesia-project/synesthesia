@@ -94,7 +94,7 @@ const createFilterInput = (context: InputContext<Config>): Input<Config> => {
     for (const p of knownProperties || []) {
       // Add new property
       if (!option.components.filters.has(p)) {
-        const filterGroup = new ld.Group({ noBorder: true});
+        const filterGroup = new ld.Group({ noBorder: true });
         filterGroup.addChild(new ld.Label({ text: `${p}:` }));
         filterGroup
           // TODO: make this a select of the available values for this property
@@ -130,8 +130,8 @@ const createFilterInput = (context: InputContext<Config>): Input<Config> => {
     }
     option.components.filterGroup.addChildren(
       ...[...option.components.filters.entries()]
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([_, filterGroup]) => filterGroup)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([_, filterGroup]) => filterGroup)
     );
   };
 
@@ -239,8 +239,10 @@ const createFilterInput = (context: InputContext<Config>): Input<Config> => {
         options[i].config = config[i];
         options[i].input.applyConfig(config[i]?.input, lastConfig?.[i]?.input);
         options[i].components.group.setLabels(
-          Object.entries(options[i].config.filter).map(([prop, val]) => ({ text: `${prop}: ${val}`}))
-        )
+          Object.entries(options[i].config.filter).map(([prop, val]) => ({
+            text: `${prop}: ${val}`,
+          }))
+        );
         updateFilters(i);
       }
       // Clear the cache
