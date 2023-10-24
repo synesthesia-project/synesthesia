@@ -49,6 +49,8 @@ const createFilterInput = (context: InputContext<Config>): Input<Config> => {
     pixelToOption: new Map()
   }
 
+  let knownProperties: null | Set<string> = null;
+
   const header = group.addChild(new ld.Group({ noBorder: true, wrap: true }));
 
   const addLayer = header.addChild(
@@ -62,7 +64,42 @@ const createFilterInput = (context: InputContext<Config>): Input<Config> => {
     new ld.Group({ direction: 'vertical', noBorder: true })
   );
 
+  const updateFilters = (oId: number) => {
+    const option = options[oId];
+    option.filterGroup.removeAllChildren();
+    for (const p of knownProperties || []) {
+      option.filterGroup.addChild(new ld.Label({ text: `${p}:`}));
+      option.filterGroup
+        .addChild(new ld.TextInput({value: option.config.filter[p]}))
+        .addListener('change', (value => context.updateConfig(current => {
+          return [
+            ...current.slice(0, oId),
+            {
+              ...current[oId],
+              filter: value ? {
+                ...current[oId].filter,
+                [p]: value
+              } : Object.fromEntries(Object.entries(current[oId].filter).filter(([k]) => k !== p))
+            },
+            ...current.slice(oId + 1)
+          ]
+        })))
+    }
+  }
+
   const render: CompositorModule['render'] = (map, pixels) => {
+
+    // if properties don't exist yet, populate them
+    if (!knownProperties) {
+      knownProperties = new Set<string>();
+      for (const p of pixels) {
+        for (const key of Object.keys(getProperties(p))) {
+          knownProperties.add(key);
+        }
+      }
+      // Update filters display now we have properties
+      options.map((_, i) => updateFilters(i));
+    }
 
     // Render each option
     // TODO: make this more efficient by only passing along the filtered pixels
@@ -108,7 +145,8 @@ const createFilterInput = (context: InputContext<Config>): Input<Config> => {
         );
 
         const group = new ld.Group({
-          direction: 'vertical'
+          direction: 'vertical',
+          defaultCollapsibleState: 'auto',
         });
 
         group.addHeaderChild(deleteButton);
@@ -140,6 +178,7 @@ const createFilterInput = (context: InputContext<Config>): Input<Config> => {
       for (let i = 0; i < config.length; i++) {
         options[i].config = config[i];
         options[i].input.applyConfig(config[i]?.input, lastConfig?.[i]?.input);
+        updateFilters(i);
       }
       // Clear the cache
       cache.pixelToOption.clear();
