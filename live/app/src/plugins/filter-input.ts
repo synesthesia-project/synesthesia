@@ -97,6 +97,7 @@ const createFilterInput = (context: InputContext<Config>): Input<Config> => {
         const filterGroup = new ld.Group({ noBorder: true});
         filterGroup.addChild(new ld.Label({ text: `${p}:` }));
         filterGroup
+          // TODO: make this a select of the available values for this property
           .addChild(new ld.TextInput({ value: option.config.filter[p] }))
           .addListener('change', (value) =>
             context.updateConfig((current) => {
