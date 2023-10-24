@@ -52,8 +52,6 @@ export class Universes {
       update: (current: UniversesConfig) => UniversesConfig
     ) => void
   ) {
-    this.updateConfig((c) => c);
-
     this.group
       .addHeaderChild(new ld.Button({ icon: 'add' }))
       .addListener('click', () => {
