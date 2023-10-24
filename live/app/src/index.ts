@@ -7,6 +7,7 @@ import { DMX_PLUGIN } from '@synesthesia-project/live-dmx';
 import { SCAN_INPUT_PLUGIN } from './plugins/scan-input';
 import { BPM_PLUGIN } from './plugins/bpm';
 import { BEAT_INPUT_PLUGIN } from './plugins/beat-input';
+import { FILTER_INPUT_PLUGIN } from './plugins/filter-input';
 
 const configPath = process.argv[2];
 
@@ -21,6 +22,7 @@ Stage(
     VIRTUAL_OUTPUT_PLUGIN,
     CHASE_INPUT_PLUGIN,
     FILL_INPUT_PLUGIN,
+    FILTER_INPUT_PLUGIN,
     SCAN_INPUT_PLUGIN,
     ADD_INPUT_PLUGIN,
     DMX_PLUGIN,
