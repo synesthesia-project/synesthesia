@@ -46,7 +46,7 @@ const DMX_OUTPUT_CONFIG = t.type({
         universe: t.number,
         channel: t.number,
         name: t.string,
-        properties: t.record(t.string, t.union([t.string, t.undefined]))
+        properties: t.record(t.string, t.string)
       }),
     ])
   ),
@@ -346,7 +346,7 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
   let pixels: {
     fixturePixels: EnhancedFixturePixel[];
     map: PixelMap;
-    pixelInfo: Array<PixelInfo<null>>;
+    pixelInfo: Array<PixelInfo<{properties: Record<string, string>}>>;
   } | null;
 
   const render = () => {
@@ -428,7 +428,11 @@ const createDmxOutput = (context: OutputContext<Config>): Output<Config> => {
         yMax: Math.max(...fixturePixels.map((f) => f.y)),
       },
       pixelInfo: fixturePixels.map((f) => ({
-        data: null,
+        data: {
+          properties: {
+            ...f.fixtureConfig.properties
+          }
+        },
         x: f.x,
         y: f.y,
       })),
