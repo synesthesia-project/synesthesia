@@ -194,7 +194,7 @@ export const Sequences = (options: {
     );
 
     const deskComponent = deskGroup.addChild(
-      new ld.Group({ direction: 'vertical' })
+      new ld.Group({ direction: 'vertical', defaultCollapsibleState: 'open' })
     );
 
     configComponent.addListener('title-changed', (title) =>
@@ -340,15 +340,18 @@ export const Sequences = (options: {
               new ld.Group({ noBorder: true })
             );
             const label = deskGroup.addChild(new ld.Label({ text: '' }));
-            const input = deskGroup.addChild(new ld.SliderButton({
-              value: -1,
-              min: -1,
-              max: 255,
-              step: 1,
-              mode: 'writeThrough'
-            }));
+            const input = deskGroup.addChild(
+              new ld.SliderButton({
+                value: -1,
+                min: -1,
+                max: 255,
+                step: 1,
+                mode: 'writeThrough',
+              })
+            );
             input.addListener('change', (value) =>
-            updateSequenceChannel(gId, sqId, chId, value < 0 ? null : value));
+              updateSequenceChannel(gId, sqId, chId, value < 0 ? null : value)
+            );
             sequence.channels.set(
               chId,
               (channel = {
