@@ -14,7 +14,7 @@ const optionalRecord = <T extends t.Mixed>(type: T) =>
 
 export const SEQUENCES_SEQUENCE_CONFIG = t.type({
   name: t.string,
-  channels: optionalRecord(t.string),
+  channels: optionalRecord(t.number),
 });
 
 export type SequencesSequenceConfig = t.TypeOf<
