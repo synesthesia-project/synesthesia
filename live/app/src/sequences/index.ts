@@ -16,7 +16,7 @@ export const INIT_SEQUENCES_CONFIG: SequencesConfig = {
 
 type SequenceChannel = {
   deskGroup: ld.Group;
-  input: ld.TextInput;
+  input: ld.SliderButton;
   label: ld.Label;
 };
 
@@ -87,13 +87,13 @@ export const Sequences = (options: {
     gId: string,
     sId: string,
     chId: string,
-    value: string
+    value: number | null
   ) =>
     updateSequenceConfig(gId, sId, (c) => ({
       ...c,
       channels: {
         ...c.channels,
-        [chId]: value,
+        [chId]: value ?? undefined,
       },
     }));
 
@@ -340,12 +340,15 @@ export const Sequences = (options: {
               new ld.Group({ noBorder: true })
             );
             const label = deskGroup.addChild(new ld.Label({ text: '' }));
-            const input = deskGroup.addChild(new ld.TextInput());
-            deskGroup
-              .addChild(new ld.Button({ text: 'Set', icon: 'save' }))
-              .addListener('click', () =>
-                updateSequenceChannel(gId, sqId, chId, input.getValue() ?? '')
-              );
+            const input = deskGroup.addChild(new ld.SliderButton({
+              value: -1,
+              min: -1,
+              max: 255,
+              step: 1,
+              mode: 'writeThrough'
+            }));
+            input.addListener('change', (value) =>
+            updateSequenceChannel(gId, sqId, chId, value < 0 ? null : value));
             sequence.channels.set(
               chId,
               (channel = {
@@ -356,7 +359,7 @@ export const Sequences = (options: {
             );
           }
           channel.label.setText(ch.name.join(' > '));
-          channel.input.setValue(sq?.channels[chId] || '');
+          channel.input.setValue(sq?.channels[chId] ?? -1);
         }
       }
       // Remove deleted channels:
@@ -424,8 +427,8 @@ export const Sequences = (options: {
         null;
       if (sequence) {
         for (const [chId, value] of Object.entries(sequence.channels)) {
-          if (value) {
-            channelValues.set(chId, parseInt(value) || 0);
+          if (value !== undefined) {
+            channelValues.set(chId, value);
           }
         }
       }
