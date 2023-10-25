@@ -8,7 +8,7 @@ import {
   RGBA_WHITE,
 } from '@synesthesia-project/compositor/lib/color';
 
-type BeatEvent = {
+export type BeatEventData = {
   periodMs: number;
   index: number;
   barSize: number;
@@ -16,13 +16,17 @@ type BeatEvent = {
   barIndex: number;
 };
 
-const BEAT_EVENT_EMITTER = createEventEmitter<BeatEvent>('beat');
+const BEAT_EVENT_EMITTER = createEventEmitter<BeatEventData>('beat');
 const STOP_BEAT_ACTION = createAction('beat.stop', z.unknown());
 const RECORD_BEAT_ACTION = createAction('beat.record', z.unknown());
 
 export const BEAT_EVENT = BEAT_EVENT_EMITTER.register;
 
-let barSize = 4;
+export const DEFAULT_BAR_SIZE = 4;
+
+// TODO: make this a value that can be accessed by other plugins
+// via variable
+let barSize = DEFAULT_BAR_SIZE;
 
 let manualRecording: null | {
   firstBeat: number;
