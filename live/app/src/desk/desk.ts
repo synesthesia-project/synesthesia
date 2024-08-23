@@ -20,6 +20,22 @@ export const createDesk = () => {
     new ld.Group({ direction: 'vertical', noBorder: true })
   );
 
+  const dimmerGroup = deskTab.addChild(
+    new ld.Group({ noBorder: true, wrap: true })
+  );
+
+  dimmerGroup.addChild(new ld.Label({ text: `Dimmer:` }));
+
+  const compositorDimmer = dimmerGroup.addChild(
+    new ld.SliderButton({
+      value: 1,
+      min: 0,
+      max: 1,
+      step: 0.01,
+      mode: 'writeThrough',
+    })
+  );
+
   const compositorCueTriggers = deskTab.addChild(
     new ld.Group({ direction: 'vertical' })
   );
@@ -92,6 +108,7 @@ export const createDesk = () => {
     sequencesGroup,
     pluginComponentsGroup,
     compositorCuesGroup,
+    compositorDimmer,
     compositorCueTriggers,
     sequencesDesk,
     init,

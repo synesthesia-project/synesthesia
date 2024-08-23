@@ -1,5 +1,6 @@
 import * as ld from '@synesthesia-project/light-desk';
 import { throttle } from 'lodash';
+import { ModulateModule } from '@synesthesia-project/compositor/lib/modules/modulate';
 import { TransitionModule } from '@synesthesia-project/compositor/lib/modules/transition';
 import FillModule from '@synesthesia-project/compositor/lib/modules/fill';
 import { RGBA_TRANSPARENT } from '@synesthesia-project/compositor/lib/color';
@@ -60,14 +61,19 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
   const inputManager = createInputManager();
 
   const compositor: {
-    root: TransitionModule;
+    transition: TransitionModule;
+    modulate: ModulateModule;
     current: null | string;
     cues: Map<string, InputSocket>;
-  } = {
-    root: new TransitionModule(new FillModule(RGBA_TRANSPARENT)),
-    current: null,
-    cues: new Map(),
-  };
+  } = (() => {
+    const transition = new TransitionModule(new FillModule(RGBA_TRANSPARENT));
+    return {
+      transition,
+      modulate: new ModulateModule(transition),
+      current: null,
+      cues: new Map(),
+    };
+  })();
 
   /**
    * Map from output key to active instance of the output
@@ -116,6 +122,18 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       saveCurrentConfig();
     }
   };
+
+  // Setup Dimmer
+  desk.compositorDimmer.addListener('change', (value) =>
+    updateConfig((config) => ({
+      ...config,
+      compositor: {
+        current: config.compositor?.current ?? null,
+        dimmer: value,
+        cues: config.compositor?.cues || {},
+      },
+    }))
+  );
 
   // Setup Sequences
 
@@ -171,7 +189,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
       }
     };
     const render: OutputContext<ConfigT>['render'] = (map, pixels) =>
-      compositor.root.render(map, pixels);
+      compositor.modulate.render(map, pixels);
     const setChannels: OutputContext<ConfigT>['setChannels'] = (channels) => {
       activeOutput.channels = channels;
       sendChannelsToSequences();
@@ -310,6 +328,8 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
 
   const updateInputsFromConfig = (prev: Config) => {
     const cues = config.compositor?.cues || {};
+    compositor.modulate.setAlpha(config.compositor?.dimmer ?? 1);
+    desk.compositorDimmer.setValue(config.compositor?.dimmer ?? 1);
     desk.compositorCueTriggers.removeAllChildren();
     for (const [cueId, cueConfig] of Object.entries(cues)) {
       if (cueConfig === undefined) continue;
@@ -322,6 +342,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
             ...current,
             compositor: {
               current: current.compositor?.current ?? null,
+              dimmer: current.compositor?.dimmer ?? 1,
               cues: {
                 ...current.compositor?.cues,
                 [cueId]: existing && update(existing),
@@ -339,6 +360,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
               ...current,
               compositor: {
                 current: current.compositor?.current ?? null,
+                dimmer: current.compositor?.dimmer ?? 1,
                 cues: {
                   ...current.compositor?.cues,
                   [cueId]: undefined,
@@ -383,6 +405,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
             ...config,
             compositor: {
               current: cueId,
+              dimmer: config.compositor?.dimmer ?? 1,
               cues: config.compositor?.cues || {},
             },
           }))
@@ -404,9 +427,9 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
           ? compositor.cues.get(compositor.current)?.getModlue()
           : null;
       if (module) {
-        compositor.root.transition(module, 1);
+        compositor.transition.transition(module, 1);
       } else {
-        compositor.root.transition(new FillModule(RGBA_TRANSPARENT), 1);
+        compositor.transition.transition(new FillModule(RGBA_TRANSPARENT), 1);
       }
     }
   };
@@ -424,6 +447,7 @@ export const Stage = async (plugins: Plugin[], configPath: string) => {
         ...config,
         compositor: {
           current: config.compositor?.current ?? null,
+          dimmer: config.compositor?.dimmer ?? 1,
           cues: { ...config.compositor?.cues, [uuidv4()]: {} },
         },
       })),

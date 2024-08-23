@@ -47,6 +47,7 @@ export const CONFIG = t.partial({
   outputs: t.record(t.string, OUTPUT),
   compositor: t.type({
     current: t.union([t.null, t.string]),
+    dimmer: t.number,
     cues: optionalRecord(CUE_CONFIG),
   }),
   sequences: SEQUENCES_CONFIG,
